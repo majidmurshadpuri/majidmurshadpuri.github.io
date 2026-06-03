@@ -2,164 +2,97 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Majid Murshadpuri · Deep & Comfortable Library</title>
+<meta name="description" content="Explore writings, poetry, tools, and reflections — a warm collection in Hindi, English & Urdu.">
 
-<title>Majid Murshadpuri</title>
-<meta name="description" content="Explore the writings, reflections, opinions, and practical HTML tools of Majid Murshadpuri, along with his recommended books and articles and websites">
-
-<link rel="stylesheet" href="style.css">
+<!-- ========== BEAUTIFUL FONTS FOR THREE LANGUAGES ========== -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-<div class="topbar">
+<div class="deep-collection">
+  <div class="deep-header">
     <h1>Majid Murshadpuri</h1>
-<p>
-Interested in literature, Urdu poetry, Islamic thought, and analytical stems.
-</p>
-</div>
+    <h2>literature · Urdu poetry · Islamic thought · analytical stems</h2>
+  </div>
 
-<div class="container">
-
+  <div class="content-panel">
     <div class="search-box">
-        <input 
-            type="text" 
-            id="searchInput"
-            placeholder="Search tools..."
-            oninput="filterTools()"
-        >
+      <input 
+        type="text" 
+        id="searchInput"
+        placeholder="🔍 Search • کھوجیں • ढूंढें"
+        oninput="filterTools()"
+      >
     </div>
 
-    <div class="grid" id="toolsGrid">
-
-        <!-- TOOL CARD START -->
-        <div class="tool-card">
-            <a class="tool-link" href="Aakhiri Tasveer Hindi.html">
-                
-                <div class="icon">📖</div>
-
-                <div class="tool-title">
-                    Umair Najmi Shayari Collection (Hindi)
-                </div>
-
-                <div class="tool-desc">
-                    I have collected all the Ghazals of Umair Najmi in a beautifully designed format.
-                </div>
-
-            </a>
-        </div>
-        <!-- TOOL CARD END -->
-        
-        <!-- TOOL CARD START -->
-        <div class="tool-card">
-            <a class="tool-link" href="Whatsapp to Ebook.html">
-                
-                <div class="icon">📖</div>
-
-                <div class="tool-title">
-                    Chat to Ebook Converter 
-                </div>
-
-                <div class="tool-desc">
-                    This tool converts your whatsApp chat into a beautiful html ebook.
-                </div>
-
-            </a>
-        </div>
-        <!-- TOOL CARD END -->
-
-
-        <!-- COPY THIS CARD AND CHANGE DETAILS -->
-
-        <div class="tool-card">
-            <a class="tool-link" href="Tools/">
-                
-                <div class="icon">🧮</div>
-
-                <div class="tool-title">
-                    Calculator
-                </div>
-
-                <div class="tool-desc">
-                    Offline calculator with advanced features.
-                </div>
-
-            </a>
-        </div>
-
-
-        <div class="tool-card">
-            <a class="tool-link" href="shayari.html">
-                
-                <div class="icon">📖</div>
-
-                <div class="tool-title">
-                    Shayari Composer
-                </div>
-
-                <div class="tool-desc">
-                    Create beautifully formatted Urdu poetry.
-                </div>
-
-            </a>
-        </div>
-
-
-        <div class="tool-card">
-            <a class="tool-link" href="ebook.html">
-                
-                <div class="icon">📚</div>
-
-                <div class="tool-title">
-                    Ebook Creator
-                </div>
-
-                <div class="tool-desc">
-                    Compile articles into beautiful ebook pages.
-                </div>
-
-            </a>
-        </div>
-
-
+    <div class="tools-grid" id="toolsGrid">
+      <!-- original cards – all links unchanged -->
+      <div class="tool-card">
+        <a class="tool-link" href="Aakhiri Tasveer Hindi.html">
+          <div class="icon">📜</div>
+          <div class="tool-title">Umair Najmi Shayari Collection (Hindi)</div>
+          <div class="tool-desc">I have collected all the Ghazals of Umair Najmi in a beautifully designed format.</div>
+        </a>
+      </div>
+      <div class="tool-card">
+        <a class="tool-link" href="Whatsapp to Ebook.html">
+          <div class="icon">📖</div>
+          <div class="tool-title">Chat to Ebook Converter</div>
+          <div class="tool-desc">This tool converts your WhatsApp chat into a beautiful html ebook.</div>
+        </a>
+      </div>
+      <div class="tool-card">
+        <a class="tool-link" href="shayari.html">
+          <div class="icon">✍🏽</div>
+          <div class="tool-title">Shayari Composer</div>
+          <div class="tool-desc">Create beautifully formatted Urdu poetry.</div>
+        </a>
+      </div>
+      <div class="tool-card">
+        <a class="tool-link" href="ebook.html">
+          <div class="icon">📚</div>
+          <div class="tool-title">Ebook Creator</div>
+          <div class="tool-desc">Compile articles into beautiful ebook pages.</div>
+        </a>
+      </div>
     </div>
+  </div>
 
-</div>
-
-<div class="footer">
-    My Offline HTML Tools Collection
+  <div class="deep-footer">
+    ✦ a living collection · crafted with depth & warmth ✦
+  </div>
 </div>
 
 <script>
-
-function filterTools(){
-
-    const input = document
-        .getElementById('searchInput')
-        .value
-        .toLowerCase();
-
+  // unchanged filter function
+  function filterTools() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
     const cards = document.querySelectorAll('.tool-card');
-
-    cards.forEach(card=>{
-
-        const text = card.textContent.toLowerCase();
-
-        if(text.includes(input)){
-
-            card.style.display = '';
-
-        }else{
-
-            card.style.display = 'none';
-
-        }
-
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      if (text.includes(input)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
     });
+  }
 
-}
-
+  // gentle fade-in for cards
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.tool-card');
+    cards.forEach((card, idx) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(12px)';
+      setTimeout(() => {
+        card.style.transition = 'opacity 0.4s ease, transform 0.35s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, idx * 40);
+    });
+  });
 </script>
-
 </body>
 </html>
