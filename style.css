@@ -1,0 +1,143 @@
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+    --bg:#111827;
+    --card:#1f2937;
+    --cardHover:#374151;
+    --text:#f9fafb;
+    --accent:#3b82f6;
+    --accent2:#8b5cf6;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+}
+
+.topbar{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:#0f172a;
+    border-bottom:1px solid #334155;
+    padding:16px;
+    text-align:center;
+}
+
+.topbar h1{
+    font-size:24px;
+    font-weight:bold;
+}
+
+.topbar p{
+    margin-top:6px;
+    color:#cbd5e1;
+    font-size:14px;
+}
+
+.container{
+    padding:18px;
+    max-width:1200px;
+    margin:auto;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:18px;
+}
+
+.tool-card{
+    background:var(--card);
+    border-radius:20px;
+    overflow:hidden;
+    transition:0.25s;
+    border:1px solid #374151;
+    position:relative;
+}
+
+.tool-card:hover{
+    transform:translateY(-4px);
+    background:var(--cardHover);
+}
+
+.tool-link{
+    text-decoration:none;
+    color:white;
+    display:block;
+    padding:22px;
+}
+
+.icon{
+    width:60px;
+    height:60px;
+    border-radius:16px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    margin-bottom:18px;
+}
+
+.tool-title{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.tool-desc{
+    color:#cbd5e1;
+    line-height:1.5;
+    font-size:14px;
+}
+
+.footer{
+    text-align:center;
+    padding:25px 15px;
+    color:#94a3b8;
+    font-size:14px;
+}
+
+.search-box{
+    margin-bottom:20px;
+}
+
+.search-box input{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:16px;
+    background:#1e293b;
+    color:white;
+    font-size:16px;
+    outline:none;
+}
+
+.search-box input::placeholder{
+    color:#94a3b8;
+}
+
+@media(max-width:600px){
+
+    .topbar h1{
+        font-size:22px;
+    }
+
+    .tool-title{
+        font-size:18px;
+    }
+
+}
+
+</style>
+
