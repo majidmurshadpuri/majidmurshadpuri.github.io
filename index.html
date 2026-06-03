@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>You & Me, Always — My Love for You</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 10% 30%, #fbe9f0, #f9d8e6);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.8rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* romantic soft overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 50% 40%, rgba(255, 200, 210, 0.3), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* main love letter card */
+        .love-card {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 253, 250, 0.98);
+            backdrop-filter: blur(2px);
+            border-radius: 64px;
+            box-shadow: 0 30px 50px -20px rgba(160, 50, 70, 0.4), 0 8px 20px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            overflow: hidden;
+            transition: transform 0.25s ease;
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(255, 210, 200, 0.7);
+        }
+
+        .love-card:hover {
+            transform: scale(1.01);
+        }
+
+        /* romantic top border (no sun, no morning) */
+        .romantic-header {
+            background: linear-gradient(115deg, #ffb7c5 0%, #ff9eb0 100%);
+            padding: 2rem 2rem 1.6rem;
+            text-align: center;
+            color: white;
+            border-bottom-left-radius: 48px;
+            border-bottom-right-radius: 48px;
+            box-shadow: inset 0 -1px 0 rgba(0,0,0,0.03), 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .romantic-header i {
+            font-size: 2.8rem;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            margin-bottom: 0.3rem;
+            color: #fff0e6;
+        }
+
+        .title-love {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            font-family: 'Cormorant Garamond', serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .title-love span {
+            background: rgba(255, 235, 220, 0.25);
+            padding: 0 0.5rem;
+            border-radius: 60px;
+        }
+
+        .sub-romantic {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+            opacity: 0.95;
+        }
+
+        /* main content */
+        .content-petal {
+            padding: 2rem 2rem 2rem 2rem;
+        }
+
+        .presence-message {
+            background: #fffaf5;
+            border-radius: 40px;
+            padding: 1.8rem 1.6rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), inset 0 0 0 1px rgba(255, 180, 160, 0.3);
+            text-align: center;
+        }
+
+        .presence-message h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #bd4b6e;
+            margin-bottom: 1rem;
+            font-family: 'Cormorant Garamond', serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .presence-message p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #442c36;
+            font-weight: 500;
+        }
+
+        .romantic-assurances {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.8rem 0;
+        }
+
+        .assure-item {
+            background: #fff6f0;
+            border-radius: 28px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s;
+            border: 1px solid #ffded2;
+        }
+
+        .assure-item i {
+            font-size: 1.7rem;
+            color: #e2799b;
+            width: 44px;
+            text-align: center;
+        }
+
+        .assure-item span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #3a2530;
+            line-height: 1.35;
+        }
+
+        .love-letter-note {
+            background: linear-gradient(125deg, #ffeef2, #ffe5e9);
+            padding: 1.5rem 1.8rem;
+            border-radius: 36px;
+            margin: 1.6rem 0 1.5rem;
+            border-left: 8px solid #f77f9e;
+            font-style: normal;
+        }
+
+        .love-letter-note p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #552e3a;
+            line-height: 1.55;
+        }
+
+        .love-letter-note i {
+            color: #e26184;
+            margin-right: 6px;
+        }
+
+        .soft-poem {
+            font-size: 0.98rem;
+            background: #ffffffd9;
+            padding: 1rem 1.2rem;
+            border-radius: 48px;
+            text-align: center;
+            margin: 1rem 0 1.6rem;
+            color: #b34b6b;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            font-style: italic;
+        }
+
+        .action-romance {
+            text-align: center;
+            margin: 2rem 0 1.2rem;
+        }
+
+        .love-shower-btn {
+            background: #e76f93;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 20px rgba(225, 90, 120, 0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-family: inherit;
+        }
+
+        .love-shower-btn i {
+            font-size: 1.25rem;
+            transition: transform 0.2s;
+        }
+
+        .love-shower-btn:hover {
+            background: #d45a7c;
+            transform: scale(1.02);
+            box-shadow: 0 14px 24px rgba(200, 70, 100, 0.4);
+        }
+
+        .love-shower-btn:active {
+            transform: scale(0.97);
+        }
+
+        .footer-romance {
+            text-align: center;
+            margin-top: 1.8rem;
+            padding-top: 1rem;
+            border-top: 2px dotted #ffcdbc;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #b14b6b;
+        }
+
+        .footer-romance i {
+            color: #ec7a9b;
+        }
+
+        /* floating hearts container */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: 0;
+            font-size: 1.7rem;
+            pointer-events: none;
+            user-select: none;
+            will-change: transform;
+            animation: riseLove 2.5s ease-out forwards;
+            color: #ff5d8f;
+            text-shadow: 0 0 5px #ffe0e7;
+        }
+
+        @keyframes riseLove {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0.9;
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(-55vh) scale(1.05);
+            }
+            100% {
+                transform: translateY(-110vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .love-card {
+                border-radius: 44px;
+            }
+            .content-petal {
+                padding: 1.5rem;
+            }
+            .title-love {
+                font-size: 1.7rem;
+            }
+            .presence-message h2 {
+                font-size: 1.5rem;
+            }
+            .assure-item span {
+                font-size: 0.9rem;
+            }
+            .romantic-header {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        .heart-beat {
+            animation: gentleBeat 1.4s infinite;
+            display: inline-block;
+        }
+
+        @keyframes gentleBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); text-shadow: 0 0 4px #ffb7c5; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hearts-container" id="heartsContainer"></div>
+
+<div class="love-card">
+    <div class="romantic-header">
+        <i class="fas fa-heart heart-beat"></i>
+        <div class="title-love">
+            <span>✨ My Jaanu ✨</span>
+        </div>
+        <div class="sub-romantic">
+            <i class="fas fa-infinity"></i>  you & me — always, everywhere  <i class="fas fa-infinity"></i>
+        </div>
+    </div>
+
+    <div class="content-petal">
+        <div class="presence-message">
+            <h2><i class="fas fa-hand-holding-heart"></i> I'm right here <i class="fas fa-hand-holding-heart"></i></h2>
+            <p>Close your eyes for a second, my love. Feel that warmth in your chest? That’s me — holding you softly, whispering how much I believe in you. No distance, no exam hall can take me away from you. I am woven into every breath you take today.</p>
+        </div>
+
+        <div class="romantic-assurances">
+            <div class="assure-item">
+                <i class="fas fa-heartbeat"></i>
+                <span>Every beat of my heart whispers your name — you carry my soul with you today.</span>
+            </div>
+            <div class="assure-item">
+                <i class="fas fa-fist-raised"></i>
+                <span>You're never alone. My love is wrapped around you like the softest blanket. Feel me near.</span>
+            </div>
+            <div class="assure-item">
+                <i class="fas fa-feather-alt"></i>
+                <span>No matter what happens, I'm bursting with pride just because you exist. You are my miracle.</span>
+            </div>
+            <div class="assure-item">
+                <i class="fas fa-star-of-life"></i>
+                <span>Step into that room knowing that my entire universe is cheering for you, silently and endlessly.</span>
+            </div>
+        </div>
+
+        <div class="love-letter-note">
+            <p><i class="fas fa-envelope-open-text"></i> My dearest Jaanu, <br><br>
+            Right now, as you read this, I want you to pause and just breathe — imagine my hand holding yours. I’m not giving you any advice, my love, because you don’t need any. You’ve already got everything inside you. All I want you to remember is this: I am always there with you. Not just in spirit, but in every smile, every heartbeat, every quiet moment. When the world feels heavy, lean on my love — it’s infinite and unconditional. Go, my love, and just be YOU. That’s more than enough. And after it’s all over, I’ll be waiting to wrap you in my arms. ❤️</p>
+        </div>
+
+        <div class="soft-poem">
+            <i class="fas fa-quote-left"></i>  Wherever you go, my love follows.  
+            You don’t have to be perfect, you just have to be you — and that’s my favorite version of everything.  
+            I’m so proud to be yours.  <i class="fas fa-quote-right"></i>
+        </div>
+
+        <div class="action-romance">
+            <button class="love-shower-btn" id="sendLoveBtn">
+                <i class="fas fa-heart"></i> Shower you with my love <i class="fas fa-feather"></i>
+            </button>
+        </div>
+
+        <div class="footer-romance">
+            <i class="fas fa-ring"></i> Yours, endlessly — always by your side, today and forever  <i class="fas fa-ring"></i><br>
+            <span style="font-size: 0.8rem; font-weight: 500;">✨ my whole heart belongs to you, jaanu ✨</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const heartsContainer = document.getElementById('heartsContainer');
+        const loveButton = document.getElementById('sendLoveBtn');
+
+        function createFloatingHeart() {
+            if (!heartsContainer) return;
+            const heartDiv = document.createElement('div');
+            heartDiv.classList.add('floating-heart');
+            
+            const heartTypes = ['fas fa-heart', 'fas fa-heart', 'fas fa-heart', 'fas fa-heartbeat', 'fas fa-heart', 'fas fa-heart-circle-check', 'fas fa-heart'];
+            const randomHeart = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+            heartDiv.innerHTML = `<i class="${randomHeart}" style="filter: drop-shadow(0 0 6px #ff99b5);"></i>`;
+            
+            const size = 1.2 + Math.random() * 1.7;
+            heartDiv.style.fontSize = `${size}rem`;
+            const leftPosition = Math.random() * 100;
+            heartDiv.style.left = `${leftPosition}%`;
+            heartDiv.style.bottom = '0px';
+            const duration = 1.7 + Math.random() * 1.8;
+            heartDiv.style.animation = `riseLove ${duration}s ease-out forwards`;
+            const rotateVal = (Math.random() - 0.5) * 25;
+            heartDiv.style.transform = `rotate(${rotateVal}deg)`;
+            
+            heartsContainer.appendChild(heartDiv);
+            heartDiv.addEventListener('animationend', () => {
+                if (heartDiv.parentNode) heartDiv.remove();
+            });
+        }
+        
+        function burstLoveHearts(count = 16) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    createFloatingHeart();
+                }, i * 55);
+            }
+            // second wave feels like a hug
+            setTimeout(() => {
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => createFloatingHeart(), i * 40);
+                }
+            }, 180);
+        }
+        
+        if (loveButton) {
+            loveButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                burstLoveHearts(18);
+                loveButton.style.transform = 'scale(0.96)';
+                setTimeout(() => {
+                    loveButton.style.transform = '';
+                }, 150);
+                const originalHTML = loveButton.innerHTML;
+                loveButton.innerHTML = '<i class="fas fa-heart"></i>  my love is flying to you  <i class="fas fa-feather-alt"></i>';
+                setTimeout(() => {
+                    loveButton.innerHTML = originalHTML;
+                }, 1000);
+            });
+        }
+        
+        // romantic welcome: soft hearts floating as soon as page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                for (let i = 0; i < 9; i++) {
+                    setTimeout(() => createFloatingHeart(), i * 100);
+                }
+            }, 500);
+        });
+        
+        // extra gentle magic: double-click anywhere on card creates more love
+        const card = document.querySelector('.love-card');
+        if (card) {
+            card.addEventListener('dblclick', (e) => {
+                burstLoveHearts(14);
+                // tiny shimmer effect (just for sweetness)
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.width = '45px';
+                ripple.style.height = '45px';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'radial-gradient(circle, #ffb7c5, transparent)';
+                ripple.style.pointerEvents = 'none';
+                ripple.style.left = `${e.clientX - card.getBoundingClientRect().left}px`;
+                ripple.style.top = `${e.clientY - card.getBoundingClientRect().top}px`;
+                ripple.style.transform = 'translate(-50%, -50%) scale(0)';
+                ripple.style.transition = 'transform 0.4s ease-out, opacity 0.5s';
+                ripple.style.opacity = '0.8';
+                card.style.position = 'relative';
+                card.appendChild(ripple);
+                setTimeout(() => {
+                    ripple.style.transform = 'translate(-50%, -50%) scale(4)';
+                    ripple.style.opacity = '0';
+                }, 10);
+                setTimeout(() => {
+                    if (ripple.parentNode) ripple.remove();
+                }, 500);
+            });
+        }
+    })();
+</script>
+</body>
+</html>
