@@ -4,258 +4,348 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZIP to Master PDF Converter</title>
+    <!-- Tailwind CSS for robust, mobile-friendly layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- JSZip for handling .zip files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- PDF-Lib for generating and merging PDFs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --text: #0f172a;
-            --border: #e2e8f0;
+        /* Custom scrollbar for the log */
+        .log-scroll::-webkit-scrollbar {
+            width: 8px;
         }
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-        h1 {
-            font-size: 1.5rem;
-            margin-top: 0;
-        }
-        .upload-area {
-            border: 2px dashed var(--primary);
-            padding: 30px 20px;
-            text-align: center;
-            border-radius: 8px;
-            background: #eff6ff;
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s;
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .log-container {
-            margin-top: 20px;
+        .log-scroll::-webkit-scrollbar-track {
             background: #1e293b;
-            color: #10b981;
-            padding: 16px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            height: 250px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
         }
-        .log-error { color: #ef4444; }
-        .log-warn { color: #f59e0b; }
+        .log-scroll::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col items-center p-4 sm:p-8">
 
-<div class="container">
-    <h1>ZIP to Master PDF</h1>
-    <p style="color: #64748b; font-size: 0.9rem;">Upload a .zip containing PDFs, TXTs, or HTMLs to combine them into one file.</p>
-    
-    <label class="upload-area" id="drop-zone">
-        <span id="file-name">Tap to select a .zip file</span>
-        <input type="file" id="zip-input" accept=".zip">
-    </label>
-
-    <button id="convert-btn" class="btn" disabled>Convert to Master PDF</button>
-
-    <div class="log-container" id="activity-log">📋 Activity log awaiting input...</div>
-</div>
-
-<script>
-    const { PDFDocument, StandardFonts, rgb } = PDFLib;
-    const zipInput = document.getElementById('zip-input');
-    const fileNameDisplay = document.getElementById('file-name');
-    const convertBtn = document.getElementById('convert-btn');
-    const activityLog = document.getElementById('activity-log');
-
-    let currentFile = null;
-
-    // Utility: Add zero padding for time
-    const pad = (n) => n.toString().padStart(2, '0');
-
-    // Utility: Logging
-    function logMsg(message, type = 'info') {
-        const now = new Date();
-        const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-        let prefix = '📌';
-        let className = '';
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
         
-        if (type === 'error') { prefix = '💥 FATAL:'; className = 'log-error'; }
-        else if (type === 'warn') { prefix = '⚠️'; className = 'log-warn'; }
-        else if (type === 'success') { prefix = '✅'; }
+        <!-- Header -->
+        <div class="bg-blue-600 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold mb-2">ZIP to Master PDF</h1>
+            <p class="text-blue-100 text-sm">Combine nested PDFs, Text, and HTML files into a single document.</p>
+        </div>
 
-        const logEntry = document.createElement('div');
-        if (className) logEntry.className = className;
-        logEntry.textContent = `${prefix} ${timeStr} — ${message}`;
-        
-        activityLog.appendChild(logEntry);
-        activityLog.scrollTop = activityLog.scrollHeight;
-    }
+        <div class="p-6 sm:p-8">
+            <!-- File Uploader -->
+            <label for="zip-input" class="flex flex-col items-center justify-center w-full h-32 sm:h-40 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer mb-6 relative group">
+                <div class="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
+                    <svg class="w-8 h-8 mb-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <p class="mb-1 text-sm font-semibold text-blue-700" id="file-name-display">Tap to select a .zip file</p>
+                    <p class="text-xs text-blue-500" id="file-size-display">Supported contents: .pdf, .txt, .html</p>
+                </div>
+                <input id="zip-input" type="file" accept=".zip" class="hidden" />
+            </label>
 
-    // Utility: Sanitize text to fix the "WinAnsi cannot encode" bug
-    function sanitizeForWinAnsi(text) {
-        // Keeps standard ASCII and basic formatting. Strips emojis and smart quotes.
-        return text.replace(/[^\x00-\x7F]/g, " ").replace(/\r\n/g, "\n");
-    }
+            <!-- Action Button -->
+            <button id="convert-btn" disabled class="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 shadow-lg shadow-blue-200 mb-8 flex justify-center items-center gap-2">
+                <svg id="spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span id="btn-text">Convert to Master PDF</span>
+            </button>
 
-    // Utility: Simple word wrapper for plain text PDF generation
-    function wrapText(text, maxCharsPerLine) {
-        const lines = [];
-        const rawLines = text.split('\n');
-        
-        rawLines.forEach(line => {
-            let currentLine = '';
-            const words = line.split(' ');
-            words.forEach(word => {
-                if ((currentLine + word).length > maxCharsPerLine) {
-                    lines.push(currentLine);
-                    currentLine = word + ' ';
-                } else {
-                    currentLine += word + ' ';
+            <!-- Activity Log -->
+            <div class="bg-slate-900 rounded-xl overflow-hidden shadow-inner">
+                <div class="bg-slate-800 px-4 py-2 text-xs font-mono text-slate-400 border-b border-slate-700 flex justify-between">
+                    <span>Terminal Output</span>
+                    <button id="clear-log" class="hover:text-white transition-colors">Clear</button>
+                </div>
+                <div id="activity-log" class="p-4 h-64 overflow-y-auto text-sm font-mono leading-relaxed log-scroll text-emerald-400">
+                    <div class="text-slate-500">Waiting for file input...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Destructure PDFLib functions
+        const { PDFDocument, StandardFonts, rgb } = PDFLib;
+
+        // UI Elements
+        const zipInput = document.getElementById('zip-input');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const fileSizeDisplay = document.getElementById('file-size-display');
+        const convertBtn = document.getElementById('convert-btn');
+        const btnText = document.getElementById('btn-text');
+        const spinner = document.getElementById('spinner');
+        const activityLog = document.getElementById('activity-log');
+        const clearLogBtn = document.getElementById('clear-log');
+
+        let currentFile = null;
+
+        // Utility: Logging
+        function log(msg, type = 'info') {
+            const now = new Date();
+            const time = now.toTimeString().split(' ')[0]; // HH:MM:SS
+            
+            const entry = document.createElement('div');
+            entry.className = 'mb-1 break-words';
+            
+            let prefix = `<span class="text-slate-500">[${time}]</span> `;
+            
+            if (type === 'error') {
+                entry.innerHTML = `${prefix}<span class="text-red-400">💥 FATAL: ${msg}</span>`;
+            } else if (type === 'warn') {
+                entry.innerHTML = `${prefix}<span class="text-amber-400">⚠️ ${msg}</span>`;
+            } else if (type === 'success') {
+                entry.innerHTML = `${prefix}<span class="text-emerald-400">🎉 ${msg}</span>`;
+            } else if (type === 'file') {
+                entry.innerHTML = `${prefix}<span class="text-blue-300">📄 ${msg}</span>`;
+            } else {
+                entry.innerHTML = `${prefix}<span class="text-slate-300">📌 ${msg}</span>`;
+            }
+            
+            activityLog.appendChild(entry);
+            activityLog.scrollTop = activityLog.scrollHeight;
+        }
+
+        clearLogBtn.addEventListener('click', () => {
+            activityLog.innerHTML = '<div class="text-slate-500">Log cleared.</div>';
+        });
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // File Selection Event
+        zipInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                currentFile = e.target.files[0];
+                fileNameDisplay.textContent = currentFile.name;
+                fileNameDisplay.classList.remove('text-blue-700');
+                fileNameDisplay.classList.add('text-blue-900');
+                fileSizeDisplay.textContent = formatBytes(currentFile.size);
+                convertBtn.disabled = false;
+                
+                activityLog.innerHTML = ''; // Clear log
+                log(`Selected: "${currentFile.name}" (${formatBytes(currentFile.size)})`, 'info');
+            }
+        });
+
+        // Advanced Text Sanitization (Prevents WinAnsi encoding errors)
+        function sanitizeText(text) {
+            if (!text) return "";
+            
+            // 1. Replace typographic special characters with ASCII equivalents
+            let cleaned = text
+                .replace(/[\u2018\u2019\u201A\u201B]/g, "'") // Smart single quotes
+                .replace(/[\u201C\u201D\u201E\u201F]/g, '"') // Smart double quotes
+                .replace(/[\u2010\u2011\u2012\u2013\u2014\u2015]/g, "-") // Hyphens and dashes
+                .replace(/\u2026/g, "...") // Ellipsis
+                .replace(/[\u00A0]/g, " ") // Non-breaking space
+                .replace(/\t/g, "    "); // Tabs to spaces
+                
+            // 2. Strip absolutely all remaining non-ASCII characters (emojis, etc)
+            // WinAnsi supports ASCII 0-127 and some 128-255 characters, but safe bet is stripping unknowns.
+            cleaned = cleaned.replace(/[^\x00-\x7F]/g, "?"); 
+            
+            return cleaned;
+        }
+
+        // Strip HTML tags for HTML files
+        function htmlToText(htmlStr) {
+            const temp = document.createElement('div');
+            temp.innerHTML = htmlStr;
+            return temp.textContent || temp.innerText || "";
+        }
+
+        // Word Wrapping for PDF Text Rendering
+        function wrapText(text, maxCharsPerLine) {
+            const lines = [];
+            const rawLines = text.split('\n');
+            
+            rawLines.forEach(line => {
+                let currentLine = '';
+                const words = line.split(' ');
+                
+                words.forEach(word => {
+                    if ((currentLine + word).length > maxCharsPerLine) {
+                        if (currentLine.length > 0) lines.push(currentLine.trimEnd());
+                        
+                        // Handle words longer than maxCharsPerLine
+                        if (word.length > maxCharsPerLine) {
+                            let chunk = word;
+                            while (chunk.length > maxCharsPerLine) {
+                                lines.push(chunk.substring(0, maxCharsPerLine));
+                                chunk = chunk.substring(maxCharsPerLine);
+                            }
+                            currentLine = chunk + ' ';
+                        } else {
+                            currentLine = word + ' ';
+                        }
+                    } else {
+                        currentLine += word + ' ';
+                    }
+                });
+                if (currentLine.trim().length > 0 || line === '') {
+                    lines.push(currentLine.trimEnd());
                 }
             });
-            lines.push(currentLine);
-        });
-        return lines;
-    }
-
-    // Handle File Selection
-    zipInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            currentFile = e.target.files[0];
-            fileNameDisplay.textContent = currentFile.name;
-            convertBtn.disabled = false;
-            activityLog.innerHTML = '📋 Activity log\n'; // Reset log
-            logMsg(`Loaded ZIP: "${currentFile.name}" (${(currentFile.size / 1024).toFixed(1)} KB)`);
+            return lines;
         }
-    });
 
-    // Handle Conversion
-    convertBtn.addEventListener('click', async () => {
-        if (!currentFile) return;
-        convertBtn.disabled = true;
-        convertBtn.textContent = "Processing...";
-
-        try {
-            // 1. Initialize Master PDF
-            const masterPdf = await PDFDocument.create();
-            const font = await masterPdf.embedFont(StandardFonts.Helvetica);
-            const fontSize = 12;
-
-            // 2. Load ZIP
-            const zip = new JSZip();
-            const contents = await zip.loadAsync(currentFile);
-            const files = Object.values(contents.files).filter(f => !f.dir); // Exclude folders
+        // Conversion Process
+        convertBtn.addEventListener('click', async () => {
+            if (!currentFile) return;
             
-            logMsg(`ZIP parsed successfully (${files.length} entries)`, 'success');
+            // UI State updates
+            convertBtn.disabled = true;
+            spinner.classList.remove('hidden');
+            btnText.textContent = "Processing...";
 
-            let processedCount = 0;
-
-            // 3. Process each file
-            for (const file of Object.values(files)) {
-                try {
-                    const ext = file.name.split('.').pop().toLowerCase();
-                    const fileNameStr = file.name;
-
-                    if (ext === 'pdf') {
-                        // Handle Existing PDFs
-                        const fileData = await file.async("uint8array");
-                        const tempPdf = await PDFDocument.load(fileData);
-                        const copiedPages = await masterPdf.copyPages(tempPdf, tempPdf.getPageIndices());
-                        copiedPages.forEach(page => masterPdf.addPage(page));
-                        
-                        logMsg(`Merged PDF: ${fileNameStr} (${tempPdf.getPageCount()} pages)`);
-                        processedCount++;
-
-                    } else if (ext === 'txt' || ext === 'html') {
-                        // Handle Text/HTML files
-                        let textData = await file.async("string");
-                        
-                        if (ext === 'html') {
-                            // Basic HTML tag stripping
-                            const doc = new DOMParser().parseFromString(textData, 'text/html');
-                            textData = doc.body.textContent || "";
-                        }
-
-                        // Fix the WinAnsi bug
-                        textData = sanitizeForWinAnsi(textData);
-                        
-                        // Add title page/header for text docs
-                        let page = masterPdf.addPage();
-                        const { width, height } = page.getSize();
-                        let yOffset = height - 50;
-
-                        // Draw Title using properly destructured rgb() function
-                        page.drawText(`File: ${fileNameStr}`, {
-                            x: 50, y: yOffset, size: 14, font: font, color: rgb(0.1, 0.25, 0.4) 
-                        });
-                        yOffset -= 30;
-
-                        // Wrap text (approx 90 chars fit on A4 at 12pt Helvetica)
-                        const lines = wrapText(textData, 90);
-
-                        for (const line of lines) {
-                            if (yOffset < 50) {
-                                page = masterPdf.addPage();
-                                yOffset = height - 50;
-                            }
-                            page.drawText(line, { x: 50, y: yOffset, size: fontSize, font: font });
-                            yOffset -= 15; // Line height
-                        }
-
-                        logMsg(`Extracted Text: ${fileNameStr}`);
-                        processedCount++;
-
-                    } else {
-                        // Skip unsupported files (.lnk, .jpg, etc)
-                        logMsg(`Skipped (unsupported type): ${fileNameStr}`, 'warn');
-                    }
-                } catch (err) {
-                    logMsg(`Failed processing ${file.name}: ${err.message}`, 'error');
-                }
-            }
-
-            // 4. Save and Download Master PDF
-            if (processedCount > 0) {
-                logMsg(`Finalizing Master PDF...`);
-                const pdfBytes = await masterPdf.save();
-                const blob = new Blob([pdfBytes], { type: "application/pdf" });
-                const url = URL.createObjectURL(blob);
+            try {
+                // Initialize Master PDF
+                log('Initializing Master PDF document...', 'info');
+                const masterPdf = await PDFDocument.create();
                 
-                const link = document.createElement('a');
-                link.href = url;
+                // Embed standard font
+                const font = await masterPdf.embedFont(StandardFonts.Helvetica);
+                const titleFont = await masterPdf.embedFont(StandardFonts.HelveticaBold);
+                
+                // Load ZIP
+                log('Extracting ZIP archive...', 'info');
+                const zip = new JSZip();
+                const contents = await zip.loadAsync(currentFile);
+                
+                // Filter and sort files (folders excluded, sorted alphabetically to keep structure)
+                const files = Object.values(contents.files)
+                    .filter(f => !f.dir)
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                
+                log(`Found ${files.length} files inside ZIP.`, 'success');
+
+                let processedCount = 0;
+
+                for (const file of files) {
+                    try {
+                        const fileNameStr = file.name;
+                        const ext = fileNameStr.split('.').pop().toLowerCase();
+                        
+                        // Ignore system hidden files like __MACOSX or .DS_Store
+                        if (fileNameStr.includes('__MACOSX') || fileNameStr.split('/').pop().startsWith('.')) {
+                            continue;
+                        }
+
+                        if (ext === 'pdf') {
+                            log(`Merging PDF: ${fileNameStr}`, 'file');
+                            const fileData = await file.async("uint8array");
+                            const tempPdf = await PDFDocument.load(fileData);
+                            const copiedPages = await masterPdf.copyPages(tempPdf, tempPdf.getPageIndices());
+                            copiedPages.forEach(page => masterPdf.addPage(page));
+                            processedCount++;
+
+                        } else if (ext === 'txt' || ext === 'html' || ext === 'md' || ext === 'csv') {
+                            log(`Extracting Text from: ${fileNameStr}`, 'file');
+                            let textData = await file.async("string");
+                            
+                            if (ext === 'html') {
+                                textData = htmlToText(textData);
+                            }
+
+                            textData = sanitizeText(textData);
+                            
+                            // Document Formatting Constants
+                            const fontSize = 11;
+                            const margin = 50;
+                            const maxCharsPerLine = 95; // Approx chars fitting on A4 at 11pt Helvetica
+                            const lineHeight = 16;
+                            
+                            let page = masterPdf.addPage();
+                            let { width, height } = page.getSize();
+                            let yOffset = height - margin;
+
+                            // Draw File Header
+                            // USING DESTRUCTURED rgb() METHOD CORRECTLY
+                            page.drawText(`Source: ${fileNameStr}`, {
+                                x: margin, 
+                                y: yOffset, 
+                                size: 14, 
+                                font: titleFont, 
+                                color: rgb(0.1, 0.4, 0.8) 
+                            });
+                            
+                            // Header underline
+                            page.drawLine({
+                                start: { x: margin, y: yOffset - 5 },
+                                end: { x: width - margin, y: yOffset - 5 },
+                                thickness: 1,
+                                color: rgb(0.8, 0.8, 0.8)
+                            });
+
+                            yOffset -= 30; // Move down for body text
+
+                            // Write Body Text
+                            const lines = wrapText(textData, maxCharsPerLine);
+
+                            for (const line of lines) {
+                                // Add new page if we reach the bottom margin
+                                if (yOffset < margin) {
+                                    page = masterPdf.addPage();
+                                    yOffset = height - margin;
+                                }
+                                page.drawText(line, { 
+                                    x: margin, 
+                                    y: yOffset, 
+                                    size: fontSize, 
+                                    font: font,
+                                    color: rgb(0.2, 0.2, 0.2)
+                                });
+                                yOffset -= lineHeight;
+                            }
+                            processedCount++;
+
+                        } else {
+                            log(`Skipped unsupported file type: ${fileNameStr}`, 'warn');
+                        }
+                    } catch (err) {
+                        log(`Failed processing ${file.name}: ${err.message}`, 'error');
+                    }
+                }
+
+                if (processedCount > 0) {
+                    log('Finalizing Master PDF file...', 'info');
+                    const pdfBytes = await masterPdf.save();
+                    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Trigger download
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `Master_Compiled_${Date.now()}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    log(`Conversion complete! Combined ${processedCount} files successfully.`, 'success');
+                } else {
+                    log('No valid PDF, TXT, or HTML files were found to convert.', 'error');
+                }
+
+            } catch (globalErr) {
+                log(`Process halted completely: ${globalErr.message}`, 'error');
+                console.error(globalErr);
+            } finally {
+                // Reset UI state
+                convertBtn.disabled = false;
+                spinner.classList.add('hidden');
+                btnText.textContent = "Convert to Master PDF";
+                zipInput.value = ''; // Allow re-selecting the same file
+            }
+        });
+    </script>
+</body>
+</html>
