@@ -194,33 +194,26 @@
     }
 
     // ---------- CRITICAL: Sanitize text to WinAnsi (Helvetica supported) ----------
-    // WinAnsi encoding (code page 1252) covers Latin1 + some punctuation.
-    // Remove any character whose Unicode code point > 255 (or not in printable range)
     function sanitizeForWinAnsi(text) {
       if (!text) return '';
-      // Replace any char outside 0x20-0xFF with a space or fallback
-      // Keep tabs and newlines, but replace others
       let result = '';
       for (let i = 0; i < text.length; i++) {
         const code = text.charCodeAt(i);
         if (code === 9 || code === 10 || code === 13) {
-          result += text[i]; // keep tabs, newlines
+          result += text[i];
         } else if (code >= 32 && code <= 255) {
           result += text[i];
         } else {
-          // Replace non-WinAnsi chars (emoji, fancy quotes, etc) with a space or similar
           result += ' ';
         }
       }
       return result;
     }
 
-    // Clean file paths for display (also sanitize)
     function sanitizePath(path) {
       return sanitizeForWinAnsi(path);
     }
 
-    // Extract text from HTML safely
     function extractTextFromHtml(htmlString) {
       try {
         const parser = new DOMParser();
@@ -232,7 +225,7 @@
       }
     }
 
-    // ---------- Add text content as pages (fixed encoding) ----------
+    // ---------- Add text content as pages (fixed color handling) ----------
     async function addTextPagesToPdf(pdfDoc, filePath, rawContent, fileExt) {
       let contentText = rawContent;
       if (fileExt === '.html' || fileExt === '.htm') {
@@ -255,7 +248,7 @@
       const lineHeight = fontSize * 1.45;
       const titleLineHeight = titleFontSize * 1.3;
 
-      // Split text into lines respecting max width
+      // Helper to split lines
       function splitTextToLines(text, font, fontSize, maxWidth) {
         const paragraphs = text.split(/\r?\n/);
         const lines = [];
@@ -304,6 +297,12 @@
       let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
       let y = pageHeight - margin;
 
+      // Use pdfDoc.rgb() for colors (fixes "Invalid color" error)
+      const titleColor = pdfDoc.rgb(0.1, 0.25, 0.45);
+      const headerColor = pdfDoc.rgb(0.4, 0.5, 0.6);
+      const textColor = pdfDoc.rgb(0.1, 0.1, 0.15);
+      const lineColor = pdfDoc.rgb(0.7, 0.8, 0.9);
+
       function drawTitle(page, lines) {
         let yPos = y;
         for (let line of lines) {
@@ -316,7 +315,7 @@
             y: yPos,
             size: titleFontSize,
             font: boldFont,
-            color: { r: 0.1, g: 0.25, b: 0.45 }
+            color: titleColor
           });
           yPos -= titleLineHeight;
         }
@@ -329,7 +328,7 @@
             start: { x: margin, y: yPos + 3 },
             end: { x: pageWidth - margin, y: yPos + 3 },
             thickness: 0.8,
-            color: { r: 0.7, g: 0.8, b: 0.9 }
+            color: lineColor
           });
         }
         yPos -= 12;
@@ -348,7 +347,7 @@
             y: y,
             size: 8,
             font: boldFont,
-            color: { r: 0.4, g: 0.5, b: 0.6 }
+            color: headerColor
           });
           y -= 14;
         }
@@ -358,16 +357,14 @@
             y: y,
             size: fontSize,
             font: font,
-            color: { r: 0.1, g: 0.1, b: 0.15 }
+            color: textColor
           });
-        } else {
-          // empty line, just move
         }
         y -= lineHeight;
       }
     }
 
-    // Merge existing PDF (already sanitized on binary level, no text encoding issues)
+    // Merge existing PDF (binary safe)
     async function mergePdfToMaster(pdfDoc, arrayBuffer) {
       const externalPdf = await PDFLib.PDFDocument.load(arrayBuffer);
       const copiedPages = await pdfDoc.copyPages(externalPdf, externalPdf.getPageIndices());
@@ -375,7 +372,7 @@
       return externalPdf.getPageCount();
     }
 
-    // Process all entries with improved error handling & encoding safety
+    // Process all entries with robust error handling
     async function processZipEntries(zip, finalPdfDoc, onProgressCb) {
       const entries = [];
       zip.forEach((path, entry) => {
@@ -409,7 +406,6 @@
             addedCount++;
           } else if (isTextLike) {
             let rawString = await fileObj.async('string');
-            // attempt to handle possible binary fallback, but safe
             await addTextPagesToPdf(finalPdfDoc, filePath, rawString, ext);
             addLog(`📝 Added text: ${filePath}`);
             addedCount++;
@@ -444,15 +440,31 @@
       }
 
       const finalPdfDoc = await PDFLib.PDFDocument.create();
-      // Add cover page with metadata
+      // Add cover page with metadata using proper color objects
       const coverPage = finalPdfDoc.addPage([595, 842]);
       const boldFont = await finalPdfDoc.embedFont('Helvetica-Bold');
       const normalFont = await finalPdfDoc.embedFont('Helvetica');
-      coverPage.drawText("MASTER DOCUMENT", { x: 70, y: 720, size: 24, font: boldFont, color: { r: 0.1, g: 0.25, b: 0.4 } });
-      coverPage.drawText(`Source ZIP: ${sanitizePath(zipFile.name)}`, { x: 70, y: 670, size: 11, font: normalFont });
-      coverPage.drawText(`Generated: ${new Date().toLocaleString()}`, { x: 70, y: 645, size: 10, font: normalFont });
-      coverPage.drawText(`All nested folders & supported text/PDF files merged in alphabetical order.`, { x: 70, y: 620, size: 10, font: normalFont });
-      coverPage.drawText(`Note: Non-ASCII characters (emoji, special symbols) replaced with spaces.`, { x: 70, y: 580, size: 9, font: normalFont, color: { r: 0.3, g: 0.45, b: 0.55 } });
+      
+      // Create color objects using pdfDoc.rgb
+      const titleColor = finalPdfDoc.rgb(0.1, 0.25, 0.4);
+      const textColorDark = finalPdfDoc.rgb(0.2, 0.3, 0.4);
+      const metaColor = finalPdfDoc.rgb(0.3, 0.45, 0.55);
+      
+      coverPage.drawText("MASTER DOCUMENT", { 
+        x: 70, y: 720, size: 24, font: boldFont, color: titleColor 
+      });
+      coverPage.drawText(`Source ZIP: ${sanitizePath(zipFile.name)}`, { 
+        x: 70, y: 670, size: 11, font: normalFont, color: textColorDark 
+      });
+      coverPage.drawText(`Generated: ${new Date().toLocaleString()}`, { 
+        x: 70, y: 645, size: 10, font: normalFont, color: textColorDark 
+      });
+      coverPage.drawText(`All nested folders & supported text/PDF files merged in alphabetical order.`, { 
+        x: 70, y: 620, size: 10, font: normalFont, color: textColorDark 
+      });
+      coverPage.drawText(`Note: Non-ASCII characters (emoji, special symbols) replaced with spaces.`, { 
+        x: 70, y: 580, size: 9, font: normalFont, color: metaColor 
+      });
 
       const updateProgress = (current, total) => {
         const percent = (current / total) * 100;
