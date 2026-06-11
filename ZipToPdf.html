@@ -158,7 +158,7 @@
     let masterPdfBytes = null;
     let isProcessing = false;
 
-    // ---------- Helper: safe log ----------
+    // Helper: add log entry
     function addLog(message, isError = false) {
       const entry = document.createElement('div');
       entry.className = 'log-entry';
@@ -193,7 +193,7 @@
       fileNameDisplay.textContent = '';
     }
 
-    // ---------- CRITICAL: Sanitize text to WinAnsi (Helvetica supported) ----------
+    // ---------- Sanitize text for WinAnsi (Helvetica) ----------
     function sanitizeForWinAnsi(text) {
       if (!text) return '';
       let result = '';
@@ -225,7 +225,7 @@
       }
     }
 
-    // ---------- Add text content as pages (fixed color handling) ----------
+    // ---------- Add text content as pages (fixed colors using PDFLib.rgb) ----------
     async function addTextPagesToPdf(pdfDoc, filePath, rawContent, fileExt) {
       let contentText = rawContent;
       if (fileExt === '.html' || fileExt === '.htm') {
@@ -248,7 +248,6 @@
       const lineHeight = fontSize * 1.45;
       const titleLineHeight = titleFontSize * 1.3;
 
-      // Helper to split lines
       function splitTextToLines(text, font, fontSize, maxWidth) {
         const paragraphs = text.split(/\r?\n/);
         const lines = [];
@@ -297,11 +296,11 @@
       let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
       let y = pageHeight - margin;
 
-      // Use pdfDoc.rgb() for colors (fixes "Invalid color" error)
-      const titleColor = pdfDoc.rgb(0.1, 0.25, 0.45);
-      const headerColor = pdfDoc.rgb(0.4, 0.5, 0.6);
-      const textColor = pdfDoc.rgb(0.1, 0.1, 0.15);
-      const lineColor = pdfDoc.rgb(0.7, 0.8, 0.9);
+      // Use PDFLib.rgb() for colors (global PDFLib object)
+      const titleColor = PDFLib.rgb(0.1, 0.25, 0.45);
+      const headerColor = PDFLib.rgb(0.4, 0.5, 0.6);
+      const textColor = PDFLib.rgb(0.1, 0.1, 0.15);
+      const lineColor = PDFLib.rgb(0.7, 0.8, 0.9);
 
       function drawTitle(page, lines) {
         let yPos = y;
@@ -372,7 +371,7 @@
       return externalPdf.getPageCount();
     }
 
-    // Process all entries with robust error handling
+    // Process all entries
     async function processZipEntries(zip, finalPdfDoc, onProgressCb) {
       const entries = [];
       zip.forEach((path, entry) => {
@@ -440,30 +439,29 @@
       }
 
       const finalPdfDoc = await PDFLib.PDFDocument.create();
-      // Add cover page with metadata using proper color objects
+      // Cover page using PDFLib.rgb
       const coverPage = finalPdfDoc.addPage([595, 842]);
       const boldFont = await finalPdfDoc.embedFont('Helvetica-Bold');
       const normalFont = await finalPdfDoc.embedFont('Helvetica');
       
-      // Create color objects using pdfDoc.rgb
-      const titleColor = finalPdfDoc.rgb(0.1, 0.25, 0.4);
-      const textColorDark = finalPdfDoc.rgb(0.2, 0.3, 0.4);
-      const metaColor = finalPdfDoc.rgb(0.3, 0.45, 0.55);
+      const coverTitleColor = PDFLib.rgb(0.1, 0.25, 0.4);
+      const coverTextColor = PDFLib.rgb(0.2, 0.3, 0.4);
+      const coverMetaColor = PDFLib.rgb(0.3, 0.45, 0.55);
       
       coverPage.drawText("MASTER DOCUMENT", { 
-        x: 70, y: 720, size: 24, font: boldFont, color: titleColor 
+        x: 70, y: 720, size: 24, font: boldFont, color: coverTitleColor 
       });
       coverPage.drawText(`Source ZIP: ${sanitizePath(zipFile.name)}`, { 
-        x: 70, y: 670, size: 11, font: normalFont, color: textColorDark 
+        x: 70, y: 670, size: 11, font: normalFont, color: coverTextColor 
       });
       coverPage.drawText(`Generated: ${new Date().toLocaleString()}`, { 
-        x: 70, y: 645, size: 10, font: normalFont, color: textColorDark 
+        x: 70, y: 645, size: 10, font: normalFont, color: coverTextColor 
       });
       coverPage.drawText(`All nested folders & supported text/PDF files merged in alphabetical order.`, { 
-        x: 70, y: 620, size: 10, font: normalFont, color: textColorDark 
+        x: 70, y: 620, size: 10, font: normalFont, color: coverTextColor 
       });
       coverPage.drawText(`Note: Non-ASCII characters (emoji, special symbols) replaced with spaces.`, { 
-        x: 70, y: 580, size: 9, font: normalFont, color: metaColor 
+        x: 70, y: 580, size: 9, font: normalFont, color: coverMetaColor 
       });
 
       const updateProgress = (current, total) => {
@@ -488,7 +486,6 @@
       }
     }
 
-    // Event: handle selected file
     async function handleZipFile(file) {
       if (!file || !file.name.toLowerCase().endsWith('.zip')) {
         alert("Please select a valid .zip file.");
@@ -529,7 +526,7 @@
       addLog("📎 Master PDF downloaded");
     }
 
-    // Attach event listeners
+    // Event listeners
     fileInput.addEventListener('change', (e) => {
       if (e.target.files && e.target.files[0]) handleZipFile(e.target.files[0]);
     });
@@ -554,7 +551,6 @@
     downloadBtn.addEventListener('click', downloadMasterPdf);
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // Check libs
     if (typeof JSZip === 'undefined' || typeof PDFLib === 'undefined') {
       showFatalError("Critical: JSZip or pdf-lib failed to load. Check internet.");
     } else {
