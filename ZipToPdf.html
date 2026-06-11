@@ -132,7 +132,7 @@
     </div>
 
     <button id="downloadBtn" class="download-btn disabled" disabled>📑 Download Master PDF</button>
-    <footer>✅ All non‑WinAnsi characters (emoji, special symbols) are replaced with spaces</footer>
+    <footer>✅ All non‑WinAnsi characters (‑, emoji, etc.) are replaced with safe ASCII</footer>
   </div>
 </div>
 
@@ -184,19 +184,45 @@
       fileNameDisplay.textContent = '';
     }
 
-    // ---------- STRICT SANITIZATION: keep only WinAnsi (code point 32-255, plus \t\n\r) ----------
-    function sanitizeToWinAnsi(text) {
-      if (!text) return '';
+    // ---------- ULTRA‑STRICT SANITIZER: WinAnsi (code page 1252) only ----------
+    // Replaces any character not in 32–255 (except 127) with a space,
+    // and maps common problematic characters to ASCII equivalents.
+    function toWinAnsiSafe(str) {
+      if (typeof str !== 'string') str = String(str || '');
+      // Map specific Unicode characters to their ASCII equivalents
+      const charMap = {
+        '\u2011': '-',   // non‑breaking hyphen
+        '\u2010': '-',   // hyphen
+        '\u2012': '-',   // figure dash
+        '\u2013': '-',   // en dash
+        '\u2014': '--',  // em dash
+        '\u2018': "'",   // left single quote
+        '\u2019': "'",   // right single quote
+        '\u201C': '"',   // left double quote
+        '\u201D': '"',   // right double quote
+        '\u2026': '...', // ellipsis
+        '\u00A0': ' ',   // non‑breaking space
+        '\u2022': '*',   // bullet
+        '\u00B7': '.',   // middle dot
+      };
       let result = '';
-      // iterate over Unicode code points (handles surrogate pairs correctly)
-      for (const ch of text) {
+      for (const ch of str) {
+        let replaced = charMap[ch];
+        if (replaced !== undefined) {
+          result += replaced;
+          continue;
+        }
         const code = ch.codePointAt(0);
+        // Keep tab (9), newline (10), carriage return (13)
         if (code === 9 || code === 10 || code === 13) {
-          result += ch;  // keep tab, newline, carriage return
-        } else if (code >= 32 && code <= 255) {
           result += ch;
-        } else {
-          result += ' '; // replace everything else (emoji, exotic symbols, etc.)
+        } 
+        // WinAnsi printable range: 32–255 excluding DEL (127)
+        else if (code >= 32 && code <= 255 && code !== 127) {
+          result += ch;
+        } 
+        else {
+          result += ' '; // replace everything else with space
         }
       }
       return result;
@@ -208,19 +234,19 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlString, 'text/html');
         const bodyText = doc.body ? doc.body.innerText : htmlString;
-        return sanitizeToWinAnsi(bodyText);
+        return toWinAnsiSafe(bodyText);
       } catch(e) {
-        return sanitizeToWinAnsi(htmlString);
+        return toWinAnsiSafe(htmlString);
       }
     }
 
-    // ---------- Add text pages (no encoding errors now) ----------
+    // ---------- Add text pages (no encoding errors) ----------
     async function addTextPagesToPdf(pdfDoc, filePath, rawContent, fileExt) {
       let contentText = rawContent;
       if (fileExt === '.html' || fileExt === '.htm') {
         contentText = extractTextFromHtml(rawContent);
       } else {
-        contentText = sanitizeToWinAnsi(rawContent);
+        contentText = toWinAnsiSafe(rawContent);
       }
       if (!contentText || contentText.trim() === "") {
         contentText = "[Empty file or no readable text]";
@@ -237,7 +263,6 @@
       const lineHeight = fontSize * 1.45;
       const titleLineHeight = titleFontSize * 1.3;
 
-      // split text into lines respecting max width
       function splitTextToLines(text, font, fontSize, maxWidth) {
         const paragraphs = text.split(/\r?\n/);
         const lines = [];
@@ -279,14 +304,13 @@
         return lines;
       }
 
-      const safePath = sanitizeToWinAnsi(filePath);
-      const titleLines = splitTextToLines(`📄 ${safePath}`, boldFont, titleFontSize, maxWidth);
+      const safePath = toWinAnsiSafe(filePath);
+      const titleLines = splitTextToLines(`File: ${safePath}`, boldFont, titleFontSize, maxWidth);
       const contentLines = splitTextToLines(contentText, font, fontSize, maxWidth);
 
       let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
       let y = pageHeight - margin;
 
-      // Colors using PDFLib.rgb (global)
       const titleColor = PDFLib.rgb(0.1, 0.25, 0.45);
       const headerColor = PDFLib.rgb(0.4, 0.5, 0.6);
       const textColor = PDFLib.rgb(0.1, 0.1, 0.15);
@@ -330,7 +354,7 @@
         if (y - lineHeight < margin) {
           currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
           y = pageHeight - margin;
-          const shortHeader = `... ${safePath.substring(0, 55)}`;
+          const shortHeader = toWinAnsiSafe(`... ${safePath.substring(0, 55)}`);
           currentPage.drawText(shortHeader, {
             x: margin,
             y: y,
@@ -438,10 +462,10 @@
       const coverTextColor = PDFLib.rgb(0.2, 0.3, 0.4);
       
       coverPage.drawText("MASTER DOCUMENT", { x: 70, y: 720, size: 24, font: boldFont, color: coverTitleColor });
-      coverPage.drawText(`Source ZIP: ${sanitizeToWinAnsi(zipFile.name)}`, { x: 70, y: 670, size: 11, font: normalFont, color: coverTextColor });
+      coverPage.drawText(`Source ZIP: ${toWinAnsiSafe(zipFile.name)}`, { x: 70, y: 670, size: 11, font: normalFont, color: coverTextColor });
       coverPage.drawText(`Generated: ${new Date().toLocaleString()}`, { x: 70, y: 645, size: 10, font: normalFont, color: coverTextColor });
       coverPage.drawText(`All supported files merged in alphabetical order.`, { x: 70, y: 620, size: 10, font: normalFont, color: coverTextColor });
-      coverPage.drawText(`Non‑WinAnsi characters (emoji, etc.) were replaced with spaces.`, { x: 70, y: 580, size: 9, font: normalFont, color: PDFLib.rgb(0.3, 0.45, 0.55) });
+      coverPage.drawText(`Non‑WinAnsi characters (‑, emoji, etc.) were replaced with safe ASCII.`, { x: 70, y: 580, size: 9, font: normalFont, color: PDFLib.rgb(0.3, 0.45, 0.55) });
 
       const updateProgress = (current, total) => {
         const percent = (current / total) * 100;
