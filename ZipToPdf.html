@@ -4,10 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
   <title>ZIP to Master PDF · Folder-to-PDF Converter</title>
-  
+  <!-- JSZip & pdf-lib CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -144,233 +143,412 @@
 </div>
 
 <script>
-  const fileInput = document.getElementById('fileInput');
-  const dropZone = document.getElementById('dropZone');
-  const fileNameDisplay = document.getElementById('fileNameDisplay');
-  const progressArea = document.getElementById('progressArea');
-  const progressFill = document.getElementById('progressFill');
-  const statusMsg = document.getElementById('statusMessage');
-  const logContainer = document.getElementById('logContainer');
-  const logEntriesDiv = document.getElementById('logEntries');
-  const downloadBtn = document.getElementById('downloadBtn');
+  (function(){
+    // DOM elements
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const progressArea = document.getElementById('progressArea');
+    const progressFill = document.getElementById('progressFill');
+    const statusMsg = document.getElementById('statusMessage');
+    const logContainer = document.getElementById('logContainer');
+    const logEntriesDiv = document.getElementById('logEntries');
+    const downloadBtn = document.getElementById('downloadBtn');
 
-  let masterPdfBytes = null;
-  let isProcessing = false;
+    let masterPdfBytes = null;
+    let isProcessing = false;
 
-  function addLog(message, isError = false) {
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.style.color = isError ? '#c23d22' : '#1a4d6b';
-    entry.style.borderLeft = isError ? '3px solid #c23d22' : 'none';
-    entry.style.paddingLeft = isError ? '8px' : '5px';
-    entry.innerHTML = `📌 ${new Date().toLocaleTimeString()} — ${message}`;
-    logEntriesDiv.appendChild(entry);
-    logEntriesDiv.scrollTop = logEntriesDiv.scrollHeight;
-  }
-
-  function showFatalError(msg) {
-    addLog(`💥 FATAL: ${msg}`, true);
-    statusMsg.innerHTML = `❌ ${msg}`;
-    const banner = document.createElement('div');
-    banner.className = 'error-banner';
-    banner.innerText = `⚠️ ${msg}`;
-    progressArea.insertAdjacentElement('afterend', banner);
-    setTimeout(() => banner.remove(), 15000);
-  }
-
-  function resetUI() {
-    masterPdfBytes = null;
-    downloadBtn.disabled = true;
-    downloadBtn.classList.add('disabled');
-    downloadBtn.textContent = '📑 Download Master PDF';
-    progressFill.style.width = '0%';
-    statusMsg.textContent = '⚙️ Waiting for ZIP...';
-    logEntriesDiv.innerHTML = '';
-    logContainer.style.display = 'none';
-    progressArea.style.display = 'none';
-    fileNameDisplay.textContent = '';
-  }
-
-  // Clean text to avoid Unicode encoding errors in Helvetica
-  function cleanText(text) {
-    return text.replace(/[^\x00-\x7F]/g, ''); // Remove non-ASCII characters
-  }
-
-  function extractTextFromHtml(htmlString) {
-    try {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlString, 'text/html');
-      return doc.body ? doc.body.innerText : htmlString;
-    } catch(e) {
-      return htmlString;
+    // ---------- Helper: safe log ----------
+    function addLog(message, isError = false) {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.style.color = isError ? '#c23d22' : '#1a4d6b';
+      entry.style.borderLeft = isError ? '3px solid #c23d22' : 'none';
+      entry.style.paddingLeft = isError ? '8px' : '5px';
+      entry.innerHTML = `📌 ${new Date().toLocaleTimeString()} — ${message}`;
+      logEntriesDiv.appendChild(entry);
+      logEntriesDiv.scrollTop = logEntriesDiv.scrollHeight;
     }
-  }
 
-  async function addTextPagesToPdf(pdfDoc, filePath, rawContent, fileExt) {
-    let contentText = rawContent;
-    if (fileExt === '.html' || fileExt === '.htm') {
-      contentText = extractTextFromHtml(rawContent);
+    function showFatalError(msg) {
+      addLog(`💥 FATAL: ${msg}`, true);
+      statusMsg.innerHTML = `❌ ${msg.substring(0, 100)}`;
+      const banner = document.createElement('div');
+      banner.className = 'error-banner';
+      banner.innerText = `⚠️ ${msg}`;
+      progressArea.insertAdjacentElement('afterend', banner);
+      setTimeout(() => banner.remove(), 15000);
     }
-    contentText = cleanText(contentText || "[Empty file]");
 
-    const font = await pdfDoc.embedFont('Helvetica');
-    const boldFont = await pdfDoc.embedFont('Helvetica-Bold');
-    const fontSize = 10, titleFontSize = 13, margin = 54;
-    const pageWidth = 595, pageHeight = 842;
-    const maxWidth = pageWidth - margin * 2;
-    const lineHeight = fontSize * 1.45;
+    function resetUI() {
+      masterPdfBytes = null;
+      downloadBtn.disabled = true;
+      downloadBtn.classList.add('disabled');
+      downloadBtn.textContent = '📑 Download Master PDF';
+      progressFill.style.width = '0%';
+      statusMsg.textContent = '⚙️ Waiting for ZIP...';
+      if (logEntriesDiv) logEntriesDiv.innerHTML = '';
+      logContainer.style.display = 'none';
+      progressArea.style.display = 'none';
+      fileNameDisplay.textContent = '';
+    }
 
-    let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
-    let y = pageHeight - margin;
-
-    // Title
-    const titleText = `📄 ${filePath}`;
-    currentPage.drawText(titleText, { x: margin, y: y, size: titleFontSize, font: boldFont, color: { r: 0.1, g: 0.25, b: 0.45 } });
-    y -= 30;
-
-    // Content
-    const lines = contentText.split(/\r?\n/);
-    for (let line of lines) {
-      if (y - lineHeight < margin) {
-        currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
-        y = pageHeight - margin;
+    // ---------- CRITICAL: Sanitize text to WinAnsi (Helvetica supported) ----------
+    // WinAnsi encoding (code page 1252) covers Latin1 + some punctuation.
+    // Remove any character whose Unicode code point > 255 (or not in printable range)
+    function sanitizeForWinAnsi(text) {
+      if (!text) return '';
+      // Replace any char outside 0x20-0xFF with a space or fallback
+      // Keep tabs and newlines, but replace others
+      let result = '';
+      for (let i = 0; i < text.length; i++) {
+        const code = text.charCodeAt(i);
+        if (code === 9 || code === 10 || code === 13) {
+          result += text[i]; // keep tabs, newlines
+        } else if (code >= 32 && code <= 255) {
+          result += text[i];
+        } else {
+          // Replace non-WinAnsi chars (emoji, fancy quotes, etc) with a space or similar
+          result += ' ';
+        }
       }
-      if (line.trim()) {
-        currentPage.drawText(line, { x: margin, y: y, size: fontSize, font: font });
-      }
-      y -= lineHeight;
+      return result;
     }
-  }
 
-  async function mergePdfToMaster(pdfDoc, arrayBuffer) {
-    const externalPdf = await PDFLib.PDFDocument.load(arrayBuffer);
-    const copiedPages = await pdfDoc.copyPages(externalPdf, externalPdf.getPageIndices());
-    copiedPages.forEach(p => pdfDoc.addPage(p));
-    return externalPdf.getPageCount();
-  }
+    // Clean file paths for display (also sanitize)
+    function sanitizePath(path) {
+      return sanitizeForWinAnsi(path);
+    }
 
-  async function processZipEntries(zip, finalPdfDoc, onProgressCb) {
-    const entries = [];
-    zip.forEach((path, entry) => {
-      if (!entry.dir && path && !path.endsWith('/')) entries.push(path);
-    });
-    entries.sort((a, b) => a.localeCompare(b));
+    // Extract text from HTML safely
+    function extractTextFromHtml(htmlString) {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, 'text/html');
+        const bodyText = doc.body ? doc.body.innerText : htmlString;
+        return sanitizeForWinAnsi(bodyText);
+      } catch(e) {
+        return sanitizeForWinAnsi(htmlString);
+      }
+    }
 
-    const total = entries.length;
-    let processed = 0, added = 0;
+    // ---------- Add text content as pages (fixed encoding) ----------
+    async function addTextPagesToPdf(pdfDoc, filePath, rawContent, fileExt) {
+      let contentText = rawContent;
+      if (fileExt === '.html' || fileExt === '.htm') {
+        contentText = extractTextFromHtml(rawContent);
+      } else {
+        contentText = sanitizeForWinAnsi(rawContent);
+      }
+      if (!contentText || contentText.trim() === "") {
+        contentText = "[Empty file or no readable text]";
+      }
 
-    for (const filePath of entries) {
-      const ext = filePath.substring(filePath.lastIndexOf('.')).toLowerCase();
-      const fileObj = zip.file(filePath);
-      if (!fileObj) { processed++; onProgressCb(processed, total); continue; }
+      const font = await pdfDoc.embedFont('Helvetica');
+      const boldFont = await pdfDoc.embedFont('Helvetica-Bold');
+      const fontSize = 10;
+      const titleFontSize = 13;
+      const margin = 54;
+      const pageWidth = 595;
+      const pageHeight = 842;
+      const maxWidth = pageWidth - margin * 2;
+      const lineHeight = fontSize * 1.45;
+      const titleLineHeight = titleFontSize * 1.3;
 
-      const isPdf = ext === '.pdf';
-      const isText = ['.txt','.md','.html','.htm','.json','.xml','.csv','.log','.ini','.conf','.js','.css'].includes(ext);
+      // Split text into lines respecting max width
+      function splitTextToLines(text, font, fontSize, maxWidth) {
+        const paragraphs = text.split(/\r?\n/);
+        const lines = [];
+        for (let para of paragraphs) {
+          if (para.trim() === "") {
+            lines.push("");
+            continue;
+          }
+          const words = para.split(/\s+/);
+          let currentLine = "";
+          for (let word of words) {
+            const testLine = currentLine ? currentLine + " " + word : word;
+            const width = font.widthOfTextAtSize(testLine, fontSize);
+            if (width <= maxWidth) {
+              currentLine = testLine;
+            } else {
+              if (currentLine) lines.push(currentLine);
+              const singleWidth = font.widthOfTextAtSize(word, fontSize);
+              if (singleWidth > maxWidth) {
+                let chunk = "";
+                for (let ch of word) {
+                  const testChunk = chunk + ch;
+                  if (font.widthOfTextAtSize(testChunk, fontSize) <= maxWidth) {
+                    chunk = testChunk;
+                  } else {
+                    if (chunk) lines.push(chunk);
+                    chunk = ch;
+                  }
+                }
+                if (chunk) lines.push(chunk);
+                currentLine = "";
+              } else {
+                currentLine = word;
+              }
+            }
+          }
+          if (currentLine) lines.push(currentLine);
+        }
+        return lines;
+      }
+
+      const safePath = sanitizePath(filePath);
+      const titleLines = splitTextToLines(`📄 ${safePath}`, boldFont, titleFontSize, maxWidth);
+      const contentLines = splitTextToLines(contentText, font, fontSize, maxWidth);
+
+      let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+      let y = pageHeight - margin;
+
+      function drawTitle(page, lines) {
+        let yPos = y;
+        for (let line of lines) {
+          if (yPos - titleLineHeight < margin) {
+            currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+            yPos = pageHeight - margin;
+          }
+          page.drawText(line, {
+            x: margin,
+            y: yPos,
+            size: titleFontSize,
+            font: boldFont,
+            color: { r: 0.1, g: 0.25, b: 0.45 }
+          });
+          yPos -= titleLineHeight;
+        }
+        yPos -= 6;
+        if (yPos < margin + 8) {
+          currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+          yPos = pageHeight - margin;
+        } else {
+          page.drawLine({
+            start: { x: margin, y: yPos + 3 },
+            end: { x: pageWidth - margin, y: yPos + 3 },
+            thickness: 0.8,
+            color: { r: 0.7, g: 0.8, b: 0.9 }
+          });
+        }
+        yPos -= 12;
+        return yPos;
+      }
+
+      y = drawTitle(currentPage, titleLines);
+
+      for (let line of contentLines) {
+        if (y - lineHeight < margin) {
+          currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+          y = pageHeight - margin;
+          const header = `... ${safePath.substring(0, 55)}`;
+          currentPage.drawText(header, {
+            x: margin,
+            y: y,
+            size: 8,
+            font: boldFont,
+            color: { r: 0.4, g: 0.5, b: 0.6 }
+          });
+          y -= 14;
+        }
+        if (line.length > 0) {
+          currentPage.drawText(line, {
+            x: margin,
+            y: y,
+            size: fontSize,
+            font: font,
+            color: { r: 0.1, g: 0.1, b: 0.15 }
+          });
+        } else {
+          // empty line, just move
+        }
+        y -= lineHeight;
+      }
+    }
+
+    // Merge existing PDF (already sanitized on binary level, no text encoding issues)
+    async function mergePdfToMaster(pdfDoc, arrayBuffer) {
+      const externalPdf = await PDFLib.PDFDocument.load(arrayBuffer);
+      const copiedPages = await pdfDoc.copyPages(externalPdf, externalPdf.getPageIndices());
+      copiedPages.forEach(p => pdfDoc.addPage(p));
+      return externalPdf.getPageCount();
+    }
+
+    // Process all entries with improved error handling & encoding safety
+    async function processZipEntries(zip, finalPdfDoc, onProgressCb) {
+      const entries = [];
+      zip.forEach((path, entry) => {
+        if (!entry.dir && path && !path.endsWith('/')) entries.push(path);
+      });
+      if (entries.length === 0) throw new Error("ZIP archive contains no files.");
+      entries.sort((a, b) => a.localeCompare(b));
+
+      const total = entries.length;
+      let processed = 0;
+      let addedCount = 0;
+
+      for (const filePath of entries) {
+        const ext = filePath.substring(filePath.lastIndexOf('.')).toLowerCase();
+        const fileObj = zip.file(filePath);
+        if (!fileObj) {
+          processed++;
+          onProgressCb(processed, total);
+          continue;
+        }
+
+        const isPdf = ext === '.pdf';
+        const textExtensions = ['.txt','.md','.markdown','.html','.htm','.json','.xml','.csv','.log','.ini','.conf','.js','.css','.rss','.atom'];
+        const isTextLike = textExtensions.includes(ext);
+
+        try {
+          if (isPdf) {
+            const data = await fileObj.async('arraybuffer');
+            const pageCount = await mergePdfToMaster(finalPdfDoc, data);
+            addLog(`📄 Merged PDF: ${filePath} (${pageCount} pages)`);
+            addedCount++;
+          } else if (isTextLike) {
+            let rawString = await fileObj.async('string');
+            // attempt to handle possible binary fallback, but safe
+            await addTextPagesToPdf(finalPdfDoc, filePath, rawString, ext);
+            addLog(`📝 Added text: ${filePath}`);
+            addedCount++;
+          } else {
+            addLog(`⏩ Skipped (unsupported type): ${filePath}`);
+          }
+        } catch (err) {
+          addLog(`⚠️ Failed ${filePath}: ${err.message.substring(0, 120)}`, true);
+        }
+        processed++;
+        onProgressCb(processed, total);
+      }
+      return { added: addedCount, total };
+    }
+
+    // Main conversion function
+    async function convertZipToMaster(zipFile) {
+      resetUI();
+      progressArea.style.display = 'block';
+      logContainer.style.display = 'block';
+      addLog(`🔍 Loading ZIP: "${zipFile.name}" (${(zipFile.size / 1024).toFixed(1)} KB)`);
+      statusMsg.innerHTML = "📦 Reading archive...";
+      progressFill.style.width = '10%';
+
+      let zip;
+      try {
+        zip = await JSZip.loadAsync(zipFile);
+        addLog(`✅ ZIP parsed successfully (${Object.keys(zip.files).length} entries)`);
+      } catch (err) {
+        showFatalError(`Failed to read ZIP: ${err.message}`);
+        return;
+      }
+
+      const finalPdfDoc = await PDFLib.PDFDocument.create();
+      // Add cover page with metadata
+      const coverPage = finalPdfDoc.addPage([595, 842]);
+      const boldFont = await finalPdfDoc.embedFont('Helvetica-Bold');
+      const normalFont = await finalPdfDoc.embedFont('Helvetica');
+      coverPage.drawText("MASTER DOCUMENT", { x: 70, y: 720, size: 24, font: boldFont, color: { r: 0.1, g: 0.25, b: 0.4 } });
+      coverPage.drawText(`Source ZIP: ${sanitizePath(zipFile.name)}`, { x: 70, y: 670, size: 11, font: normalFont });
+      coverPage.drawText(`Generated: ${new Date().toLocaleString()}`, { x: 70, y: 645, size: 10, font: normalFont });
+      coverPage.drawText(`All nested folders & supported text/PDF files merged in alphabetical order.`, { x: 70, y: 620, size: 10, font: normalFont });
+      coverPage.drawText(`Note: Non-ASCII characters (emoji, special symbols) replaced with spaces.`, { x: 70, y: 580, size: 9, font: normalFont, color: { r: 0.3, g: 0.45, b: 0.55 } });
+
+      const updateProgress = (current, total) => {
+        const percent = (current / total) * 100;
+        progressFill.style.width = `${percent}%`;
+        statusMsg.innerHTML = `🔄 Processing: ${current} / ${total} files (PDF + text)`;
+      };
 
       try {
-        if (isPdf) {
-          const data = await fileObj.async('arraybuffer');
-          const pages = await mergePdfToMaster(finalPdfDoc, data);
-          addLog(`📄 Merged PDF: \( {filePath} ( \){pages} pages)`);
-          added++;
-        } else if (isText) {
-          const data = await fileObj.async('string');
-          await addTextPagesToPdf(finalPdfDoc, filePath, data, ext);
-          addLog(`📝 Added text: ${filePath}`);
-          added++;
-        } else {
-          addLog(`⏩ Skipped: ${filePath}`);
-        }
-      } catch (e) {
-        addLog(`⚠️ Failed ${filePath}: ${e.message}`, true);
+        const result = await processZipEntries(zip, finalPdfDoc, updateProgress);
+        const pdfBytes = await finalPdfDoc.save();
+        masterPdfBytes = pdfBytes;
+        statusMsg.innerHTML = `✅ Done! ${result.added} files converted.`;
+        progressFill.style.width = '100%';
+        downloadBtn.disabled = false;
+        downloadBtn.classList.remove('disabled');
+        downloadBtn.textContent = `📥 Download Master PDF (${(pdfBytes.length / 1024).toFixed(1)} KB)`;
+        addLog(`🎉 Conversion completed! ${result.added} files included.`);
+      } catch (err) {
+        showFatalError(`Processing failed: ${err.message}`);
+        masterPdfBytes = null;
       }
-      processed++;
-      onProgressCb(processed, total);
-    }
-    return { added, total };
-  }
-
-  async function convertZipToMaster(zipFile) {
-    resetUI();
-    progressArea.style.display = 'block';
-    logContainer.style.display = 'block';
-
-    addLog(`🔍 Loading ZIP: "\( {zipFile.name}" ( \){(zipFile.size / 1024).toFixed(1)} KB)`);
-    statusMsg.textContent = "📦 Reading archive...";
-    progressFill.style.width = '10%';
-
-    let zip;
-    try {
-      zip = await JSZip.loadAsync(zipFile);
-      addLog(`✅ ZIP parsed successfully (${Object.keys(zip.files).length} entries)`);
-    } catch (err) {
-      showFatalError(`Failed to read ZIP: ${err.message}`);
-      return;
     }
 
-    const finalPdfDoc = await PDFLib.PDFDocument.create();
-    const cover = finalPdfDoc.addPage([595, 842]);
-    const bold = await finalPdfDoc.embedFont('Helvetica-Bold');
-    const normal = await finalPdfDoc.embedFont('Helvetica');
-    cover.drawText("MASTER DOCUMENT", { x: 70, y: 720, size: 26, font: bold });
-    cover.drawText(`Source: ${zipFile.name}`, { x: 70, y: 670, size: 12, font: normal });
-    cover.drawText(`Generated: ${new Date().toLocaleString()}`, { x: 70, y: 645, size: 11, font: normal });
-
-    const updateProgress = (current, total) => {
-      progressFill.style.width = `${Math.round((current / total) * 100)}%`;
-      statusMsg.textContent = `Processing \( {current}/ \){total} files...`;
-    };
-
-    try {
-      const result = await processZipEntries(zip, finalPdfDoc, updateProgress);
-      const pdfBytes = await finalPdfDoc.save();
-
-      masterPdfBytes = pdfBytes;
-      statusMsg.textContent = `✅ Done! ${result.added} files converted.`;
-      progressFill.style.width = '100%';
-      downloadBtn.disabled = false;
-      downloadBtn.classList.remove('disabled');
-      downloadBtn.textContent = `📥 Download Master PDF (${(pdfBytes.length / 1024).toFixed(1)} KB)`;
-      addLog(`🎉 Conversion completed! ${result.added} files included.`);
-    } catch (err) {
-      showFatalError(`Processing failed: ${err.message}`);
+    // Event: handle selected file
+    async function handleZipFile(file) {
+      if (!file || !file.name.toLowerCase().endsWith('.zip')) {
+        alert("Please select a valid .zip file.");
+        return;
+      }
+      if (isProcessing) {
+        alert("Already processing a ZIP, please wait.");
+        return;
+      }
+      isProcessing = true;
+      fileNameDisplay.textContent = `📁 ${file.name}`;
+      try {
+        await convertZipToMaster(file);
+      } catch (err) {
+        console.error(err);
+        if (!statusMsg.innerHTML.includes("FATAL")) {
+          showFatalError(err.message || "Unknown conversion error");
+        }
+      } finally {
+        isProcessing = false;
+      }
     }
-  }
 
-  async function handleZipFile(file) {
-    if (!file?.name.toLowerCase().endsWith('.zip')) return alert("Please select a .zip file");
-    if (isProcessing) return alert("Already processing...");
-    
-    isProcessing = true;
-    fileNameDisplay.textContent = `📁 ${file.name}`;
-    await convertZipToMaster(file);
-    isProcessing = false;
-  }
+    function downloadMasterPdf() {
+      if (!masterPdfBytes) {
+        alert("No PDF ready yet. Process a ZIP file first.");
+        return;
+      }
+      const blob = new Blob([masterPdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Master_PDF_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      addLog("📎 Master PDF downloaded");
+    }
 
-  function downloadMasterPdf() {
-    if (!masterPdfBytes) return alert("No PDF ready yet");
-    const blob = new Blob([masterPdfBytes], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Master_PDF_${new Date().toISOString().slice(0,10)}.pdf`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+    // Attach event listeners
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) handleZipFile(e.target.files[0]);
+    });
 
-  // Events
-  fileInput.addEventListener('change', e => e.target.files[0] && handleZipFile(e.target.files[0]));
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) handleZipFile(e.dataTransfer.files[0]); });
-  downloadBtn.addEventListener('click', downloadMasterPdf);
-  dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const files = e.dataTransfer.files;
+      if (files.length && files[0].name.toLowerCase().endsWith('.zip')) {
+        handleZipFile(files[0]);
+        fileInput.files = files;
+      } else {
+        alert("Please drop a .zip archive only.");
+      }
+    });
 
-  if (typeof JSZip === 'undefined' || typeof PDFLib === 'undefined') {
-    showFatalError("Libraries failed to load.");
-  } else {
-    resetUI();
-  }
+    downloadBtn.addEventListener('click', downloadMasterPdf);
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Check libs
+    if (typeof JSZip === 'undefined' || typeof PDFLib === 'undefined') {
+      showFatalError("Critical: JSZip or pdf-lib failed to load. Check internet.");
+    } else {
+      resetUI();
+    }
+  })();
 </script>
 </body>
 </html>
