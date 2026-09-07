@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Majid Murshadpuri · English Literature & Criticism</title>
+  <meta name="description" content="A curated collection of HTML books on English Literature, Criticism, Theory, and analytical thought — from Majid Murshadpuri.">
+
+  <!-- ========== BEAUTIFUL FONTS FOR THREE LANGUAGES ========== -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ----- reset & base (theme colours refreshed) ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #e6e0d6;
+      font-family: 'Cormorant Garamond', 'Noto Sans Devanagari', 'Noto Nastaliq Urdu', serif;
+      color: #1f2a3a;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .deep-collection {
+      max-width: 1100px;
+      width: 100%;
+      background: #f4efe8;
+      backdrop-filter: blur(2px);
+      border-radius: 3.5rem 3.5rem 2.5rem 2.5rem;
+      padding: 2.5rem 2.5rem 2rem;
+      box-shadow: 0 20px 40px -16px rgba(25, 30, 40, 0.25), 0 8px 16px rgba(0,0,0,0.04);
+      border: 1px solid #cfc6b8;
+      transition: all 0.2s;
+    }
+
+    /* ----- header + home button row ----- */
+    .deep-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #b9ad9c;
+      padding-bottom: 0.75rem;
+    }
+
+    .header-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .deep-header h1 {
+      font-size: 2.8rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      color: #1e2a3a;
+      line-height: 1.1;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .deep-header h2 {
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: #3f4a5a;
+      letter-spacing: 1px;
+      text-transform: lowercase;
+      font-style: italic;
+      margin-top: 0.2rem;
+      border-left: 2px solid #a39684;
+      padding-left: 0.75rem;
+    }
+
+    /* ----- back to home button ----- */
+    .home-button-wrapper {
+      display: flex;
+      align-items: center;
+      margin-left: 1rem;
+      flex-shrink: 0;
+    }
+
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #d3c9bb;
+      padding: 0.5rem 1.2rem 0.5rem 1rem;
+      border-radius: 40px;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #1f2a3a;
+      text-decoration: none;
+      border: 1px solid #b7aa98;
+      transition: 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-home:hover {
+      background: #c5b9a9;
+      border-color: #9e8f7c;
+      transform: scale(1.02);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+      color: #0f1825;
+    }
+
+    .btn-home:active {
+      transform: scale(0.96);
+    }
+
+    .btn-home svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ----- content panel + search ----- */
+    .content-panel {
+      margin: 1.8rem 0 1.2rem;
+    }
+
+    .search-box {
+      margin-bottom: 2rem;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.9rem 1.6rem;
+      font-size: 1.1rem;
+      font-family: 'Cormorant Garamond', 'Noto Sans Devanagari', 'Noto Nastaliq Urdu', serif;
+      background: #f9f5ef;
+      border: 1px solid #ccc0b0;
+      border-radius: 60px;
+      outline: none;
+      transition: 0.2s;
+      color: #1f2a3a;
+      letter-spacing: 0.3px;
+    }
+
+    .search-box input:focus {
+      border-color: #8f8170;
+      box-shadow: 0 0 0 4px rgba(143, 129, 112, 0.2);
+      background: #ffffff;
+    }
+
+    .search-box input::placeholder {
+      color: #7c7060;
+      font-weight: 300;
+      opacity: 0.8;
+    }
+
+    /* ----- grid (cards) ----- */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .tool-card {
+      background: #f7f2ea;
+      border-radius: 2.2rem;
+      padding: 1.5rem 1.2rem 1.4rem;
+      border: 1px solid #d5c9bb;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 12px -6px rgba(0,0,0,0.04);
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    .tool-card:hover {
+      transform: translateY(-6px);
+      border-color: #a49481;
+      box-shadow: 0 18px 30px -14px rgba(40, 45, 55, 0.15);
+      background: #fcf8f1;
+    }
+
+    .tool-link {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: #1f2a3a;
+    }
+
+    .icon {
+      font-size: 2.4rem;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .tool-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      font-family: 'Cormorant Garamond', serif;
+      margin-bottom: 0.3rem;
+      color: #1e2a3a;
+    }
+
+    .tool-desc {
+      font-size: 0.95rem;
+      color: #4b5563;
+      line-height: 1.4;
+      font-weight: 400;
+      font-family: 'Cormorant Garamond', 'Noto Sans Devanagari', 'Noto Nastaliq Urdu', serif;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ----- tag styles ----- */
+    .tag-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.5rem;
+      margin-top: 0.3rem;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      background: #e3d9cd;
+      color: #2f3b4a;
+      border: 1px solid #cdbfae;
+      font-family: 'Cormorant Garamond', sans-serif;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+      transition: 0.1s ease;
+    }
+
+    .tag:hover {
+      background: #d3c6b5;
+      border-color: #b2a28e;
+    }
+
+    /* tag variants */
+    .tag-literature { background: #ded1c0; border-color: #bcaa95; }
+    .tag-criticism { background: #d6cdbc; border-color: #b3a48f; }
+    .tag-theory { background: #dccfc0; border-color: #b7a793; }
+    .tag-ebook { background: #d8cebe; border-color: #b5a692; }
+    .tag-classic { background: #dbd0c0; border-color: #b9a994; }
+    .tag-modern { background: #d4c9b8; border-color: #b0a18c; }
+
+    /* ----- footer ----- */
+    .deep-footer {
+      margin-top: 2.8rem;
+      text-align: center;
+      font-size: 1rem;
+      color: #5f6a78;
+      letter-spacing: 1.2px;
+      border-top: 1px solid #cdc0b0;
+      padding-top: 1.5rem;
+      font-style: italic;
+    }
+
+    /* small screens */
+    @media (max-width: 600px) {
+      .deep-collection {
+        padding: 1.8rem 1.2rem 1.5rem;
+        border-radius: 2.5rem;
+      }
+      .deep-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+      }
+      .home-button-wrapper {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+      }
+      .deep-header h1 {
+        font-size: 2.2rem;
+      }
+      .btn-home {
+        font-size: 0.95rem;
+        padding: 0.4rem 1rem 0.4rem 0.8rem;
+      }
+      .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+    }
+
+    @media (max-width: 450px) {
+      .deep-header h1 {
+        font-size: 1.9rem;
+      }
+      .deep-header h2 {
+        font-size: 0.95rem;
+        padding-left: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="deep-collection">
+
+  <!-- header row: title + home button -->
+  <div class="deep-header">
+    <div class="header-text">
+      <h1>Majid Murshadpuri</h1>
+      <h2>English literature · Criticism · Theory · Analytical Stems</h2>
+    </div>
+    <div class="home-button-wrapper">
+      <a href="index.html" class="btn-home" aria-label="Back to Home">
+        <svg viewBox="0 0 24 24" width="20" height="20">
+          <path d="M3 12l9-9 9 9" />
+          <path d="M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10" />
+        </svg>
+        <span>Home</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- main panel -->
+  <div class="content-panel">
+    <div class="search-box">
+      <input 
+        type="text" 
+        id="searchInput"
+        placeholder="🔍 Search • کھوجیں • ढूंढें • search"
+        oninput="filterTools()"
+      >
+    </div>
+
+    <div class="tools-grid" id="toolsGrid">
+      <!-- ===== LITERATURE & CRITICISM BOOKS ===== -->
+      <!-- Card 1: Shakespearean Tragedy -->
+      <div class="tool-card">
+        <a class="tool-link" href="shakespeare-tragedy.html">
+          <div class="icon">🎭</div>
+          <div class="tool-title">Renaissance</div>
+          <div class="tool-desc">A beginner-friendly comprehensive study guide on Renaissance</div>
+          <div class="tag-group">
+            <span class="tag">Literary Movements</span>
+            <span class="tag">British Literary History</span>
+            <span class="tag">UPPSC GIC</span>
+            
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 2: Literary Theory: An Anthology -->
+      <div class="tool-card">
+        <a class="tool-link" href="literary-theory-anthology.html">
+          <div class="icon">📖</div>
+          <div class="tool-title">Literary Theory: An Anthology</div>
+          <div class="tool-desc">Key texts from formalism to poststructuralism — a foundational reader for theory.</div>
+          <div class="tag-group">
+            <span class="tag tag-theory">Theory</span>
+            <span class="tag tag-criticism">Criticism</span>
+            <span class="tag tag-modern">Modern</span>
+            <span class="tag">Anthology</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 3: The English Novel: From Defoe to Woolf -->
+      <div class="tool-card">
+        <a class="tool-link" href="english-novel.html">
+          <div class="icon">📚</div>
+          <div class="tool-title">The English Novel: From Defoe to Woolf</div>
+          <div class="tool-desc">Traces the evolution of the novel through the 18th, 19th, and early 20th centuries.</div>
+          <div class="tag-group">
+            <span class="tag tag-literature">Literature</span>
+            <span class="tag tag-ebook">Ebook</span>
+            <span class="tag tag-classic">Classic</span>
+            <span class="tag">Novel</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 4: Practical Criticism & Close Reading -->
+      <div class="tool-card">
+        <a class="tool-link" href="practical-criticism.html">
+          <div class="icon">🔍</div>
+          <div class="tool-title">Practical Criticism & Close Reading</div>
+          <div class="tool-desc">Methods for detailed textual analysis, with examples from poetry and prose.</div>
+          <div class="tag-group">
+            <span class="tag tag-criticism">Criticism</span>
+            <span class="tag tag-theory">Theory</span>
+            <span class="tag tag-tool">Method</span>
+            <span class="tag">Close Reading</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 5: Postcolonial Literature & Theory -->
+      <div class="tool-card">
+        <a class="tool-link" href="postcolonial-lit.html">
+          <div class="icon">🌍</div>
+          <div class="tool-title">Postcolonial Literature & Theory</div>
+          <div class="tool-desc">Key concepts, writers, and critical frameworks from Said, Spivak, and Bhabha.</div>
+          <div class="tag-group">
+            <span class="tag tag-theory">Theory</span>
+            <span class="tag tag-criticism">Criticism</span>
+            <span class="tag tag-modern">Modern</span>
+            <span class="tag">Postcolonial</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 6: Romanticism & The Sublime -->
+      <div class="tool-card">
+        <a class="tool-link" href="romantic-sublime.html">
+          <div class="icon">🌿</div>
+          <div class="tool-title">Romanticism & The Sublime</div>
+          <div class="tool-desc">Explores the Romantic imagination, nature, and the aesthetic of the sublime.</div>
+          <div class="tag-group">
+            <span class="tag tag-literature">Literature</span>
+            <span class="tag tag-classic">Classic</span>
+            <span class="tag">Romantic</span>
+            <span class="tag">Poetry</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 7: Structuralism & Semiotics -->
+      <div class="tool-card">
+        <a class="tool-link" href="structuralism-semiotics.html">
+          <div class="icon">🧩</div>
+          <div class="tool-title">Structuralism & Semiotics</div>
+          <div class="tool-desc">Saussure, Lévi-Strauss, Barthes — the foundations of structuralist thought.</div>
+          <div class="tag-group">
+            <span class="tag tag-theory">Theory</span>
+            <span class="tag tag-criticism">Criticism</span>
+            <span class="tag tag-modern">Modern</span>
+            <span class="tag">Semiotics</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 8: Victorian Literature & Society -->
+      <div class="tool-card">
+        <a class="tool-link" href="victorian-lit.html">
+          <div class="icon">🏛️</div>
+          <div class="tool-title">Victorian Literature & Society</div>
+          <div class="tool-desc">Dickens, Eliot, the Brontës, and the social contexts of the Victorian era.</div>
+          <div class="tag-group">
+            <span class="tag tag-literature">Literature</span>
+            <span class="tag tag-ebook">Ebook</span>
+            <span class="tag tag-classic">Classic</span>
+            <span class="tag">Victorian</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="deep-footer">
+    ✦ a living collection · crafted with depth & warmth ✦
+  </div>
+</div>
+
+<script>
+  // unchanged filter function (searches titles, descriptions, and tags)
+  function filterTools() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('.tool-card');
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      if (text.includes(input)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // gentle fade-in for cards (preserved)
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.tool-card');
+    cards.forEach((card, idx) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(12px)';
+      setTimeout(() => {
+        card.style.transition = 'opacity 0.4s ease, transform 0.35s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, idx * 40);
+    });
+  });
+</script>
+</body>
+</html>
