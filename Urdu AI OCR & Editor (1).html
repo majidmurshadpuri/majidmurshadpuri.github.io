@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Urdu AI OCR & Editor</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet" />
+
+    <style>
+        /* Theme Variables */
+        :root {
+            --bg-main: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --border-color: #e5e7eb;
+        }
+
+        .theme-dark {
+            --bg-main: #111827;
+            --bg-card: #1f2937;
+            --text-main: #f9fafb;
+            --border-color: #374151;
+        }
+
+        .theme-sepia {
+            --bg-main: #e6dfcc;
+            --bg-card: #f4ecd8;
+            --text-main: #5c4b37;
+            --border-color: #d3c7b1;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .card-panel {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .input-element {
+            background-color: var(--bg-main);
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        /* Nastaliq Font Customizations */
+        .nastaliq-font {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            direction: rtl;
+            text-align: right;
+            line-height: 2.4;
+            word-spacing: 0.15em;
+        }
+
+        /* Standard Font for LTR Languages */
+        .standard-font {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            direction: ltr;
+            text-align: left;
+            line-height: 1.7;
+            word-spacing: normal;
+        }
+
+        #editor {
+            outline: none;
+            min-height: 450px;
+            transition: font-family 0.3s ease, direction 0.3s ease, text-align 0.3s ease, line-height 0.3s ease;
+        }
+
+        /* Beautiful formatting for AI Extracted Text */
+        #editor h1,
+        #editor h2,
+        #editor h3 {
+            font-weight: 700;
+            line-height: 1.4;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        #editor h1 {
+            font-size: 1.6em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3em;
+        }
+        #editor h2 {
+            font-size: 1.4em;
+        }
+        #editor h3 {
+            font-size: 1.2em;
+        }
+        #editor p {
+            margin-bottom: 1.2em;
+        }
+        #editor strong {
+            font-weight: 700;
+        }
+        #editor em {
+            font-style: normal;
+        }
+        #editor u {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+        #editor blockquote {
+            border-right: 4px solid #3b82f6;
+            padding-right: 1.2em;
+            margin-right: 0;
+            margin-left: 1em;
+            opacity: 0.85;
+            background-color: var(--bg-main);
+            padding: 1em;
+            border-radius: 0.375rem;
+            margin-bottom: 1.2em;
+        }
+        #editor ul,
+        #editor ol {
+            padding-right: 2em;
+            margin-bottom: 1.2em;
+        }
+        #editor li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Override RTL for standard-font */
+        .standard-font blockquote {
+            border-right: none;
+            border-left: 4px solid #3b82f6;
+            padding-right: 1em;
+            padding-left: 1.2em;
+            margin-right: 1em;
+            margin-left: 0;
+        }
+        .standard-font ul,
+        .standard-font ol {
+            padding-right: 0;
+            padding-left: 2em;
+        }
+    </style>
+</head>
+<body class="theme-light min-h-screen p-2 sm:p-4 md:p-8 flex flex-col font-sans">
+
+    <header class="max-w-7xl mx-auto w-full mb-4 md:mb-8">
+        <div class="card-panel rounded-xl border shadow-sm p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2.5 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold">Urdu AI OCR</h1>
+                    <p class="text-sm opacity-70">Extract & Format Text</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-6">
+                <!-- Language Selector -->
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                    </svg>
+                    <select id="langSelect" onchange="setLanguage(this.value)" class="input-element border rounded-md px-3 py-1.5 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="auto">Auto-detect</option>
+                        <option value="urdu">Urdu (اردو)</option>
+                        <option value="english">English</option>
+                        <option value="hindi">Hindi (हिंदी)</option>
+                    </select>
+                </div>
+
+                <!-- Theme Selector -->
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <select id="themeSelect" onchange="setTheme(this.value)" class="input-element border rounded-md px-3 py-1.5 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="light">Light Mode</option>
+                        <option value="dark">Dark Mode</option>
+                        <option value="sepia">Sepia (Eye Comfort)</option>
+                    </select>
+                </div>
+
+                <!-- Font Size Slider -->
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                    <input type="range" id="fontSizeSlider" min="16" max="48" value="22" class="w-24 md:w-32 accent-blue-600" />
+                    <span id="fontSizeValue" class="text-sm font-medium w-8">22px</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 flex-grow">
+
+        <div class="lg:col-span-5 flex flex-col gap-6">
+
+            <div class="card-panel rounded-xl border shadow-sm p-6">
+                <h2 class="text-lg font-bold mb-3 flex items-center gap-2 border-b border-[var(--border-color)] pb-3">
+                    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                    API Configuration
+                </h2>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1 opacity-90">Gemini Model</label>
+                    <select id="modelSelect" class="input-element border rounded-lg px-3 py-2.5 w-full outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-all">
+                        <option value="gemini-3.5-flash">Gemini 3.5 Flash (Recommended)</option>
+                        <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro Preview</option>
+                        <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite</option>
+                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                    </select>
+                </div>
+
+                <label class="block text-sm font-medium mb-1 opacity-90">Gemini API Key</label>
+                <div class="relative">
+                    <input type="password" id="apiKeyInput" placeholder="Enter your AIzaSy... key here" class="input-element border rounded-lg pl-4 pr-10 py-2.5 w-full outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-all font-mono" />
+                    <button type="button" onclick="toggleApiKeyVisibility()" class="absolute inset-y-0 right-0 px-3 flex items-center opacity-60 hover:opacity-100 transition-opacity">
+                        <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-xs opacity-60 mt-2">Your key is saved securely in your browser's local storage and is never sent anywhere except directly to Google's API.</p>
+            </div>
+
+            <div class="card-panel rounded-xl border shadow-sm p-6">
+                <h2 class="text-lg font-bold mb-4 flex items-center gap-2 border-b border-[var(--border-color)] pb-3">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    Document Source
+                </h2>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-medium mb-2 opacity-90">Upload PDF or Image</label>
+                    <div class="flex flex-col gap-3">
+                        <label class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-center px-4 py-3 rounded-lg transition-colors duration-200 shadow font-medium">
+                            Choose File
+                            <input type="file" id="fileInput" accept=".pdf, image/*" class="hidden" />
+                        </label>
+                        <span id="fileNameDisplay" class="text-sm opacity-70 truncate px-1">No file selected</span>
+                    </div>
+                </div>
+
+                <div id="pageNumberContainer" class="mb-6 transition-opacity duration-300">
+                    <label class="block text-sm font-medium mb-2 opacity-90">Page Number (PDF only)</label>
+                    <input type="number" id="pageNumber" min="1" value="1" class="input-element border rounded-lg px-4 py-2 w-full outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
+                </div>
+
+                <button id="extractBtn" onclick="extractText()" class="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg font-bold transition-all shadow-md flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Extract Text
+                </button>
+            </div>
+
+            <div class="card-panel rounded-xl border shadow-sm p-6">
+                <h2 class="text-lg font-bold mb-4 flex items-center gap-2 border-b border-[var(--border-color)] pb-3">
+                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Direct Text Input
+                </h2>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2 opacity-90">Paste raw text to format & edit</label>
+                    <textarea id="rawTextInput" rows="3" placeholder="پیسٹ کریں یا ٹائپ کریں..." class="input-element border rounded-lg px-4 py-3 w-full outline-none focus:ring-2 focus:ring-purple-500 transition-all resize-y nastaliq-font text-lg"></textarea>
+                </div>
+                <button onclick="loadRawText()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-bold transition-all shadow-md flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    Load into Editor
+                </button>
+            </div>
+
+            <div class="card-panel rounded-xl border shadow-sm p-4 flex-grow flex flex-col">
+                <h3 class="text-sm font-semibold opacity-70 mb-3 uppercase tracking-wider">Preview</h3>
+                <div id="previewContainer" class="flex-grow bg-[var(--bg-main)] rounded-lg border border-[var(--border-color)] overflow-hidden flex items-center justify-center p-2 min-h-[300px]">
+                    <div class="text-sm opacity-50 text-center px-4">Document preview will appear here</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 card-panel rounded-xl border shadow-sm p-2 sm:p-4 md:p-6 flex flex-col relative">
+
+            <div id="loadingOverlay" class="hidden absolute inset-0 bg-[var(--bg-card)]/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-xl">
+                <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
+                <p class="text-lg font-bold">Extracting & Formatting Text...</p>
+                <p class="text-sm opacity-75 mt-2">Using Gemini AI to structure headings, bold text, etc.</p>
+            </div>
+
+            <div class="flex justify-between items-center mb-2 md:mb-4 pb-2 md:pb-4 border-b border-[var(--border-color)]">
+                <h2 class="text-lg font-bold flex items-center gap-2 px-1">
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Editable Output
+                </h2>
+                <span id="saveStatus" class="text-xs opacity-60 bg-[var(--bg-main)] px-2 py-1 rounded">Changes auto-save</span>
+            </div>
+
+            <!-- Content Editable Area -->
+            <div id="editor" contenteditable="true" class="nastaliq-font flex-grow overflow-y-auto mb-4 px-1 md:px-4 py-2 bg-transparent outline-none focus:outline-none" dir="rtl">
+                <p class="opacity-40 text-center mt-12 font-sans" style="direction: ltr;">Upload a document, paste raw text, or start typing to see text extracted and formatted here.</p>
+            </div>
+
+            <!-- Actions Buttons -->
+            <div class="flex flex-col xl:flex-row gap-2 md:gap-4 mt-auto">
+                <button onclick="copyPlainText()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-md">
+                    <svg class="w-5 h-5 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    Copy Text
+                </button>
+                <button onclick="copyHtmlCode()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-md" title="Copy raw HTML code preserving styles">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                    Copy HTML Code
+                </button>
+                <button onclick="focusPageNumber()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-md">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>
+                    Focus Page #
+                </button>
+                <button id="nextPageBtn" onclick="loadNextPage()" class="hidden flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-md">
+                    Next Page
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /* --- Core Configuration & Database --- */
+        const dbName = "UrduOCR_DB";
+        const storeName = "files";
+
+        let currentFile = null;
+        let currentPdfDoc = null;
+
+        /* --- Lookahead/Prefetch State --- */
+        let prefetchedText = null;
+        let prefetchedPage = null;
+        let isPrefetching = false;
+
+        /* --- IndexedDB Logic for File Persistence --- */
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 1);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(storeName)) {
+                        db.createObjectStore(storeName);
+                    }
+                };
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function saveFileToDB(file) {
+            try {
+                const db = await initDB();
+                const tx = db.transaction(storeName, "readwrite");
+                const store = tx.objectStore(storeName);
+                store.put(file, "currentFile");
+            } catch (e) {
+                console.warn("Could not save file to DB", e);
+            }
+        }
+
+        async function getFileFromDB() {
+            try {
+                const db = await initDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, "readonly");
+                    const store = tx.objectStore(storeName);
+                    const request = store.get("currentFile");
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (e) {
+                return null;
+            }
+        }
+
+        /* --- State Management --- */
+        function saveState() {
+            localStorage.setItem('urduOcr_editorContent', document.getElementById('editor').innerHTML);
+            localStorage.setItem('urduOcr_pageNum', document.getElementById('pageNumber').value);
+            localStorage.setItem('urduOcr_fontSize', document.getElementById('fontSizeSlider').value);
+            localStorage.setItem('urduOcr_theme', document.getElementById('themeSelect').value);
+            localStorage.setItem('urduOcr_apiKey', document.getElementById('apiKeyInput').value.trim());
+            const modelSelect = document.getElementById('modelSelect');
+            if (modelSelect) localStorage.setItem('urduOcr_model', modelSelect.value);
+            localStorage.setItem('urduOcr_lang', document.getElementById('langSelect').value);
+        }
+
+        async function loadState() {
+            const savedApiKey = localStorage.getItem('urduOcr_apiKey');
+            if (savedApiKey) document.getElementById('apiKeyInput').value = savedApiKey;
+
+            const savedModel = localStorage.getItem('urduOcr_model');
+            if (savedModel) {
+                const modelSelect = document.getElementById('modelSelect');
+                if ([...modelSelect.options].some(opt => opt.value === savedModel)) {
+                    modelSelect.value = savedModel;
+                }
+            }
+
+            const savedHtml = localStorage.getItem('urduOcr_editorContent');
+            if (savedHtml) document.getElementById('editor').innerHTML = savedHtml;
+
+            const savedPageNum = localStorage.getItem('urduOcr_pageNum');
+            if (savedPageNum) document.getElementById('pageNumber').value = savedPageNum;
+
+            const savedFontSize = localStorage.getItem('urduOcr_fontSize');
+            if (savedFontSize) {
+                document.getElementById('fontSizeSlider').value = savedFontSize;
+                updateFontSize(savedFontSize);
+            }
+
+            const savedTheme = localStorage.getItem('urduOcr_theme') || 'light';
+            setTheme(savedTheme);
+
+            const savedLang = localStorage.getItem('urduOcr_lang') || 'auto';
+            setLanguage(savedLang);
+
+            const savedFile = await getFileFromDB();
+            if (savedFile) {
+                currentFile = savedFile;
+                document.getElementById('fileNameDisplay').innerText = `Restored: ${savedFile.name}`;
+                await processSelectedFile();
+            }
+        }
+
+        /* --- STREAMING_CHUNK:Updating auto-detection and language handlers... --- */
+        function setTheme(theme) {
+            document.body.classList.remove('theme-light', 'theme-dark', 'theme-sepia');
+            document.body.classList.add(`theme-${theme}`);
+            document.getElementById('themeSelect').value = theme;
+            saveState();
+        }
+
+        // Applies dynamic direction based on the text contents
+        function applyAutoDirection() {
+            const editor = document.getElementById('editor');
+            const lang = document.getElementById('langSelect').value;
+            if (lang !== 'auto') return;
+
+            const text = editor.innerText.trim();
+            if (text.length === 0) return;
+
+            // Unicode range matching Urdu, Arabic, Persian characters
+            const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+            
+            if (arabicRegex.test(text)) {
+                editor.classList.add('nastaliq-font');
+                editor.classList.remove('standard-font');
+                editor.setAttribute('dir', 'rtl');
+            } else {
+                editor.classList.add('standard-font');
+                editor.classList.remove('nastaliq-font');
+                editor.setAttribute('dir', 'ltr');
+            }
+        }
+
+        function setLanguage(lang) {
+            const editor = document.getElementById('editor');
+            document.getElementById('langSelect').value = lang;
+
+            editor.classList.remove('nastaliq-font', 'standard-font');
+            editor.removeAttribute('dir');
+
+            if (lang === 'urdu') {
+                editor.classList.add('nastaliq-font');
+                editor.setAttribute('dir', 'rtl');
+            } else if (lang === 'english' || lang === 'hindi') {
+                editor.classList.add('standard-font');
+                editor.setAttribute('dir', 'ltr');
+            } else if (lang === 'auto') {
+                // If auto is selected, figure out the direction based on current text
+                applyAutoDirection();
+                // If the editor is completely empty, default to LTR temporarily
+                if (editor.innerText.trim() === '') {
+                    editor.classList.add('standard-font');
+                    editor.setAttribute('dir', 'ltr');
+                }
+            }
+            saveState();
+        }
+
+        function updateFontSize(size) {
+            document.getElementById('editor').style.fontSize = `${size}px`;
+            document.getElementById('fontSizeValue').innerText = `${size}px`;
+            saveState();
+        }
+
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKeyInput');
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className =
+                `fixed bottom-5 right-5 px-6 py-3 rounded-lg shadow-lg text-white text-sm font-medium transition-all duration-300 transform translate-y-10 opacity-0 ${isError ? 'bg-red-600' : 'bg-green-600'}`;
+            toast.style.zIndex = '9999';
+            toast.innerText = message;
+
+            document.body.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        // Event Listeners setup
+        document.getElementById('modelSelect').addEventListener('change', saveState);
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            currentFile = file;
+            await saveFileToDB(file);
+            document.getElementById('fileNameDisplay').innerText = file.name;
+            await processSelectedFile();
+        });
+
+        document.getElementById('apiKeyInput').addEventListener('input', saveState);
+        document.getElementById('pageNumber').addEventListener('input', () => {
+            saveState();
+            updatePreview();
+        });
+
+        document.getElementById('fontSizeSlider').addEventListener('input', (e) => updateFontSize(e.target.value));
+        
+        // Listen to editor input for saving state AND auto-detecting direction dynamically
+        document.getElementById('editor').addEventListener('input', () => {
+            applyAutoDirection();
+            saveState();
+        });
+
+        window.addEventListener('DOMContentLoaded', loadState);
+
+        /* --- STREAMING_CHUNK:Updating AI OCR request logic... --- */
+        async function processSelectedFile() {
+            currentPdfDoc = null;
+            prefetchedText = null;
+            prefetchedPage = null;
+            isPrefetching = false;
+
+            const nextBtn = document.getElementById('nextPageBtn');
+            if (nextBtn) nextBtn.classList.add('hidden');
+
+            const pageNumInput = document.getElementById('pageNumber');
+            const pageNumberContainer = document.getElementById('pageNumberContainer');
+
+            if (currentFile.type === 'application/pdf') {
+                pageNumInput.disabled = false;
+                pageNumberContainer.style.opacity = '1';
+                try {
+                    const arrayBuffer = await currentFile.arrayBuffer();
+                    const typedarray = new Uint8Array(arrayBuffer);
+                    currentPdfDoc = await pdfjsLib.getDocument(typedarray).promise;
+
+                    let pageNum = parseInt(pageNumInput.value) || 1;
+                    if (pageNum > currentPdfDoc.numPages) pageNum = 1;
+                    pageNumInput.value = pageNum;
+                    pageNumInput.max = currentPdfDoc.numPages;
+                    pageNumInput.min = 1;
+                } catch (err) {
+                    showToast("Failed to load PDF structure.", true);
+                }
+            } else {
+                pageNumInput.disabled = true;
+                pageNumberContainer.style.opacity = '0.5';
+            }
+
+            saveState();
+            await updatePreview();
+        }
+
+        async function updatePreview() {
+            const previewContainer = document.getElementById('previewContainer');
+            if (!currentFile) return;
+
+            previewContainer.innerHTML = '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>';
+
+            try {
+                if (currentFile.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewContainer.innerHTML =
+                            `<img src="${e.target.result}" class="max-w-full max-h-[350px] object-contain rounded border border-[var(--border-color)] shadow-sm bg-white" />`;
+                    };
+                    reader.readAsDataURL(currentFile);
+                } else if (currentFile.type === 'application/pdf' && currentPdfDoc) {
+                    let pageNum = parseInt(document.getElementById('pageNumber').value) || 1;
+                    if (pageNum > currentPdfDoc.numPages || pageNum < 1) {
+                        previewContainer.innerHTML =
+                            `<div class="text-red-500 text-sm">Invalid page number. Max: ${currentPdfDoc.numPages}</div>`;
+                        return;
+                    }
+
+                    const page = await currentPdfDoc.getPage(pageNum);
+                    const viewport = page.getViewport({ scale: 1.0 });
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    canvas.className =
+                        "max-w-full max-h-[350px] object-contain rounded border border-[var(--border-color)] shadow-sm bg-white";
+
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                    previewContainer.innerHTML = '';
+                    previewContainer.appendChild(canvas);
+                }
+            } catch (error) {
+                previewContainer.innerHTML = `<div class="text-red-500 text-sm text-center">Preview error: ${error.message}</div>`;
+            }
+        }
+
+        /* --- Gemini API Logic --- */
+        async function callGemini(base64Image, mimeType, apiKey, model) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            const lang = document.getElementById('langSelect').value;
+            let langInstruction = "the Urdu language. Extract the text entirely in Urdu.";
+            if (lang === 'english') {
+                langInstruction = "the English language. Extract the text entirely in English.";
+            } else if (lang === 'hindi') {
+                langInstruction = "the Hindi language. Extract the text entirely in Hindi (Devanagari script).";
+            } else if (lang === 'auto') {
+                langInstruction = "multiple languages. Extract the text in its exact original language(s). Detect between Hindi, English, Urdu or Arabic.";
+            }
+
+            const prompt = `You are an expert OCR AI specializing in ${langInstruction} Your task is to extract all the text from the provided document image.
+
+        CRITICAL INSTRUCTIONS:
+        1. Extract the text accurately based on the specified language.
+        2. Format the output professionally using Markdown.
+        3. Automatically identify and apply appropriate formatting based on the visual hierarchy:
+           - Use headings (#, ##) for titles.
+           - Use bold (**) for emphasized text.
+           - Use blockquotes (>) for quoted text or indented paragraphs.
+           - Use <u>...</u> for underlined text if present.
+        4. Do NOT use italics (*) for Urdu/Arabic text. For other languages, use italics where appropriate.
+        5. Ensure highly accurate spacing between words, lines, and paragraphs.
+        6. Do NOT include any conversational filler, introductions, or explanations. Output ONLY the formatted text.`;
+
+            const payload = {
+                contents: [{
+                    role: "user",
+                    parts: [
+                        { text: prompt },
+                        { inlineData: { mimeType: mimeType, data: base64Image } }
+                    ]
+                }]
+            };
+
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            let attempt = 0;
+
+            while (attempt < 6) {
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errData = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errData}`);
+                    }
+
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+                } catch (error) {
+                    if (attempt === 5) {
+                        throw new Error("Failed after maximum retries. " + error.message);
+                    }
+                    await new Promise(r => setTimeout(r, delays[attempt]));
+                    attempt++;
+                }
+            }
+        }
+
+        async function extractPageContent(pageNum, apiKey, model) {
+            if (pageNum > currentPdfDoc.numPages || pageNum < 1) {
+                throw new Error(`Invalid page number.`);
+            }
+            const page = await currentPdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 2.5 });
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+            const base64Data = canvas.toDataURL('image/jpeg', 0.95).split(',')[1];
+
+            const markdownResult = await callGemini(base64Data, 'image/jpeg', apiKey, model);
+            return marked.parse(markdownResult, { breaks: true });
+        }
+
+        async function extractImageContent(apiKey, model) {
+            const base64Data = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+                reader.readAsDataURL(currentFile);
+            });
+            const markdownResult = await callGemini(base64Data, currentFile.type, apiKey, model);
+            return marked.parse(markdownResult, { breaks: true });
+        }
+
+        async function prefetchPage(pageNum, apiKey, model) {
+            if (isPrefetching) return;
+
+            const nextBtn = document.getElementById('nextPageBtn');
+            isPrefetching = true;
+            prefetchedPage = null;
+            prefetchedText = null;
+
+            if (nextBtn) {
+                nextBtn.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div> Extracting Next...';
+                nextBtn.disabled = true;
+                nextBtn.classList.remove('hidden');
+            }
+
+            try {
+                const html = await extractPageContent(pageNum, apiKey, model);
+                prefetchedText = html;
+                prefetchedPage = pageNum;
+
+                if (nextBtn) {
+                    nextBtn.innerHTML = 'Next Page <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>';
+                    nextBtn.disabled = false;
+                }
+            } catch (err) {
+                console.error("Prefetch failed:", err);
+                if (nextBtn) {
+                    nextBtn.innerHTML = 'Next Page (Retry)';
+                    nextBtn.disabled = false;
+                }
+            } finally {
+                isPrefetching = false;
+            }
+        }
+
+        async function extractText() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            const model = document.getElementById('modelSelect').value;
+
+            if (!apiKey) {
+                showToast("Please enter your Gemini API Key first.", true);
+                document.getElementById('apiKeyInput').focus();
+                return;
+            }
+
+            if (!currentFile) {
+                showToast("Please select a document first.", true);
+                return;
+            }
+
+            const extractBtn = document.getElementById('extractBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const editor = document.getElementById('editor');
+
+            extractBtn.disabled = true;
+            loadingOverlay.classList.remove('hidden');
+
+            try {
+                let htmlResult = "";
+                let currentPageNum = 1;
+
+                if (currentFile.type === 'application/pdf' && currentPdfDoc) {
+                    currentPageNum = parseInt(document.getElementById('pageNumber').value) || 1;
+
+                    if (currentPageNum === prefetchedPage && prefetchedText) {
+                        htmlResult = prefetchedText;
+                    } else {
+                        htmlResult = await extractPageContent(currentPageNum, apiKey, model);
+                    }
+                } else if (currentFile.type.startsWith('image/')) {
+                    htmlResult = await extractImageContent(apiKey, model);
+                } else {
+                    throw new Error("Document structure not loaded properly. Try re-selecting.");
+                }
+
+                editor.innerHTML = htmlResult;
+                // Re-apply language detection after extraction
+                setLanguage(document.getElementById('langSelect').value);
+                saveState();
+                showToast("Text extracted and formatted successfully!");
+
+                editor.scrollTop = 0;
+                const editorContainer = document.querySelector('.lg\\:col-span-7');
+                if (editorContainer) {
+                    editorContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+
+                if (currentFile.type === 'application/pdf' && currentPdfDoc) {
+                    const nextBtn = document.getElementById('nextPageBtn');
+                    if (currentPageNum < currentPdfDoc.numPages) {
+                        prefetchPage(currentPageNum + 1, apiKey, model);
+                        nextBtn.classList.remove('hidden');
+                    } else {
+                        nextBtn.classList.add('hidden');
+                    }
+                }
+
+            } catch (error) {
+                showToast("Error: " + error.message, true);
+            } finally {
+                extractBtn.disabled = false;
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+
+        function loadNextPage() {
+            const pageNumInput = document.getElementById('pageNumber');
+            let currentPageNum = parseInt(pageNumInput.value) || 1;
+
+            if (!currentPdfDoc || currentPageNum >= currentPdfDoc.numPages) {
+                return;
+            }
+
+            pageNumInput.value = currentPageNum + 1;
+            saveState();
+            updatePreview();
+
+            extractText();
+        }
+
+        function loadRawText() {
+            const rawText = document.getElementById('rawTextInput').value.trim();
+            if (!rawText) {
+                showToast("Please paste some text first.", true);
+                return;
+            }
+
+            const formattedHtml = rawText.split('\n').map(line => {
+                const trimmed = line.trim();
+                return trimmed ? `<p>${trimmed}</p>` : '<br/>';
+            }).join('');
+
+            const editor = document.getElementById('editor');
+            editor.innerHTML = formattedHtml;
+            
+            // Re-apply language logic 
+            setLanguage(document.getElementById('langSelect').value);
+            saveState();
+            showToast("Text loaded into editor successfully!");
+            document.getElementById('rawTextInput').value = '';
+        }
+
+        /* --- STREAMING_CHUNK:Refining HTML code copy logic... --- */
+        function copyPlainText() {
+            const editor = document.getElementById('editor');
+            const text = editor.innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = text;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+
+            try {
+                document.execCommand('copy');
+                showToast('Plain Text Copied!');
+            } catch (err) {
+                showToast('Failed to copy text', true);
+            }
+            document.body.removeChild(tempTextArea);
+        }
+
+        function copyHtmlCode() {
+            const editor = document.getElementById('editor');
+            
+            // Determine active layout traits
+            const isRtl = editor.classList.contains('nastaliq-font');
+            const direction = isRtl ? 'rtl' : 'ltr';
+            const textAlign = isRtl ? 'right' : 'left';
+            const fontFamily = isRtl ? "'Noto Nastaliq Urdu', serif" : "system-ui, -apple-system, sans-serif";
+            const lineHeight = isRtl ? '2.4' : '1.7';
+            
+            // Wrap inner HTML with inline styles so it's fully preserved externally
+            const htmlContent = `<div style="direction: ${direction}; text-align: ${textAlign}; font-family: ${fontFamily}; line-height: ${lineHeight}; white-space: pre-wrap;">
+${editor.innerHTML.trim()}
+</div>`;
+
+            // We generate the raw HTML Code as text and copy it to clipboard
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = htmlContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+
+            try {
+                document.execCommand('copy');
+                showToast('HTML Code Copied!');
+            } catch (err) {
+                showToast('Failed to copy HTML code', true);
+            }
+
+            document.body.removeChild(tempTextArea);
+        }
+
+        function focusPageNumber() {
+            const pageNumInput = document.getElementById('pageNumber');
+            if (pageNumInput) {
+                pageNumInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                setTimeout(() => {
+                    pageNumInput.focus();
+                    pageNumInput.classList.add('ring-4', 'ring-amber-500');
+
+                    setTimeout(() => {
+                        pageNumInput.classList.remove('ring-4', 'ring-amber-500');
+                    }, 1000);
+                }, 400);
+            }
+        }
+    </script>
+</body>
+</html>
