@@ -30,61 +30,87 @@
     background: #2f241b;
     border-bottom: 1px solid #6a4f38;
     text-align: center;
-    padding: 1.3rem 1rem 1rem;
+    padding: 1.8rem 1rem 1.5rem;
+    position: relative;
   }
   .deep-header h1 {
-    font-size: 2.2rem;
+    font-size: 2.6rem;
     color: #f3e7d9;      /* soft cream */
     font-weight: 600;
     letter-spacing: -0.2px;
     text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    margin-bottom: 0.3rem;
   }
   .deep-header h2 {
     font-size: 1rem;
     color: #e2cfb5;      /* lighter parchment */
     font-weight: 500;
-    margin-top: 6px;
+    margin-top: 4px;
     font-style: italic;
   }
 
-  /* ===== NEW: ABOUT ME BUTTON STYLES ===== */
+  /* ===== IMPROVED: ABOUT ME BUTTON STYLES ===== */
   .about-wrapper {
-    margin-top: 1rem;
+    margin-top: 1.2rem;
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 0.8rem;
     flex-wrap: wrap;
   }
 
   .about-btn {
-    display: inline-block;
-    background: #4a3727;
-    padding: 0.6rem 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: transparent;
+    padding: 0.5rem 2rem;
     border-radius: 60px;
     font-family: 'Cormorant Garamond', 'Noto Sans Devanagari', 'Noto Nastaliq Urdu', serif;
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #f3e7d9;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #e2cfb5;
     text-decoration: none;
-    border: 1px solid #8a6f52;
+    border: 1.5px solid #6a4f38;
     transition: all 0.3s ease;
     letter-spacing: 0.5px;
-    background: linear-gradient(135deg, #4d3a29, #3a2b1e);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,245,210,0.1);
+    background: rgba(74, 55, 39, 0.5);
     backdrop-filter: blur(4px);
     cursor: pointer;
+    position: relative;
+  }
+
+  .about-btn::before {
+    content: "👤";
+    font-size: 1.1rem;
+    opacity: 0.8;
   }
 
   .about-btn:hover {
-    background: #5e4532;
+    background: rgba(90, 65, 45, 0.8);
     border-color: #b89870;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,245,210,0.15);
-    transform: translateY(-2px) scale(1.02);
     color: #fff5e8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   }
 
   .about-btn:active {
     transform: scale(0.97) translateY(0);
+  }
+
+  /* Optional: Add a subtle divider line before the button */
+  .about-wrapper::before {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #6a4f38, transparent);
+    margin: 0 auto 0.8rem;
+  }
+
+  .about-wrapper {
+    flex-direction: column;
   }
 
   /* content panel */
@@ -215,16 +241,29 @@
   @media (max-width: 640px) {
     body { padding: 0.8rem; }
     .content-panel { padding: 1.2rem; }
+    .deep-header { padding: 1.2rem 0.8rem; }
     .deep-header h1 { font-size: 1.8rem; }
     .deep-header h2 { font-size: 0.85rem; }
     .tool-title { font-size: 1.35rem; }
     .icon { width: 52px; height: 52px; font-size: 2rem; }
     .tool-link { padding: 1.2rem; }
     .about-btn {
-      font-size: 1rem;
-      padding: 0.5rem 1.6rem;
+      font-size: 0.95rem;
+      padding: 0.4rem 1.4rem;
     }
     .about-wrapper {
       margin-top: 0.8rem;
+    }
+    .about-wrapper::before {
+      width: 40px;
+    }
+  }
+
+  /* For very small screens */
+  @media (max-width: 400px) {
+    .deep-header h1 { font-size: 1.5rem; }
+    .about-btn {
+      font-size: 0.85rem;
+      padding: 0.3rem 1.2rem;
     }
   }
