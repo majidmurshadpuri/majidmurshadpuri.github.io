@@ -107,6 +107,10 @@ body {
   transform: scale(0.97) translateY(0);
 }
 
+.home-btn::before {
+  content: "🏠";
+}
+
 /* ---------- CONTENT PANEL ---------- */
 .content-panel {
   padding: 2rem 2rem 1.8rem;
