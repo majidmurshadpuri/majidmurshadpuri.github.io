@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Class 8 Mathematics · SA I Interactive Practice</title>
+<meta name="description" content="Interactive Class 8 Mathematics practice paper — 15 auto-generated questions, regenerate, reveal answers, print with key.">
+
+<!-- ========== SHARED FONTS ========== -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- ========== SHARED STYLESHEET ========== -->
+<link rel="stylesheet" href="style.css" />
+
+<!-- ========== PAGE-SPECIFIC STYLES ========== -->
+<style>
+/* ============================================================
+   PRACTICE PAGE — questions as site cards
+   (Site chrome: .deep-collection, .deep-header, .about-btn,
+    .deep-footer come from style.css)
+   ============================================================ */
+
+/* ---------- PAGE WRAPPER ---------- */
+.practice-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 1.4rem) clamp(1rem, 3vw, 1.5rem) clamp(2rem, 4vw, 2.5rem);
+}
+
+/* ---------- INFO NOTICE ---------- */
+.notice{
+  background: rgba(200, 161, 107, 0.10);
+  border: 1px solid rgba(200, 161, 107, 0.35);
+  color: #f2e0ca;
+  padding: .7rem 1rem;
+  border-radius: 12px;
+  font-size: .85rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  font-style: italic;
+}
+.notice strong{ color: #d8b581; font-style: normal; }
+
+/* ---------- TOOLBAR ---------- */
+.toolbar{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-items: center;
+  background: rgba(255, 245, 210, 0.06);
+  border: 1px solid rgba(200, 161, 107, 0.28);
+  border-radius: 16px;
+  padding: .75rem .85rem;
+  margin-bottom: 1.25rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+}
+.toolbar .spacer{ flex: 1; }
+
+.btn{
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: .85rem;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  padding: .55rem 1rem;
+  cursor: pointer;
+  letter-spacing: .01em;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  transition: transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+.btn:active{ transform: translateY(1px); }
+
+.btn-primary{ background: #a8431e; color: #fff7e6; box-shadow: 0 2px 0 #8a3417; }
+.btn-primary:hover{ background: #b94d24; }
+.btn-gold{ background: #c8a16b; color: #2a1a04; box-shadow: 0 2px 0 #8a5f1a; border-color: #b89870; }
+.btn-gold:hover{ background: #d8b581; }
+.btn-ghost{ background: transparent; color: #f2e0ca; border-color: #6a4f38; }
+.btn-ghost:hover{ background: rgba(200,161,107,.18); border-color: #b89870; }
+.btn-green{ background: #2e7d32; color: #fff; box-shadow: 0 2px 0 #1b5e20; }
+.btn-green:hover{ background: #399b3e; }
+
+/* ---------- BACK + HOME BUTTONS (side by side) ---------- */
+.deep-header .about-wrapper {
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.back-btn::before { content: "←"; }
+
+/* ---------- PAPER HEAD → simple info strip ---------- */
+.paper-head{
+  text-align: center;
+  padding: 1rem 1rem 1.4rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px dashed rgba(200, 161, 107, 0.35);
+}
+.paper-head .badge{
+  display: inline-block;
+  background: rgba(200, 161, 107, 0.15);
+  color: #d8b581;
+  font-size: .68rem;
+  letter-spacing: .12em;
+  padding: .3rem .85rem;
+  border-radius: 999px;
+  margin-bottom: .6rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  border: 1px solid rgba(200, 161, 107, 0.35);
+}
+.paper-head h2{
+  margin: .1rem 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.4rem, 3.5vw, 1.75rem);
+  font-weight: 700;
+  color: #f2e0ca;
+  letter-spacing: -0.2px;
+}
+.paper-head h3{
+  margin: .2rem 0 0;
+  font-size: .95rem;
+  font-weight: 400;
+  color: #dfcbb0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+}
+.paper-head p.note{
+  font-style: italic;
+  font-size: .82rem;
+  color: #b29777;
+  margin: .6rem 0 0;
+}
+
+/* ---------- QUESTIONS (site glass cards) ---------- */
+.qlist{ display: flex; flex-direction: column; gap: 1rem; }
+
+.qcard{
+  background: rgba(255, 245, 210, 0.06);
+  border: 1px solid rgba(200, 161, 107, 0.28);
+  border-radius: 18px;
+  padding: 1rem 1.1rem 1.05rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.20);
+  page-break-inside: avoid;
+  color: #f2e0ca;
+}
+.qcard-head{
+  display: flex;
+  gap: .55rem;
+  align-items: flex-start;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.qnum{
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #d8b581;
+  flex: none;
+  min-width: 1.6em;
+  line-height: 1.4;
+}
+.qtitle{ flex: 1; color: #f2e0ca; }
+
+.qcard-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .75rem;
+  padding-top: .65rem;
+  border-top: 1px dashed rgba(200, 161, 107, 0.25);
+}
+.qbtn{
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: .75rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  padding: .4rem .8rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  letter-spacing: .02em;
+  transition: background .2s ease, transform .15s ease;
+}
+.qbtn:active{ transform: translateY(1px); }
+.qbtn-regen{ background: #c8a16b; color: #2a1a04; border-color: #8a5f1a; }
+.qbtn-regen:hover{ background: #d8b581; }
+.qbtn-ans{ background: #2e7d32; color: #fff; border-color: #1b5e20; }
+.qbtn-ans:hover{ background: #3a9c40; }
+.qbtn-hide{ background: transparent; color: #e8a689; border-color: rgba(232, 166, 137, 0.5); }
+.qbtn-hide:hover{ background: rgba(232, 166, 137, 0.15); color: #f3b8a0; }
+
+/* ---------- ANSWERS (warm gold-tinted glass) ---------- */
+.qanswer{
+  display: none;
+  margin-top: .85rem;
+  padding: .8rem 1rem;
+  background: rgba(200, 161, 107, 0.12);
+  border: 1px solid rgba(200, 161, 107, 0.4);
+  border-radius: 12px;
+  font-size: .93rem;
+  line-height: 1.6;
+  color: #f2e0ca;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.qanswer.show{ display: block; }
+.qanswer .ans-title{
+  font-weight: 700;
+  color: #d8b581;
+  margin-bottom: .35rem;
+  font-size: .75rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.qanswer .ans-part{ display: block; margin: .18rem 0 0 1em; }
+.qanswer .ans-part b{ color: #d8b581; }
+
+.qcard.hidden{
+  background: rgba(200, 161, 107, 0.04);
+  border: 1.5px dashed rgba(200, 161, 107, 0.35);
+}
+.qcard.hidden .qcard-head,
+.qcard.hidden .parts,
+.qcard.hidden .figure,
+.qcard.hidden .qcard-actions,
+.qcard.hidden .qanswer{ display: none !important; }
+
+.qhidden-bar{
+  display: none;
+  font-size: .88rem;
+  color: #b29777;
+  font-style: italic;
+  align-items: center;
+  gap: .6rem;
+  justify-content: space-between;
+}
+.qcard.hidden .qhidden-bar{ display: flex; }
+
+.qhidden-bar .show-btn{
+  font-family: system-ui, sans-serif;
+  font-size: .78rem;
+  font-weight: 700;
+  background: #a8431e;
+  color: #fff7e6;
+  border: 1.5px solid #8a3417;
+  border-radius: 8px;
+  padding: .4rem .85rem;
+  cursor: pointer;
+  font-style: normal;
+}
+.qhidden-bar .show-btn:hover{ background: #8a3417; }
+
+/* Fractions, exponents */
+.frac{
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+  margin: 0 .18em;
+  font-size: .92em;
+  line-height: 1.05;
+}
+.frac .fn{ border-bottom: 1.4px solid currentColor; padding: 0 .25em; }
+.frac .fd{ padding: .05em .25em 0; }
+sup{ font-size: .7em; }
+
+.parts{ margin: .55rem 0 0 1.6em; display: grid; gap: .5rem; }
+.part-row{ display: flex; gap: .5rem; align-items: baseline; line-height: 1.6; }
+.part-label{ font-weight: 700; color: #d8b581; flex: none; }
+
+/* ---------- PRINT-ONLY ANSWERS SECTION ---------- */
+.print-answers{ display: none; }
+
+/* ============================================================
+   PRINT STYLES — clean A4 output
+   ============================================================ */
+@media print{
+  /* Hide site chrome */
+  .deep-header,
+  .deep-footer,
+  .toolbar,
+  .notice,
+  .about-wrapper { display: none !important; }
+
+  body{
+    background: #fff !important;
+    padding: 0 !important;
+    color: #000 !important;
+  }
+  .deep-collection{
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    backdrop-filter: none !important;
+  }
+  .practice-wrap{ max-width: 100%; padding: 0; margin: 0; }
+
+  /* Paper head — light version for print */
+  .paper-head{
+    border-bottom: 2px solid #000;
+    padding-bottom: .6rem;
+    margin-bottom: 1rem;
+  }
+  .paper-head .badge{
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+  }
+  .paper-head h2{ color: #000; }
+  .paper-head h3{ color: #333; }
+  .paper-head p.note{ color: #333; }
+
+  /* Question cards — flat and ink-friendly */
+  .qlist{ gap: .8rem; }
+  .qcard{
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: #000;
+    border-bottom: 1px dotted #999;
+    padding-bottom: .6rem;
+  }
+  .qcard-head{ color: #000; }
+  .qnum{ color: #000; }
+  .qtitle{ color: #000; }
+  .qcard-actions,
+  .qhidden-bar{ display: none !important; }
+  .qanswer{ display: none !important; }
+  .qcard.hidden{ display: none !important; }
+
+  .parts .part-label{ color: #000; }
+  .parts .part-row{ color: #000; }
+
+  /* Print-only answers block */
+  .print-answers{ display: block !important; margin-top: 1.6rem; }
+  .print-answers h2{
+    font-size: 1.1rem;
+    color: #000;
+    margin: 0 0 .6rem;
+    border-bottom: 2px solid #000;
+    padding-bottom: .25rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+  .print-answers .ans-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem .9rem;
+    font-size: .85rem;
+    line-height: 1.4;
+    color: #000;
+  }
+  .print-answers .ans-item{
+    border-bottom: 1px dotted #999;
+    padding-bottom: .25rem;
+    color: #000;
+  }
+  .print-answers .ans-item b{ color: #000; }
+
+  body.hide-answers .print-answers{ display: none !important; }
+  .qcard{ page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="deep-collection">
+
+  <!-- ========== HEADER (site chrome) ========== -->
+  <div class="deep-header">
+    <h1>Class 8 Mathematics</h1>
+    <h2>SA I · Interactive Practice Paper · Regenerate · Reveal · Print</h2>
+
+    <!-- Back + Home buttons -->
+    <div class="about-wrapper">
+      <a class="about-btn back-btn" href="Maths_SAI_Practice.html">✦ Back ✦</a>
+      <a class="about-btn home-btn" href="https://majidmurshadpuri.github.io">✦ Home ✦</a>
+    </div>
+  </div>
+
+  <!-- ========== PRACTICE AREA ========== -->
+  <div class="practice-wrap">
+
+    <div class="notice">
+      <strong>Model Question Paper — For Practice Purposes Only.</strong>
+      Not an official school examination paper.
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-primary" id="regenAllBtn">⟳ Regenerate All Questions</button>
+      <button class="btn btn-green" id="showAllAnsBtn">Show All Answers</button>
+      <button class="btn btn-ghost" id="hideAllAnsBtn">Hide All Answers</button>
+      <div class="spacer"></div>
+      <button class="btn btn-gold" id="printBtn">🖨 Print / Save as PDF</button>
+    </div>
+
+    <!-- Paper head — inline info strip -->
+    <div class="paper-head">
+      <span class="badge">MODEL PAPER · FOR PRACTICE</span>
+      <h2>Class 8th — SA I</h2>
+      <h3>Session 2026-27 · Subject: Mathematics</h3>
+      <p class="note">Note: All questions are compulsory.</p>
+    </div>
+
+    <div class="qlist" id="qlist"></div>
+
+    <section class="print-answers" id="printAnswers">
+      <h2>Answers</h2>
+      <div class="ans-grid" id="printAnswersGrid"></div>
+    </section>
+
+  </div>
+
+  <!-- ========== FOOTER (site chrome) ========== -->
+  <div class="deep-footer">
+    ✦ a living collection · crafted with depth &amp; warmth ✦
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   PART 1 — QUESTION GENERATORS (pure logic, no AI)
+   ============================================================ */
+
+const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = arr => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const rsign = () => Math.random() < 0.5 ? 1 : -1;
+
+const frac = (n, d) => `<span class="frac"><span class="fn">${n}</span><span class="fd">${d}</span></span>`;
+const sup = t => `<sup>${t}</sup>`;
+
+function joinTerms(terms) {
+  const out = [];
+  let first = true;
+  for (const [c, v] of terms) {
+    if (c === 0) continue;
+    const abs = Math.abs(c);
+    const cStr = (abs === 1 && v) ? "" : String(abs);
+    const body = cStr + v;
+    if (first) {
+      out.push((c < 0 ? "&minus;" : "") + body);
+      first = false;
+    } else {
+      out.push((c < 0 ? " &minus; " : " + ") + body);
+    }
+  }
+  return out.length ? out.join("") : "0";
+}
+
+const VARS_POOL = ["x","y","a","b","c","p","q","l","m","n","k","u","v","f","g","h","d","r","s","t","w","z"];
+function freshVars() { return shuffle([...VARS_POOL]).slice(0, 6); }
+
+/* ---------- Q1 ---------- */
+function genQ1(vars) {
+  const v = pick(vars);
+  const a = rand(5, 12);
+  const b = rand(2, 5) * rsign();
+  const c = rand(1, 6) * rsign();
+  const d = rand(3, 9);
+  let denom = d - a * b; if (denom === 0) denom = 1;
+  let num = a * c;
+  const g1 = gcd(Math.abs(num), Math.abs(denom));
+  num /= g1; denom /= g1;
+  if (denom < 0) { num = -num; denom = -denom; }
+  const ans1 = denom === 1 ? `${num}` : frac(num, denom);
+
+  const bInner2 = joinTerms([[b, v], [c, ""]]);
+
+  const m = rand(2, 5);
+  const p = rand(3, 7);
+  const q = rand(1, 3) * rsign();
+  const r = rand(1, 3) * rsign();
+  const s = rand(2, 6);
+  let num2 = p * r - s * q;
+  let den2 = m * s;
+  const g2 = gcd(Math.abs(num2), Math.abs(den2));
+  num2 /= g2; den2 /= g2;
+  if (den2 < 0) { num2 = -num2; den2 = -den2; }
+  const ans2 = den2 === 1 ? `${num2}` : frac(num2, den2);
+
+  const leftB = `${frac(`${m}${v}`, p)} ${q < 0 ? "&minus;" : "+"} ${frac(Math.abs(q), p)}`;
+  const rightB = `${r < 0 ? "&minus;" : ""}${frac(Math.abs(r), s)}`;
+
+  return {
+    n: 1,
+    title: "Solve the following equations:",
+    parts: [
+      { label: "a", q: `${frac(v, a)} = ${frac(bInner2, d)}`, a: `${v} = ${ans1}` },
+      { label: "b", q: `${leftB} = ${rightB}`, a: `${v} = ${ans2}` }
+    ]
+  };
+}
+
+/* ---------- Q2 ---------- */
+function genQ2() {
+  const n = rand(11, 65);
+  return { n: 2, title: `Find the square of ${n}.`, parts: null, a: `${n * n}` };
+}
+function genQ3() {
+  const root = rand(11, 99);
+  return { n: 3, title: `Find the square root of ${root * root}.`, parts: null, a: `${root}` };
+}
+function genQ4() {
+  const n = rand(3, 20);
+  return { n: 4, title: `Find the cube of ${n}.`, parts: null, a: `${n * n * n}` };
+}
+function genQ5() {
+  const root = rand(3, 20);
+  return { n: 5, title: `Find the cube root of ${root * root * root}.`, parts: null, a: `${root}` };
+}
+
+/* ---------- Q6 ---------- */
+function genQ6(vars) {
+  const [v1, v2, v3] = shuffle([...vars]).slice(0, 3);
+  const A = rand(2, 9) * rsign(), B = rand(3, 10) * rsign(), C = rand(2, 9) * rsign();
+  const D = rand(2, 9) * rsign(), E = rand(2, 9) * rsign();
+  const a1 = joinTerms([[A, `${v1}${v2}`], [B, `${v2}${v3}`], [C, `${v1}${v3}`]]);
+  const a2 = joinTerms([[D, `${v2}${v3}`], [E, `${v1}${v3}`]]);
+  const sumA = joinTerms([[A, `${v1}${v2}`], [B + D, `${v2}${v3}`], [C + E, `${v1}${v3}`]]);
+
+  const P = rand(3, 9) * rsign(), Q = rand(2, 9) * rsign(), R = rand(2, 9) * rsign();
+  const S = rand(2, 9) * rsign(), T = rand(2, 9) * rsign(), U = rand(2, 9) * rsign();
+  const b1 = joinTerms([[P, `${v1}${sup(2)}`], [Q, v1], [R, ""]]);
+  const b2 = joinTerms([[S, `${v1}${sup(2)}`], [T, v1], [U, ""]]);
+  const sumB = joinTerms([[P + S, `${v1}${sup(2)}`], [Q + T, v1], [R + U, ""]]);
+
+  return {
+    n: 6, title: "Add the following:",
+    parts: [
+      { label: "a", q: `(${a1}) and (${a2})`, a: sumA },
+      { label: "b", q: `(${b1}) and (${b2})`, a: sumB }
+    ]
+  };
+}
+
+/* ---------- Q7 ---------- */
+function genQ7(vars) {
+  const [v1, v2, v3] = shuffle([...vars]).slice(0, 3);
+  const P = rand(3, 9) * rsign(), Q = rand(2, 9) * rsign(), R = rand(2, 9) * rsign();
+  const S = rand(2, 9) * rsign(), T = rand(2, 9) * rsign(), U = rand(2, 9) * rsign();
+  const firstA = joinTerms([[P, `${v1}${sup(2)}`], [Q, v1], [R, ""]]);
+  const secondA = joinTerms([[S, `${v1}${sup(2)}`], [T, v1], [U, ""]]);
+  const resA = joinTerms([[S - P, `${v1}${sup(2)}`], [T - Q, v1], [U - R, ""]]);
+  const a1 = `(${firstA}) from (${secondA})`;
+
+  const A = rand(2, 9) * rsign(), B = rand(2, 9) * rsign(), C = rand(2, 9) * rsign();
+  const D = rand(2, 9) * rsign(), E = rand(2, 9) * rsign(), F = rand(2, 9) * rsign();
+  const firstB = joinTerms([[A, `${v1}${v2}`], [B, `${v2}${v3}`], [C, `${v1}${v3}`]]);
+  const secondB = joinTerms([[D, `${v2}${v3}`], [E, `${v1}${v3}`], [F, `${v1}${v2}`]]);
+  const resB = joinTerms([[F - A, `${v1}${v2}`], [E - C, `${v1}${v3}`], [D - B, `${v2}${v3}`]]);
+  const b1 = `(${firstB}) from (${secondB})`;
+
+  return {
+    n: 7, title: "Subtract:",
+    parts: [
+      { label: "a", q: a1, a: resA },
+      { label: "b", q: b1, a: resB }
+    ]
+  };
+}
+
+/* ---------- Q8 ---------- */
+function genQ8(vars) {
+  const [v1, v2] = shuffle([...vars]).slice(0, 2);
+  const a = rand(2, 7) * rsign(), b = rand(2, 9) * rsign();
+  const p1 = rand(1, 4), q2 = rand(1, 3);
+  const prodCoef = a * b;
+  const expr1 = `${a < 0 ? "&minus;" : ""}${Math.abs(a)}${v1}${sup(p1)}`;
+  const expr2 = `${b < 0 ? "&minus;" : ""}${Math.abs(b)}${v1}${v2}${sup(q2)}`;
+  const prod = `${prodCoef < 0 ? "&minus;" : ""}${Math.abs(prodCoef)}${v1}${sup(p1 + 1)}${v2}${sup(q2)}`;
+  return { n: 8, title: `Find the product of ${expr1} and ${expr2}.`, parts: null, a: prod };
+}
+
+/* ---------- Q9 ---------- */
+function genQ9(vars) {
+  const [v1, v2] = shuffle([...vars]).slice(0, 2);
+  const a = rand(3, 7) * rsign(), b = rand(2, 6) * rsign(), c = rand(2, 6) * rsign();
+  const p = rand(2, 4), q = rand(1, 3);
+  const mono = `${a < 0 ? "&minus;" : ""}${Math.abs(a)}${v1}${sup(p)}`;
+  const bin = `(${joinTerms([[b, v1], [c, `${v1}${sup(2)}${v2}${sup(q)}`]])})`;
+  const res = joinTerms([[a * b, `${v1}${sup(p + 1)}`], [a * c, `${v1}${sup(p + 2)}${v2}${sup(q)}`]]);
+  return { n: 9, title: `Find the product of the following: ${mono} and ${bin}.`, parts: null, a: res };
+}
+
+/* ---------- Q10 ---------- */
+function genQ10(vars) {
+  const [v1, v2] = shuffle([...vars]).slice(0, 2);
+  const a = rand(2, 5) * rsign(), b = rand(2, 5) * rsign();
+  const s2 = rsign();
+  const bin1 = `(${joinTerms([[a, `${v1}${sup(2)}`], [b, `${v1}${v2}`]])})`;
+  const bin2 = `(${v1} ${s2 > 0 ? "+" : "&minus;"} ${v2})`;
+  const res = joinTerms([
+    [a, `${v1}${sup(3)}`],
+    [a * s2 + b, `${v1}${sup(2)}${v2}`],
+    [b * s2, `${v1}${v2}${sup(2)}`]
+  ]);
+  return { n: 10, title: `Find the product of the following binomials: ${bin1} and ${bin2}.`, parts: null, a: res };
+}
+
+/* ---------- Q11 ---------- */
+function genQ11(vars) {
+  const [v1, v2] = shuffle([...vars]).slice(0, 2);
+  const a = rand(2, 6) * rsign(), b = rand(2, 6) * rsign(), c = rand(2, 5) * rsign();
+  const c1 = 1 + a * b, c2 = a * c, c3 = -1;
+  const res = joinTerms([[c1, `${v1}${sup(2)}`], [c2, `${v1}${v2}`], [c3, `${v2}${sup(2)}`]]);
+  const aStr = `${a < 0 ? "&minus;" : ""}${Math.abs(a)}${v1}`;
+  const inner = joinTerms([[b, v1], [c, v2]]);
+  return { n: 11, title: `Simplify: (${v1}+${v2})(${v1}&minus;${v2}) + ${aStr}(${inner})`, parts: null, a: res };
+}
+
+/* ---------- Q12 ---------- */
+function genQ12(vars) {
+  const [v1, v2, v3] = shuffle([...vars]).slice(0, 3);
+  const a = rand(2, 9), b = rand(2, 9), c = rand(2, 9);
+  const s1 = rsign(), s2 = rsign();
+  const r1 = joinTerms([[1, `${v1}${sup(2)}`], [2 * s1 * a, v1], [a * a, ""]]);
+  const r2 = joinTerms([[1, `${v2}${sup(2)}`], [-2 * s2 * b, v2], [b * b, ""]]);
+  const r3 = joinTerms([[1, `${v3}${sup(2)}`], [-(c * c), ""]]);
+  return {
+    n: 12, title: "Solve the following using algebraic formulae:",
+    parts: [
+      { label: "a", q: `(${v1} ${s1 > 0 ? "+" : "&minus;"} ${a})(${v1} ${s1 > 0 ? "+" : "&minus;"} ${a})`, a: r1 },
+      { label: "b", q: `(${b} ${s2 > 0 ? "&minus;" : "+"} ${v2})(${b} ${s2 > 0 ? "&minus;" : "+"} ${v2})`, a: r2 },
+      { label: "c", q: `(${v3} + ${c})(${v3} &minus; ${c})`, a: r3 }
+    ]
+  };
+}
+
+/* ---------- Q13 ---------- */
+function genQ13(vars) {
+  const [v1, v2, v3] = shuffle([...vars]).slice(0, 3);
+  const A = rand(20, 60) * rsign();
+  const B = rand(10, 40) * rsign();
+  const g1 = gcd(Math.abs(A), Math.abs(B));
+  const numA = A / g1, denA = B / g1;
+  const signA = (numA < 0) !== (denA < 0) ? "&minus;" : "";
+  const ansA = frac(`${signA}${Math.abs(numA)}${v2}`, `${Math.abs(denA)}${v3}${sup(2)}`);
+
+  const C = rand(20, 60) * rsign();
+  const E = rand(4, 12) * rsign();
+  const d = rand(2, 6) * rsign();
+  const g2 = gcd(Math.abs(C), Math.abs(E));
+  const coefB = C / g2, denB = E / g2;
+  const signB = (coefB < 0) !== (denB < 0) ? "&minus;" : "";
+  const absCoefB = Math.abs(coefB / denB);
+  const ansB = `${signB}${absCoefB === 1 ? "" : absCoefB}${v1}(${v2} ${d < 0 ? "+" : "&minus;"} ${Math.abs(d)})`;
+
+  const H = rand(2, 6) * rsign();
+  const k = rand(3, 9) * rsign();
+  const F = H, G = H * k;
+  const ansC = `1`;
+
+  const Fstr = `${F < 0 ? "&minus;" : ""}${Math.abs(F)}${v1}`;
+  const Hstr = `${H < 0 ? "&minus;" : ""}${Math.abs(H)}`;
+
+  return {
+    n: 13, title: "Divide the following:",
+    parts: [
+      { label: "a", q: `${A < 0 ? "&minus;" : ""}${Math.abs(A)}${v1}${v2} &divide; ${B < 0 ? "&minus;" : ""}${Math.abs(B)}${v1}${v3}${sup(2)}`, a: ansA },
+      { label: "b", q: `${C < 0 ? "&minus;" : ""}${Math.abs(C)}${v1}${v2}(${v2} ${d < 0 ? "+" : "&minus;"} ${Math.abs(d)})(${v2} ${d < 0 ? "&minus;" : "+"} ${Math.abs(d)}) &divide; ${E < 0 ? "&minus;" : ""}${Math.abs(E)}${v2}(${v2} ${d < 0 ? "&minus;" : "+"} ${Math.abs(d)})`, a: ansB },
+      { label: "c", q: `(${Fstr} ${G < 0 ? "+" : "&minus;"} ${Math.abs(G)}) &divide; ${Hstr}(${v1} ${k < 0 ? "+" : "&minus;"} ${Math.abs(k)})`, a: ansC }
+    ]
+  };
+}
+
+/* ---------- Q14 ---------- */
+function genQ14(vars) {
+  const [v1, v2] = shuffle([...vars]).slice(0, 2);
+  const p1 = rand(2, 5), q1 = rand(2, 4), p2 = rand(1, 3);
+  const A = rand(2, 8) * rsign(), B = rand(2, 8) * rsign();
+  const v3 = pick(vars.filter(v => v !== v1 && v !== v2));
+  const g = gcd(Math.abs(A), Math.abs(B));
+  const minP = Math.min(p1, p2);
+  const Astr = `${A < 0 ? "&minus;" : ""}${Math.abs(A)}${v1}${sup(p1)}${v2}${sup(q1)}`;
+  const Bstr = `${B < 0 ? "&minus;" : ""}${Math.abs(B)}${v1}${p2 > 1 ? sup(p2) : ""}${v3}`;
+  return {
+    n: 14,
+    title: `Find the common factor of the given terms: ${Astr} and ${Bstr}`,
+    parts: null,
+    a: `${g}${v1}${minP > 1 ? sup(minP) : ""}`
+  };
+}
+
+/* ---------- Q15 ---------- */
+function genQ15(vars) {
+  const [v1, v2] = shuffle([...vars]).slice(0, 2);
+  const v3 = pick(vars.filter(v => v !== v1 && v !== v2));
+
+  const A = rand(2, 9) * rsign(), B = rand(2, 9) * rsign();
+  const g1 = gcd(Math.abs(A), Math.abs(B));
+  const fA = `${A < 0 ? "&minus;" : ""}${Math.abs(A)}${v1}${v2} ${B < 0 ? "&minus;" : "+"} ${Math.abs(B)}${v2}${v3}`;
+  const ansA = `${g1}${v2}(${A < 0 ? "&minus;" : ""}${Math.abs(A / g1)}${v1} ${(B / g1) < 0 ? "&minus;" : "+"} ${Math.abs(B / g1)}${v3})`;
+
+  const a = rand(2, 5) * rsign(), b = rand(2, 5) * rsign(), c = rand(2, 5) * rsign(), d = rand(2, 5) * rsign();
+  const b1 = joinTerms([[a * c, v1], [a * d, v2], [b * c, `${v1}${sup(2)}`], [b * d, `${v1}${v2}`]]);
+  const ansB = `(${a < 0 ? "&minus;" : ""}${Math.abs(a)} + ${b < 0 ? "&minus;" : ""}${Math.abs(b)}${v1})(${c < 0 ? "&minus;" : ""}${Math.abs(c)}${v1} + ${d < 0 ? "&minus;" : ""}${Math.abs(d)}${v2})`;
+
+  const p = rand(2, 9) * rsign(), q = rand(2, 9) * rsign();
+  const c1 = joinTerms([[1, `${v1}${sup(2)}`], [p + q, v1], [p * q, ""]]);
+  const ansC = `(${v1} ${p < 0 ? "&minus;" : "+"} ${Math.abs(p)})(${v1} ${q < 0 ? "&minus;" : "+"} ${Math.abs(q)})`;
+
+  const A2 = rand(2, 9), B2 = rand(2, 9);
+  const d1 = `${A2 * A2}${v1}${sup(2)} &minus; ${B2 * B2}${v2}${sup(2)}`;
+  const ansD = `(${A2}${v1} &minus; ${B2}${v2})(${A2}${v1} + ${B2}${v2})`;
+
+  return {
+    n: 15, title: "Factorise the following expressions:",
+    parts: [
+      { label: "a", q: fA, a: ansA },
+      { label: "b", q: b1, a: ansB },
+      { label: "c", q: c1, a: ansC },
+      { label: "d", q: d1, a: ansD }
+    ]
+  };
+}
+
+const Q_GENERATORS = {
+  1: genQ1, 2: genQ2, 3: genQ3, 4: genQ4, 5: genQ5,
+  6: genQ6, 7: genQ7, 8: genQ8, 9: genQ9, 10: genQ10,
+  11: genQ11, 12: genQ12, 13: genQ13, 14: genQ14, 15: genQ15
+};
+
+function generateQuestion(slot, vars) {
+  const fn = Q_GENERATORS[slot];
+  if (!fn) return null;
+  return (slot >= 2 && slot <= 5) ? fn() : fn(vars);
+}
+
+/* ============================================================
+   PART 2 — STATE + PERSISTENCE
+   ============================================================ */
+
+const STORAGE_KEY = 'c8math_interactive_v1';
+
+let state = {
+  vars: null,
+  slots: {},
+  hidden: {},
+  answersShown: {}
+};
+
+function saveState() {
+  try {
+    const snap = {
+      vars: state.vars,
+      slots: state.slots,
+      hidden: state.hidden,
+      answersShown: state.answersShown,
+      version: 1
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
+  } catch (e) {
+    console.warn('Could not save state:', e);
+  }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const snap = JSON.parse(raw);
+    if (!snap || snap.version !== 1) return false;
+    if (!snap.slots || typeof snap.slots !== 'object') return false;
+    if (!snap.hidden || typeof snap.hidden !== 'object') return false;
+    if (!snap.answersShown || typeof snap.answersShown !== 'object') return false;
+
+    state.vars = snap.vars || freshVars();
+    state.slots = snap.slots;
+    state.hidden = snap.hidden;
+    state.answersShown = snap.answersShown;
+
+    for (let n = 1; n <= 15; n++) {
+      if (!state.slots[n]) state.slots[n] = generateQuestion(n, state.vars);
+      if (typeof state.hidden[n] !== 'boolean') state.hidden[n] = false;
+      if (typeof state.answersShown[n] !== 'boolean') state.answersShown[n] = false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Could not load state:', e);
+    return false;
+  }
+}
+
+/* ============================================================
+   PART 3 — RENDER
+   ============================================================ */
+
+const qlistEl = document.getElementById('qlist');
+const printAnswersGridEl = document.getElementById('printAnswersGrid');
+
+function displayNumbers() {
+  const map = {};
+  let dn = 1;
+  for (let n = 1; n <= 15; n++) if (!state.hidden[n]) map[n] = dn++;
+  return map;
+}
+
+function renderAnswerBody(q) {
+  let html = `<div class="ans-title">Answer</div>`;
+  if (q.parts) {
+    q.parts.forEach(p => {
+      html += `<span class="ans-part"><b>${p.label}.</b> ${p.a}</span>`;
+    });
+  } else {
+    html += `<span class="ans-part">${q.a}</span>`;
+  }
+  return html;
+}
+
+function buildCard(slot, displayNum) {
+  const q = state.slots[slot];
+  const card = document.createElement('div');
+  card.className = 'qcard';
+  card.dataset.slot = slot;
+
+  card.innerHTML = `
+    <div class="qcard-head">
+      <span class="qnum">${displayNum}.</span>
+      <span class="qtitle">${q.title}</span>
+    </div>
+    ${q.parts ? `<div class="parts">${q.parts.map(p =>
+        `<div class="part-row"><span class="part-label">${p.label}.</span><span>${p.q}</span></div>`
+      ).join('')}</div>` : ''}
+
+    <div class="qcard-actions">
+      <button class="qbtn qbtn-regen" data-action="regen">⟳ Regenerate</button>
+      <button class="qbtn qbtn-ans" data-action="answer">👁 Show Answer</button>
+      <button class="qbtn qbtn-hide" data-action="hide">✕ Hide</button>
+    </div>
+
+    <div class="qanswer" data-role="answer">${renderAnswerBody(q)}</div>
+
+    <div class="qhidden-bar" data-role="hiddenbar">
+      <span>Question hidden.</span>
+      <button class="show-btn" data-action="show">Show Question</button>
+    </div>
+  `;
+
+  card.querySelector('[data-action="regen"]').addEventListener('click', () => regenOne(slot));
+  card.querySelector('[data-action="answer"]').addEventListener('click', () => toggleAnswer(slot));
+  card.querySelector('[data-action="hide"]').addEventListener('click', () => hideOne(slot));
+  card.querySelector('[data-action="show"]').addEventListener('click', () => showOne(slot));
+
+  if (state.answersShown[slot]) {
+    card.querySelector('[data-role="answer"]').classList.add('show');
+    card.querySelector('[data-action="answer"]').innerHTML = '🙈 Hide Answer';
+  }
+  if (state.hidden[slot]) card.classList.add('hidden');
+
+  return card;
+}
+
+function renderAllCards() {
+  const displayMap = displayNumbers();
+  qlistEl.innerHTML = '';
+  for (let n = 1; n <= 15; n++) {
+    qlistEl.appendChild(buildCard(n, displayMap[n] !== undefined ? displayMap[n] : '—'));
+  }
+  renderPrintAnswers();
+}
+
+function refreshOneCard(slot) {
+  const old = qlistEl.querySelector(`.qcard[data-slot="${slot}"]`);
+  if (!old) return;
+  const displayMap = displayNumbers();
+  const fresh = buildCard(slot, displayMap[slot] !== undefined ? displayMap[slot] : '—');
+  old.replaceWith(fresh);
+}
+
+function renderPrintAnswers() {
+  const displayMap = displayNumbers();
+  printAnswersGridEl.innerHTML = '';
+  for (let n = 1; n <= 15; n++) {
+    if (state.hidden[n]) continue;
+    const q = state.slots[n];
+    const dn = displayMap[n];
+    const item = document.createElement('div');
+    item.className = 'ans-item';
+    let html = `<b>${dn}.</b> `;
+    if (q.parts) {
+      html += q.parts.map(p => `<b>${p.label}.</b> ${p.a}`).join(' &nbsp; ');
+    } else {
+      html += q.a;
+    }
+    item.innerHTML = html;
+    printAnswersGridEl.appendChild(item);
+  }
+}
+
+/* ============================================================
+   PART 4 — PER-QUESTION ACTIONS
+   ============================================================ */
+
+function regenOne(slot) {
+  state.slots[slot] = generateQuestion(slot, state.vars);
+  state.answersShown[slot] = false;
+  refreshOneCard(slot);
+  renderPrintAnswers();
+  saveState();
+}
+function toggleAnswer(slot) {
+  state.answersShown[slot] = !state.answersShown[slot];
+  const card = qlistEl.querySelector(`.qcard[data-slot="${slot}"]`);
+  if (card) {
+    const ans = card.querySelector('[data-role="answer"]');
+    const btn = card.querySelector('[data-action="answer"]');
+    if (state.answersShown[slot]) { ans.classList.add('show'); btn.innerHTML = '🙈 Hide Answer'; }
+    else { ans.classList.remove('show'); btn.innerHTML = '👁 Show Answer'; }
+  }
+  saveState();
+}
+function hideOne(slot) {
+  state.hidden[slot] = true;
+  renderAllCards();
+  saveState();
+}
+function showOne(slot) {
+  state.hidden[slot] = false;
+  state.answersShown[slot] = false;
+  state.slots[slot] = generateQuestion(slot, state.vars);
+  renderAllCards();
+  saveState();
+}
+
+/* ============================================================
+   PART 5 — GLOBAL ACTIONS
+   ============================================================ */
+
+document.getElementById('regenAllBtn').addEventListener('click', () => {
+  state.vars = freshVars();
+  for (let n = 1; n <= 15; n++) {
+    state.slots[n] = generateQuestion(n, state.vars);
+    state.answersShown[n] = false;
+    state.hidden[n] = false;
+  }
+  renderAllCards();
+  saveState();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+document.getElementById('showAllAnsBtn').addEventListener('click', () => {
+  for (let n = 1; n <= 15; n++) if (!state.hidden[n]) state.answersShown[n] = true;
+  renderAllCards();
+  saveState();
+});
+document.getElementById('hideAllAnsBtn').addEventListener('click', () => {
+  for (let n = 1; n <= 15; n++) state.answersShown[n] = false;
+  renderAllCards();
+  saveState();
+});
+document.getElementById('printBtn').addEventListener('click', () => {
+  const withAnswers = confirm(
+    "Include the ANSWER KEY in the printed version?\n\n" +
+    "OK  → Print questions + Answers section at the end\n" +
+    "Cancel → Print questions only (no answers)"
+  );
+  document.body.classList.remove('show-answers', 'hide-answers');
+  document.body.classList.add(withAnswers ? 'show-answers' : 'hide-answers');
+  renderPrintAnswers();
+  window.print();
+  setTimeout(() => {
+    document.body.classList.remove('show-answers', 'hide-answers');
+  }, 500);
+});
+
+/* ============================================================
+   PART 6 — BOOTSTRAP
+   ============================================================ */
+
+(function init() {
+  const restored = loadState();
+
+  if (!restored) {
+    state.vars = freshVars();
+    for (let n = 1; n <= 15; n++) {
+      state.slots[n] = generateQuestion(n, state.vars);
+      state.hidden[n] = false;
+      state.answersShown[n] = false;
+    }
+    saveState();
+  }
+
+  renderAllCards();
+})();
+</script>
+</body>
+</html>
