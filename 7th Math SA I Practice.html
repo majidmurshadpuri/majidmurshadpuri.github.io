@@ -12,26 +12,13 @@
 <!-- ========== SHARED STYLESHEET ========== -->
 <link rel="stylesheet" href="style.css" />
 
-<!-- ========== PAGE-SPECIFIC STYLES (paper + toolbar only) ========== -->
+<!-- ========== PAGE-SPECIFIC STYLES ========== -->
 <style>
 /* ============================================================
-   INTERACTIVE PAPER — page-specific styling
-   (Site chrome comes from style.css: .deep-collection,
-    .deep-header, .about-btn, .deep-footer)
+   PRACTICE PAGE — questions as site cards
+   (Site chrome: .deep-collection, .deep-header, .about-btn,
+    .deep-footer come from style.css)
    ============================================================ */
-
-:root{
-  --paper-ink:#241a0f;
-  --paper:#fbf6e9;
-  --rule:#c9b787;
-  --navy:#152944;
-  --gold:#b9862f;
-  --gold-bright:#d8a94a;
-  --ember:#a8431e;
-  --ember-deep:#8a3417;
-  --green:#2e7d32;
-  --green-deep:#1b5e20;
-}
 
 /* ---------- PAGE WRAPPER ---------- */
 .practice-wrap {
@@ -40,21 +27,22 @@
   padding: clamp(1rem, 3vw, 1.4rem) clamp(1rem, 3vw, 1.5rem) clamp(2rem, 4vw, 2.5rem);
 }
 
-/* ---------- NOTICE BAR ---------- */
+/* ---------- INFO NOTICE (matches site tone) ---------- */
 .notice{
-  background: rgba(255, 243, 207, 0.9);
-  border: 1.5px dashed #a8431e;
-  color: #5a3410;
-  padding: .7rem .9rem;
-  border-radius: 10px;
-  font-size: .82rem;
+  background: rgba(200, 161, 107, 0.10);
+  border: 1px solid rgba(200, 161, 107, 0.35);
+  color: #f2e0ca;
+  padding: .7rem 1rem;
+  border-radius: 12px;
+  font-size: .85rem;
   text-align: center;
   margin-bottom: 1rem;
-  line-height: 1.45;
+  line-height: 1.5;
+  font-style: italic;
 }
-.notice strong{ color: #8a3417; }
+.notice strong{ color: #d8b581; font-style: normal; }
 
-/* ---------- TOOLBAR (glass, matches site theme) ---------- */
+/* ---------- TOOLBAR ---------- */
 .toolbar{
   display: flex;
   flex-wrap: wrap;
@@ -104,133 +92,141 @@
 }
 .back-btn::before { content: "←"; }
 
-/* ---------- PAPER SHEET (kept in its own paper aesthetic) ---------- */
-.paper-sheet{
-  background: #fbf6e9;
-  border: 1px solid #c9b787;
-  border-radius: 6px;
-  padding: clamp(1.2rem, 3vw, 1.6rem) clamp(1rem, 3vw, 1.4rem) clamp(1.8rem, 4vw, 2.2rem);
-  box-shadow: 0 14px 32px rgba(0,0,0,0.28), 0 0 0 6px rgba(200,161,107,0.10);
-  color: #241a0f;
-}
+/* ---------- PAPER HEAD → simple info strip ---------- */
 .paper-head{
   text-align: center;
-  border-bottom: 2.5px solid #152944;
-  padding-bottom: .9rem;
-  margin-bottom: 1.3rem;
+  padding: 1rem 1rem 1.4rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px dashed rgba(200, 161, 107, 0.35);
 }
 .paper-head .badge{
   display: inline-block;
-  background: #152944;
-  color: #d8a94a;
+  background: rgba(200, 161, 107, 0.15);
+  color: #d8b581;
   font-size: .68rem;
-  letter-spacing: .08em;
-  padding: .25rem .6rem;
+  letter-spacing: .12em;
+  padding: .3rem .85rem;
   border-radius: 999px;
-  margin-bottom: .5rem;
+  margin-bottom: .6rem;
   font-family: system-ui, -apple-system, sans-serif;
   font-weight: 700;
+  border: 1px solid rgba(200, 161, 107, 0.35);
 }
 .paper-head h2{
   margin: .1rem 0;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.6rem;
+  font-size: clamp(1.4rem, 3.5vw, 1.75rem);
   font-weight: 700;
-  color: #152944;
+  color: #f2e0ca;
+  letter-spacing: -0.2px;
 }
 .paper-head h3{
-  margin: .15rem 0;
-  font-size: 1rem;
+  margin: .2rem 0 0;
+  font-size: .95rem;
   font-weight: 400;
-  color: #4b3c22;
-  font-family: Georgia, serif;
+  color: #dfcbb0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
 }
 .paper-head p.note{
   font-style: italic;
   font-size: .82rem;
-  color: #6b5a3a;
-  margin: .5rem 0 0;
-  font-family: Georgia, serif;
+  color: #b29777;
+  margin: .6rem 0 0;
 }
 
-/* ---------- QUESTIONS ---------- */
+/* ---------- QUESTIONS (now site cards) ---------- */
 .qlist{ display: flex; flex-direction: column; gap: 1rem; }
 
 .qcard{
-  border: 1px solid #c9b787;
-  border-radius: 10px;
-  background: #fffdf6;
-  padding: .85rem .95rem .9rem;
-  box-shadow: 0 1px 3px rgba(60,40,10,.05);
+  background: rgba(255, 245, 210, 0.06);
+  border: 1px solid rgba(200, 161, 107, 0.28);
+  border-radius: 18px;
+  padding: 1rem 1.1rem 1.05rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.20);
   page-break-inside: avoid;
-  font-family: Georgia, 'Cambria', 'Times New Roman', serif;
+  color: #f2e0ca;
 }
 .qcard-head{
   display: flex;
   gap: .55rem;
   align-items: flex-start;
   font-size: 1rem;
-  line-height: 1.5;
+  line-height: 1.55;
 }
-.qnum{ font-weight: 700; color: #8a3417; flex: none; min-width: 1.6em; }
-.qtitle{ flex: 1; }
+.qnum{
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #d8b581;
+  flex: none;
+  min-width: 1.6em;
+  line-height: 1.4;
+}
+.qtitle{ flex: 1; color: #f2e0ca; }
 
 .qcard-actions{
   display: flex;
   flex-wrap: wrap;
   gap: .4rem;
-  margin-top: .7rem;
-  padding-top: .6rem;
-  border-top: 1px dashed #c9b787;
+  margin-top: .75rem;
+  padding-top: .65rem;
+  border-top: 1px dashed rgba(200, 161, 107, 0.25);
 }
 .qbtn{
   font-family: system-ui, -apple-system, sans-serif;
   font-size: .75rem;
   font-weight: 700;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1.5px solid transparent;
-  padding: .35rem .7rem;
+  padding: .4rem .8rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: .25rem;
   letter-spacing: .02em;
+  transition: background .2s ease, transform .15s ease;
 }
+.qbtn:active{ transform: translateY(1px); }
 .qbtn-regen{ background: #c8a16b; color: #2a1a04; border-color: #8a5f1a; }
 .qbtn-regen:hover{ background: #d8b581; }
 .qbtn-ans{ background: #2e7d32; color: #fff; border-color: #1b5e20; }
 .qbtn-ans:hover{ background: #3a9c40; }
-.qbtn-hide{ background: transparent; color: #a8431e; border-color: #a8431e; }
-.qbtn-hide:hover{ background: #a8431e; color: #fff7e6; }
+.qbtn-hide{ background: transparent; color: #e8a689; border-color: rgba(232, 166, 137, 0.5); }
+.qbtn-hide:hover{ background: rgba(232, 166, 137, 0.15); color: #f3b8a0; }
 
+/* ---------- ANSWERS (warm gold-tinted glass) ---------- */
 .qanswer{
   display: none;
-  margin-top: .7rem;
-  padding: .7rem .85rem;
-  background: #eef8ee;
-  border: 1.5px solid #a5c9a5;
-  border-radius: 8px;
-  font-size: .92rem;
-  line-height: 1.55;
-  color: #1e3a1e;
-  font-family: Georgia, serif;
+  margin-top: .85rem;
+  padding: .8rem 1rem;
+  background: rgba(200, 161, 107, 0.12);
+  border: 1px solid rgba(200, 161, 107, 0.4);
+  border-radius: 12px;
+  font-size: .93rem;
+  line-height: 1.6;
+  color: #f2e0ca;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 .qanswer.show{ display: block; }
 .qanswer .ans-title{
   font-weight: 700;
-  color: #1b5e20;
-  margin-bottom: .3rem;
-  font-size: .78rem;
-  letter-spacing: .05em;
+  color: #d8b581;
+  margin-bottom: .35rem;
+  font-size: .75rem;
+  letter-spacing: .1em;
   text-transform: uppercase;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
 }
-.qanswer .ans-part{ display: block; margin: .15rem 0 0 1em; }
-.qanswer .ans-part b{ color: #1b5e20; }
+.qanswer .ans-part{ display: block; margin: .18rem 0 0 1em; }
+.qanswer .ans-part b{ color: #d8b581; }
 
 .qcard.hidden{
-  background: #f4edd8;
-  border: 1.5px dashed #c9b787;
+  background: rgba(200, 161, 107, 0.04);
+  border: 1.5px dashed rgba(200, 161, 107, 0.35);
 }
 .qcard.hidden .qcard-head,
 .qcard.hidden .parts,
@@ -241,7 +237,7 @@
 .qhidden-bar{
   display: none;
   font-size: .88rem;
-  color: #6b5a3a;
+  color: #b29777;
   font-style: italic;
   align-items: center;
   gap: .6rem;
@@ -256,7 +252,7 @@
   background: #a8431e;
   color: #fff7e6;
   border: 1.5px solid #8a3417;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: .4rem .85rem;
   cursor: pointer;
   font-style: normal;
@@ -277,35 +273,40 @@
 .frac .fd{ padding: .05em .25em 0; }
 sup{ font-size: .7em; }
 
-.parts{ margin: .45rem 0 0 1.6em; display: grid; gap: .45rem; }
+.parts{ margin: .55rem 0 0 1.6em; display: grid; gap: .5rem; }
 .part-row{ display: flex; gap: .5rem; align-items: baseline; line-height: 1.6; }
-.part-label{ font-weight: 700; color: #152944; flex: none; }
+.part-label{ font-weight: 700; color: #d8b581; flex: none; }
 
-/* Figures (SVG) */
+/* Figures */
 .figure{
-  margin: .6rem 0 .4rem 1.6em;
-  background: #fffdf6;
-  border: 1.5px dashed #c9b787;
-  border-radius: 8px;
-  padding: .55rem;
+  margin: .7rem 0 .4rem 1.6em;
+  background: rgba(255, 245, 210, 0.04);
+  border: 1px dashed rgba(200, 161, 107, 0.35);
+  border-radius: 12px;
+  padding: .65rem;
   display: inline-block;
 }
 .figure svg{ display: block; max-width: 100%; height: auto; }
+.figure svg line,
+.figure svg polygon{ stroke: #f2e0ca; }
+.figure svg text{ fill: #d8b581 !important; }
+.figure svg circle{ fill: #f2e0ca; }
 .figure .caption{
   font-size: .72rem;
-  color: #6b5a3a;
+  color: #b29777;
   text-align: center;
-  margin-top: .25rem;
+  margin-top: .35rem;
+  font-style: italic;
 }
 
 /* ---------- PRINT-ONLY ANSWERS SECTION ---------- */
 .print-answers{ display: none; }
 
 /* ============================================================
-   PRINT STYLES — clean A4 exam paper
+   PRINT STYLES — clean A4 output
    ============================================================ */
 @media print{
-  /* Hide the site chrome so only the paper prints */
+  /* Hide site chrome so only the paper content prints */
   .deep-header,
   .deep-footer,
   .toolbar,
@@ -315,6 +316,7 @@ sup{ font-size: .7em; }
   body{
     background: #fff !important;
     padding: 0 !important;
+    color: #000 !important;
   }
   .deep-collection{
     box-shadow: none !important;
@@ -325,20 +327,57 @@ sup{ font-size: .7em; }
   }
   .practice-wrap{ max-width: 100%; padding: 0; margin: 0; }
 
-  .paper-sheet{
-    box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-    background: #fff !important;
-    border-radius: 0 !important;
+  /* Paper head — light version for print */
+  .paper-head{
+    border-bottom: 2px solid #000;
+    padding-bottom: .6rem;
+    margin-bottom: 1rem;
   }
-  .qlist{ gap: .9rem; }
-  .qcard{ box-shadow: none; border: none; padding: 0; margin: 0; background: transparent; }
+  .paper-head .badge{
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+  }
+  .paper-head h2{ color: #000; }
+  .paper-head h3{ color: #333; }
+  .paper-head p.note{ color: #333; }
+
+  /* Question cards — flat and ink-friendly */
+  .qlist{ gap: .8rem; }
+  .qcard{
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: #000;
+    border-bottom: 1px dotted #999;
+    padding-bottom: .6rem;
+  }
+  .qcard-head{ color: #000; }
+  .qnum{ color: #000; }
+  .qtitle{ color: #000; }
   .qcard-actions,
   .qhidden-bar{ display: none !important; }
   .qanswer{ display: none !important; }
   .qcard.hidden{ display: none !important; }
 
+  .parts .part-label{ color: #000; }
+  .parts .part-row{ color: #000; }
+
+  .figure{
+    border: none;
+    padding: 0;
+    margin-left: 1.6em;
+    background: transparent;
+  }
+  .figure svg line,
+  .figure svg polygon{ stroke: #000; }
+  .figure svg text{ fill: #000 !important; }
+  .figure svg circle{ fill: #000; }
+  .figure .caption{ color: #333; }
+
+  /* Print-only answers block */
   .print-answers{ display: block !important; margin-top: 1.6rem; }
   .print-answers h2{
     font-size: 1.1rem;
@@ -354,17 +393,17 @@ sup{ font-size: .7em; }
     gap: .5rem .9rem;
     font-size: .85rem;
     line-height: 1.4;
-    font-family: Georgia, serif;
+    color: #000;
   }
   .print-answers .ans-item{
     border-bottom: 1px dotted #999;
     padding-bottom: .25rem;
+    color: #000;
   }
   .print-answers .ans-item b{ color: #000; }
 
   body.hide-answers .print-answers{ display: none !important; }
   .qcard{ page-break-inside: avoid; }
-  .figure{ border: none; padding: 0; margin-left: 1.6em; }
 }
 </style>
 </head>
@@ -400,21 +439,20 @@ sup{ font-size: .7em; }
       <button class="btn btn-gold" id="printBtn">🖨 Print / Save as PDF</button>
     </div>
 
-    <div class="paper-sheet">
-      <div class="paper-head">
-        <span class="badge">MODEL PAPER · FOR PRACTICE</span>
-        <h2>Class 7th — SA I</h2>
-        <h3>Session 2026-27 &nbsp;·&nbsp; Subject: Mathematics</h3>
-        <p class="note">Note: All questions are compulsory.</p>
-      </div>
-
-      <div class="qlist" id="qlist"></div>
-
-      <section class="print-answers" id="printAnswers">
-        <h2>Answers</h2>
-        <div class="ans-grid" id="printAnswersGrid"></div>
-      </section>
+    <!-- Paper head — now a light info strip, no card -->
+    <div class="paper-head">
+      <span class="badge">MODEL PAPER · FOR PRACTICE</span>
+      <h2>Class 7th — SA I</h2>
+      <h3>Session 2026-27 · Subject: Mathematics</h3>
+      <p class="note">Note: All questions are compulsory.</p>
     </div>
+
+    <div class="qlist" id="qlist"></div>
+
+    <section class="print-answers" id="printAnswers">
+      <h2>Answers</h2>
+      <div class="ans-grid" id="printAnswersGrid"></div>
+    </section>
 
   </div>
 
@@ -481,7 +519,6 @@ function polyM(terms) {
    PART 2 — QUESTION GENERATORS
    ============================================================ */
 
-/* ---------- Q1 ---------- */
 function genQ1() {
   let a, b, c, d, den;
   do {
@@ -524,7 +561,6 @@ function genQ1() {
   };
 }
 
-/* ---------- Q2 ---------- */
 function genQ2() {
   const a = rand(15, 80);
   const b = rand(20, 150);
@@ -538,17 +574,14 @@ function genQ2() {
   };
 }
 
-/* ============================================================
-   Q3 — RANDOM ANGLE FIGURES
-   ============================================================ */
-
-function svgLine(x1, y1, x2, y2, color = "#152944", w = 1.6) {
+/* ---------- Q3 — ANGLE FIGURES ---------- */
+function svgLine(x1, y1, x2, y2, color = "#f2e0ca", w = 1.6) {
   return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${w}"/>`;
 }
-function svgRay(x1, y1, x2, y2, color = "#a8431e") {
+function svgRay(x1, y1, x2, y2, color = "#d8b581") {
   return svgLine(x1, y1, x2, y2, color, 1.6);
 }
-function svgLabel(x, y, text, color = "#a8431e", size = 12) {
+function svgLabel(x, y, text, color = "#d8b581", size = 12) {
   return `<text x="${x}" y="${y}" font-size="${size}" fill="${color}">${text}</text>`;
 }
 
@@ -563,9 +596,9 @@ function layoutParallelTransversal() {
       ${svgLine(15, 45, 245, 45)}
       ${svgLine(15, 110, 245, 110)}
       ${svgRay(70, 15, 190, 135)}
-      ${svgLabel(160, 38, `${given}°`, "#a8431e")}
-      ${svgLabel(70, 128, "x", "#a8431e")}
-      ${svgLabel(200, 128, "y", "#a8431e")}
+      ${svgLabel(160, 38, `${given}°`, "#d8b581")}
+      ${svgLabel(70, 128, "x", "#d8b581")}
+      ${svgLabel(200, 128, "y", "#d8b581")}
     </svg>`;
 
   return {
@@ -588,15 +621,15 @@ function layoutAroundPoint() {
 
   const svg = `
     <svg viewBox="0 0 220 160" width="220" height="160" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="110" cy="80" r="2.5" fill="#152944"/>
+      <circle cx="110" cy="80" r="2.5" fill="#f2e0ca"/>
       ${svgRay(110, 80, 30, 25)}
       ${svgRay(110, 80, 200, 30)}
       ${svgRay(110, 80, 200, 140)}
       ${svgRay(110, 80, 25, 140)}
-      ${svgLabel(80, 40, `${a}°`, "#a8431e", 11)}
-      ${svgLabel(135, 55, `${b}°`, "#a8431e", 11)}
-      ${svgLabel(135, 120, `${c}°`, "#a8431e", 11)}
-      ${svgLabel(70, 125, "x", "#152944", 12)}
+      ${svgLabel(80, 40, `${a}°`, "#d8b581", 11)}
+      ${svgLabel(135, 55, `${b}°`, "#d8b581", 11)}
+      ${svgLabel(135, 120, `${c}°`, "#d8b581", 11)}
+      ${svgLabel(70, 125, "x", "#f2e0ca", 12)}
     </svg>`;
 
   return {
@@ -619,10 +652,10 @@ function layoutOnStraightLine() {
       ${svgLine(20, 90, 220, 90)}
       ${svgRay(120, 90, 50, 25)}
       ${svgRay(120, 90, 195, 30)}
-      <circle cx="120" cy="90" r="2.5" fill="#152944"/>
-      ${svgLabel(60, 60, `${a}°`, "#a8431e", 11)}
-      ${svgLabel(150, 60, `${b}°`, "#a8431e", 11)}
-      ${svgLabel(130, 108, "x", "#152944", 12)}
+      <circle cx="120" cy="90" r="2.5" fill="#f2e0ca"/>
+      ${svgLabel(60, 60, `${a}°`, "#d8b581", 11)}
+      ${svgLabel(150, 60, `${b}°`, "#d8b581", 11)}
+      ${svgLabel(130, 108, "x", "#f2e0ca", 12)}
     </svg>`;
 
   return {
@@ -642,10 +675,10 @@ function layoutIntersectingLines() {
     <svg viewBox="0 0 220 160" width="220" height="160" xmlns="http://www.w3.org/2000/svg">
       ${svgLine(20, 40, 200, 120)}
       ${svgLine(20, 120, 200, 40)}
-      ${svgLabel(95, 55, `${a}°`, "#a8431e", 11)}
-      ${svgLabel(100, 110, "x", "#152944", 12)}
-      ${svgLabel(50, 90, "y", "#152944", 12)}
-      ${svgLabel(160, 80, "z", "#152944", 12)}
+      ${svgLabel(95, 55, `${a}°`, "#d8b581", 11)}
+      ${svgLabel(100, 110, "x", "#f2e0ca", 12)}
+      ${svgLabel(50, 90, "y", "#f2e0ca", 12)}
+      ${svgLabel(160, 80, "z", "#f2e0ca", 12)}
     </svg>`;
 
   return {
@@ -668,12 +701,12 @@ function layoutTriangleExterior() {
 
   const svg = `
     <svg viewBox="0 0 240 160" width="240" height="160" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="40,130 200,130 90,30" fill="none" stroke="#152944" stroke-width="1.6"/>
-      ${svgRay(200, 130, 235, 130, "#a8431e")}
-      ${svgLabel(70, 45, `${A}°`, "#a8431e", 11)}
-      ${svgLabel(160, 118, `${B}°`, "#a8431e", 11)}
-      ${svgLabel(90, 118, "x", "#152944", 12)}
-      ${svgLabel(215, 122, "y", "#152944", 12)}
+      <polygon points="40,130 200,130 90,30" fill="none" stroke="#f2e0ca" stroke-width="1.6"/>
+      ${svgRay(200, 130, 235, 130, "#d8b581")}
+      ${svgLabel(70, 45, `${A}°`, "#d8b581", 11)}
+      ${svgLabel(160, 118, `${B}°`, "#d8b581", 11)}
+      ${svgLabel(90, 118, "x", "#f2e0ca", 12)}
+      ${svgLabel(215, 122, "y", "#f2e0ca", 12)}
     </svg>`;
 
   return {
@@ -699,10 +732,10 @@ function layoutTwoTransversals() {
       ${svgLine(15, 115, 245, 115)}
       ${svgRay(60, 10, 140, 140)}
       ${svgRay(180, 10, 100, 140)}
-      ${svgLabel(100, 34, `${g1}°`, "#a8431e", 11)}
-      ${svgLabel(150, 34, `${g2}°`, "#a8431e", 11)}
-      ${svgLabel(60, 130, "x", "#152944", 12)}
-      ${svgLabel(190, 130, "y", "#152944", 12)}
+      ${svgLabel(100, 34, `${g1}°`, "#d8b581", 11)}
+      ${svgLabel(150, 34, `${g2}°`, "#d8b581", 11)}
+      ${svgLabel(60, 130, "x", "#f2e0ca", 12)}
+      ${svgLabel(190, 130, "y", "#f2e0ca", 12)}
     </svg>`;
 
   return {
@@ -739,7 +772,7 @@ function genQ3() {
     for (const p of b.parts) {
       const label = String.fromCharCode(97 + idx);
       idx++;
-      parts.push({ label, q: `${p.q} <i style="color:#6b5a3a;font-size:.85em">(${b.facts})</i>`, a: p.a });
+      parts.push({ label, q: `${p.q} <i style="color:#b29777;font-size:.85em">(${b.facts})</i>`, a: p.a });
     }
   }
 
@@ -751,7 +784,6 @@ function genQ3() {
   };
 }
 
-/* ---------- Q4 ---------- */
 function genQ4() {
   const a1 = rand(20, 90);
   const a2 = rand(2, 8);
@@ -812,7 +844,6 @@ function genQ4() {
   };
 }
 
-/* ---------- Q5 ---------- */
 function genQ5() {
   const whole = rand(1, 9);
   const dec = rand(1, 99);
@@ -829,7 +860,6 @@ function genQ5() {
   };
 }
 
-/* ---------- Q6 ---------- */
 function genQ6() {
   const den = pick([2, 4, 5, 10, 20, 25, 50, 100]);
   const num = rand(1, den * 3);
@@ -842,7 +872,6 @@ function genQ6() {
   };
 }
 
-/* ---------- Q7 ---------- */
 function genQ7() {
   const a1 = rand(2, 15) * rsign();
   const b1 = rand(2, 15) * rsign();
@@ -876,7 +905,6 @@ function genQ7() {
   };
 }
 
-/* ---------- Q8 ---------- */
 function genQ8() {
   const A = rand(2, 9) * rsign();
   const B = rand(2, 9) * rsign();
@@ -904,7 +932,6 @@ function genQ8() {
   };
 }
 
-/* ---------- Q9 ---------- */
 function genQ9() {
   const A = rand(2, 15) * rsign();
   const B = rand(2, 15) * rsign();
@@ -965,13 +992,12 @@ let state = {
 
 function saveState() {
   try {
-    const snap = {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
       slots: state.slots,
       hidden: state.hidden,
       answersShown: state.answersShown,
       version: 1
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
+    }));
   } catch (e) {
     console.warn('Could not save state:', e);
   }
