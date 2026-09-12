@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>PDF to JPG + OCR</title>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!-- Tesseract OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<!-- JSZip -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- FileSaver -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    background:#0f1117;
+    color:white;
+    font-family:Arial, sans-serif;
+    padding:20px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:10px;
+    font-size:2.2rem;
+}
+
+.subtitle{
+    text-align:center;
+    color:#9ca3af;
+    margin-bottom:30px;
+}
+
+.card{
+    background:#1b1f2a;
+    border:1px solid #2f3648;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:25px;
+}
+
+input[type="file"]{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #374151;
+    background:#111827;
+    color:white;
+    font-size:15px;
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-top:20px;
+}
+
+button{
+    border:none;
+    border-radius:12px;
+    padding:14px 20px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    opacity:0.92;
+}
+
+.convert-btn{
+    background:#2563eb;
+    color:white;
+}
+
+.ocr-btn{
+    background:#16a34a;
+    color:white;
+}
+
+.zip-btn{
+    background:#7c3aed;
+    color:white;
+}
+
+.clear-btn{
+    background:#dc2626;
+    color:white;
+}
+
+.status{
+    margin-top:20px;
+    padding:14px;
+    border-radius:12px;
+    background:#111827;
+    color:#7dd3fc;
+    font-weight:bold;
+}
+
+.images-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+    margin-top:20px;
+}
+
+.image-box{
+    background:#111827;
+    border:1px solid #374151;
+    border-radius:16px;
+    padding:15px;
+}
+
+.image-box img{
+    width:100%;
+    border-radius:10px;
+    margin-bottom:12px;
+}
+
+.page-title{
+    color:#93c5fd;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.download-link{
+    display:block;
+    text-align:center;
+    text-decoration:none;
+    background:#7c3aed;
+    color:white;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:10px;
+    font-weight:bold;
+}
+
+.download-link:hover{
+    opacity:0.9;
+}
+
+textarea{
+    width:100%;
+    min-height:350px;
+    resize:vertical;
+    border:none;
+    outline:none;
+    border-radius:14px;
+    padding:18px;
+    background:#0b1220;
+    color:#f3f4f6;
+    font-size:15px;
+    line-height:1.8;
+    border:1px solid #374151;
+}
+
+.loader{
+    width:20px;
+    height:20px;
+    border:3px solid rgba(255,255,255,0.2);
+    border-top:3px solid white;
+    border-radius:50%;
+    display:inline-block;
+    animation:spin 1s linear infinite;
+    vertical-align:middle;
+    margin-right:8px;
+}
+
+@keyframes spin{
+    100%{
+        transform:rotate(360deg);
+    }
+}
+
+@media(max-width:700px){
+
+    .controls{
+        flex-direction:column;
+    }
+
+    button{
+        width:100%;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>PDF → JPG + OCR</h1>
+
+    <p class="subtitle">
+        Convert PDF pages into JPG images and extract Urdu + English text
+    </p>
+
+    <div class="card">
+
+        <input
+            type="file"
+            id="pdfFile"
+            accept="application/pdf"
+        />
+
+        <div class="controls">
+
+            <button
+                class="convert-btn"
+                onclick="convertPDF()"
+            >
+                Convert PDF to JPG
+            </button>
+
+            <button
+                class="ocr-btn"
+                onclick="runOCRAllPages()"
+            >
+                OCR All Pages
+            </button>
+
+            <button
+                class="zip-btn"
+                onclick="downloadAllJPGs()"
+            >
+                Download All JPGs
+            </button>
+
+            <button
+                class="clear-btn"
+                onclick="clearAll()"
+            >
+                Clear All
+            </button>
+
+        </div>
+
+        <div class="status" id="status">
+            Waiting for PDF...
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Generated JPG Pages</h2>
+
+        <div
+            class="images-grid"
+            id="imagesContainer"
+        ></div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Extracted Text</h2>
+
+        <textarea
+            id="ocrText"
+            placeholder="OCR extracted text will appear here..."
+        ></textarea>
+
+    </div>
+
+</div>
+
+<script>
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let generatedImages = [];
+
+function updateStatus(message){
+
+    document.getElementById("status").innerHTML = message;
+}
+
+async function convertPDF(){
+
+    const fileInput = document.getElementById("pdfFile");
+
+    if(!fileInput.files.length){
+
+        alert("Please select a PDF file.");
+        return;
+    }
+
+    generatedImages = [];
+
+    document.getElementById("imagesContainer").innerHTML = "";
+
+    updateStatus(
+        '<span class="loader"></span>Loading PDF...'
+    );
+
+    const file = fileInput.files[0];
+
+    const reader = new FileReader();
+
+    reader.onload = async function(){
+
+        try{
+
+            const typedArray = new Uint8Array(this.result);
+
+            const pdf = await pdfjsLib
+                .getDocument(typedArray)
+                .promise;
+
+            updateStatus(
+                `<span class="loader"></span>
+                Converting ${pdf.numPages} pages...`
+            );
+
+            for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
+
+                const page = await pdf.getPage(pageNum);
+
+                const viewport = page.getViewport({
+                    scale:2
+                });
+
+                const canvas = document.createElement("canvas");
+
+                const context = canvas.getContext("2d");
+
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                await page.render({
+                    canvasContext:context,
+                    viewport:viewport
+                }).promise;
+
+                const imageData = canvas.toDataURL(
+                    "image/jpeg",
+                    1.0
+                );
+
+                generatedImages.push({
+                    page:pageNum,
+                    image:imageData
+                });
+
+                createImageCard(
+                    imageData,
+                    pageNum
+                );
+            }
+
+            updateStatus(
+                "PDF converted successfully."
+            );
+
+        }catch(error){
+
+            console.error(error);
+
+            updateStatus(
+                "Error while converting PDF."
+            );
+        }
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
+function createImageCard(imageData, pageNum){
+
+    const container =
+        document.getElementById("imagesContainer");
+
+    const box = document.createElement("div");
+
+    box.className = "image-box";
+
+    const title = document.createElement("div");
+
+    title.className = "page-title";
+
+    title.innerText = `Page ${pageNum}`;
+
+    const img = document.createElement("img");
+
+    img.src = imageData;
+
+    // DOWNLOAD JPG BUTTON
+
+    const downloadBtn = document.createElement("a");
+
+    downloadBtn.href = imageData;
+
+    downloadBtn.download = `page-${pageNum}.jpg`;
+
+    downloadBtn.className = "download-link";
+
+    downloadBtn.innerText = "Download JPG";
+
+    // OCR BUTTON
+
+    const ocrBtn = document.createElement("button");
+
+    ocrBtn.className = "ocr-btn";
+
+    ocrBtn.style.width = "100%";
+
+    ocrBtn.innerText = "Extract Text (OCR)";
+
+    ocrBtn.onclick = async function(){
+
+        try{
+
+            ocrBtn.disabled = true;
+
+            ocrBtn.innerText = "Processing OCR...";
+
+            updateStatus(
+                `<span class="loader"></span>
+                Running OCR on Page ${pageNum}...`
+            );
+
+            const result =
+                await Tesseract.recognize(
+                    imageData,
+                    'eng+urd',
+                    {
+                        logger: m => {
+
+                            if(
+                                m.status ===
+                                'recognizing text'
+                            ){
+
+                                updateStatus(
+                                    `<span class="loader"></span>
+                                    OCR Page ${pageNum}: ${Math.round(m.progress * 100)}%`
+                                );
+                            }
+                        }
+                    }
+                );
+
+            const textarea =
+                document.getElementById("ocrText");
+
+            textarea.value +=
+`\n\n========================
+PAGE ${pageNum}
+========================
+
+${result.data.text}
+`;
+
+            updateStatus(
+                `OCR completed for Page ${pageNum}.`
+            );
+
+            ocrBtn.innerText = "OCR Completed";
+
+        }catch(error){
+
+            console.error(error);
+
+            updateStatus(
+                `OCR failed for Page ${pageNum}.`
+            );
+
+            ocrBtn.innerText = "OCR Failed";
+        }
+    };
+
+    box.appendChild(title);
+
+    box.appendChild(img);
+
+    box.appendChild(downloadBtn);
+
+    box.appendChild(ocrBtn);
+
+    container.appendChild(box);
+}
+
+async function runOCRAllPages(){
+
+    if(generatedImages.length === 0){
+
+        alert("Please convert PDF first.");
+
+        return;
+    }
+
+    for(let i = 0; i < generatedImages.length; i++){
+
+        const item = generatedImages[i];
+
+        try{
+
+            updateStatus(
+                `<span class="loader"></span>
+                OCR Processing Page ${item.page}...`
+            );
+
+            const result =
+                await Tesseract.recognize(
+                    item.image,
+                    'eng+urd',
+                    {
+                        logger: m => {
+
+                            if(
+                                m.status ===
+                                'recognizing text'
+                            ){
+
+                                updateStatus(
+                                    `<span class="loader"></span>
+                                    OCR Page ${item.page}: ${Math.round(m.progress * 100)}%`
+                                );
+                            }
+                        }
+                    }
+                );
+
+            document.getElementById(
+                "ocrText"
+            ).value +=
+`\n\n========================
+PAGE ${item.page}
+========================
+
+${result.data.text}
+`;
+
+        }catch(error){
+
+            console.error(error);
+        }
+    }
+
+    updateStatus(
+        "OCR completed for all pages."
+    );
+}
+
+async function downloadAllJPGs(){
+
+    if(generatedImages.length === 0){
+
+        alert("Please convert PDF first.");
+
+        return;
+    }
+
+    try{
+
+        updateStatus(
+            '<span class="loader"></span>Creating ZIP file...'
+        );
+
+        const zip = new JSZip();
+
+        for(let i = 0; i < generatedImages.length; i++){
+
+            const item = generatedImages[i];
+
+            const imageData =
+                item.image.split(',')[1];
+
+            zip.file(
+                `page-${item.page}.jpg`,
+                imageData,
+                {
+                    base64:true
+                }
+            );
+        }
+
+        const content = await zip.generateAsync({
+            type:"blob"
+        });
+
+        saveAs(
+            content,
+            "all-jpg-pages.zip"
+        );
+
+        updateStatus(
+            "ZIP downloaded successfully."
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        updateStatus(
+            "Failed to create ZIP file."
+        );
+    }
+}
+
+function clearAll(){
+
+    generatedImages = [];
+
+    document.getElementById(
+        "pdfFile"
+    ).value = "";
+
+    document.getElementById(
+        "imagesContainer"
+    ).innerHTML = "";
+
+    document.getElementById(
+        "ocrText"
+    ).value = "";
+
+    updateStatus(
+        "Waiting for PDF..."
+    );
+}
+
+</script>
+
+</body>
+</html>
