@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Tools &amp; Apps Studio · Majid Murshadpuri</title>
+  <meta name="description" content="All interactive tools, converters, composers & utilities by Majid Murshadpuri — gathered in one warm, dedicated workspace." />
+
+  <!-- ========== BEAUTIFUL FONTS FOR THREE LANGUAGES ========== -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ========== SHARED STYLESHEET ========== -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="deep-collection">
+
+  <!-- ========== HEADER ========== -->
+  <div class="deep-header">
+    <h1>Tools &amp; Apps Studio</h1>
+    <h2>A warm workspace of converters, composers &amp; creative utilities</h2>
+
+    <!-- ===== HOME BUTTON (styled like About Me button) ===== -->
+    <div class="about-wrapper">
+      <a class="about-btn home-btn" href="https://majidmurshadpuri.github.io">✦ Home ✦</a>
+    </div>
+  </div>
+
+  <!-- ========== CONTENT ========== -->
+  <div class="content-panel">
+    <div class="search-box">
+      <input 
+        type="text" 
+        id="searchInput"
+        placeholder="🔍 Search • کھوجیں • ढूंढें"
+        oninput="filterTools()"
+      />
+    </div>
+
+    <div class="tools-grid" id="toolsGrid">
+
+      <div class="tool-card">
+        <a class="tool-link" href="EnglishStudyMaterial/Maths Practice - Main Page.html">
+          <div class="icon">🔣</div>
+          <div class="tool-title">SA I - Maths Practice</div>
+          <div class="tool-desc">Dear Students! Learn Mathematics on your own pace.</div>
+        </a>
+      </div>
+
+      <div class="tool-card">
+        <a class="tool-link" href="English Study Material.html">
+          <div class="icon">📝</div>
+          <div class="tool-title">English (Literature, Criticism, Theory)</div>
+          <div class="tool-desc">I am organizing notes for the preparation competitive exams for aspiring English Teachers</div>
+        </a>
+      </div>
+
+      <div class="tool-card">
+        <a class="tool-link" href="Aakhiri Tasveer Hindi.html">
+          <div class="icon">📜</div>
+          <div class="tool-title">Umair Najmi Shayari Collection (Hindi)</div>
+          <div class="tool-desc">I have collected all the Ghazals of Umair Najmi in a beautifully designed format.</div>
+        </a>
+      </div>
+
+      <div class="tool-card">
+        <a class="tool-link" href="Whatsapp to Ebook.html">
+          <div class="icon">📖</div>
+          <div class="tool-title">Chat to Ebook Converter</div>
+          <div class="tool-desc">This tool converts your WhatsApp chat into a beautiful html ebook.</div>
+        </a>
+      </div>
+
+      <div class="tool-card">
+        <a class="tool-link" href="Urdu AI OCR & Editor.html">
+          <div class="icon">⚙️</div>
+          <div class="tool-title">AI OCR &amp; Editor</div>
+          <div class="tool-desc">This tool extracts text from your document and makes it easier for you to read it.</div>
+        </a>
+      </div>
+
+      <div class="tool-card">
+        <a class="tool-link" href="Pdf_to_JPG_OCR.html">
+          <div class="icon">⚙️</div>
+          <div class="tool-title">PDF to JPG + OCR</div>
+          <div class="tool-desc">Convert PDF pages into JPG images and extract Urdu + English text</div>
+        </a>
+      </div>
+
+      <div class="tool-card">
+        <a class="tool-link" href="shayari.html">
+          <div class="icon">✍🏽</div>
+          <div class="tool-title">Shayari Composer</div>
+          <div class="tool-desc">Create beautifully formatted Urdu poetry.</div>
+        </a>
+      </div>
+
+      <div class="tool-card">
+        <a class="tool-link" href="Urdu_Kitab_Saaz.html">
+          <div class="icon">📚</div>
+          <div class="tool-title">Urdu Kitab Saaz</div>
+          <div class="tool-desc">A browser-based Urdu book composer for organising articles and compiling them into a self-contained, navigable HTML book</div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <div class="deep-footer">
+    ✦ a living collection · crafted with depth &amp; warmth ✦
+  </div>
+
+</div>
+
+<script>
+  // Reused search filter — identical to home page
+  function filterTools() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('.tool-card');
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(input) ? '' : 'none';
+    });
+  }
+
+  // Gentle fade-in for cards
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.tool-card');
+    cards.forEach((card, idx) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(12px)';
+      setTimeout(() => {
+        card.style.transition = 'opacity 0.4s ease, transform 0.35s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, idx * 40);
+    });
+  });
+</script>
+</body>
+</html>
