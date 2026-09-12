@@ -1,7 +1,8 @@
 /* ============================================================
-   MAJID MURSADPURI — SITE-WIDE STYLESHEET
-   Theme: Navy Glass + Blue/Gold  (matching MyResume.html)
-   Fonts: Cormorant Garamond (headings) + system-ui (body)
+   MAJID MURSADPURI — SITE STYLESHEET (Option C)
+   Theme: Warm Parchment + Soft Glass + Gold Accents
+   Used by: index.html, apps.html
+   (NOT used by MyResume.html — that page has its own style)
    ============================================================ */
 
 /* ---------- RESET ---------- */
@@ -18,22 +19,23 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "Helvetica Neue", Arial, sans-serif;
   line-height: 1.55;
-  color: #f8fafc;
-  background: #0f172a;
+  color: #3a2a1c;
+  background: #d7cab0;                 /* warm parchment */
   min-height: 100dvh;
   overflow-x: hidden;
   padding: clamp(0.9rem, 3vw, 1.5rem);
   position: relative;
 }
 
-/* Ambient radial glows behind everything */
+/* Soft ambient glows behind everything */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(49,130,206,0.28), transparent),
-    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(201,162,39,0.14), transparent);
+    radial-gradient(ellipse 70% 50% at 15% -10%, rgba(200,161,107,0.30), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 5%,  rgba(94,69,50,0.22), transparent),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(200,161,107,0.15), transparent);
   pointer-events: none;
   z-index: 0;
 }
@@ -45,21 +47,26 @@ ul { list-style: none; }
 
 /* ---------- CSS VARIABLES ---------- */
 :root {
-  --primary: #1e3a5f;
-  --primary-light: #2b6cb0;
-  --accent: #3182ce;
-  --gold: #c9a227;
-  --bg-card: rgba(255,255,255,0.08);
-  --glass: rgba(255,255,255,0.10);
-  --glass-strong: rgba(255,255,255,0.16);
-  --glass-border: rgba(255,255,255,0.18);
-  --text: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #cbd5e1;
-  --radius: 18px;
-  --radius-sm: 12px;
-  --shadow: 0 10px 34px rgba(0,0,0,0.35);
-  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --parchment:      #d7cab0;
+  --brown-deep:     #3f2e1f;
+  --brown-mid:      #5e4532;
+  --brown-dark:     #2f241b;
+  --brown-border:   #6a4f38;
+  --brown-hover:    #9b7858;
+  --gold:           #c8a16b;
+  --gold-soft:      #b89870;
+  --cream:          #f2e0ca;
+  --cream-soft:     #e2cfb5;
+  --text-dim:       #dfcbb0;
+  --text-muted:     #b29777;
+  --glass:          rgba(255, 245, 210, 0.06);
+  --glass-strong:   rgba(255, 245, 210, 0.10);
+  --glass-border:   rgba(200, 161, 107, 0.28);
+  --glass-border-hi:rgba(200, 161, 107, 0.55);
+  --radius:         24px;
+  --radius-sm:      14px;
+  --shadow:         0 14px 30px rgba(0,0,0,0.28);
+  --transition:     0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ---------- MAIN CONTAINER ---------- */
@@ -68,47 +75,45 @@ ul { list-style: none; }
   z-index: 1;
   max-width: 1180px;
   margin: 0 auto;
-  background: linear-gradient(160deg, rgba(30,58,95,0.55) 0%, rgba(15,23,42,0.75) 100%);
-  border: 1px solid var(--glass-border);
-  border-radius: 28px;
-  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.08);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: linear-gradient(145deg, #5e4532, #3f2e1f);
+  border: 1px solid var(--brown-border);
+  border-radius: 32px;
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.28),
+    inset 0 1px 0 rgba(255,245,210,0.10);
   overflow: hidden;
 }
 
 /* ---------- HEADER ---------- */
 .deep-header {
+  position: relative;
   text-align: center;
   padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem) clamp(1.5rem, 4vw, 2rem);
-  border-bottom: 1px solid var(--glass-border);
-  position: relative;
+  background: linear-gradient(180deg, rgba(47,36,27,0.65), rgba(47,36,27,0.15));
+  border-bottom: 1px solid var(--brown-border);
 }
 
 .deep-header h1 {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight: 700;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #ffffff 0%, #93c5fd 50%, #c9a227 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  margin-bottom: 0.4rem;
+  letter-spacing: -0.3px;
   line-height: 1.15;
+  color: #f3e7d9;
+  margin-bottom: 0.4rem;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.25);
 }
 
 .deep-header h2 {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+  font-size: clamp(0.95rem, 2.4vw, 1.15rem);
   font-weight: 500;
   font-style: italic;
-  color: var(--text-muted);
+  color: var(--cream-soft);
   letter-spacing: 0.3px;
 }
 
-/* Button wrapper (About / My Website / Home / Print) */
+/* Button wrapper */
 .about-wrapper {
   margin-top: 1.4rem;
   display: flex;
@@ -122,7 +127,7 @@ ul { list-style: none; }
   display: block;
   width: 60px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(147,197,253,0.5), transparent);
+  background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
   margin: 0 auto 0.4rem;
 }
 
@@ -134,17 +139,19 @@ ul { list-style: none; }
   gap: 0.55rem;
   padding: 0.65rem 1.75rem;
   border-radius: 50px;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: inherit;
   font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  color: #fff;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: var(--cream-soft);
   text-decoration: none;
-  border: 1px solid var(--glass-border);
-  background: var(--glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
+  border: 1.5px solid var(--brown-border);
+  background: rgba(74, 55, 39, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: transform var(--transition), background var(--transition),
+              box-shadow var(--transition), color var(--transition),
+              border-color var(--transition);
   cursor: pointer;
 }
 
@@ -156,13 +163,15 @@ ul { list-style: none; }
 .about-btn:hover,
 .about-btn:focus-visible {
   transform: translateY(-2px);
-  background: var(--glass-strong);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+  background: rgba(90, 65, 45, 0.85);
+  border-color: var(--gold-soft);
+  color: #fff5e8;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.32);
   outline: none;
 }
 
 .about-btn:focus-visible {
-  outline: 2px solid #93c5fd;
+  outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
 
@@ -171,24 +180,21 @@ ul { list-style: none; }
 /* Icon variants */
 .website-btn::before { content: "🌐"; }
 .home-btn::before    { content: "🏠"; }
-.print-btn::before   { content: "🖨️"; }
-.about-me-btn::before{ content: "👤"; }
 .tools-btn::before   { content: "🧰"; }
+.about-me-btn::before{ content: "👤"; }
 
 /* ---------- CONTENT PANEL ---------- */
 .content-panel {
   padding: clamp(1.5rem, 4vw, 2.25rem) clamp(1rem, 4vw, 2rem) clamp(1.5rem, 4vw, 2rem);
 }
 
-/* ---------- CONTACT STRIP (NEW) ---------- */
+/* ---------- CONTACT STRIP ---------- */
 .contact-strip {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.6rem 1.2rem;
-  padding: 0 1rem 1.25rem;
-  font-size: clamp(0.78rem, 2vw, 0.88rem);
-  color: var(--text-dim);
+  gap: 0.55rem 0.9rem;
+  padding: clamp(1rem, 3vw, 1.4rem) clamp(1rem, 3vw, 1.5rem) 0;
 }
 
 .contact-strip a,
@@ -196,20 +202,23 @@ ul { list-style: none; }
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.35rem 0.85rem;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--glass-border);
+  padding: 0.4rem 0.9rem;
+  background: rgba(74, 55, 39, 0.45);
+  border: 1px solid var(--brown-border);
   border-radius: 50px;
+  font-size: clamp(0.75rem, 1.9vw, 0.85rem);
   color: var(--text-dim);
   transition: all var(--transition);
   white-space: nowrap;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .contact-strip a:hover,
 .contact-strip a:focus-visible {
-  background: rgba(49,130,206,0.22);
-  border-color: rgba(147,197,253,0.5);
-  color: #fff;
+  background: rgba(90, 65, 45, 0.85);
+  border-color: var(--gold-soft);
+  color: #fff5e8;
   outline: none;
   transform: translateY(-1px);
 }
@@ -225,14 +234,15 @@ ul { list-style: none; }
   padding: 0.85rem 1.4rem;
   font-family: inherit;
   font-size: 1rem;
-  background: rgba(15,23,42,0.55);
-  border: 1px solid var(--glass-border);
+  background: rgba(31, 25, 19, 0.65);
+  border: 1px solid var(--brown-border);
   border-radius: 50px;
-  color: var(--text);
+  color: var(--cream);
   outline: none;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   transition: all var(--transition);
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .search-box input::placeholder {
@@ -241,9 +251,9 @@ ul { list-style: none; }
 }
 
 .search-box input:focus {
-  border-color: rgba(147,197,253,0.7);
-  background: rgba(15,23,42,0.75);
-  box-shadow: 0 0 0 3px rgba(49,130,206,0.25), inset 0 1px 3px rgba(0,0,0,0.25);
+  border-color: var(--gold-soft);
+  background: rgba(31, 25, 19, 0.85);
+  box-shadow: 0 0 0 3px rgba(200,161,107,0.22), inset 0 1px 3px rgba(0,0,0,0.3);
 }
 
 /* ---------- GRID ---------- */
@@ -257,7 +267,7 @@ ul { list-style: none; }
 @media (min-width: 640px) {
   .tools-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    gap: 1.6rem;
   }
 }
 
@@ -267,25 +277,28 @@ ul { list-style: none; }
   margin: 0 auto;
 }
 
-/* ---------- TOOL / NAV CARDS ---------- */
+/* ---------- TOOL CARDS ---------- */
 .tool-card {
+  position: relative;
   background: var(--glass);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: transform var(--transition), background var(--transition), box-shadow var(--transition), border-color var(--transition);
+  transition: transform var(--transition), background var(--transition),
+              box-shadow var(--transition), border-color var(--transition);
   overflow: hidden;
   width: 100%;
   text-align: left;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.22);
 }
 
 .tool-card:hover,
 .tool-card:focus-within {
   transform: translateY(-5px);
   background: var(--glass-strong);
-  border-color: rgba(147,197,253,0.4);
-  box-shadow: 0 16px 36px rgba(0,0,0,0.38);
+  border-color: var(--glass-border-hi);
+  box-shadow: 0 16px 34px rgba(0,0,0,0.32);
 }
 
 .tool-card:active { transform: scale(0.985) translateY(0); }
@@ -303,11 +316,12 @@ button.tool-card {
   text-align: left;
   background: transparent;
   border: none;
+  height: 100%;
 }
 
 .tool-link:focus-visible,
 button.tool-card:focus-visible {
-  outline: 2px solid #93c5fd;
+  outline: 2px solid var(--gold);
   outline-offset: -2px;
   border-radius: var(--radius);
 }
@@ -319,9 +333,9 @@ button.tool-card:focus-visible {
   align-items: center;
   justify-content: center;
   font-size: clamp(1.5rem, 4vw, 1.8rem);
-  background: linear-gradient(135deg, rgba(49,130,206,0.28), rgba(201,162,39,0.18));
-  border: 1px solid rgba(147,197,253,0.28);
-  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(200,161,107,0.24), rgba(94,69,50,0.30));
+  border: 1px solid rgba(200,161,107,0.38);
+  border-radius: 16px;
   transition: transform var(--transition), background var(--transition);
   flex-shrink: 0;
 }
@@ -329,16 +343,18 @@ button.tool-card:focus-visible {
 .tool-card:hover .icon,
 .tool-card:focus-within .icon {
   transform: scale(1.05) rotate(-2deg);
-  background: linear-gradient(135deg, rgba(49,130,206,0.42), rgba(201,162,39,0.28));
+  background: linear-gradient(135deg, rgba(200,161,107,0.40), rgba(94,69,50,0.45));
 }
 
 .tool-title {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
   font-weight: 700;
-  color: #ffffff;
+  color: var(--cream);
   line-height: 1.25;
   letter-spacing: -0.2px;
+  border-left: 4px solid var(--gold);
+  padding-left: 0.75rem;
 }
 
 .tool-desc {
@@ -346,6 +362,7 @@ button.tool-card:focus-visible {
   color: var(--text-dim);
   line-height: 1.55;
   font-style: italic;
+  padding-left: 0.75rem;
 }
 
 /* Full-width card */
@@ -353,82 +370,15 @@ button.tool-card:focus-visible {
 
 /* ---------- FOOTER ---------- */
 .deep-footer {
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid var(--brown-border);
   text-align: center;
   padding: 1.1rem 1rem calc(1.1rem + env(safe-area-inset-bottom));
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  font-style: italic;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  letter-spacing: 0.3px;
-}
-
-/* ---------- SECTION PANELS (for MyResume.html) ---------- */
-.section-panel {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
-  overflow-y: auto;
-  overflow-x: hidden;
-  transform: translateX(100%);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  visibility: hidden;
-  padding-bottom: 5rem;
-}
-
-.section-panel.active {
-  transform: translateX(0);
-  visibility: visible;
-}
-
-.section-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: clamp(0.9rem, 2.5vw, 1.15rem) clamp(1rem, 3vw, 1.5rem);
-  background: rgba(15,23,42,0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--glass-border);
-}
-
-.back-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  color: #fff;
-  font-size: 1.2rem;
-  transition: background var(--transition);
-  flex-shrink: 0;
-}
-
-.back-btn:hover,
-.back-btn:focus-visible {
-  background: rgba(255,255,255,0.2);
-  outline: 2px solid #93c5fd;
-}
-
-.section-title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(1.15rem, 3.5vw, 1.4rem);
-  font-weight: 700;
-  color: #fff;
-}
-
-.section-body {
-  padding: clamp(1.25rem, 3.5vw, 1.75rem) clamp(1rem, 3.5vw, 1.5rem);
-  max-width: 680px;
-  margin: 0 auto;
   color: var(--text-dim);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  letter-spacing: 0.4px;
+  background: rgba(31, 25, 19, 0.55);
 }
 
 /* ---------- ANIMATIONS ---------- */
@@ -437,21 +387,20 @@ button.tool-card:focus-visible {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.fade-in {
-  animation: fadeUp 0.55s ease-out both;
-}
+.fade-in { animation: fadeUp 0.55s ease-out both; }
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 640px) {
   body { padding: 0.7rem; }
-  .deep-collection { border-radius: 22px; }
+  .deep-collection { border-radius: 24px; }
   .contact-strip { gap: 0.5rem; }
   .contact-strip a,
-  .contact-strip span { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
+  .contact-strip span { font-size: 0.72rem; padding: 0.32rem 0.75rem; }
+  .about-btn { font-size: 0.88rem; padding: 0.55rem 1.4rem; }
 }
 
 @media (max-width: 400px) {
-  .about-btn { font-size: 0.88rem; padding: 0.55rem 1.4rem; }
+  .about-btn { font-size: 0.82rem; padding: 0.5rem 1.2rem; }
   .contact-strip a,
-  .contact-strip span { font-size: 0.72rem; }
+  .contact-strip span { font-size: 0.68rem; }
 }
