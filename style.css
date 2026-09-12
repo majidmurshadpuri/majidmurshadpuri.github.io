@@ -1,269 +1,294 @@
-/* ---------- RESET & BASE (background kept as is) ---------- */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-  }
+/* ---------- RESET & BASE ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
+body {
+  background: #d7cab0; /* warm parchment */
+  font-family: 'Cormorant Garamond', 'Noto Sans Devanagari', 'Noto Nastaliq Urdu', Georgia, serif;
+  padding: 1.5rem;
+  min-height: 100vh;
+}
+
+/* ---------- MAIN CONTAINER ---------- */
+.deep-collection {
+  max-width: 1400px;
+  margin: 0 auto;
+  background: linear-gradient(145deg, #5e4532, #3f2e1f);
+  border-radius: 32px;
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 245, 210, 0.1);
+  overflow: hidden;
+}
+
+/* ---------- HEADER ---------- */
+.deep-header {
+  background: #2f241b;
+  border-bottom: 1px solid #6a4f38;
+  text-align: center;
+  padding: 1.8rem 1rem 1.5rem;
+  position: relative;
+}
+
+.deep-header h1 {
+  font-size: 2.6rem;
+  color: #f3e7d9;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.3rem;
+}
+
+.deep-header h2 {
+  font-size: 1rem;
+  color: #e2cfb5;
+  font-weight: 500;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ---------- ABOUT ME BUTTON ---------- */
+.about-wrapper {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.about-wrapper::before {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #6a4f38, transparent);
+  margin: 0 auto 0.8rem;
+}
+
+.about-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 2rem;
+  border-radius: 60px;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #e2cfb5;
+  text-decoration: none;
+  border: 1.5px solid #6a4f38;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  background: rgba(74, 55, 39, 0.5);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  position: relative;
+}
+
+.about-btn::before {
+  content: "👤";
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+.about-btn:hover {
+  background: rgba(90, 65, 45, 0.8);
+  border-color: #b89870;
+  color: #fff5e8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.about-btn:active {
+  transform: scale(0.97) translateY(0);
+}
+
+/* ---------- CONTENT PANEL ---------- */
+.content-panel {
+  padding: 2rem 2rem 1.8rem;
+}
+
+/* ---------- SEARCH BOX ---------- */
+.search-box {
+  max-width: 520px;
+  margin: 0 auto 2rem auto;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 22px;
+  font-family: inherit;
+  font-size: 1rem;
+  background: #1f1913;
+  border: 1px solid #7a6046;
+  border-radius: 60px;
+  color: #f2e5d4;
+  transition: all 0.2s;
+  outline: none;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 200, 0.05);
+}
+
+.search-box input:focus {
+  border-color: #b89870;
+  background: #2c2119;
+  box-shadow: 0 0 0 2px rgba(180, 140, 100, 0.3);
+}
+
+.search-box input::placeholder {
+  color: #b29777;
+  font-style: italic;
+}
+
+/* ---------- TOOLS GRID ---------- */
+.tools-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.8rem;
+  width: 100%;
+}
+
+@media (min-width: 680px) {
+  .tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .tools-grid {
+    gap: 2.2rem;
+  }
+}
+
+/* ---------- TOOL CARDS ---------- */
+.tool-card {
+  background: linear-gradient(135deg, #382b20, #261e16);
+  border-radius: 28px;
+  transition: all 0.25s ease;
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 245, 210, 0.08);
+  border: 1px solid #6b4f38;
+  overflow: hidden;
+}
+
+.tool-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 32px rgba(0, 0, 0, 0.4);
+  border-color: #9b7858;
+  background: linear-gradient(135deg, #3d2e22, #2a2018);
+}
+
+.tool-card:active {
+  transform: scale(0.98);
+}
+
+.tool-link {
+  display: block;
+  text-decoration: none;
+  padding: 1.6rem 1.4rem 1.8rem;
+  height: 100%;
+}
+
+.icon {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+  background: #3e2e22;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 60px;
+  color: #e2cdb0;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(255, 245, 210, 0.1);
+}
+
+.tool-card:hover .icon {
+  background: #4e3a2a;
+  color: #f7e6d0;
+  transform: scale(0.96);
+}
+
+.tool-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  font-family: 'Cormorant Garamond', 'Noto Sans Devanagari', 'Noto Nastaliq Urdu', serif;
+  color: #f2e0ca;
+  margin-bottom: 0.6rem;
+  border-left: 4px solid #c8a16b;
+  padding-left: 0.8rem;
+  line-height: 1.3;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.tool-desc {
+  font-size: 0.95rem;
+  color: #dfcbb0;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* ---------- FOOTER ---------- */
+.deep-footer {
+  background: #1f1913;
+  border-top: 1px solid #6a4f38;
+  text-align: center;
+  padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  color: #dcc9ad;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 640px) {
   body {
-    background: #d7cab0;  /* overall background unchanged – warm parchment */
-    font-family: 'Cormorant Garamond', 'Noto Sans Devanagari', 'Noto Nastaliq Urdu', Georgia, serif;
-    padding: 1.5rem;
-    min-height: 100vh;
+    padding: 0.8rem;
   }
-
-  /* main container — deep, rich tone with soft light text */
-  .deep-collection {
-    max-width: 1400px;
-    margin: 0 auto;
-    background: #4a3727;  /* heavy, dark brown base for the whole card area */
-    background: linear-gradient(145deg, #5e4532, #3f2e1f);
-    border-radius: 32px;
-    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,245,210,0.1);
-    overflow: hidden;
-    transition: all 0.2s;
+  .content-panel {
+    padding: 1.2rem;
   }
-
-  /* header — deep and warm, light text */
   .deep-header {
-    background: #2f241b;
-    border-bottom: 1px solid #6a4f38;
-    text-align: center;
-    padding: 1.8rem 1rem 1.5rem;
-    position: relative;
+    padding: 1.2rem 0.8rem;
   }
   .deep-header h1 {
-    font-size: 2.6rem;
-    color: #f3e7d9;      /* soft cream */
-    font-weight: 600;
-    letter-spacing: -0.2px;
-    text-shadow: 0 1px 1px rgba(0,0,0,0.2);
-    margin-bottom: 0.3rem;
+    font-size: 1.8rem;
   }
   .deep-header h2 {
-    font-size: 1rem;
-    color: #e2cfb5;      /* lighter parchment */
-    font-weight: 500;
-    margin-top: 4px;
-    font-style: italic;
-  }
-
-  /* ===== IMPROVED: ABOUT ME BUTTON STYLES ===== */
-  .about-wrapper {
-    margin-top: 1.2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.8rem;
-    flex-wrap: wrap;
-  }
-
-  .about-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background: transparent;
-    padding: 0.5rem 2rem;
-    border-radius: 60px;
-    font-family: 'Cormorant Garamond', 'Noto Sans Devanagari', 'Noto Nastaliq Urdu', serif;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #e2cfb5;
-    text-decoration: none;
-    border: 1.5px solid #6a4f38;
-    transition: all 0.3s ease;
-    letter-spacing: 0.5px;
-    background: rgba(74, 55, 39, 0.5);
-    backdrop-filter: blur(4px);
-    cursor: pointer;
-    position: relative;
-  }
-
-  .about-btn::before {
-    content: "👤";
-    font-size: 1.1rem;
-    opacity: 0.8;
-  }
-
-  .about-btn:hover {
-    background: rgba(90, 65, 45, 0.8);
-    border-color: #b89870;
-    color: #fff5e8;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .about-btn:active {
-    transform: scale(0.97) translateY(0);
-  }
-
-  /* Optional: Add a subtle divider line before the button */
-  .about-wrapper::before {
-    content: "";
-    display: block;
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #6a4f38, transparent);
-    margin: 0 auto 0.8rem;
-  }
-
-  .about-wrapper {
-    flex-direction: column;
-  }
-
-  /* content panel */
-  .content-panel {
-    padding: 2rem 2rem 1.8rem;
-  }
-
-  /* search box — light text on dark input field */
-  .search-box {
-    max-width: 520px;
-    margin: 0 auto 2rem auto;
-  }
-  .search-box input {
-    width: 100%;
-    padding: 12px 22px;
-    font-family: inherit;
-    font-size: 1rem;
-    background: #1f1913;
-    border: 1px solid #7a6046;
-    border-radius: 60px;
-    color: #f2e5d4;
-    transition: all 0.2s;
-    outline: none;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,200,0.05);
-  }
-  .search-box input:focus {
-    border-color: #b89870;
-    background: #2c2119;
-    box-shadow: 0 0 0 2px rgba(180, 140, 100, 0.3);
-  }
-  .search-box input::placeholder {
-    color: #b29777;
-    font-style: italic;
-  }
-
-  /* FULL WIDTH CARD GRID */
-  .tools-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.8rem;
-    width: 100%;
-  }
-  @media (min-width: 680px) {
-    .tools-grid {
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 2rem;
-    }
-  }
-  @media (min-width: 1100px) {
-    .tools-grid {
-      gap: 2.2rem;
-    }
-  }
-
-  /* cards — heavy background, light elegant text */
-  .tool-card {
-    background: #2f241b;
-    background: linear-gradient(135deg, #382b20, #261e16);
-    border-radius: 28px;
-    transition: all 0.25s ease;
-    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,245,210,0.08);
-    border: 1px solid #6b4f38;
-    overflow: hidden;
-  }
-  .tool-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.4);
-    border-color: #9b7858;
-    background: #3d2e22;
-  }
-  .tool-card:active {
-    transform: scale(0.98);
-  }
-  .tool-link {
-    display: block;
-    text-decoration: none;
-    padding: 1.6rem 1.4rem 1.8rem;
-  }
-  .icon {
-    font-size: 2.8rem;
-    margin-bottom: 1rem;
-    background: #3e2e22;
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 60px;
-    color: #e2cdb0;
-    transition: 0.2s;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3), 0 1px 1px rgba(255,245,210,0.1);
-  }
-  .tool-card:hover .icon {
-    background: #4e3a2a;
-    color: #f7e6d0;
-    transform: scale(0.96);
+    font-size: 0.85rem;
   }
   .tool-title {
-    font-size: 1.6rem;
-    font-weight: 600;
-    font-family: 'Cormorant Garamond', 'Noto Sans Devanagari', 'Noto Nastaliq Urdu', serif;
-    color: #f2e0ca;      /* light, warm cream */
-    margin-bottom: 0.6rem;
-    border-left: 4px solid #c8a16b;
-    padding-left: 0.8rem;
-    line-height: 1.3;
-    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+    font-size: 1.35rem;
   }
-  .tool-desc {
+  .icon {
+    width: 52px;
+    height: 52px;
+    font-size: 2rem;
+  }
+  .tool-link {
+    padding: 1.2rem;
+  }
+  .about-btn {
     font-size: 0.95rem;
-    color: #dfcbb0;      /* soft light beige */
-    line-height: 1.5;
-    font-weight: 450;
+    padding: 0.4rem 1.4rem;
   }
+  .about-wrapper {
+    margin-top: 0.8rem;
+  }
+  .about-wrapper::before {
+    width: 40px;
+  }
+}
 
-  /* footer — deep background with light text */
-  .deep-footer {
-    background: #1f1913;
-    border-top: 1px solid #6a4f38;
-    text-align: center;
-    padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
-    color: #dcc9ad;
-    font-size: 0.8rem;
-    font-style: italic;
+@media (max-width: 400px) {
+  .deep-header h1 {
+    font-size: 1.5rem;
   }
-
-  /* responsive adjustments */
-  @media (max-width: 640px) {
-    body { padding: 0.8rem; }
-    .content-panel { padding: 1.2rem; }
-    .deep-header { padding: 1.2rem 0.8rem; }
-    .deep-header h1 { font-size: 1.8rem; }
-    .deep-header h2 { font-size: 0.85rem; }
-    .tool-title { font-size: 1.35rem; }
-    .icon { width: 52px; height: 52px; font-size: 2rem; }
-    .tool-link { padding: 1.2rem; }
-    .about-btn {
-      font-size: 0.95rem;
-      padding: 0.4rem 1.4rem;
-    }
-    .about-wrapper {
-      margin-top: 0.8rem;
-    }
-    .about-wrapper::before {
-      width: 40px;
-    }
+  .about-btn {
+    font-size: 0.85rem;
+    padding: 0.3rem 1.2rem;
   }
-
-  /* For very small screens */
-  @media (max-width: 400px) {
-    .deep-header h1 { font-size: 1.5rem; }
-    .about-btn {
-      font-size: 0.85rem;
-      padding: 0.3rem 1.2rem;
-    }
-  }
+}
