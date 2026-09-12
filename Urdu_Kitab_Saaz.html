@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اردو کتاب ساز - شمارہ بند فہرست</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Noto Nastaliq Urdu',serif;
+  background:#c8b49a;
+  min-height:100vh;
+  direction:rtl;
+  padding:24px 16px 60px;
+}
+
+/* ===== HEADER ===== */
+.header{
+  text-align:center;
+  margin-bottom:28px;
+}
+.header h1{
+  font-size:2rem;
+  color:#4a2e0e;
+  margin-bottom:6px;
+}
+.header p{
+  color:#7a5535;
+  font-size:.95rem;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:linear-gradient(145deg,#fffaf2,#fef5e4);
+  border-radius:20px;
+  box-shadow:0 4px 24px rgba(0,0,0,.13);
+  padding:22px 20px;
+  margin-bottom:18px;
+  border:1px solid #e8d5b5;
+}
+
+/* ===== ARTICLE CARD ===== */
+.article-card .card-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+  cursor:pointer;
+  user-select:none;
+}
+.article-card .card-num{
+  font-size:.8rem;
+  color:#9c6e3a;
+  background:#f3e4c8;
+  border-radius:20px;
+  padding:3px 10px;
+}
+.article-card .drag-handle{
+  cursor:grab;
+  color:#b89c6e;
+  font-size:1.2rem;
+  user-select:none;
+}
+.move-controls{
+  display:flex;
+  gap:8px;
+  margin-left:12px;
+}
+.move-btn{
+  background:#e8dcc8;
+  border:none;
+  border-radius:20px;
+  padding:4px 12px;
+  font-family:inherit;
+  font-size:0.75rem;
+  cursor:pointer;
+  color:#5a3a1a;
+  transition:0.2s;
+  font-weight:500;
+}
+.move-btn:hover{
+  background:#d4c4a8;
+  transform:scale(1.02);
+}
+.field-label{
+  font-size:.88rem;
+  color:#7a5535;
+  margin-bottom:5px;
+  display:block;
+}
+.title-input{
+  width:100%;
+  border:1.5px solid #dcc9a8;
+  border-radius:12px;
+  padding:10px 14px;
+  font-family:inherit;
+  font-size:1rem;
+  background:#fffdf8;
+  margin-bottom:12px;
+  direction:rtl;
+  outline:none;
+}
+.content-area{
+  width:100%;
+  border:1.5px solid #dcc9a8;
+  border-radius:12px;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:.93rem;
+  background:#fffdf8;
+  min-height:180px;
+  resize:vertical;
+  direction:rtl;
+  line-height:2;
+  outline:none;
+}
+.helper-text{
+  font-size:.78rem;
+  color:#a07848;
+  margin-top:6px;
+  line-height:1.6;
+}
+.card-actions{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:12px;
+  gap:12px;
+}
+.btn-remove{
+  border:none;
+  background:#fce8e0;
+  color:#a0432a;
+  border-radius:30px;
+  padding:7px 16px;
+  font-family:inherit;
+  cursor:pointer;
+  transition:0.2s;
+}
+.btn-remove:hover{
+  background:#f8d5c8;
+}
+.btn-save{
+  border:none;
+  background:#d9e0c0;
+  color:#4a6320;
+  border-radius:30px;
+  padding:7px 20px;
+  font-family:inherit;
+  cursor:pointer;
+  transition:0.2s;
+  font-weight:500;
+}
+.btn-save:hover{
+  background:#c8d4a8;
+}
+.btn-add{
+  width:100%;
+  border:2px dashed #c9a870;
+  background:rgba(255,250,242,.6);
+  color:#8a6030;
+  border-radius:16px;
+  padding:14px;
+  font-family:inherit;
+  font-size:1rem;
+  cursor:pointer;
+  margin-bottom:18px;
+  transition:0.2s;
+}
+.btn-add:hover{
+  background:rgba(255,250,242,.9);
+  border-color:#b07840;
+}
+.settings-card{
+  background:linear-gradient(145deg,#f9f0e0,#f2e6cc);
+  border-radius:20px;
+  box-shadow:0 4px 24px rgba(0,0,0,.10);
+  padding:22px 20px;
+  margin-bottom:18px;
+  border:1px solid #dcc9a0;
+}
+.settings-card h2{
+  font-size:1.15rem;
+  color:#5a3518;
+  margin-bottom:16px;
+}
+.btn-compile{
+  width:100%;
+  border:none;
+  background:linear-gradient(135deg,#8b5e2a,#c08840);
+  color:#fff8ee;
+  border-radius:16px;
+  padding:16px;
+  font-family:inherit;
+  font-size:1.1rem;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:6px;
+  transition:0.2s;
+}
+.btn-compile:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(0,0,0,0.15);
+}
+.btn-export{
+  background:#6c8b4a;
+  margin-bottom:12px;
+  background:linear-gradient(135deg,#5a7340,#7a9a50);
+}
+.btn-import{
+  background:#8a6e3a;
+  margin-bottom:12px;
+  background:linear-gradient(135deg,#7a5a30,#9a7a50);
+}
+.article-card.drag-over{
+  border:2px dashed #b07840;
+  background:#fff8e8;
+}
+.empty-state{
+  text-align:center;
+  color:#a08050;
+  padding:30px;
+}
+.collapsible-fields{
+  transition: all 0.25s ease;
+  overflow:hidden;
+}
+.collapsed{
+  display: none !important;
+}
+.article-heading{
+  flex:1;
+  font-weight:500;
+  color:#5a3a1a;
+  padding:4px 8px;
+  margin:0 10px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:0.95rem;
+}
+@media(max-width:600px){
+  .header h1{ font-size:1.6rem; }
+  .card{ padding:16px 14px; }
+  .move-btn{ padding:2px 8px; font-size:0.7rem; }
+  .article-heading{ font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📚 اردو کتاب ساز (شمارہ بند فہرست)</h1>
+  <p>مضامین داخل کریں | خودکار محفوظ | درآمد/برآمد | ترتیب تبدیل | شمارہ بند فہرست</p>
+</div>
+
+<div class="settings-card">
+  <h2>⚙️ کتاب کی معلومات</h2>
+  <label class="field-label">کتاب کا عنوان</label>
+  <input type="text" id="bookTitle" class="title-input" value="اِس زمانہ میں">
+  <label class="field-label">ذیلی عنوان</label>
+  <input type="text" id="bookSubtitle" class="title-input" value="اب کام کرنے کی ضرورت ہے">
+</div>
+
+<div id="articlesContainer"></div>
+
+<button class="btn-add" onclick="addArticle()">+ نیا مضمون شامل کریں</button>
+
+<div style="display: flex; gap: 12px; margin-bottom: 18px; flex-wrap:wrap;">
+  <button class="btn-compile btn-export" style="flex:1; min-width:140px;" onclick="exportToJson()">📤 JSON میں Export</button>
+  <button class="btn-compile btn-import" style="flex:1; min-width:140px;" onclick="importFromJson()">📥 JSON Import کریں</button>
+</div>
+
+<button class="btn-compile" onclick="compileBook()">📖 کتاب مرتب کریں (HTML ڈاؤن لوڈ)</button>
+
+<script>
+// ------------------------------ ڈیٹا ماڈل ------------------------------
+let articles = [];    // ہر شے: { id, title, content, isSaved }
+let dragSrc = null;
+let saveTimeout = null;
+
+// لوکل اسٹوریج کی کنجی
+const STORAGE_KEY = 'urdu_kitab_composer_numbered';
+
+// ------------------------------ پرسسٹینس (Persist) - خودکار محفوظ ------------------------------
+function saveToLocalStorage() {
+  const bookTitle = document.getElementById('bookTitle').value;
+  const bookSubtitle = document.getElementById('bookSubtitle').value;
+  const dataToStore = {
+    bookTitle: bookTitle,
+    bookSubtitle: bookSubtitle,
+    articles: articles.map(art => ({
+      id: art.id,
+      title: art.title,
+      content: art.content,
+      isSaved: art.isSaved
+    }))
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToStore));
+}
+
+function loadFromLocalStorage() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if(!stored) return false;
+  try {
+    const data = JSON.parse(stored);
+    document.getElementById('bookTitle').value = data.bookTitle || 'اِس زمانہ میں';
+    document.getElementById('bookSubtitle').value = data.bookSubtitle || 'اب کام کرنے کی ضرورت ہے';
+    if(data.articles && Array.isArray(data.articles)) {
+      articles = data.articles.map(art => ({
+        id: art.id,
+        title: art.title || '',
+        content: art.content || '',
+        isSaved: art.isSaved === true ? true : false
+      }));
+    } else {
+      articles = [];
+    }
+    return true;
+  } catch(e) { return false; }
+}
+
+function autoPersist() {
+  if(saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    saveToLocalStorage();
+  }, 300);
+}
+
+// کتاب کے عنوان اور ذیلی عنوان کے لیے خودکار محفوظ
+const bookTitleEl = document.getElementById('bookTitle');
+const bookSubtitleEl = document.getElementById('bookSubtitle');
+bookTitleEl.addEventListener('input', () => { autoPersist(); });
+bookSubtitleEl.addEventListener('input', () => { autoPersist(); });
+
+// ------------------------------ مضمون شامل کریں ------------------------------
+function addArticle(title='', content='', isSaved=false) {
+  const id = Date.now() + Math.random() * 10000;
+  articles.push({
+    id: id,
+    title: title || 'نیا مضمون',
+    content: content || '<p>نئے مضمون کا متن یہاں لکھیں۔ آپ HTML استعمال کر سکتے ہیں جیسے <strong>موٹا</strong> یا <em>ترچھا</em>۔</p>',
+    isSaved: isSaved
+  });
+  renderAll();
+  autoPersist();
+}
+
+// ------------------------------ حذف کریں ------------------------------
+function removeArticle(id) {
+  if(confirm('کیا آپ یقیناً یہ مضمون حذف کرنا چاہتے ہیں؟')) {
+    articles = articles.filter(a => a.id !== id);
+    renderAll();
+    autoPersist();
+  }
+}
+
+// ------------------------------ محفوظ / ترمیم (Collapse/Expand) ------------------------------
+function toggleSaveArticle(id) {
+  const article = articles.find(a => a.id === id);
+  if(article) {
+    article.isSaved = !article.isSaved;
+    renderAll();
+    autoPersist();
+  }
+}
+
+// ------------------------------ اوپر / نیچے منتقل کریں ------------------------------
+function moveArticleUp(id) {
+  const index = articles.findIndex(a => a.id === id);
+  if(index > 0) {
+    [articles[index-1], articles[index]] = [articles[index], articles[index-1]];
+    renderAll();
+    autoPersist();
+  }
+}
+
+function moveArticleDown(id) {
+  const index = articles.findIndex(a => a.id === id);
+  if(index !== -1 && index < articles.length-1) {
+    [articles[index], articles[index+1]] = [articles[index+1], articles[index]];
+    renderAll();
+    autoPersist();
+  }
+}
+
+// ------------------------------ JSON ایکسپورٹ / امپورٹ ------------------------------
+function exportToJson() {
+  const bookTitle = document.getElementById('bookTitle').value;
+  const bookSubtitle = document.getElementById('bookSubtitle').value;
+  const exportData = {
+    bookTitle: bookTitle,
+    bookSubtitle: bookSubtitle,
+    articles: articles.map(a => ({
+      id: a.id,
+      title: a.title,
+      content: a.content,
+      isSaved: a.isSaved
+    }))
+  };
+  const jsonStr = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([jsonStr], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'urdu_kitab_data.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('تمام ڈیٹا JSON فائل میں محفوظ ہو گیا۔');
+}
+
+function importFromJson() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if(imported.bookTitle !== undefined) {
+          document.getElementById('bookTitle').value = imported.bookTitle;
+        }
+        if(imported.bookSubtitle !== undefined) {
+          document.getElementById('bookSubtitle').value = imported.bookSubtitle;
+        }
+        if(imported.articles && Array.isArray(imported.articles)) {
+          articles = imported.articles.map(art => ({
+            id: art.id || (Date.now() + Math.random() * 10000),
+            title: art.title || '',
+            content: art.content || '',
+            isSaved: art.isSaved === true ? true : false
+          }));
+          renderAll();
+          autoPersist();
+          alert('JSON درآمد کامیاب! تمام مضامین لوڈ ہو گئے۔');
+        } else {
+          alert('JSON فارمیٹ غلط ہے، مضامین کی صف نہیں ملی۔');
+        }
+      } catch(err) {
+        alert('JSON پڑھنے میں خرابی: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ------------------------------ HTML ایسکیپ ------------------------------
+function escapeAttr(s){
+  return (s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escapeHTML(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ------------------------------ رینڈر (Collapsible + Move Up/Down + Drag & Drop) ------------------------------
+function renderAll(){
+  const container = document.getElementById('articlesContainer');
+  if(articles.length === 0){
+    container.innerHTML = '<div class="empty-state">📭 ابھی کوئی مضمون نہیں ہے۔ "نیا مضمون شامل کریں" کے بٹن سے شروع کریں۔</div>';
+    return;
+  }
+  container.innerHTML = '';
+  
+  articles.forEach((art, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card article-card';
+    card.dataset.id = art.id;
+    card.draggable = true;
+    
+    const isCollapsed = art.isSaved;
+    const displayTitle = art.title && art.title.length > 40 ? art.title.slice(0,37)+'...' : (art.title || 'مضمون');
+    
+    card.innerHTML = `
+      <div class="card-header" data-header-id="${art.id}">
+        <span class="drag-handle" draggable="true">⠿</span>
+        <div class="article-heading" id="heading-${art.id}">${escapeHTML(displayTitle)}</div>
+        <div class="move-controls">
+          <button class="move-btn move-up" data-id="${art.id}" title="اوپر لے جائیں">▲ اوپر</button>
+          <button class="move-btn move-down" data-id="${art.id}" title="نیچے لے جائیں">▼ نیچے</button>
+        </div>
+        <span class="card-num">مضمون ${idx+1}</span>
+      </div>
+      <div class="collapsible-fields ${isCollapsed ? 'collapsed' : ''}" id="fields-${art.id}">
+        <label class="field-label">عنوان</label>
+        <input type="text" class="title-input art-title" data-id="${art.id}" value="${escapeAttr(art.title)}">
+        <label class="field-label">مضمون (HTML سمیت)</label>
+        <textarea class="content-area art-content" data-id="${art.id}">${escapeHTML(art.content)}</textarea>
+        <p class="helper-text">💡 HTML استعمال کر سکتے ہیں: &lt;strong&gt;موٹا&lt;/strong&gt;، &lt;em&gt;ترچھا&lt;/em&gt;، &lt;div class="quote-box"&gt;اقتباس&lt;/div&gt; وغیرہ</p>
+        <div class="card-actions">
+          <button class="btn-remove" data-id="${art.id}">🗑 حذف کریں</button>
+          <button class="btn-save" data-id="${art.id}">${art.isSaved ? '✏️ ترمیم کھولیں' : '💾 محفوظ کریں اور بند کریں'}</button>
+        </div>
+      </div>
+    `;
+    
+    const headerDiv = card.querySelector('.card-header');
+    const headingSpan = card.querySelector('.article-heading');
+    
+    const openArticleOnClick = (e) => {
+      if(e.target.classList && (e.target.classList.contains('move-btn') || e.target.classList.contains('drag-handle') || e.target.closest('.move-controls') || e.target.closest('.drag-handle'))) {
+        return;
+      }
+      const articleObj = articles.find(a => a.id == art.id);
+      if(articleObj && articleObj.isSaved === true) {
+        toggleSaveArticle(art.id);
+      }
+    };
+    
+    headerDiv.style.cursor = 'pointer';
+    headerDiv.addEventListener('click', openArticleOnClick);
+    if(headingSpan) headingSpan.style.cursor = 'pointer';
+    if(headingSpan) headingSpan.addEventListener('click', openArticleOnClick);
+    
+    const removeBtn = card.querySelector(`.btn-remove[data-id="${art.id}"]`);
+    if(removeBtn) removeBtn.onclick = (e) => { e.stopPropagation(); removeArticle(art.id); };
+    
+    const saveBtn = card.querySelector(`.btn-save[data-id="${art.id}"]`);
+    if(saveBtn) saveBtn.onclick = (e) => { e.stopPropagation(); toggleSaveArticle(art.id); };
+    
+    const moveUpBtn = card.querySelector(`.move-up[data-id="${art.id}"]`);
+    if(moveUpBtn) moveUpBtn.onclick = (e) => { e.stopPropagation(); moveArticleUp(art.id); };
+    const moveDownBtn = card.querySelector(`.move-down[data-id="${art.id}"]`);
+    if(moveDownBtn) moveDownBtn.onclick = (e) => { e.stopPropagation(); moveArticleDown(art.id); };
+    
+    const titleInput = card.querySelector(`.art-title[data-id="${art.id}"]`);
+    if(titleInput) {
+      titleInput.addEventListener('input', (e) => {
+        const a = articles.find(x => x.id == art.id);
+        if(a) { 
+          a.title = e.target.value; 
+          const headSpan = card.querySelector(`#heading-${art.id}`);
+          if(headSpan) {
+            const newDisplay = (a.title.length > 40 ? a.title.slice(0,37)+'...' : a.title);
+            headSpan.innerText = newDisplay;
+          }
+          autoPersist();
+        }
+      });
+    }
+    
+    const contentInput = card.querySelector(`.art-content[data-id="${art.id}"]`);
+    if(contentInput) {
+      contentInput.addEventListener('input', (e) => {
+        const a = articles.find(x => x.id == art.id);
+        if(a) { a.content = e.target.value; autoPersist(); }
+      });
+    }
+    
+    card.addEventListener('dragstart', (e) => {
+      dragSrc = card;
+      e.dataTransfer.setData('text/plain', art.id);
+      card.style.opacity = '0.5';
+    });
+    card.addEventListener('dragend', () => {
+      if(dragSrc) dragSrc.style.opacity = '';
+      dragSrc = null;
+    });
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drag-over');
+    });
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      if(dragSrc && dragSrc !== card) {
+        const fromId = parseFloat(dragSrc.dataset.id);
+        const toId = parseFloat(card.dataset.id);
+        const fi = articles.findIndex(a => a.id == fromId);
+        const ti = articles.findIndex(a => a.id == toId);
+        if(fi !== -1 && ti !== -1) {
+          const [moved] = articles.splice(fi, 1);
+          articles.splice(ti, 0, moved);
+          renderAll();
+          autoPersist();
+        }
+      }
+      if(dragSrc) dragSrc.style.opacity = '';
+      dragSrc = null;
+    });
+    container.appendChild(card);
+  });
+}
+
+// ------------------------------ کتاب مرتب کریں (شمارہ بند فہرست کے ساتھ) ------------------------------
+function compileBook(){
+  const bookTitle = document.getElementById('bookTitle').value.trim() || 'اردو کتاب';
+  const bookSubtitle = document.getElementById('bookSubtitle').value.trim();
+  if(articles.length === 0){
+    alert('کم از کم ایک مضمون شامل کریں');
+    return;
+  }
+  const articleArr = articles.map((art, i) => ({
+    number: i+1,
+    title: art.title || 'مضمون '+(i+1),
+    html: art.content || '<p></p>'
+  }));
+  
+  const html = `<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${bookTitle}</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;background:#d7cab0;font-family:'Noto Nastaliq Urdu',serif;direction:rtl;}
+.topbar{position:fixed;top:0;left:0;right:0;height:58px;background:#fff8ed;display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid #d8c2a0;z-index:3000;}
+.menu-btn{width:42px;height:42px;border:1px solid #c9a870;background:#fff8ed;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;}
+.menu-btn span{width:22px;height:2px;background:#6b4422;display:block;}
+.topbar-title{color:#6a4420;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.drawer{position:fixed;top:58px;right:0;width:280px;height:calc(100% - 58px);background:#fffaf2;transform:translateX(100%);transition:.3s;overflow:auto;z-index:2500;box-shadow:-2px 0 10px rgba(0,0,0,0.1);}
+.drawer.open{transform:translateX(0);}
+.drawer a{display:block;padding:12px 20px;border-bottom:1px solid #eee;text-decoration:none;color:#4a2e0e;font-family:inherit;transition:0.2s;}
+.drawer a:hover{background:#f3e8d8;padding-right:28px;}
+.drawer .chapter-num{display:inline-block;min-width:45px;color:#9c6e3a;font-weight:500;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:.3s;z-index:2400;}
+.overlay.open{opacity:1;pointer-events:auto;}
+.page{padding:90px 22px 90px;line-height:2.2;max-width:760px;margin:auto;}
+.page p{margin-bottom:1.2rem;}
+.page h1,.page h2,.page h3{color:#4a2e0e;margin:1rem 0 0.5rem;}
+.quote-box{background:#fff1de;border-right:4px solid #bc7d49;border-radius:20px;padding:14px;margin:1rem 0;}
+.poetry{background:#faf2df;border-right:4px solid #c59a68;border-radius:24px;padding:16px;margin:1rem 0;text-align:center;}
+.table-responsive{overflow:auto;}
+table{width:100%;border-collapse:collapse;}
+th,td{border:1px solid #ccc;padding:10px;}
+.footer{position:fixed;bottom:0;left:0;right:0;height:58px;background:#fff8ed;display:flex;justify-content:space-between;align-items:center;padding:0 12px;border-top:1px solid #d8c2a0;}
+.btn{border:none;background:#ead8c1;padding:8px 18px;border-radius:40px;font-family:inherit;cursor:pointer;transition:0.2s;}
+.btn:hover{background:#ddc8aa;transform:scale(1.02);}
+@media(max-width:600px){.page{padding:85px 16px 85px;}.drawer{width:260px;}}
+</style>
+</head>
+<body>
+<div class="topbar"><button class="menu-btn" onclick="toggleDrawer()"><span></span><span></span><span></span></button><div class="topbar-title">${bookTitle}</div></div>
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <a href="#" onclick="showArticle(-1)"><span class="chapter-num">🏠</span> سرِورق</a>
+  ${articleArr.map(a => `<a href="#" onclick="showArticle(${a.number-1})"><span class="chapter-num">${a.number}.</span> ${escapeHTML(a.title)}</a>`).join('')}
+</div>
+<div class="page" id="page"></div>
+<div class="footer"><button class="btn" onclick="prevArticle()">◀ پچھلا</button><button class="btn" onclick="nextArticle()">اگلا ▶</button></div>
+<script>
+const ARTICLES = ${JSON.stringify(articleArr.map(a => ({title: a.title, html: a.html})))};
+const ARTICLE_NUMBERS = ${JSON.stringify(articleArr.map(a => a.number))};
+let current = -1;
+const page = document.getElementById('page');
+function toggleDrawer(){ document.getElementById('drawer').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); }
+function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+function showArticle(i){
+  current = i;
+  if(i === -1){
+    page.innerHTML = \`<div style="min-height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;"><h1 style="font-size:2.4rem;color:#764825;">${bookTitle}</h1><h2 style="color:#9c6e47;">${bookSubtitle}</h2><p style="margin-top:30px;color:#7a5a3a;">📖 کل مضامین: ${articleArr.length}</p></div>\`;
+  } else {
+    const articleNum = i+1;
+    const articleTitle = ARTICLES[i].title;
+    page.innerHTML = \`<div style="margin-bottom:20px; border-bottom:2px solid #d8c2a0; padding-bottom:10px;"><span style="background:#f3e4c8; padding:4px 12px; border-radius:20px; font-size:0.9rem;">مضمون \${articleNum}</span><h2 style="margin-top:10px; color:#764825;">\${articleTitle}</h2></div>\${ARTICLES[i].html}\`;
+  }
+  closeDrawer();
+  localStorage.setItem('urdu_book_article', current);
+}
+function nextArticle(){ if(current < ARTICLES.length-1) showArticle(current+1); }
+function prevArticle(){ if(current > -1) showArticle(current-1); }
+const saved = parseInt(localStorage.getItem('urdu_book_article'));
+if(!isNaN(saved) && saved >= -1 && saved < ARTICLES.length) showArticle(saved); else showArticle(-1);
+function escapeHTML(str){ return (str||'').replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+<\/script>
+</body>
+</html>`;
+  
+  function escapeHTMLForBook(s){
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = bookTitle.replace(/[\\/:*?"<>|]/g, '') + '.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('کتاب کامیابی سے تیار ہو گئی! فہرست میں مضامین کے نمبر بھی شامل ہیں۔');
+}
+
+// ------------------------------ ابتدائی لوڈ ------------------------------
+function init() {
+  const loaded = loadFromLocalStorage();
+  if(!loaded || articles.length === 0) {
+    articles = [];
+    addArticle('پہلا مضمون: تعارف', '<p>یہ پہلے مضمون کا متن ہے۔ آپ <strong>HTML</strong> استعمال کر سکتے ہیں۔ اسے محفوظ کر کے بند کریں اور ہیڈر پر کلک کر کے دوبارہ کھولیں۔</p>', false);
+    addArticle('دوسرا مضمون: اہم نکات', '<p>دوسرے مضمون میں کچھ اہم باتیں پیش کی جائیں گی۔ کتاب کی فہرست میں مضامین کے نمبر بھی نظر آئیں گے۔</p>', false);
+  } else {
+    renderAll();
+  }
+  autoPersist();
+}
+
+init();
+</script>
+</body>
+</html>
