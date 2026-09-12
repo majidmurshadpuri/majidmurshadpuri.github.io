@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Class 7 Mathematics · SA I Interactive Practice</title>
+<meta name="description" content="Interactive Class 7 Mathematics practice paper (SA I pattern) — regenerate questions, reveal answers, print with key.">
+
+<!-- ========== SHARED FONTS ========== -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- ========== SHARED STYLESHEET ========== -->
+<link rel="stylesheet" href="style.css" />
+
+<!-- ========== PAGE-SPECIFIC STYLES (paper + toolbar only) ========== -->
+<style>
+/* ============================================================
+   INTERACTIVE PAPER — page-specific styling
+   (Site chrome comes from style.css: .deep-collection,
+    .deep-header, .about-btn, .deep-footer)
+   ============================================================ */
+
+:root{
+  --paper-ink:#241a0f;
+  --paper:#fbf6e9;
+  --rule:#c9b787;
+  --navy:#152944;
+  --gold:#b9862f;
+  --gold-bright:#d8a94a;
+  --ember:#a8431e;
+  --ember-deep:#8a3417;
+  --green:#2e7d32;
+  --green-deep:#1b5e20;
+}
+
+/* ---------- PAGE WRAPPER ---------- */
+.practice-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 1.4rem) clamp(1rem, 3vw, 1.5rem) clamp(2rem, 4vw, 2.5rem);
+}
+
+/* ---------- NOTICE BAR ---------- */
+.notice{
+  background: rgba(255, 243, 207, 0.9);
+  border: 1.5px dashed #a8431e;
+  color: #5a3410;
+  padding: .7rem .9rem;
+  border-radius: 10px;
+  font-size: .82rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  line-height: 1.45;
+}
+.notice strong{ color: #8a3417; }
+
+/* ---------- TOOLBAR (glass, matches site theme) ---------- */
+.toolbar{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-items: center;
+  background: rgba(255, 245, 210, 0.06);
+  border: 1px solid rgba(200, 161, 107, 0.28);
+  border-radius: 16px;
+  padding: .75rem .85rem;
+  margin-bottom: 1.25rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+}
+.toolbar .spacer{ flex: 1; }
+
+.btn{
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: .85rem;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  padding: .55rem 1rem;
+  cursor: pointer;
+  letter-spacing: .01em;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  transition: transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+.btn:active{ transform: translateY(1px); }
+
+.btn-primary{ background: #a8431e; color: #fff7e6; box-shadow: 0 2px 0 #8a3417; }
+.btn-primary:hover{ background: #b94d24; }
+.btn-gold{ background: #c8a16b; color: #2a1a04; box-shadow: 0 2px 0 #8a5f1a; border-color: #b89870; }
+.btn-gold:hover{ background: #d8b581; }
+.btn-ghost{ background: transparent; color: #f2e0ca; border-color: #6a4f38; }
+.btn-ghost:hover{ background: rgba(200,161,107,.18); border-color: #b89870; }
+.btn-green{ background: #2e7d32; color: #fff; box-shadow: 0 2px 0 #1b5e20; }
+.btn-green:hover{ background: #399b3e; }
+
+/* ---------- BACK + HOME BUTTONS (side by side) ---------- */
+.deep-header .about-wrapper {
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.back-btn::before { content: "←"; }
+
+/* ---------- PAPER SHEET (kept in its own paper aesthetic) ---------- */
+.paper-sheet{
+  background: #fbf6e9;
+  border: 1px solid #c9b787;
+  border-radius: 6px;
+  padding: clamp(1.2rem, 3vw, 1.6rem) clamp(1rem, 3vw, 1.4rem) clamp(1.8rem, 4vw, 2.2rem);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.28), 0 0 0 6px rgba(200,161,107,0.10);
+  color: #241a0f;
+}
+.paper-head{
+  text-align: center;
+  border-bottom: 2.5px solid #152944;
+  padding-bottom: .9rem;
+  margin-bottom: 1.3rem;
+}
+.paper-head .badge{
+  display: inline-block;
+  background: #152944;
+  color: #d8a94a;
+  font-size: .68rem;
+  letter-spacing: .08em;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  margin-bottom: .5rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+}
+.paper-head h2{
+  margin: .1rem 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #152944;
+}
+.paper-head h3{
+  margin: .15rem 0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #4b3c22;
+  font-family: Georgia, serif;
+}
+.paper-head p.note{
+  font-style: italic;
+  font-size: .82rem;
+  color: #6b5a3a;
+  margin: .5rem 0 0;
+  font-family: Georgia, serif;
+}
+
+/* ---------- QUESTIONS ---------- */
+.qlist{ display: flex; flex-direction: column; gap: 1rem; }
+
+.qcard{
+  border: 1px solid #c9b787;
+  border-radius: 10px;
+  background: #fffdf6;
+  padding: .85rem .95rem .9rem;
+  box-shadow: 0 1px 3px rgba(60,40,10,.05);
+  page-break-inside: avoid;
+  font-family: Georgia, 'Cambria', 'Times New Roman', serif;
+}
+.qcard-head{
+  display: flex;
+  gap: .55rem;
+  align-items: flex-start;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.qnum{ font-weight: 700; color: #8a3417; flex: none; min-width: 1.6em; }
+.qtitle{ flex: 1; }
+
+.qcard-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .7rem;
+  padding-top: .6rem;
+  border-top: 1px dashed #c9b787;
+}
+.qbtn{
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: .75rem;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1.5px solid transparent;
+  padding: .35rem .7rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  letter-spacing: .02em;
+}
+.qbtn-regen{ background: #c8a16b; color: #2a1a04; border-color: #8a5f1a; }
+.qbtn-regen:hover{ background: #d8b581; }
+.qbtn-ans{ background: #2e7d32; color: #fff; border-color: #1b5e20; }
+.qbtn-ans:hover{ background: #3a9c40; }
+.qbtn-hide{ background: transparent; color: #a8431e; border-color: #a8431e; }
+.qbtn-hide:hover{ background: #a8431e; color: #fff7e6; }
+
+.qanswer{
+  display: none;
+  margin-top: .7rem;
+  padding: .7rem .85rem;
+  background: #eef8ee;
+  border: 1.5px solid #a5c9a5;
+  border-radius: 8px;
+  font-size: .92rem;
+  line-height: 1.55;
+  color: #1e3a1e;
+  font-family: Georgia, serif;
+}
+.qanswer.show{ display: block; }
+.qanswer .ans-title{
+  font-weight: 700;
+  color: #1b5e20;
+  margin-bottom: .3rem;
+  font-size: .78rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  font-family: system-ui, sans-serif;
+}
+.qanswer .ans-part{ display: block; margin: .15rem 0 0 1em; }
+.qanswer .ans-part b{ color: #1b5e20; }
+
+.qcard.hidden{
+  background: #f4edd8;
+  border: 1.5px dashed #c9b787;
+}
+.qcard.hidden .qcard-head,
+.qcard.hidden .parts,
+.qcard.hidden .figure,
+.qcard.hidden .qcard-actions,
+.qcard.hidden .qanswer{ display: none !important; }
+
+.qhidden-bar{
+  display: none;
+  font-size: .88rem;
+  color: #6b5a3a;
+  font-style: italic;
+  align-items: center;
+  gap: .6rem;
+  justify-content: space-between;
+}
+.qcard.hidden .qhidden-bar{ display: flex; }
+
+.qhidden-bar .show-btn{
+  font-family: system-ui, sans-serif;
+  font-size: .78rem;
+  font-weight: 700;
+  background: #a8431e;
+  color: #fff7e6;
+  border: 1.5px solid #8a3417;
+  border-radius: 6px;
+  padding: .4rem .85rem;
+  cursor: pointer;
+  font-style: normal;
+}
+.qhidden-bar .show-btn:hover{ background: #8a3417; }
+
+/* Fractions, exponents */
+.frac{
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+  margin: 0 .18em;
+  font-size: .92em;
+  line-height: 1.05;
+}
+.frac .fn{ border-bottom: 1.4px solid currentColor; padding: 0 .25em; }
+.frac .fd{ padding: .05em .25em 0; }
+sup{ font-size: .7em; }
+
+.parts{ margin: .45rem 0 0 1.6em; display: grid; gap: .45rem; }
+.part-row{ display: flex; gap: .5rem; align-items: baseline; line-height: 1.6; }
+.part-label{ font-weight: 700; color: #152944; flex: none; }
+
+/* Figures (SVG) */
+.figure{
+  margin: .6rem 0 .4rem 1.6em;
+  background: #fffdf6;
+  border: 1.5px dashed #c9b787;
+  border-radius: 8px;
+  padding: .55rem;
+  display: inline-block;
+}
+.figure svg{ display: block; max-width: 100%; height: auto; }
+.figure .caption{
+  font-size: .72rem;
+  color: #6b5a3a;
+  text-align: center;
+  margin-top: .25rem;
+}
+
+/* ---------- PRINT-ONLY ANSWERS SECTION ---------- */
+.print-answers{ display: none; }
+
+/* ============================================================
+   PRINT STYLES — clean A4 exam paper
+   ============================================================ */
+@media print{
+  /* Hide the site chrome so only the paper prints */
+  .deep-header,
+  .deep-footer,
+  .toolbar,
+  .notice,
+  .about-wrapper { display: none !important; }
+
+  body{
+    background: #fff !important;
+    padding: 0 !important;
+  }
+  .deep-collection{
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    backdrop-filter: none !important;
+  }
+  .practice-wrap{ max-width: 100%; padding: 0; margin: 0; }
+
+  .paper-sheet{
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    background: #fff !important;
+    border-radius: 0 !important;
+  }
+  .qlist{ gap: .9rem; }
+  .qcard{ box-shadow: none; border: none; padding: 0; margin: 0; background: transparent; }
+  .qcard-actions,
+  .qhidden-bar{ display: none !important; }
+  .qanswer{ display: none !important; }
+  .qcard.hidden{ display: none !important; }
+
+  .print-answers{ display: block !important; margin-top: 1.6rem; }
+  .print-answers h2{
+    font-size: 1.1rem;
+    color: #000;
+    margin: 0 0 .6rem;
+    border-bottom: 2px solid #000;
+    padding-bottom: .25rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+  .print-answers .ans-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem .9rem;
+    font-size: .85rem;
+    line-height: 1.4;
+    font-family: Georgia, serif;
+  }
+  .print-answers .ans-item{
+    border-bottom: 1px dotted #999;
+    padding-bottom: .25rem;
+  }
+  .print-answers .ans-item b{ color: #000; }
+
+  body.hide-answers .print-answers{ display: none !important; }
+  .qcard{ page-break-inside: avoid; }
+  .figure{ border: none; padding: 0; margin-left: 1.6em; }
+}
+</style>
+</head>
+<body>
+
+<div class="deep-collection">
+
+  <!-- ========== HEADER (site chrome) ========== -->
+  <div class="deep-header">
+    <h1>Class 7 Mathematics</h1>
+    <h2>SA I · Interactive Practice Paper · Regenerate · Reveal · Print</h2>
+
+    <!-- Back + Home buttons -->
+    <div class="about-wrapper">
+      <a class="about-btn back-btn" href="Maths_SAI_Practice.html">✦ Back ✦</a>
+      <a class="about-btn home-btn" href="https://majidmurshadpuri.github.io">✦ Home ✦</a>
+    </div>
+  </div>
+
+  <!-- ========== PRACTICE AREA ========== -->
+  <div class="practice-wrap">
+
+    <div class="notice">
+      <strong>Model Question Paper — For Practice Purposes Only.</strong>
+      Not an official school examination paper.
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-primary" id="regenAllBtn">⟳ Regenerate All Questions</button>
+      <button class="btn btn-green" id="showAllAnsBtn">Show All Answers</button>
+      <button class="btn btn-ghost" id="hideAllAnsBtn">Hide All Answers</button>
+      <div class="spacer"></div>
+      <button class="btn btn-gold" id="printBtn">🖨 Print / Save as PDF</button>
+    </div>
+
+    <div class="paper-sheet">
+      <div class="paper-head">
+        <span class="badge">MODEL PAPER · FOR PRACTICE</span>
+        <h2>Class 7th — SA I</h2>
+        <h3>Session 2026-27 &nbsp;·&nbsp; Subject: Mathematics</h3>
+        <p class="note">Note: All questions are compulsory.</p>
+      </div>
+
+      <div class="qlist" id="qlist"></div>
+
+      <section class="print-answers" id="printAnswers">
+        <h2>Answers</h2>
+        <div class="ans-grid" id="printAnswersGrid"></div>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- ========== FOOTER (site chrome) ========== -->
+  <div class="deep-footer">
+    ✦ a living collection · crafted with depth &amp; warmth ✦
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   PART 1 — HELPERS
+   ============================================================ */
+
+const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = arr => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const rsign = () => Math.random() < 0.5 ? 1 : -1;
+
+const frac = (n, d) => {
+  if (d < 0) { n = -n; d = -d; }
+  return `<span class="frac"><span class="fn">${n}</span><span class="fd">${d}</span></span>`;
+};
+const sup = t => `<sup>${t}</sup>`;
+
+function simpFrac(n, d) {
+  if (d === 0) return { n: n, d: d, str: `${n}/0` };
+  if (d < 0) { n = -n; d = -d; }
+  const g = gcd(Math.abs(n), Math.abs(d)) || 1;
+  n /= g; d /= g;
+  if (d === 1) return { n: n, d: d, str: `${n}` };
+  return { n: n, d: d, str: frac(n, d) };
+}
+
+function trimNum(x) {
+  if (!isFinite(x)) return String(x);
+  const r = Math.round(x * 1e6) / 1e6;
+  return String(r);
+}
+
+function polyM(terms) {
+  const out = [];
+  let first = true;
+  for (const [c, v] of terms) {
+    if (c === 0) continue;
+    const abs = Math.abs(c);
+    const cStr = (abs === 1 && v) ? "" : String(abs);
+    const body = cStr + v;
+    if (first) { out.push((c < 0 ? "&minus;" : "") + body); first = false; }
+    else { out.push((c < 0 ? " &minus; " : " + ") + body); }
+  }
+  return out.length ? out.join("") : "0";
+}
+
+/* ============================================================
+   PART 2 — QUESTION GENERATORS
+   ============================================================ */
+
+/* ---------- Q1 ---------- */
+function genQ1() {
+  let a, b, c, d, den;
+  do {
+    a = rand(2, 9) * rsign();
+    c = rand(2, 9) * rsign();
+    b = rand(1, 15) * rsign();
+    d = rand(1, 15) * rsign();
+    den = a - c;
+  } while (den === 0);
+  const numA = d - b;
+  const ansA = simpFrac(numA, den);
+  const qA = `${polyM([[a, "x"], [b, ""]])} = ${polyM([[c, "x"], [d, ""]])}`;
+
+  const bB = rand(2, 15) * rsign();
+  const cB = rand(2, 15) * rsign();
+  const ansB = cB - bB;
+  const qB = `${bB} + n = ${cB}`;
+
+  const aC = rand(2, 6) * rsign();
+  const bC = rand(1, 9) * rsign();
+  const cC = rand(1, 9) * rsign();
+  const ansC = aC * (cC - bC);
+  const qC = `${frac("x", aC < 0 ? `&minus;${Math.abs(aC)}` : aC)} ${bC < 0 ? "&minus;" : "+"} ${Math.abs(bC)} = ${cC}`;
+
+  const aD = rand(2, 7) * rsign();
+  const bD = rand(1, 9) * rsign();
+  const cD = rand(1, 15) * rsign();
+  const ansD = simpFrac(cD - bD, aD);
+  const qD = `${bD} ${aD < 0 ? "&minus;" : "+"} ${Math.abs(aD)}x = ${cD}`;
+
+  return {
+    n: 1,
+    title: "Solve the following equations:",
+    parts: [
+      { label: "a", q: qA, a: `x = ${ansA.str}` },
+      { label: "b", q: qB, a: `n = ${ansB}` },
+      { label: "c", q: qC, a: `x = ${ansC}` },
+      { label: "d", q: qD, a: `x = ${ansD.str}` }
+    ]
+  };
+}
+
+/* ---------- Q2 ---------- */
+function genQ2() {
+  const a = rand(15, 80);
+  const b = rand(20, 150);
+  return {
+    n: 2,
+    title: "Find:-",
+    parts: [
+      { label: "a", q: `The complement of ${a}&deg;`, a: `${90 - a}&deg;` },
+      { label: "b", q: `The supplement of ${b}&deg;`, a: `${180 - b}&deg;` }
+    ]
+  };
+}
+
+/* ============================================================
+   Q3 — RANDOM ANGLE FIGURES
+   ============================================================ */
+
+function svgLine(x1, y1, x2, y2, color = "#152944", w = 1.6) {
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${w}"/>`;
+}
+function svgRay(x1, y1, x2, y2, color = "#a8431e") {
+  return svgLine(x1, y1, x2, y2, color, 1.6);
+}
+function svgLabel(x, y, text, color = "#a8431e", size = 12) {
+  return `<text x="${x}" y="${y}" font-size="${size}" fill="${color}">${text}</text>`;
+}
+
+function layoutParallelTransversal() {
+  const given = rand(35, 145);
+  const coInterior = Math.random() < 0.5;
+  const xVal = coInterior ? 180 - given : given;
+  const yVal = 180 - xVal;
+
+  const svg = `
+    <svg viewBox="0 0 260 150" width="260" height="150" xmlns="http://www.w3.org/2000/svg">
+      ${svgLine(15, 45, 245, 45)}
+      ${svgLine(15, 110, 245, 110)}
+      ${svgRay(70, 15, 190, 135)}
+      ${svgLabel(160, 38, `${given}°`, "#a8431e")}
+      ${svgLabel(70, 128, "x", "#a8431e")}
+      ${svgLabel(200, 128, "y", "#a8431e")}
+    </svg>`;
+
+  return {
+    svg,
+    caption: "l₁ ∥ l₂, cut by a transversal",
+    facts: "Angles on a straight line and vertically opposite angles.",
+    parts: [
+      { label: "a", q: "Find x.", a: `x = ${xVal}&deg;` },
+      { label: "b", q: "Find y.", a: `y = ${yVal}&deg;` }
+    ]
+  };
+}
+
+function layoutAroundPoint() {
+  const a = rand(50, 140);
+  const b = rand(50, 140);
+  const c = rand(40, 120);
+  let x = 360 - a - b - c;
+  if (x < 20 || x > 200) return layoutAroundPoint();
+
+  const svg = `
+    <svg viewBox="0 0 220 160" width="220" height="160" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="80" r="2.5" fill="#152944"/>
+      ${svgRay(110, 80, 30, 25)}
+      ${svgRay(110, 80, 200, 30)}
+      ${svgRay(110, 80, 200, 140)}
+      ${svgRay(110, 80, 25, 140)}
+      ${svgLabel(80, 40, `${a}°`, "#a8431e", 11)}
+      ${svgLabel(135, 55, `${b}°`, "#a8431e", 11)}
+      ${svgLabel(135, 120, `${c}°`, "#a8431e", 11)}
+      ${svgLabel(70, 125, "x", "#152944", 12)}
+    </svg>`;
+
+  return {
+    svg,
+    caption: "Four rays from a single point",
+    facts: "Angles around a point add up to 360°.",
+    parts: [
+      { label: "a", q: "Find x.", a: `x = ${x}&deg;` }
+    ]
+  };
+}
+
+function layoutOnStraightLine() {
+  const a = rand(35, 90);
+  const b = rand(35, 90);
+  const x = 180 - a - b;
+
+  const svg = `
+    <svg viewBox="0 0 240 150" width="240" height="150" xmlns="http://www.w3.org/2000/svg">
+      ${svgLine(20, 90, 220, 90)}
+      ${svgRay(120, 90, 50, 25)}
+      ${svgRay(120, 90, 195, 30)}
+      <circle cx="120" cy="90" r="2.5" fill="#152944"/>
+      ${svgLabel(60, 60, `${a}°`, "#a8431e", 11)}
+      ${svgLabel(150, 60, `${b}°`, "#a8431e", 11)}
+      ${svgLabel(130, 108, "x", "#152944", 12)}
+    </svg>`;
+
+  return {
+    svg,
+    caption: "Three rays on a straight line",
+    facts: "Angles on a straight line add up to 180°.",
+    parts: [
+      { label: "a", q: "Find x.", a: `x = ${x}&deg;` }
+    ]
+  };
+}
+
+function layoutIntersectingLines() {
+  const a = rand(30, 150);
+  const b = 180 - a;
+  const svg = `
+    <svg viewBox="0 0 220 160" width="220" height="160" xmlns="http://www.w3.org/2000/svg">
+      ${svgLine(20, 40, 200, 120)}
+      ${svgLine(20, 120, 200, 40)}
+      ${svgLabel(95, 55, `${a}°`, "#a8431e", 11)}
+      ${svgLabel(100, 110, "x", "#152944", 12)}
+      ${svgLabel(50, 90, "y", "#152944", 12)}
+      ${svgLabel(160, 80, "z", "#152944", 12)}
+    </svg>`;
+
+  return {
+    svg,
+    caption: "Two intersecting lines",
+    facts: "Vertically opposite angles are equal; angles on a straight line add to 180°.",
+    parts: [
+      { label: "a", q: "Find x.", a: `x = ${b}&deg;` },
+      { label: "b", q: "Find y.", a: `y = ${a}&deg;` },
+      { label: "c", q: "Find z.", a: `z = ${b}&deg;` }
+    ]
+  };
+}
+
+function layoutTriangleExterior() {
+  const A = rand(40, 80);
+  const B = rand(40, 80);
+  const C = 180 - A - B;
+  const ext = A + B;
+
+  const svg = `
+    <svg viewBox="0 0 240 160" width="240" height="160" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="40,130 200,130 90,30" fill="none" stroke="#152944" stroke-width="1.6"/>
+      ${svgRay(200, 130, 235, 130, "#a8431e")}
+      ${svgLabel(70, 45, `${A}°`, "#a8431e", 11)}
+      ${svgLabel(160, 118, `${B}°`, "#a8431e", 11)}
+      ${svgLabel(90, 118, "x", "#152944", 12)}
+      ${svgLabel(215, 122, "y", "#152944", 12)}
+    </svg>`;
+
+  return {
+    svg,
+    caption: "Triangle with an exterior angle",
+    facts: "Angle sum of a triangle = 180°; exterior angle = sum of interior opposite angles.",
+    parts: [
+      { label: "a", q: "Find x (interior angle at the vertex).", a: `x = ${C}&deg;` },
+      { label: "b", q: "Find y (exterior angle).", a: `y = ${ext}&deg;` }
+    ]
+  };
+}
+
+function layoutTwoTransversals() {
+  const g1 = rand(40, 130);
+  const g2 = rand(40, 130);
+  const xVal = g1;
+  const yVal = 180 - g2;
+
+  const svg = `
+    <svg viewBox="0 0 260 150" width="260" height="150" xmlns="http://www.w3.org/2000/svg">
+      ${svgLine(15, 40, 245, 40)}
+      ${svgLine(15, 115, 245, 115)}
+      ${svgRay(60, 10, 140, 140)}
+      ${svgRay(180, 10, 100, 140)}
+      ${svgLabel(100, 34, `${g1}°`, "#a8431e", 11)}
+      ${svgLabel(150, 34, `${g2}°`, "#a8431e", 11)}
+      ${svgLabel(60, 130, "x", "#152944", 12)}
+      ${svgLabel(190, 130, "y", "#152944", 12)}
+    </svg>`;
+
+  return {
+    svg,
+    caption: "Two parallel lines crossed by two transversals",
+    facts: "Corresponding angles are equal; co-interior angles add to 180°.",
+    parts: [
+      { label: "a", q: "Find x.", a: `x = ${xVal}&deg;` },
+      { label: "b", q: "Find y.", a: `y = ${yVal}&deg;` }
+    ]
+  };
+}
+
+function genQ3() {
+  const layouts = [
+    layoutParallelTransversal,
+    layoutAroundPoint,
+    layoutOnStraightLine,
+    layoutIntersectingLines,
+    layoutTriangleExterior,
+    layoutTwoTransversals
+  ];
+
+  const howMany = Math.random() < 0.5 ? 1 : 2;
+  const chosen = shuffle([...layouts]).slice(0, howMany);
+  const blocks = chosen.map(fn => fn());
+
+  const figureHtml =
+    blocks.map(b => `<div class="figure">${b.svg}<div class="caption">${b.caption}</div></div>`).join("");
+
+  const parts = [];
+  let idx = 0;
+  for (const b of blocks) {
+    for (const p of b.parts) {
+      const label = String.fromCharCode(97 + idx);
+      idx++;
+      parts.push({ label, q: `${p.q} <i style="color:#6b5a3a;font-size:.85em">(${b.facts})</i>`, a: p.a });
+    }
+  }
+
+  return {
+    n: 3,
+    title: "Find the value of the unknown angle(s) in the following figure(s):",
+    figure: figureHtml,
+    parts
+  };
+}
+
+/* ---------- Q4 ---------- */
+function genQ4() {
+  const a1 = rand(20, 90);
+  const a2 = rand(2, 8);
+  const aVal = (a1 / 10) / a2;
+
+  const b1 = rand(30, 90) / 10;
+  const b2 = rand(20, 90) / 10;
+  const bVal = b1 * b2;
+
+  const c1 = rand(20, 90) / 10;
+  const c2 = rand(15, 90) / 10;
+  const cVal = c1 * c2;
+
+  const d1 = rand(1, 9) * rsign();
+  const d2 = rand(2, 9);
+  const e1 = rand(1, 9) * rsign();
+  const e2 = rand(2, 9);
+  const dNum = d1 * e2 + e1 * d2;
+  const dDen = d2 * e2;
+  const dAns = simpFrac(dNum, dDen);
+
+  const f1 = rand(1, 6) * rsign();
+  const f2 = rand(2, 7);
+  const g1 = rand(1, 6) * rsign();
+  const g2 = rand(2, 7);
+  const eNum = f1 * g2 + g1 * f2;
+  const eDen = f2 * g2;
+  const eAns = simpFrac(eNum, eDen);
+
+  const h1 = rand(1, 9) * rsign();
+  const h2 = rand(2, 10);
+  const i1 = rand(1, 9) * rsign();
+  const i2 = rand(2, 10);
+  const fNum = h1 * i1;
+  const fDen = h2 * i2;
+  const fAns = simpFrac(fNum, fDen);
+
+  const j1 = rand(1, 9) * rsign();
+  const j2 = rand(2, 10);
+  const k1 = rand(1, 9) * rsign();
+  const k2 = rand(2, 10);
+  const gNum = j1 * k2;
+  const gDen = j2 * k1;
+  const gAns = simpFrac(gNum, gDen);
+
+  return {
+    n: 4,
+    title: "Solve the following:",
+    parts: [
+      { label: "a", q: `${(a1/10).toFixed(1)} &divide; ${a2}`, a: trimNum(aVal) },
+      { label: "b", q: `${b1.toFixed(1)} &times; ${b2.toFixed(1)}`, a: trimNum(bVal) },
+      { label: "c", q: `${c1.toFixed(1)} &times; ${c2.toFixed(1)}`, a: trimNum(cVal) },
+      { label: "d", q: `${frac(d1, d2)} + ${e1 < 0 ? "(" : ""}${frac(e1, e2)}${e1 < 0 ? ")" : ""}`, a: dAns.str },
+      { label: "e", q: `${frac(f1, f2)} + ${g1 < 0 ? "(" : ""}${frac(g1, g2)}${g1 < 0 ? ")" : ""}`, a: eAns.str },
+      { label: "f", q: `${frac(h1, h2)} &times; ${frac(i1, i2)}`, a: fAns.str },
+      { label: "g", q: `${frac(j1, j2)} &divide; ${frac(k1, k2)}`, a: gAns.str }
+    ]
+  };
+}
+
+/* ---------- Q5 ---------- */
+function genQ5() {
+  const whole = rand(1, 9);
+  const dec = rand(1, 99);
+  const decStr = dec.toString().padStart(2, '0');
+  const value = parseFloat(`${whole}.${decStr}`);
+  const num = Math.round(value * 100);
+  const den = 100;
+  const ans = simpFrac(num, den);
+  return {
+    n: 5,
+    title: `Convert ${value} into a fraction and reduce it to the lowest form.`,
+    parts: null,
+    a: ans.str
+  };
+}
+
+/* ---------- Q6 ---------- */
+function genQ6() {
+  const den = pick([2, 4, 5, 10, 20, 25, 50, 100]);
+  const num = rand(1, den * 3);
+  const val = num / den;
+  return {
+    n: 6,
+    title: `Convert ${frac(num, den)} into decimal.`,
+    parts: null,
+    a: trimNum(val)
+  };
+}
+
+/* ---------- Q7 ---------- */
+function genQ7() {
+  const a1 = rand(2, 15) * rsign();
+  const b1 = rand(2, 15) * rsign();
+  const op1 = Math.random() < 0.5 ? "+" : "&minus;";
+  const valA = op1 === "+" ? (a1 + b1) : (a1 - b1);
+
+  const a1Str = a1 < 0 ? `(&minus;${Math.abs(a1)})` : `${a1}`;
+  const b1Str = b1 < 0 ? `(&minus;${Math.abs(b1)})` : `${b1}`;
+  const qA = `${a1Str} ${op1 === "+" ? "+" : "&minus;"} ${b1Str}`;
+
+  const a2 = rand(2, 15) * rsign();
+  const b2 = rand(2, 15) * rsign();
+  const outerSign = Math.random() < 0.5 ? 1 : -1;
+  const op2 = Math.random() < 0.5 ? "+" : "&minus;";
+
+  const firstVal = outerSign * a2;
+  const valB = op2 === "+" ? (firstVal + b2) : (firstVal - b2);
+
+  const innerA = a2 < 0 ? `&minus;${Math.abs(a2)}` : `${a2}`;
+  const firstStr = outerSign < 0 ? `&minus;(${innerA})` : `(${innerA})`;
+  const b2Str = b2 < 0 ? `(&minus;${Math.abs(b2)})` : `(${b2})`;
+  const qB = `${firstStr} ${op2 === "+" ? "+" : "&minus;"} ${b2Str}`;
+
+  return {
+    n: 7,
+    title: "Solve the following:",
+    parts: [
+      { label: "a", q: qA, a: `${valA}` },
+      { label: "b", q: qB, a: `${valB}` }
+    ]
+  };
+}
+
+/* ---------- Q8 ---------- */
+function genQ8() {
+  const A = rand(2, 9) * rsign();
+  const B = rand(2, 9) * rsign();
+  const C = rand(2, 9) * rsign();
+  const D = rand(2, 9) * rsign();
+  const sumA = polyM([[A + C, "x"], [B + D, "y"]]);
+  const qA = `${polyM([[A, "x"], [B, "y"]])} and ${polyM([[C, "x"], [D, "y"]])}`;
+
+  const A2 = rand(2, 5) * rsign();
+  const B2 = rand(1, 6) * rsign();
+  const C2 = rand(1, 5) * rsign();
+  const D2 = rand(1, 5) * rsign();
+  const E2 = rand(2, 8) * rsign();
+  const F2 = rand(2, 6) * rsign();
+  const sumB = polyM([[A2 + D2, "x"], [B2 + E2, "y"], [C2 + F2, "z"]]);
+  const qB = `${polyM([[A2, "x"], [B2, "y"], [C2, "z"]])} and ${polyM([[D2, "x"], [E2, "y"], [F2, "z"]])}`;
+
+  return {
+    n: 8,
+    title: "Add the following:",
+    parts: [
+      { label: "a", q: qA, a: sumA },
+      { label: "b", q: qB, a: sumB }
+    ]
+  };
+}
+
+/* ---------- Q9 ---------- */
+function genQ9() {
+  const A = rand(2, 15) * rsign();
+  const B = rand(2, 15) * rsign();
+  const C = rand(1, 8) * rsign();
+  const D = rand(2, 15) * rsign();
+  const E = rand(2, 15) * rsign();
+  const F = rand(1, 8) * rsign();
+  const diffA = polyM([[A - D, "xy"], [B - E, "ab"], [C - F, "z"]]);
+  const qA = `${polyM([[A, "xy"], [B, "ab"], [C, "z"]])} from ${polyM([[D, "xy"], [E, "ab"], [F, "z"]])}`;
+
+  const A2 = rand(1, 5) * rsign();
+  const B2 = rand(1, 6) * rsign();
+  const C2 = rand(1, 5) * rsign();
+  const D2 = rand(1, 6) * rsign();
+  const E2 = rand(5, 15) * rsign();
+  const F2 = rand(5, 15) * rsign();
+  const G2 = rand(1, 8) * rsign();
+  const H2 = rand(1, 10) * rsign();
+  const diffB = polyM([[A2 - E2, "x"], [B2 - F2, "y"], [C2 - G2, "z"], [D2 - H2, ""]]);
+  const qB = `${polyM([[A2, "x"], [B2, "y"], [C2, "z"], [D2, ""]])} from ${polyM([[E2, "x"], [F2, "y"], [G2, "z"], [H2, ""]])}`;
+
+  return {
+    n: 9,
+    title: "Subtract:",
+    parts: [
+      { label: "a", q: qA, a: diffA },
+      { label: "b", q: qB, a: diffB }
+    ]
+  };
+}
+
+/* ============================================================
+   PART 3 — REGISTRY
+   ============================================================ */
+
+const Q_GENERATORS = {
+  1: genQ1, 2: genQ2, 3: genQ3, 4: genQ4, 5: genQ5,
+  6: genQ6, 7: genQ7, 8: genQ8, 9: genQ9
+};
+
+function generateQuestion(slot) {
+  const fn = Q_GENERATORS[slot];
+  return fn ? fn() : null;
+}
+
+/* ============================================================
+   PART 4 — STATE + PERSISTENCE
+   ============================================================ */
+
+const TOTAL_Q = 9;
+const STORAGE_KEY = 'c7math_interactive_v1';
+
+let state = {
+  slots: {},
+  hidden: {},
+  answersShown: {}
+};
+
+function saveState() {
+  try {
+    const snap = {
+      slots: state.slots,
+      hidden: state.hidden,
+      answersShown: state.answersShown,
+      version: 1
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
+  } catch (e) {
+    console.warn('Could not save state:', e);
+  }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const snap = JSON.parse(raw);
+    if (!snap || snap.version !== 1) return false;
+    if (!snap.slots || typeof snap.slots !== 'object') return false;
+    if (!snap.hidden || typeof snap.hidden !== 'object') return false;
+    if (!snap.answersShown || typeof snap.answersShown !== 'object') return false;
+
+    state.slots = snap.slots;
+    state.hidden = snap.hidden;
+    state.answersShown = snap.answersShown;
+
+    for (let n = 1; n <= TOTAL_Q; n++) {
+      if (!state.slots[n]) state.slots[n] = generateQuestion(n);
+      if (typeof state.hidden[n] !== 'boolean') state.hidden[n] = false;
+      if (typeof state.answersShown[n] !== 'boolean') state.answersShown[n] = false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Could not load state:', e);
+    return false;
+  }
+}
+
+/* ============================================================
+   PART 5 — RENDER
+   ============================================================ */
+
+const qlistEl = document.getElementById('qlist');
+const printAnswersGridEl = document.getElementById('printAnswersGrid');
+
+function displayNumbers() {
+  const map = {};
+  let dn = 1;
+  for (let n = 1; n <= TOTAL_Q; n++) if (!state.hidden[n]) map[n] = dn++;
+  return map;
+}
+
+function renderAnswerBody(q) {
+  let html = `<div class="ans-title">Answer</div>`;
+  if (q.parts) {
+    q.parts.forEach(p => {
+      html += `<span class="ans-part"><b>${p.label}.</b> ${p.a}</span>`;
+    });
+  } else {
+    html += `<span class="ans-part">${q.a}</span>`;
+  }
+  return html;
+}
+
+function buildCard(slot, displayNum) {
+  const q = state.slots[slot];
+  const card = document.createElement('div');
+  card.className = 'qcard';
+  card.dataset.slot = slot;
+
+  card.innerHTML = `
+    <div class="qcard-head">
+      <span class="qnum">${displayNum}.</span>
+      <span class="qtitle">${q.title}</span>
+    </div>
+    ${q.figure ? q.figure : ''}
+    ${q.parts ? `<div class="parts">${q.parts.map(p =>
+        `<div class="part-row"><span class="part-label">${p.label}.</span><span>${p.q}</span></div>`
+      ).join('')}</div>` : ''}
+
+    <div class="qcard-actions">
+      <button class="qbtn qbtn-regen" data-action="regen">⟳ Regenerate</button>
+      <button class="qbtn qbtn-ans" data-action="answer">👁 Show Answer</button>
+      <button class="qbtn qbtn-hide" data-action="hide">✕ Hide</button>
+    </div>
+
+    <div class="qanswer" data-role="answer">${renderAnswerBody(q)}</div>
+
+    <div class="qhidden-bar" data-role="hiddenbar">
+      <span>Question hidden.</span>
+      <button class="show-btn" data-action="show">Show Question</button>
+    </div>
+  `;
+
+  card.querySelector('[data-action="regen"]').addEventListener('click', () => regenOne(slot));
+  card.querySelector('[data-action="answer"]').addEventListener('click', () => toggleAnswer(slot));
+  card.querySelector('[data-action="hide"]').addEventListener('click', () => hideOne(slot));
+  card.querySelector('[data-action="show"]').addEventListener('click', () => showOne(slot));
+
+  if (state.answersShown[slot]) {
+    card.querySelector('[data-role="answer"]').classList.add('show');
+    card.querySelector('[data-action="answer"]').innerHTML = '🙈 Hide Answer';
+  }
+  if (state.hidden[slot]) card.classList.add('hidden');
+
+  return card;
+}
+
+function renderAllCards() {
+  const displayMap = displayNumbers();
+  qlistEl.innerHTML = '';
+  for (let n = 1; n <= TOTAL_Q; n++) {
+    qlistEl.appendChild(buildCard(n, displayMap[n] !== undefined ? displayMap[n] : '—'));
+  }
+  renderPrintAnswers();
+}
+
+function refreshOneCard(slot) {
+  const old = qlistEl.querySelector(`.qcard[data-slot="${slot}"]`);
+  if (!old) return;
+  const displayMap = displayNumbers();
+  const fresh = buildCard(slot, displayMap[slot] !== undefined ? displayMap[slot] : '—');
+  old.replaceWith(fresh);
+}
+
+function renderPrintAnswers() {
+  const displayMap = displayNumbers();
+  printAnswersGridEl.innerHTML = '';
+  for (let n = 1; n <= TOTAL_Q; n++) {
+    if (state.hidden[n]) continue;
+    const q = state.slots[n];
+    const dn = displayMap[n];
+    const item = document.createElement('div');
+    item.className = 'ans-item';
+    let html = `<b>${dn}.</b> `;
+    if (q.parts) {
+      html += q.parts.map(p => `<b>${p.label}.</b> ${p.a}`).join(' &nbsp; ');
+    } else {
+      html += q.a;
+    }
+    item.innerHTML = html;
+    printAnswersGridEl.appendChild(item);
+  }
+}
+
+/* ============================================================
+   PART 6 — ACTIONS
+   ============================================================ */
+
+function regenOne(slot) {
+  state.slots[slot] = generateQuestion(slot);
+  state.answersShown[slot] = false;
+  refreshOneCard(slot);
+  renderPrintAnswers();
+  saveState();
+}
+function toggleAnswer(slot) {
+  state.answersShown[slot] = !state.answersShown[slot];
+  const card = qlistEl.querySelector(`.qcard[data-slot="${slot}"]`);
+  if (card) {
+    const ans = card.querySelector('[data-role="answer"]');
+    const btn = card.querySelector('[data-action="answer"]');
+    if (state.answersShown[slot]) { ans.classList.add('show'); btn.innerHTML = '🙈 Hide Answer'; }
+    else { ans.classList.remove('show'); btn.innerHTML = '👁 Show Answer'; }
+  }
+  saveState();
+}
+function hideOne(slot) {
+  state.hidden[slot] = true;
+  renderAllCards();
+  saveState();
+}
+function showOne(slot) {
+  state.hidden[slot] = false;
+  state.answersShown[slot] = false;
+  state.slots[slot] = generateQuestion(slot);
+  renderAllCards();
+  saveState();
+}
+
+document.getElementById('regenAllBtn').addEventListener('click', () => {
+  for (let n = 1; n <= TOTAL_Q; n++) {
+    state.slots[n] = generateQuestion(n);
+    state.answersShown[n] = false;
+    state.hidden[n] = false;
+  }
+  renderAllCards();
+  saveState();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+document.getElementById('showAllAnsBtn').addEventListener('click', () => {
+  for (let n = 1; n <= TOTAL_Q; n++) if (!state.hidden[n]) state.answersShown[n] = true;
+  renderAllCards();
+  saveState();
+});
+document.getElementById('hideAllAnsBtn').addEventListener('click', () => {
+  for (let n = 1; n <= TOTAL_Q; n++) state.answersShown[n] = false;
+  renderAllCards();
+  saveState();
+});
+document.getElementById('printBtn').addEventListener('click', () => {
+  const withAnswers = confirm(
+    "Include the ANSWER KEY in the printed version?\n\n" +
+    "OK  → Print questions + Answers section at the end\n" +
+    "Cancel → Print questions only (no answers)"
+  );
+  document.body.classList.remove('show-answers', 'hide-answers');
+  document.body.classList.add(withAnswers ? 'show-answers' : 'hide-answers');
+  renderPrintAnswers();
+  window.print();
+  setTimeout(() => {
+    document.body.classList.remove('show-answers', 'hide-answers');
+  }, 500);
+});
+
+/* ============================================================
+   PART 7 — BOOTSTRAP
+   ============================================================ */
+
+(function init() {
+  const restored = loadState();
+
+  if (!restored) {
+    for (let n = 1; n <= TOTAL_Q; n++) {
+      state.slots[n] = generateQuestion(n);
+      state.hidden[n] = false;
+      state.answersShown[n] = false;
+    }
+    saveState();
+  }
+
+  renderAllCards();
+})();
+</script>
+</body>
+</html>
