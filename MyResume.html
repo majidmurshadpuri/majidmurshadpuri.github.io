@@ -160,20 +160,19 @@ ul { list-style: none; }
   backdrop-filter: blur(8px);
 }
 
-/* ========== HERO ACTION BUTTONS (My Website) ========== */
+/* ========== HERO ACTIONS (My Website button) ========== */
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.65rem;
   margin-top: 1.35rem;
-  animation: fadeUp 0.7s ease-out 0.1s both;
 }
 .website-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.65rem 1.35rem;
+  padding: 0.7rem 1.5rem;
   background: var(--glass);
   border: 1px solid var(--glass-border);
   border-radius: 50px;
@@ -190,9 +189,10 @@ ul { list-style: none; }
   font-size: 1.05rem;
   line-height: 1;
 }
-.website-btn:hover, .website-btn:focus-visible {
+.website-btn:hover,
+.website-btn:focus-visible {
   transform: translateY(-2px);
-  background: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.2);
   box-shadow: 0 10px 26px rgba(0,0,0,0.3);
   outline: 2px solid #93c5fd;
   outline-offset: 2px;
@@ -830,7 +830,7 @@ ul { list-style: none; }
         <span class="qual-pill">Diploma in IT</span>
       </div>
 
-      <!-- My Website button -->
+      <!-- ===== MY WEBSITE BUTTON ===== -->
       <div class="hero-actions">
         <a class="website-btn" href="https://majidmurshadpuri.github.io" target="_blank" rel="noopener">My Website</a>
       </div>
@@ -1462,6 +1462,7 @@ ul { list-style: none; }
     </div>
   </div>
 
+  <!-- LETTER 2: Government Inter College (new page if needed, but kept continuous after first letter) -->
   <div class="print-page-break"></div>
 
   <div class="letter no-break">
@@ -1507,6 +1508,7 @@ ul { list-style: none; }
     panel.classList.add('active');
     panel.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    // Focus management
     var backBtn = panel.querySelector('.back-btn');
     if (backBtn) setTimeout(function () { backBtn.focus(); }, 100);
   }
@@ -1519,9 +1521,11 @@ ul { list-style: none; }
     document.body.style.overflow = '';
   }
 
+  // Expose globally for inline handlers
   window.openSection = openSection;
   window.closeSection = closeSection;
 
+  // Keyboard: Escape closes active panel
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       var active = document.querySelector('.section-panel.active');
@@ -1531,6 +1535,7 @@ ul { list-style: none; }
     }
   });
 
+  // Ensure print view is never visible on screen
   window.addEventListener('beforeprint', function () {
     document.getElementById('print-view').setAttribute('aria-hidden', 'false');
   });
