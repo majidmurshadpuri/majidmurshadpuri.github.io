@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Resize Tool</title>
+    <style>
+        /* ----- Reset & Base ----- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f6f8fc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 20, 50, 0.10);
+            padding: 40px 36px 44px;
+            max-width: 740px;
+            width: 100%;
+            transition: box-shadow 0.25s;
+        }
+
+        .card:hover {
+            box-shadow: 0 28px 72px rgba(0, 20, 50, 0.14);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0b1a33;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #5b6f8a;
+            font-size: 15px;
+            margin-bottom: 28px;
+            border-left: 3px solid #3b82f6;
+            padding-left: 14px;
+            background: #f0f4fe;
+            border-radius: 0 8px 8px 0;
+            line-height: 1.5;
+        }
+
+        /* ----- Upload Area ----- */
+        .upload-zone {
+            border: 2px dashed #d0d9e8;
+            border-radius: 16px;
+            padding: 40px 20px 36px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.25s, background 0.2s;
+            background: #fafcff;
+            position: relative;
+        }
+
+        .upload-zone:hover {
+            border-color: #3b82f6;
+            background: #f0f6ff;
+        }
+
+        .upload-zone.dragover {
+            border-color: #3b82f6;
+            background: #e8f0fe;
+        }
+
+        .upload-zone .icon {
+            font-size: 44px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .upload-zone .main-text {
+            font-size: 17px;
+            font-weight: 600;
+            color: #0b1a33;
+        }
+
+        .upload-zone .sub-text {
+            font-size: 14px;
+            color: #6b7f9a;
+            margin-top: 4px;
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ----- Preview ----- */
+        .preview-section {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .preview-section.visible {
+            display: block;
+        }
+
+        .preview-wrapper {
+            border-radius: 14px;
+            overflow: hidden;
+            background: #f2f5fa;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 120px;
+            border: 1px solid #e5ebf3;
+        }
+
+        .preview-wrapper img {
+            max-width: 100%;
+            max-height: 360px;
+            display: block;
+            object-fit: contain;
+        }
+
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 14px;
+            color: #2d4059;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .file-info .badge {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 13px;
+            background: #e8edf6;
+            color: #2d4059;
+        }
+
+        .file-info .badge.original {
+            background: #e8edf6;
+            color: #2d4059;
+        }
+
+        .file-info .badge.resized {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .file-info .badge.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .file-info .badge.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .file-info .badge.hidden {
+            display: none;
+        }
+
+        /* ----- Controls ----- */
+        .controls {
+            margin-top: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e2f47;
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+        }
+
+        .control-group .input-wrap {
+            display: flex;
+            align-items: center;
+            background: #f2f5fa;
+            border-radius: 10px;
+            border: 1px solid #dce3ef;
+            transition: border 0.2s;
+            overflow: hidden;
+        }
+
+        .control-group .input-wrap:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .control-group .input-wrap input,
+        .control-group .input-wrap select {
+            border: none;
+            background: transparent;
+            padding: 11px 14px;
+            font-size: 15px;
+            width: 100%;
+            outline: none;
+            color: #0b1a33;
+            font-weight: 500;
+            font-family: inherit;
+        }
+
+        .control-group .input-wrap select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234f6582' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .control-group .input-wrap .unit {
+            padding: 0 14px 0 4px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4f6582;
+            white-space: nowrap;
+        }
+
+        .control-group .input-wrap input[type="number"]::-webkit-inner-spin-button {
+            opacity: 1;
+        }
+
+        .btn {
+            padding: 11px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: #1d4ed8;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.30);
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            box-shadow: 0 6px 18px rgba(29, 78, 216, 0.35);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-success {
+            background: #059669;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.30);
+        }
+
+        .btn-success:hover {
+            background: #047857;
+            box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35);
+        }
+
+        .btn-success:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #4f6582;
+            border: 1px solid #dce3ef;
+        }
+
+        .btn-ghost:hover {
+            background: #f0f4fe;
+            border-color: #b0c0d8;
+        }
+
+        .btn-ghost:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        /* ----- Advanced Options Toggle ----- */
+        .advanced-toggle {
+            margin-top: 20px;
+            border-top: 1px solid #e5ebf3;
+            padding-top: 16px;
+        }
+
+        .advanced-toggle .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+
+        .advanced-toggle .toggle-btn:hover {
+            background: #eff4ff;
+        }
+
+        .advanced-toggle .toggle-btn .arrow {
+            display: inline-block;
+            transition: transform 0.25s ease;
+            font-size: 12px;
+        }
+
+        .advanced-toggle .toggle-btn .arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .advanced-panel {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease;
+            margin-top: 0;
+        }
+
+        .advanced-panel.open {
+            max-height: 600px;
+            opacity: 1;
+            margin-top: 18px;
+        }
+
+        .advanced-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            background: #f8faff;
+            padding: 20px 20px 18px;
+            border-radius: 14px;
+            border: 1px solid #e5ebf3;
+        }
+
+        .advanced-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .advanced-grid .control-group {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .advanced-grid .control-group .input-wrap {
+            background: #ffffff;
+        }
+
+        .advanced-grid .hint {
+            font-size: 12px;
+            color: #6b7f9a;
+            margin-top: 2px;
+        }
+
+        .advanced-grid .dimension-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .advanced-grid .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding-top: 4px;
+        }
+
+        .advanced-grid .checkbox-row label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #1e2f47;
+            cursor: pointer;
+        }
+
+        .advanced-grid .checkbox-row input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: #1d4ed8;
+            cursor: pointer;
+        }
+
+        .advanced-grid .checkbox-row .disabled-label {
+            color: #9aaec9;
+        }
+
+        @media (max-width: 600px) {
+            .advanced-grid {
+                grid-template-columns: 1fr;
+            }
+            .advanced-grid .dimension-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .advanced-grid .full-width {
+                grid-column: 1;
+            }
+            .advanced-grid .checkbox-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+
+        /* ----- Status ----- */
+        .status {
+            margin-top: 18px;
+            font-size: 14px;
+            color: #2d4059;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 28px;
+        }
+
+        .status .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid #dce3ef;
+            border-top-color: #1d4ed8;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .status .message {
+            flex: 1;
+        }
+
+        /* ----- Responsive ----- */
+        @media (max-width: 600px) {
+            .card {
+                padding: 24px 18px 28px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            .control-group {
+                min-width: 100%;
+            }
+            .actions {
+                flex-direction: column;
+            }
+            .btn {
+                justify-content: center;
+                width: 100%;
+            }
+            .upload-zone {
+                padding: 28px 16px;
+            }
+            .file-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .advanced-grid .dimension-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>🖼️ Image Resize</h1>
+        <p class="subtitle">
+            Compress your image to a specific file size. Expand <strong>Advanced</strong> for resolution &amp; physical dimensions.
+        </p>
+
+        <!-- Upload -->
+        <div class="upload-zone" id="uploadZone">
+            <span class="icon">📤</span>
+            <div class="main-text">Drop your image here, or click to browse</div>
+            <div class="sub-text">Supports JPG, PNG, WEBP &amp; more</div>
+            <input type="file" id="fileInput" accept="image/*" />
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-section" id="previewSection">
+            <div class="preview-wrapper">
+                <img id="previewImg" alt="Uploaded image preview" />
+            </div>
+            <div class="file-info">
+                <span>
+                    <span class="badge original" id="origSizeBadge">Original: —</span>
+                    <span class="badge resized" id="newSizeBadge">Resized: —</span>
+                    <span class="badge hidden" id="statusBadge"></span>
+                </span>
+                <span id="dimensionsInfo" style="color:#5b6f8a; font-size:13px;">—</span>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <label for="targetSize">Target size (KB)</label>
+                <div class="input-wrap">
+                    <input type="number" id="targetSize" value="200" min="1" max="100000" step="1" />
+                    <span class="unit">KB</span>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <button class="btn btn-primary" id="resizeBtn">⚡ Resize</button>
+                <button class="btn btn-success" id="downloadBtn" disabled>⬇️ Download</button>
+            </div>
+        </div>
+
+        <!-- Advanced Options Toggle -->
+        <div class="advanced-toggle">
+            <button class="toggle-btn" id="advancedToggle" type="button">
+                <span>⚙️ Advanced Options</span>
+                <span class="arrow" id="arrowIcon">▼</span>
+            </button>
+
+            <div class="advanced-panel" id="advancedPanel">
+                <div class="advanced-grid">
+                    <!-- Unit selection + checkbox -->
+                    <div class="control-group full-width">
+                        <div class="checkbox-row">
+                            <label>
+                                <input type="checkbox" id="applyDimensions" checked />
+                                Apply dimensions
+                            </label>
+                            <span style="font-size:13px; color:#6b7f9a;">(uses width/height below)</span>
+                        </div>
+                        <div style="margin-top:6px;">
+                            <label for="unitSelect" style="font-size:13px; font-weight:600; color:#1e2f47; display:block; margin-bottom:4px;">Unit</label>
+                            <div class="input-wrap">
+                                <select id="unitSelect">
+                                    <option value="mm">Millimeters (mm)</option>
+                                    <option value="cm" selected>Centimeters (cm)</option>
+                                    <option value="in">Inches (in)</option>
+                                    <option value="px">Pixels (px)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Width & Height -->
+                    <div class="control-group full-width">
+                        <label style="font-size:13px; font-weight:600; color:#1e2f47; display:block; margin-bottom:4px;">Dimensions</label>
+                        <div class="dimension-row">
+                            <div class="input-wrap">
+                                <input type="number" id="advWidth" placeholder="Width" min="0.1" step="0.1" />
+                                <span class="unit" id="unitLabelWidth">cm</span>
+                            </div>
+                            <div class="input-wrap">
+                                <input type="number" id="advHeight" placeholder="Height" min="0.1" step="0.1" />
+                                <span class="unit" id="unitLabelHeight">cm</span>
+                            </div>
+                        </div>
+                        <div class="hint">Leave blank to auto‑calculate from aspect ratio</div>
+                    </div>
+
+                    <!-- DPI + checkbox -->
+                    <div class="control-group full-width">
+                        <div class="checkbox-row">
+                            <label>
+                                <input type="checkbox" id="applyDPI" checked />
+                                Apply DPI
+                            </label>
+                            <span style="font-size:13px; color:#6b7f9a;">(used to convert physical units to pixels)</span>
+                        </div>
+                        <div style="margin-top:6px;">
+                            <label for="advDPI" style="font-size:13px; font-weight:600; color:#1e2f47; display:block; margin-bottom:4px;">Resolution (DPI)</label>
+                            <div class="input-wrap">
+                                <input type="number" id="advDPI" value="96" min="1" max="1200" step="1" />
+                                <span class="unit">dpi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="status" id="status">
+            <span class="message" id="statusMsg">Ready. Upload an image to begin.</span>
+        </div>
+
+        <!-- Hidden canvas -->
+        <canvas id="workCanvas" style="display:none;"></canvas>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ----- DOM refs -----
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const previewImg = document.getElementById('previewImg');
+            const previewSection = document.getElementById('previewSection');
+            const origSizeBadge = document.getElementById('origSizeBadge');
+            const newSizeBadge = document.getElementById('newSizeBadge');
+            const statusBadge = document.getElementById('statusBadge');
+            const dimensionsInfo = document.getElementById('dimensionsInfo');
+            const targetSizeInput = document.getElementById('targetSize');
+            const resizeBtn = document.getElementById('resizeBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const statusMsg = document.getElementById('statusMsg');
+            const workCanvas = document.getElementById('workCanvas');
+            const ctx = workCanvas.getContext('2d');
+
+            // Advanced elements
+            const advancedToggle = document.getElementById('advancedToggle');
+            const advancedPanel = document.getElementById('advancedPanel');
+            const arrowIcon = document.getElementById('arrowIcon');
+            const unitSelect = document.getElementById('unitSelect');
+            const advWidth = document.getElementById('advWidth');
+            const advHeight = document.getElementById('advHeight');
+            const advDPI = document.getElementById('advDPI');
+            const applyDimensions = document.getElementById('applyDimensions');
+            const applyDPI = document.getElementById('applyDPI');
+            const unitLabelWidth = document.getElementById('unitLabelWidth');
+            const unitLabelHeight = document.getElementById('unitLabelHeight');
+
+            // ----- State -----
+            let originalFile = null;
+            let originalImage = null;
+            let originalBlobUrl = null;
+            let originalSizeKB = 0;
+            let resizedBlob = null;
+            let resizedSizeKB = 0;
+            let isProcessing = false;
+            let advancedOpen = false;
+
+            // ----- Helpers -----
+            function formatSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                return (bytes / 1024).toFixed(1) + ' KB';
+            }
+
+            function formatSizeKB(bytes) {
+                return (bytes / 1024).toFixed(1) + ' KB';
+            }
+
+            function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+
+            // ----- Update unit labels -----
+            function updateUnitLabels() {
+                const unit = unitSelect.value;
+                const labelMap = { mm: 'mm', cm: 'cm', in: 'in', px: 'px' };
+                const label = labelMap[unit] || 'cm';
+                unitLabelWidth.textContent = label;
+                unitLabelHeight.textContent = label;
+            }
+
+            unitSelect.addEventListener('change', updateUnitLabels);
+            updateUnitLabels();
+
+            // ----- Advanced toggle -----
+            advancedToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                advancedOpen = !advancedOpen;
+                advancedPanel.classList.toggle('open', advancedOpen);
+                arrowIcon.classList.toggle('open', advancedOpen);
+            });
+
+            // ----- Load image -----
+            function loadImageFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => resolve(img);
+                        img.onerror = () => reject(new Error('Failed to decode image'));
+                        img.src = e.target.result;
+                    };
+                    reader.onerror = () => reject(new Error('Failed to read file'));
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // ----- Compress to target KB using binary search (with optional resize) -----
+            function compressToTarget(img, targetKB, targetWidth, targetHeight, useDimensions, useDPI, dpiValue) {
+                return new Promise((resolve, reject) => {
+                    const targetBytes = Math.max(targetKB * 1024, 1024);
+
+                    // Determine canvas size
+                    let w = img.naturalWidth || img.width;
+                    let h = img.naturalHeight || img.height;
+
+                    // Apply advanced resize if enabled and dimensions are provided
+                    if (useDimensions && (targetWidth > 0 || targetHeight > 0)) {
+                        const ratio = w / h;
+                        let tw = targetWidth;
+                        let th = targetHeight;
+                        if (tw > 0 && th <= 0) { th = Math.round(tw / ratio); }
+                        if (th > 0 && tw <= 0) { tw = Math.round(th * ratio); }
+                        tw = Math.max(1, Math.round(tw));
+                        th = Math.max(1, Math.round(th));
+                        // Cap to reasonable max
+                        const MAX = 8000;
+                        if (tw > MAX || th > MAX) {
+                            const scale = Math.min(MAX / tw, MAX / th);
+                            tw = Math.round(tw * scale);
+                            th = Math.round(th * scale);
+                        }
+                        w = tw;
+                        h = th;
+                    } else {
+                        // Cap dimensions to prevent memory issues
+                        const MAX_DIM = 4000;
+                        if (w > MAX_DIM || h > MAX_DIM) {
+                            const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
+                            w = Math.round(w * ratio);
+                            h = Math.round(h * ratio);
+                        }
+                    }
+
+                    workCanvas.width = w;
+                    workCanvas.height = h;
+                    ctx.clearRect(0, 0, w, h);
+                    ctx.drawImage(img, 0, 0, w, h);
+
+                    // Binary search for JPEG quality
+                    async function tryQuality(quality) {
+                        return new Promise((resolve) => {
+                            workCanvas.toBlob((blob) => {
+                                if (!blob) { resolve(null); return; }
+                                resolve({ blob, size: blob.size });
+                            }, 'image/jpeg', quality);
+                        });
+                    }
+
+                    async function binarySearch() {
+                        let lo = 0.0;
+                        let hi = 1.0;
+                        let best = { quality: 0.92, blob: null, size: Infinity };
+                        const tolerance = 0.05;
+                        const maxIter = 30;
+
+                        for (let i = 0; i < maxIter; i++) {
+                            const mid = (lo + hi) / 2;
+                            const result = await tryQuality(mid);
+                            if (!result) { hi = mid; continue; }
+
+                            if (Math.abs(result.size - targetBytes) < Math.abs(best.size - targetBytes)) {
+                                best = { quality: mid, blob: result.blob, size: result.size };
+                            }
+
+                            if (Math.abs(result.size - targetBytes) / targetBytes < tolerance) break;
+
+                            if (result.size > targetBytes) { hi = mid; } else { lo = mid; }
+                        }
+
+                        if (!best.blob) {
+                            const fallback = await tryQuality(0.9);
+                            if (fallback) best = { quality: 0.9, blob: fallback.blob, size: fallback.size };
+                            else {
+                                const fb2 = await new Promise((res) => {
+                                    workCanvas.toBlob((b) => res(b ? { blob: b, size: b.size } : null), 'image/jpeg', 0.92);
+                                });
+                                if (fb2) best = { quality: 0.92, blob: fb2.blob, size: fb2.size };
+                            }
+                        }
+
+                        // If still too large, try a lower quality
+                        if (best.size > targetBytes * 1.5) {
+                            const lower = await tryQuality(0.25);
+                            if (lower && lower.size < best.size) {
+                                if (Math.abs(lower.size - targetBytes) < Math.abs(best.size - targetBytes)) {
+                                    best = { quality: 0.25, blob: lower.blob, size: lower.size };
+                                }
+                            }
+                        }
+
+                        return best;
+                    }
+
+                    binarySearch()
+                        .then((result) => {
+                            if (!result || !result.blob) {
+                                reject(new Error('Failed to compress image'));
+                                return;
+                            }
+                            resolve({
+                                blob: result.blob,
+                                size: result.size,
+                                width: w,
+                                height: h,
+                                quality: result.quality,
+                            });
+                        })
+                        .catch(reject);
+                });
+            }
+
+            // ----- Main resize flow -----
+            async function handleResize() {
+                if (!originalImage || !originalFile) {
+                    setStatus('Please upload an image first.', '');
+                    return;
+                }
+
+                if (isProcessing) return;
+
+                const targetKB = parseFloat(targetSizeInput.value);
+                if (!targetKB || targetKB < 0.5) {
+                    setStatus('Please enter a valid target size (at least 1 KB).', '');
+                    return;
+                }
+
+                // Read advanced settings
+                const useDimensions = applyDimensions.checked;
+                const useDPI = applyDPI.checked;
+                let advW = parseFloat(advWidth.value);
+                let advH = parseFloat(advHeight.value);
+                let dpi = parseFloat(advDPI.value) || 96;
+
+                // Convert physical dimensions to pixels if needed
+                let targetPxW = 0;
+                let targetPxH = 0;
+
+                if (useDimensions) {
+                    const unit = unitSelect.value;
+                    let convFactor = 1;
+                    if (unit === 'mm') convFactor = 25.4;
+                    else if (unit === 'cm') convFactor = 2.54;
+                    else if (unit === 'in') convFactor = 1;
+                    else if (unit === 'px') convFactor = 0; // pixels, no conversion
+
+                    if (unit === 'px') {
+                        targetPxW = advW || 0;
+                        targetPxH = advH || 0;
+                    } else if (convFactor > 0 && useDPI) {
+                        // Only convert if DPI is enabled
+                        if (advW > 0) targetPxW = Math.round(advW * dpi / convFactor);
+                        if (advH > 0) targetPxH = Math.round(advH * dpi / convFactor);
+                    } else if (convFactor > 0 && !useDPI) {
+                        // If DPI is disabled but dimensions are provided, use a default conversion (96 dpi equivalent)
+                        // We'll still use the provided dpi value but the checkbox is off, so we use a fallback
+                        // Actually, if DPI is off, we should treat the values as pixels or use a default conversion?
+                        // The user wants to apply dimensions but not DPI — we'll use the DPI value anyway for conversion
+                        // but the checkbox is there to explicitly disable DPI application.
+                        // Better: if DPI is off, we treat the numbers as pixels directly (since DPI is the bridge)
+                        // But the user might still want to use the unit. Let's use the DPI value but warn?
+                        // For simplicity: if DPI is unchecked, we skip DPI conversion and treat numbers as pixels.
+                        // But the unit selector still applies? That would be confusing.
+                        // So: if DPI is unchecked, we treat the input as pixels (ignore unit conversion).
+                        // But we have a unit selector. So we'll use the unit to convert, but we need a DPI.
+                        // We'll use the DPI value even if unchecked, but the user can uncheck to effectively ignore it.
+                        // Actually, the user wants a checkbox to apply DPI. If unchecked, we should not use DPI for conversion.
+                        // But we still need to convert from physical units to pixels. Without DPI, we can't.
+                        // So if DPI is unchecked, we'll treat the numbers as pixels regardless of the unit.
+                        // That's the most intuitive: uncheck DPI → dimensions are in pixels.
+                        // So we'll set convFactor to 0 (pixels) when DPI is off.
+                        convFactor = 0;
+                        targetPxW = advW || 0;
+                        targetPxH = advH || 0;
+                    }
+
+                    // If both dimensions are 0, use original
+                    if (targetPxW <= 0 && targetPxH <= 0) {
+                        targetPxW = 0;
+                        targetPxH = 0;
+                    }
+                }
+
+                // Disable UI
+                isProcessing = true;
+                resizeBtn.disabled = true;
+                downloadBtn.disabled = true;
+                setStatus('⏳ Compressing…', 'processing');
+
+                try {
+                    const result = await compressToTarget(
+                        originalImage,
+                        targetKB,
+                        targetPxW,
+                        targetPxH,
+                        useDimensions && (targetPxW > 0 || targetPxH > 0),
+                        useDPI,
+                        dpi
+                    );
+
+                    if (resizedBlob) {
+                        if (resizedBlob.url) URL.revokeObjectURL(resizedBlob.url);
+                    }
+
+                    resizedBlob = result.blob;
+                    resizedSizeKB = result.size / 1024;
+
+                    const url = URL.createObjectURL(result.blob);
+                    resizedBlob.url = url;
+                    previewImg.src = url;
+
+                    newSizeBadge.textContent = 'Resized: ' + formatSizeKB(result.size);
+                    newSizeBadge.className = 'badge resized';
+
+                    const targetBytes = targetKB * 1024;
+                    const diffPercent = Math.abs(result.size - targetBytes) / targetBytes * 100;
+                    if (diffPercent < 5) {
+                        statusBadge.textContent = '✅ Perfect!';
+                        statusBadge.className = 'badge success';
+                        statusBadge.classList.remove('hidden');
+                    } else if (result.size < targetBytes) {
+                        statusBadge.textContent = '📉 Below target by ' + (targetKB - result.size / 1024).toFixed(1) + ' KB';
+                        statusBadge.className = 'badge resized';
+                        statusBadge.classList.remove('hidden');
+                    } else {
+                        statusBadge.textContent = '📈 Above target by ' + (result.size / 1024 - targetKB).toFixed(1) + ' KB';
+                        statusBadge.className = 'badge error';
+                        statusBadge.classList.remove('hidden');
+                    }
+
+                    // Show dimensions
+                    let dims = result.width + ' × ' + result.height + ' px';
+                    if (useDimensions && (targetPxW > 0 || targetPxH > 0)) {
+                        const unit = unitSelect.value;
+                        const labelMap = { mm: 'mm', cm: 'cm', in: 'in', px: 'px' };
+                        const unitLabel = labelMap[unit] || 'cm';
+                        let convFactor = unit === 'mm' ? 25.4 : unit === 'cm' ? 2.54 : unit === 'in' ? 1 : 0;
+                        if (unit === 'px' || !useDPI) {
+                            dims += '  |  ' + result.width + ' × ' + result.height + ' px';
+                        } else if (convFactor > 0 && useDPI) {
+                            const pw = (result.width * convFactor / dpi).toFixed(2);
+                            const ph = (result.height * convFactor / dpi).toFixed(2);
+                            dims += '  |  ' + pw + ' × ' + ph + ' ' + unitLabel + ' @ ' + dpi + ' dpi';
+                        } else {
+                            dims += '  |  ' + result.width + ' × ' + result.height + ' px';
+                        }
+                    } else {
+                        dims += '  |  ' + Math.round(result.width * 96 / 2.54) + ' × ' + Math.round(result.height * 96 / 2.54) +
+                            ' px @ 96 dpi (approx)';
+                    }
+                    dimensionsInfo.textContent = dims;
+
+                    downloadBtn.disabled = false;
+
+                    setStatus(
+                        '✅ Done! ' +
+                        formatSizeKB(originalSizeKB * 1024) +
+                        ' → ' +
+                        formatSizeKB(result.size) +
+                        '  (quality: ' +
+                        Math.round(result.quality * 100) +
+                        '%)',
+                        'success'
+                    );
+
+                } catch (err) {
+                    console.error(err);
+                    setStatus('❌ Error: ' + err.message, 'error');
+                } finally {
+                    isProcessing = false;
+                    resizeBtn.disabled = false;
+                }
+            }
+
+            // ----- Download -----
+            function handleDownload() {
+                if (!resizedBlob) return;
+
+                let ext = 'jpg';
+                if (originalFile) {
+                    const origExt = originalFile.name.split('.').pop().toLowerCase();
+                    if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'].includes(origExt)) {
+                        ext = origExt === 'jpeg' ? 'jpg' : origExt;
+                    }
+                }
+
+                const baseName = originalFile ? originalFile.name.replace(/\.[^.]+$/, '') : 'resized';
+                const fileName = baseName + '_compressed.' + ext;
+
+                const link = document.createElement('a');
+                link.href = resizedBlob.url || URL.createObjectURL(resizedBlob);
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                if (!resizedBlob.url) {
+                    setTimeout(() => { URL.revokeObjectURL(link.href); }, 5000);
+                }
+            }
+
+            // ----- UI helpers -----
+            function setStatus(msg, type) {
+                statusMsg.textContent = msg;
+                const spinner = statusMsg.parentElement.querySelector('.spinner');
+                if (spinner) spinner.remove();
+                if (type === 'processing') {
+                    const spin = document.createElement('span');
+                    spin.className = 'spinner';
+                    statusMsg.parentElement.prepend(spin);
+                }
+            }
+
+            function showPreview() {
+                previewSection.classList.add('visible');
+            }
+
+            function updateFileInfo(file) {
+                originalSizeKB = file.size / 1024;
+                origSizeBadge.textContent = 'Original: ' + formatSizeKB(file.size);
+                origSizeBadge.className = 'badge original';
+
+                if (originalImage) {
+                    const w = originalImage.naturalWidth || originalImage.width;
+                    const h = originalImage.naturalHeight || originalImage.height;
+                    dimensionsInfo.textContent = w + ' × ' + h + ' px';
+                }
+
+                newSizeBadge.textContent = 'Resized: —';
+                newSizeBadge.className = 'badge resized';
+                statusBadge.classList.add('hidden');
+                downloadBtn.disabled = true;
+
+                if (resizedBlob) {
+                    if (resizedBlob.url) URL.revokeObjectURL(resizedBlob.url);
+                    resizedBlob = null;
+                }
+                resizedSizeKB = 0;
+
+                showPreview();
+                setStatus('Image loaded. Set target size and click "Resize".', '');
+            }
+
+            // ----- Handle file -----
+            async function handleFile(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                    setStatus('Please select a valid image file.', 'error');
+                    return;
+                }
+
+                try {
+                    const img = await loadImageFile(file);
+                    originalImage = img;
+                    originalFile = file;
+
+                    const url = URL.createObjectURL(file);
+                    if (originalBlobUrl) URL.revokeObjectURL(originalBlobUrl);
+                    originalBlobUrl = url;
+                    previewImg.src = url;
+
+                    updateFileInfo(file);
+                } catch (err) {
+                    console.error(err);
+                    setStatus('❌ Failed to load image: ' + err.message, 'error');
+                }
+            }
+
+            // ----- Event listeners -----
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+                fileInput.value = '';
+            });
+
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+
+            uploadZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            resizeBtn.addEventListener('click', handleResize);
+            downloadBtn.addEventListener('click', handleDownload);
+
+            targetSizeInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault();
+                    resizeBtn.click(); }
+            });
+
+            // Paste support
+            document.addEventListener('paste', (e) => {
+                const items = e.clipboardData && e.clipboardData.items;
+                if (!items) return;
+                for (const item of items) {
+                    if (item.type.startsWith('image/')) {
+                        const file = item.getAsFile();
+                        if (file) {
+                            handleFile(file);
+                            const dt = new DataTransfer();
+                            dt.items.add(file);
+                            fileInput.files = dt.files;
+                        }
+                        break;
+                    }
+                }
+            });
+
+            // Initialize
+            setStatus('Ready. Upload an image to begin.', '');
+            console.log('🖼️ Image Resize Tool loaded. Advanced options with separate toggles for Unit & DPI.');
+        })();
+    </script>
+
+</body>
+</html>
