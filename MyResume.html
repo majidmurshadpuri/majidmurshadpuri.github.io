@@ -14,26 +14,24 @@
 
 <style>
 /* ============================================================
-   PAGE-SPECIFIC STYLES FOR MyResume.html ONLY
-   (Everything global — reset, body, buttons, section panels,
-    fadeUp, responsive chrome — lives in style.css)
+   PAGE-SPECIFIC STYLES FOR THE RESUME ONLY
+   (Global chrome — reset, body, buttons, section panels shell,
+    fadeUp keyframes, responsive body padding — all in style.css)
    ============================================================ */
 
-/* ---------- APP BACKGROUND GLOWS (this page uses #app-view) ---------- */
-#app-view {
-  min-height: 100dvh;
+/* ---------- RESUME SHELL (bounded glass card on the navy backdrop) ---------- */
+.resume-shell {
   position: relative;
-  overflow-x: hidden;
-}
-#app-view::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(49,130,206,0.25), transparent),
-    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(201,162,39,0.12), transparent);
-  pointer-events: none;
-  z-index: 0;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  background: linear-gradient(160deg, rgba(30,58,95,0.55) 0%, rgba(15,23,42,0.75) 100%);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 28px;
+  box-shadow: 0 10px 34px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
 }
 
 /* ---------- FLOATING PRINT BUTTON ---------- */
@@ -66,27 +64,16 @@
 }
 .print-fab svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-/* ---------- HOME SCREEN ---------- */
-.home-screen {
-  position: relative;
-  z-index: 1;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2rem);
-  padding-bottom: 6rem;
-}
-
 /* ---------- PROFILE HERO ---------- */
 .profile-hero {
   text-align: center;
-  margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+  padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem) clamp(1.5rem, 4vw, 2rem);
+  border-bottom: 1px solid rgba(255,255,255,0.18);
   animation: fadeUp 0.7s ease-out;
 }
 .profile-photo-wrap {
-  width: clamp(110px, 28vw, 150px);
-  height: clamp(110px, 28vw, 150px);
+  width: clamp(110px, 26vw, 150px);
+  height: clamp(110px, 26vw, 150px);
   margin: 0 auto 1.25rem;
   border-radius: 50%;
   padding: 4px;
@@ -109,48 +96,55 @@
   margin-bottom: 0.25rem;
 }
 .profile-aka {
-  font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
   color: #c9a227;
   font-style: italic;
   margin-bottom: 0.5rem;
 }
 .profile-title {
-  font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+  font-size: clamp(1rem, 2.8vw, 1.15rem);
   font-weight: 600;
   color: #93c5fd;
   margin-bottom: 0.75rem;
 }
 .profile-tagline {
-  font-size: clamp(0.8rem, 2.2vw, 0.95rem);
-  color: #94a3b8;
+  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+  color: #cbd5e1;
   max-width: 340px;
   margin: 0 auto;
   line-height: 1.55;
+  font-style: italic;
 }
 .qual-pills {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.4rem;
-  margin-top: 1rem;
+  gap: 0.45rem;
+  margin-top: 1.1rem;
 }
 .qual-pill {
-  font-size: clamp(0.65rem, 1.8vw, 0.75rem);
-  padding: 0.3rem 0.7rem;
+  font-size: clamp(0.7rem, 1.9vw, 0.8rem);
+  padding: 0.35rem 0.85rem;
   background: rgba(255,255,255,0.12);
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 50px;
   color: #e2e8f0;
   backdrop-filter: blur(8px);
+  font-weight: 500;
 }
 
-/* ---------- NAV GRID (two/three-column pill cards) ---------- */
+/* ---------- CONTACT STRIP (page-local override for the shell) ---------- */
+.resume-shell .contact-strip {
+  padding: clamp(1rem, 3vw, 1.4rem) clamp(1rem, 3vw, 1.5rem) 0;
+}
+
+/* ---------- NAV GRID (glass tile cards) ---------- */
 .nav-grid {
   width: 100%;
-  max-width: 560px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: clamp(0.65rem, 2vw, 0.9rem);
+  gap: clamp(0.75rem, 2vw, 1rem);
+  padding: clamp(1.5rem, 4vw, 2.25rem) clamp(1rem, 4vw, 2rem) clamp(1.5rem, 4vw, 2rem);
   animation: fadeUp 0.7s ease-out 0.15s both;
 }
 .nav-card {
@@ -161,7 +155,7 @@
   text-align: center;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -170,35 +164,38 @@
   min-height: clamp(90px, 22vw, 110px);
   justify-content: center;
   cursor: pointer;
+  width: 100%;
 }
 .nav-card:hover,
 .nav-card:focus-visible {
   transform: translateY(-4px);
   background: rgba(255,255,255,0.16);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+  border-color: rgba(147,197,253,0.4);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.3);
   outline: none;
 }
 .nav-card:focus-visible { outline: 2px solid #93c5fd; outline-offset: 2px; }
 .nav-icon {
-  width: clamp(28px, 7vw, 36px);
-  height: clamp(28px, 7vw, 36px);
+  width: clamp(32px, 7vw, 40px);
+  height: clamp(32px, 7vw, 40px);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(49,130,206,0.25);
+  background: linear-gradient(135deg, rgba(49,130,206,0.28), rgba(201,162,39,0.18));
+  border: 1px solid rgba(147,197,253,0.28);
   border-radius: 12px;
   font-size: clamp(1rem, 2.8vw, 1.25rem);
 }
 .nav-label {
-  font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
   font-weight: 600;
   line-height: 1.3;
 }
 .nav-card.full-width { grid-column: 1 / -1; }
 
-/* ---------- CONTENT CARDS INSIDE SECTION PANELS ---------- */
+/* ---------- CONTENT CARDS INSIDE PANELS ---------- */
 .content-card {
-  background: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.10);
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 16px;
   padding: clamp(1.1rem, 3vw, 1.4rem);
@@ -277,11 +274,7 @@
 .timeline-item:last-child { margin-bottom: 0; }
 
 /* ---------- SKILLS CHIPS ---------- */
-.skills-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
+.skills-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .skill-chip {
   display: inline-flex;
   align-items: center;
@@ -332,7 +325,7 @@
   border-radius: 0 12px 12px 0;
 }
 
-/* ---------- CONTACT LIST (inside panel) ---------- */
+/* ---------- CONTACT LIST (inside the Contact panel) ---------- */
 .contact-list { display: flex; flex-direction: column; gap: 0.75rem; }
 .contact-item {
   display: flex;
@@ -344,23 +337,25 @@
   border-radius: 10px;
   color: #e2e8f0;
   font-size: clamp(0.85rem, 2.3vw, 0.95rem);
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
 }
-.contact-item:hover,
-.contact-item:focus-visible {
-  background: rgba(255,255,255,0.14);
+a.contact-item:hover,
+a.contact-item:focus-visible {
+  background: rgba(255,255,255,0.16);
+  transform: translateY(-1px);
   outline: 2px solid #93c5fd;
 }
 .contact-icon {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   background: rgba(49,130,206,0.25);
+  border: 1px solid rgba(147,197,253,0.28);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
 }
 
 /* ---------- PERSONAL DETAILS GRID ---------- */
@@ -369,26 +364,23 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 1rem;
-  padding: 0.6rem 0;
+  padding: 0.65rem 0;
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  font-size: clamp(0.85rem, 2.3vw, 0.95rem);
+  font-size: clamp(0.88rem, 2.3vw, 0.98rem);
 }
 .detail-row:last-child { border-bottom: none; }
 .detail-label { color: #94a3b8; }
 .detail-value { color: #fff; font-weight: 500; text-align: right; }
 
-/* ---------- RESPONSIVE (page-specific) ---------- */
+/* ---------- PAGE-SPECIFIC RESPONSIVE ---------- */
 @media (min-width: 600px) {
   .nav-grid { grid-template-columns: repeat(3, 1fr); }
   .nav-card.full-width { grid-column: auto; }
   .portfolio-grid { grid-template-columns: 1fr 1fr; }
 }
-@media (min-width: 900px) {
-  .home-screen { justify-content: center; }
-}
 
 /* ============================================================
-   PRINT VIEW (hidden on screen; only fires on window.print)
+   PRINT VIEW (hidden on screen; unchanged layout)
    ============================================================ */
 #print-view {
   display: none;
@@ -409,7 +401,7 @@
     print-color-adjust: exact !important;
   }
 
-  #app-view, .print-fab, .deep-collection, .deep-footer { display: none !important; }
+  .resume-shell, .print-fab, .deep-collection, .deep-footer { display: none !important; }
   #print-view {
     display: block !important;
     width: 100%;
@@ -529,7 +521,6 @@
   }
   .print-details-grid strong { color: #1a202c; }
 
-  /* Recommendation Letters */
   .letter {
     font-family: "Times New Roman", Times, serif;
     font-size: 10.5pt; line-height: 1.5; color: #1a1a1a;
@@ -578,419 +569,430 @@
 </head>
 <body>
 
-<!-- ==================== APP VIEW ==================== -->
-<div id="app-view" role="application" aria-label="Majid Professional Resume Application">
+<!-- ==================== ON-SCREEN RESUME ==================== -->
+<div class="resume-shell" role="application" aria-label="Majid Professional Resume">
 
-  <!-- Floating Print Button -->
-  <button class="print-fab" onclick="window.print()" aria-label="Print or Save as PDF">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <polyline points="6 9 6 2 18 2 18 9"></polyline>
-      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-      <rect x="6" y="14" width="12" height="8"></rect>
-    </svg>
-    Print / Save as PDF
-  </button>
+  <!-- ========== HEADER ========== -->
+  <div class="deep-header">
+    <h1>My Resume</h1>
+    <h2>Majid Murshadpuri · TGT / PGT · Mathematics &amp; English</h2>
 
-  <!-- ========== HOME SCREEN ========== -->
-  <div class="home-screen" id="home">
+    <!-- ===== MY WEBSITE BUTTON ===== -->
+    <div class="about-wrapper">
+      <a class="about-btn website-btn" href="https://majidmurshadpuri.github.io">✦ My Website ✦</a>
+    </div>
+  </div>
 
-    <div class="profile-hero">
-      <div class="profile-photo-wrap">
-        <img class="profile-photo" src="https://drive.google.com/thumbnail?id=1uejfZKntZXcJ756s7kPK85eOaeNPdqmt&sz=w1000" alt="Photograph of Majid" width="150" height="150" loading="eager">
-      </div>
-      <h1 class="profile-name">MAJID</h1>
-      <p class="profile-aka">Also known as Majid Murshadpuri</p>
-      <p class="profile-title">TGT / PGT – Mathematics &amp; English</p>
-      <p class="profile-tagline">Student-centric educator · CTET Qualified · Technology-driven teaching</p>
-      <div class="qual-pills" aria-label="Key qualifications">
-        <span class="qual-pill">CTET 2024</span>
-        <span class="qual-pill">M.A. English 70.76%</span>
-        <span class="qual-pill">B.Ed. 77.07%</span>
-        <span class="qual-pill">Diploma in IT</span>
-      </div>
-
-      <!-- My Website button (styled by .about-btn in style.css) -->
-      <div class="about-wrapper">
-        <a class="about-btn website-btn" href="https://majidmurshadpuri.github.io">✦ My Website ✦</a>
-      </div>
+  <!-- ========== PROFILE HERO ========== -->
+  <div class="profile-hero">
+    <div class="profile-photo-wrap">
+      <img class="profile-photo"
+           src="https://drive.google.com/thumbnail?id=1uejfZKntZXcJ756s7kPK85eOaeNPdqmt&sz=w1000"
+           alt="Photograph of Majid"
+           width="150" height="150" loading="eager">
+    </div>
+    <h1 class="profile-name">MAJID</h1>
+    <p class="profile-aka">Also known as Majid Murshadpuri</p>
+    <p class="profile-title">TGT / PGT – Mathematics &amp; English</p>
+    <p class="profile-tagline">Student-centric educator · CTET Qualified · Technology-driven teaching</p>
+    <div class="qual-pills" aria-label="Key qualifications">
+      <span class="qual-pill">CTET 2024</span>
+      <span class="qual-pill">M.A. English 70.76%</span>
+      <span class="qual-pill">B.Ed. 77.07%</span>
+      <span class="qual-pill">Diploma in IT</span>
     </div>
 
-    <!-- ========== CONTACT STRIP ========== -->
-    <div class="contact-strip">
-      <a href="tel:+919536379468">📱 +91 95363 79468</a>
-      <a href="mailto:sendmailtomajid@gmail.com">✉️ sendmailtomajid@gmail.com</a>
-      <a href="https://majidmurshadpuri.github.io" target="_blank" rel="noopener">🌐 majidmurshadpuri.github.io</a>
-    </div>
-
-    <!-- ========== NAV GRID ========== -->
-    <nav class="nav-grid" aria-label="Resume sections">
-      <button class="nav-card" onclick="openSection('summary')" aria-label="Open Professional Summary">
-        <span class="nav-icon" aria-hidden="true">📋</span>
-        <span class="nav-label">Professional Summary</span>
+    <!-- Print button (styled like My Website) -->
+    <div class="about-wrapper">
+      <button class="about-btn print-btn" onclick="window.print()" aria-label="Print or Save as PDF">
+        ✦ Print / Save as PDF ✦
       </button>
-      <button class="nav-card" onclick="openSection('experience')" aria-label="Open Teaching Experience">
-        <span class="nav-icon" aria-hidden="true">🏫</span>
-        <span class="nav-label">Teaching Experience</span>
-      </button>
-      <button class="nav-card" onclick="openSection('education')" aria-label="Open Education">
-        <span class="nav-icon" aria-hidden="true">🎓</span>
-        <span class="nav-label">Education</span>
-      </button>
-      <button class="nav-card" onclick="openSection('certification')" aria-label="Open Professional Certification">
-        <span class="nav-icon" aria-hidden="true">✅</span>
-        <span class="nav-label">Certification</span>
-      </button>
-      <button class="nav-card" onclick="openSection('portfolio')" aria-label="Open Technical Portfolio">
-        <span class="nav-icon" aria-hidden="true">💻</span>
-        <span class="nav-label">Tech Portfolio</span>
-      </button>
-      <button class="nav-card" onclick="openSection('skills')" aria-label="Open Skills">
-        <span class="nav-icon" aria-hidden="true">⚡</span>
-        <span class="nav-label">Core Skills</span>
-      </button>
-      <button class="nav-card" onclick="openSection('philosophy')" aria-label="Open Teaching Philosophy">
-        <span class="nav-icon" aria-hidden="true">💡</span>
-        <span class="nav-label">Teaching Philosophy</span>
-      </button>
-      <button class="nav-card" onclick="openSection('interests')" aria-label="Open Interests">
-        <span class="nav-icon" aria-hidden="true">📖</span>
-        <span class="nav-label">Interests</span>
-      </button>
-      <button class="nav-card" onclick="openSection('personal')" aria-label="Open Personal Details">
-        <span class="nav-icon" aria-hidden="true">👤</span>
-        <span class="nav-label">Personal Details</span>
-      </button>
-      <button class="nav-card" onclick="openSection('references')" aria-label="Open References">
-        <span class="nav-icon" aria-hidden="true">📝</span>
-        <span class="nav-label">References</span>
-      </button>
-      <button class="nav-card full-width" onclick="openSection('contact')" aria-label="Open Contact">
-        <span class="nav-icon" aria-hidden="true">📞</span>
-        <span class="nav-label">Contact</span>
-      </button>
-    </nav>
-  </div>
-
-  <!-- ========== SECTION: Professional Summary ========== -->
-  <div class="section-panel" id="summary" role="region" aria-labelledby="summary-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('summary')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="summary-title">Professional Summary</h2>
-    </div>
-    <div class="section-body">
-      <div class="content-card">
-        <p>Student-centric educator with over ten years of teaching experience across school classrooms, volunteer teaching, and home tutoring. Holds a Master's degree in English (70.76%), a Bachelor of Education (77.07%), a Diploma in Information Technology, and has qualified the Central Teacher Eligibility Test (CTET 2024) by securing 109 out of 150 marks.</p>
-        <p style="margin-top:0.75rem">Currently serving as a Mathematics Teacher at Delight Public School, Hapur, since 2019, teaching Mathematics up to Class VIII. Also completed the mandatory six-month B.Ed. teaching internship in the same institution. Previously volunteered as a Mathematics Teacher for Classes IX and X at Government Inter College, Murshadpur, and has been providing home tuition in Mathematics and English up to Class XII since 2014.</p>
-        <p style="margin-top:0.75rem">Possesses a strong passion for integrating technology into education by independently designing standalone HTML web applications that simplify school administration and enhance digital learning experiences. Alongside academics, actively writes Urdu Ghazals and regularly participates in All India Mushairas.</p>
-      </div>
     </div>
   </div>
 
-  <!-- ========== SECTION: Teaching Experience ========== -->
-  <div class="section-panel" id="experience" role="region" aria-labelledby="experience-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('experience')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="experience-title">Teaching Experience</h2>
+  <!-- ========== CONTACT STRIP ========== -->
+  <div class="contact-strip">
+    <a href="tel:+919536379468">📱 +91 95363 79468</a>
+    <a href="mailto:sendmailtomajid@gmail.com">✉️ sendmailtomajid@gmail.com</a>
+    <a href="https://majidmurshadpuri.github.io" target="_blank" rel="noopener">🌐 majidmurshadpuri.github.io</a>
+  </div>
+
+  <!-- ========== NAV GRID ========== -->
+  <nav class="nav-grid" aria-label="Resume sections">
+    <button class="nav-card" onclick="openSection('summary')">
+      <span class="nav-icon" aria-hidden="true">📋</span>
+      <span class="nav-label">Professional Summary</span>
+    </button>
+    <button class="nav-card" onclick="openSection('experience')">
+      <span class="nav-icon" aria-hidden="true">🏫</span>
+      <span class="nav-label">Teaching Experience</span>
+    </button>
+    <button class="nav-card" onclick="openSection('education')">
+      <span class="nav-icon" aria-hidden="true">🎓</span>
+      <span class="nav-label">Education</span>
+    </button>
+    <button class="nav-card" onclick="openSection('certification')">
+      <span class="nav-icon" aria-hidden="true">✅</span>
+      <span class="nav-label">Certification</span>
+    </button>
+    <button class="nav-card" onclick="openSection('portfolio')">
+      <span class="nav-icon" aria-hidden="true">💻</span>
+      <span class="nav-label">Tech Portfolio</span>
+    </button>
+    <button class="nav-card" onclick="openSection('skills')">
+      <span class="nav-icon" aria-hidden="true">⚡</span>
+      <span class="nav-label">Core Skills</span>
+    </button>
+    <button class="nav-card" onclick="openSection('philosophy')">
+      <span class="nav-icon" aria-hidden="true">💡</span>
+      <span class="nav-label">Teaching Philosophy</span>
+    </button>
+    <button class="nav-card" onclick="openSection('interests')">
+      <span class="nav-icon" aria-hidden="true">📖</span>
+      <span class="nav-label">Interests</span>
+    </button>
+    <button class="nav-card" onclick="openSection('personal')">
+      <span class="nav-icon" aria-hidden="true">👤</span>
+      <span class="nav-label">Personal Details</span>
+    </button>
+    <button class="nav-card" onclick="openSection('references')">
+      <span class="nav-icon" aria-hidden="true">📝</span>
+      <span class="nav-label">References</span>
+    </button>
+    <button class="nav-card full-width" onclick="openSection('contact')">
+      <span class="nav-icon" aria-hidden="true">📞</span>
+      <span class="nav-label">Contact</span>
+    </button>
+  </nav>
+
+  <!-- ========== FOOTER ========== -->
+  <div class="deep-footer">
+    ✦ a living collection · crafted with depth &amp; warmth ✦
+  </div>
+
+</div><!-- /resume-shell -->
+
+
+<!-- ==================== SECTION PANELS (unchanged content) ==================== -->
+
+<!-- Professional Summary -->
+<div class="section-panel" id="summary" role="region" aria-labelledby="summary-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('summary')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="summary-title">Professional Summary</h2>
+  </div>
+  <div class="section-body">
+    <div class="content-card">
+      <p>Student-centric educator with over ten years of teaching experience across school classrooms, volunteer teaching, and home tutoring. Holds a Master's degree in English (70.76%), a Bachelor of Education (77.07%), a Diploma in Information Technology, and has qualified the Central Teacher Eligibility Test (CTET 2024) by securing 109 out of 150 marks.</p>
+      <p style="margin-top:0.75rem">Currently serving as a Mathematics Teacher at Delight Public School, Hapur, since 2019, teaching Mathematics up to Class VIII. Also completed the mandatory six-month B.Ed. teaching internship in the same institution. Previously volunteered as a Mathematics Teacher for Classes IX and X at Government Inter College, Murshadpur, and has been providing home tuition in Mathematics and English up to Class XII since 2014.</p>
+      <p style="margin-top:0.75rem">Possesses a strong passion for integrating technology into education by independently designing standalone HTML web applications that simplify school administration and enhance digital learning experiences. Alongside academics, actively writes Urdu Ghazals and regularly participates in All India Mushairas.</p>
     </div>
-    <div class="section-body">
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>Mathematics Teacher</h3>
-            <p class="meta">Delight Public School · Toll Plaza, Kurana, Hapur</p>
-            <p class="sub-meta">2019 – Present</p>
-            <ul>
-              <li>Teaching Mathematics up to Class VIII.</li>
-              <li>Successfully completed the mandatory six-month B.Ed. Teaching Internship in the same institution.</li>
-              <li>Known for simplifying difficult mathematical concepts.</li>
-              <li>Creates a friendly classroom atmosphere where students freely ask doubts.</li>
-              <li>Integrates technology into teaching wherever beneficial.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>Mathematics &amp; English Tutor</h3>
-            <p class="meta">Self-employed Home Tutor</p>
-            <p class="sub-meta">2014 – Present</p>
-            <ul>
-              <li>Teaching Mathematics and English Grammar from Class VI to Class XII.</li>
-              <li>Special emphasis on conceptual clarity.</li>
-              <li>Teaches every topic from the absolute foundation level.</li>
-              <li>Focuses on building confidence along with subject knowledge.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>Mathematics Teacher</h3>
-            <p class="meta">Madarsa Tajweedul Quran (Hifz Plus Programme) · Azad Market, Old Delhi</p>
-            <p class="sub-meta">2022 (Up to Ramzan)</p>
-            <ul>
-              <li>Taught Mathematics in the specialised Hifz Plus Programme.</li>
-              <li>Selected after successfully completing an intensive two-month teacher training programme at Islamic Mission School, Aligarh.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>Volunteer Mathematics Teacher</h3>
-            <p class="meta">Government Inter College · Murshadpur, Hapur</p>
-            <p class="sub-meta">2022 (Two Months)</p>
-            <ul>
-              <li>Voluntarily taught Mathematics to Classes IX and X.</li>
-              <li>Assisted a newly established Government School facing shortage of Mathematics faculty.</li>
-              <li>Prepared students thoroughly for their Board Examinations.</li>
-            </ul>
-          </div>
+  </div>
+</div>
+
+<!-- Teaching Experience -->
+<div class="section-panel" id="experience" role="region" aria-labelledby="experience-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('experience')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="experience-title">Teaching Experience</h2>
+  </div>
+  <div class="section-body">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>Mathematics Teacher</h3>
+          <p class="meta">Delight Public School · Toll Plaza, Kurana, Hapur</p>
+          <p class="sub-meta">2019 – Present</p>
+          <ul>
+            <li>Teaching Mathematics up to Class VIII.</li>
+            <li>Successfully completed the mandatory six-month B.Ed. Teaching Internship in the same institution.</li>
+            <li>Known for simplifying difficult mathematical concepts.</li>
+            <li>Creates a friendly classroom atmosphere where students freely ask doubts.</li>
+            <li>Integrates technology into teaching wherever beneficial.</li>
+          </ul>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- ========== SECTION: Education ========== -->
-  <div class="section-panel" id="education" role="region" aria-labelledby="education-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('education')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="education-title">Educational Qualifications</h2>
-    </div>
-    <div class="section-body">
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>Master of Arts (English)</h3>
-            <p class="meta">Chaudhary Charan Singh University, Meerut</p>
-            <p class="sub-meta">2023 · 70.76%</p>
-          </div>
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>Mathematics &amp; English Tutor</h3>
+          <p class="meta">Self-employed Home Tutor</p>
+          <p class="sub-meta">2014 – Present</p>
+          <ul>
+            <li>Teaching Mathematics and English Grammar from Class VI to Class XII.</li>
+            <li>Special emphasis on conceptual clarity.</li>
+            <li>Teaches every topic from the absolute foundation level.</li>
+            <li>Focuses on building confidence along with subject knowledge.</li>
+          </ul>
         </div>
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>Bachelor of Education (B.Ed.)</h3>
-            <p class="meta">Chaudhary Charan Singh University, Meerut</p>
-            <p class="sub-meta">2025 · 77.07%</p>
-          </div>
+      </div>
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>Mathematics Teacher</h3>
+          <p class="meta">Madarsa Tajweedul Quran (Hifz Plus Programme) · Azad Market, Old Delhi</p>
+          <p class="sub-meta">2022 (Up to Ramzan)</p>
+          <ul>
+            <li>Taught Mathematics in the specialised Hifz Plus Programme.</li>
+            <li>Selected after successfully completing an intensive two-month teacher training programme at Islamic Mission School, Aligarh.</li>
+          </ul>
         </div>
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>Bachelor of Arts</h3>
-            <p class="meta">English Literature · History · Political Science</p>
-            <p class="sub-meta">Chaudhary Charan Singh University, Meerut · 2021 · 61.73%</p>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>Diploma in Information Technology</h3>
-            <p class="meta">Government Polytechnic, Ghaziabad · UPBTE</p>
-            <p class="sub-meta">2018 · 74.50%</p>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>Intermediate (Class XII)</h3>
-            <p class="meta">Uttar Pradesh Board</p>
-            <p class="sub-meta">2013 · 76.40%</p>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="content-card">
-            <h3>High School (Class X)</h3>
-            <p class="meta">Uttar Pradesh Board</p>
-            <p class="sub-meta">2010 · 70.33%</p>
-          </div>
+      </div>
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>Volunteer Mathematics Teacher</h3>
+          <p class="meta">Government Inter College · Murshadpur, Hapur</p>
+          <p class="sub-meta">2022 (Two Months)</p>
+          <ul>
+            <li>Voluntarily taught Mathematics to Classes IX and X.</li>
+            <li>Assisted a newly established Government School facing shortage of Mathematics faculty.</li>
+            <li>Prepared students thoroughly for their Board Examinations.</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ========== SECTION: Certification ========== -->
-  <div class="section-panel" id="certification" role="region" aria-labelledby="cert-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('certification')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="cert-title">Professional Certification</h2>
-    </div>
-    <div class="section-body">
-      <div class="content-card">
-        <h3>CTET (Central Teacher Eligibility Test) – 2024</h3>
-        <ul>
-          <li>Qualified with 109/150 Marks.</li>
-          <li>Mandatory eligibility qualification for teaching in Central Government Schools and leading CBSE schools.</li>
-        </ul>
-      </div>
-    </div>
+<!-- Education -->
+<div class="section-panel" id="education" role="region" aria-labelledby="education-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('education')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="education-title">Educational Qualifications</h2>
   </div>
-
-  <!-- ========== SECTION: Tech Portfolio ========== -->
-  <div class="section-panel" id="portfolio" role="region" aria-labelledby="portfolio-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('portfolio')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="portfolio-title">Tech Portfolio &amp; Digital Initiatives</h2>
-    </div>
-    <div class="section-body">
-      <div class="content-card">
-        <p>Leveraging my Diploma in Information Technology together with AI-assisted development, I independently build standalone browser-based HTML applications for educational and administrative purposes. These applications are hosted on my portfolio website.</p>
-      </div>
-      <div class="content-card">
-        <h3>Featured Applications</h3>
-        <div class="portfolio-grid" style="margin-top:0.75rem">
-          <div class="portfolio-item"><span class="dot"></span> AI Text Cleaner</div>
-          <div class="portfolio-item"><span class="dot"></span> Extract Text from PDF</div>
-          <div class="portfolio-item"><span class="dot"></span> PDF Page Extractor</div>
-          <div class="portfolio-item"><span class="dot"></span> Urdu AI OCR &amp; Editor</div>
-          <div class="portfolio-item"><span class="dot"></span> Image Resize Tool</div>
-          <div class="portfolio-item"><span class="dot"></span> MCQ Reels Creator</div>
-          <div class="portfolio-item"><span class="dot"></span> Short Question Answer Practice</div>
-          <div class="portfolio-item"><span class="dot"></span> Notebook Check</div>
-          <div class="portfolio-item"><span class="dot"></span> Hindi Shayari Composer</div>
-          <div class="portfolio-item"><span class="dot"></span> HTML File Downloader</div>
+  <div class="section-body">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>Master of Arts (English)</h3>
+          <p class="meta">Chaudhary Charan Singh University, Meerut</p>
+          <p class="sub-meta">2023 · 70.76%</p>
         </div>
       </div>
-      <div class="content-card">
-        <h3>Additional Initiatives</h3>
-        <ul>
-          <li>Created and published forty-seven educational English-learning videos during the COVID-19 lockdown.</li>
-          <li>Selected through Campus Placement by Wipro in 2018 before deciding to pursue teaching as a lifelong profession.</li>
-        </ul>
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>Bachelor of Education (B.Ed.)</h3>
+          <p class="meta">Chaudhary Charan Singh University, Meerut</p>
+          <p class="sub-meta">2025 · 77.07%</p>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <!-- ========== SECTION: Skills ========== -->
-  <div class="section-panel" id="skills" role="region" aria-labelledby="skills-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('skills')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="skills-title">Core Skills</h2>
-    </div>
-    <div class="section-body">
-      <div class="content-card">
-        <div class="skills-grid">
-          <span class="skill-chip">English Literature</span>
-          <span class="skill-chip">Advanced English Grammar</span>
-          <span class="skill-chip">School Mathematics (Up to Class XII)</span>
-          <span class="skill-chip">Classroom Management</span>
-          <span class="skill-chip">Student Mentoring</span>
-          <span class="skill-chip">Educational Technology</span>
-          <span class="skill-chip">HTML Application Development</span>
-          <span class="skill-chip">AI-assisted Productivity</span>
-          <span class="skill-chip">Communication Skills</span>
-          <span class="skill-chip">Problem Solving</span>
-          <span class="skill-chip">Creative Writing</span>
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>Bachelor of Arts</h3>
+          <p class="meta">English Literature · History · Political Science</p>
+          <p class="sub-meta">Chaudhary Charan Singh University, Meerut · 2021 · 61.73%</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>Diploma in Information Technology</h3>
+          <p class="meta">Government Polytechnic, Ghaziabad · UPBTE</p>
+          <p class="sub-meta">2018 · 74.50%</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>Intermediate (Class XII)</h3>
+          <p class="meta">Uttar Pradesh Board</p>
+          <p class="sub-meta">2013 · 76.40%</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="content-card">
+          <h3>High School (Class X)</h3>
+          <p class="meta">Uttar Pradesh Board</p>
+          <p class="sub-meta">2010 · 70.33%</p>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ========== SECTION: Teaching Philosophy ========== -->
-  <div class="section-panel" id="philosophy" role="region" aria-labelledby="phil-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('philosophy')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="phil-title">Teaching Philosophy</h2>
+<!-- Certification -->
+<div class="section-panel" id="certification" role="region" aria-labelledby="cert-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('certification')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="cert-title">Professional Certification</h2>
+  </div>
+  <div class="section-body">
+    <div class="content-card">
+      <h3>CTET (Central Teacher Eligibility Test) – 2024</h3>
+      <ul>
+        <li>Qualified with 109/150 Marks.</li>
+        <li>Mandatory eligibility qualification for teaching in Central Government Schools and leading CBSE schools.</li>
+      </ul>
     </div>
-    <div class="section-body">
-      <div class="content-card">
-        <blockquote class="philosophy-quote">
-          "I never force students to study. Instead, I create an environment where they naturally want to learn. I teach every topic from its roots, patiently resolve every doubt, and guide students like a mentor. Once the foundation becomes strong, success follows naturally."
-        </blockquote>
+  </div>
+</div>
+
+<!-- Tech Portfolio -->
+<div class="section-panel" id="portfolio" role="region" aria-labelledby="portfolio-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('portfolio')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="portfolio-title">Tech Portfolio &amp; Digital Initiatives</h2>
+  </div>
+  <div class="section-body">
+    <div class="content-card">
+      <p>Leveraging my Diploma in Information Technology together with AI-assisted development, I independently build standalone browser-based HTML applications for educational and administrative purposes. These applications are hosted on my portfolio website.</p>
+    </div>
+    <div class="content-card">
+      <h3>Featured Applications</h3>
+      <div class="portfolio-grid" style="margin-top:0.75rem">
+        <div class="portfolio-item"><span class="dot"></span> AI Text Cleaner</div>
+        <div class="portfolio-item"><span class="dot"></span> Extract Text from PDF</div>
+        <div class="portfolio-item"><span class="dot"></span> PDF Page Extractor</div>
+        <div class="portfolio-item"><span class="dot"></span> Urdu AI OCR &amp; Editor</div>
+        <div class="portfolio-item"><span class="dot"></span> Image Resize Tool</div>
+        <div class="portfolio-item"><span class="dot"></span> MCQ Reels Creator</div>
+        <div class="portfolio-item"><span class="dot"></span> Short Question Answer Practice</div>
+        <div class="portfolio-item"><span class="dot"></span> Notebook Check</div>
+        <div class="portfolio-item"><span class="dot"></span> Hindi Shayari Composer</div>
+        <div class="portfolio-item"><span class="dot"></span> HTML File Downloader</div>
+      </div>
+    </div>
+    <div class="content-card">
+      <h3>Additional Initiatives</h3>
+      <ul>
+        <li>Created and published forty-seven educational English-learning videos during the COVID-19 lockdown.</li>
+        <li>Selected through Campus Placement by Wipro in 2018 before deciding to pursue teaching as a lifelong profession.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Skills -->
+<div class="section-panel" id="skills" role="region" aria-labelledby="skills-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('skills')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="skills-title">Core Skills</h2>
+  </div>
+  <div class="section-body">
+    <div class="content-card">
+      <div class="skills-grid">
+        <span class="skill-chip">English Literature</span>
+        <span class="skill-chip">Advanced English Grammar</span>
+        <span class="skill-chip">School Mathematics (Up to Class XII)</span>
+        <span class="skill-chip">Classroom Management</span>
+        <span class="skill-chip">Student Mentoring</span>
+        <span class="skill-chip">Educational Technology</span>
+        <span class="skill-chip">HTML Application Development</span>
+        <span class="skill-chip">AI-assisted Productivity</span>
+        <span class="skill-chip">Communication Skills</span>
+        <span class="skill-chip">Problem Solving</span>
+        <span class="skill-chip">Creative Writing</span>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ========== SECTION: Interests ========== -->
-  <div class="section-panel" id="interests" role="region" aria-labelledby="interests-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('interests')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="interests-title">Interests &amp; Extra-Curricular</h2>
+<!-- Teaching Philosophy -->
+<div class="section-panel" id="philosophy" role="region" aria-labelledby="phil-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('philosophy')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="phil-title">Teaching Philosophy</h2>
+  </div>
+  <div class="section-body">
+    <div class="content-card">
+      <blockquote class="philosophy-quote">
+        "I never force students to study. Instead, I create an environment where they naturally want to learn. I teach every topic from its roots, patiently resolve every doubt, and guide students like a mentor. Once the foundation becomes strong, success follows naturally."
+      </blockquote>
     </div>
-    <div class="section-body">
-      <div class="content-card">
-        <h3>Poetry &amp; Literature</h3>
-        <ul>
-          <li>Passionate Ghazal writer.</li>
-          <li>Formally trained in Urdu prosody (Arooz).</li>
-          <li>Regular participant in All India Mushairas.</li>
-          <li>Strong interest in literature, public speaking and creative writing.</li>
-        </ul>
-      </div>
-      <div class="content-card">
-        <h3>Languages Known</h3>
-        <p>English · Hindi · Urdu</p>
-        <p class="sub-meta" style="margin-top:0.35rem">(Read, Write and Speak)</p>
+  </div>
+</div>
+
+<!-- Interests -->
+<div class="section-panel" id="interests" role="region" aria-labelledby="interests-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('interests')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="interests-title">Interests &amp; Extra-Curricular</h2>
+  </div>
+  <div class="section-body">
+    <div class="content-card">
+      <h3>Poetry &amp; Literature</h3>
+      <ul>
+        <li>Passionate Ghazal writer.</li>
+        <li>Formally trained in Urdu prosody (Arooz).</li>
+        <li>Regular participant in All India Mushairas.</li>
+        <li>Strong interest in literature, public speaking and creative writing.</li>
+      </ul>
+    </div>
+    <div class="content-card">
+      <h3>Languages Known</h3>
+      <p>English · Hindi · Urdu</p>
+      <p class="sub-meta" style="margin-top:0.35rem">(Read, Write and Speak)</p>
+    </div>
+  </div>
+</div>
+
+<!-- Personal Details -->
+<div class="section-panel" id="personal" role="region" aria-labelledby="personal-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('personal')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="personal-title">Personal Dossier</h2>
+  </div>
+  <div class="section-body">
+    <div class="content-card">
+      <div class="detail-row"><span class="detail-label">Date of Birth</span><span class="detail-value">10 February 1995</span></div>
+      <div class="detail-row"><span class="detail-label">Marital Status</span><span class="detail-value">Unmarried</span></div>
+      <div class="detail-row"><span class="detail-label">Nationality</span><span class="detail-value">Indian</span></div>
+      <div class="detail-row"><span class="detail-label">Hobbies</span><span class="detail-value">Reading Literature · Writing Poetry · Developing Educational Web Applications</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- References -->
+<div class="section-panel" id="references" role="region" aria-labelledby="ref-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('references')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="ref-title">References</h2>
+  </div>
+  <div class="section-body">
+    <div class="content-card">
+      <h3>Recommendation Letter 1</h3>
+      <p class="meta">Director, Delight Public School, Hapur</p>
+      <p class="sub-meta">Mohd Aadam · Mobile: 9568381658</p>
+      <p style="margin-top:0.5rem;font-size:0.88rem;color:#94a3b8;font-style:italic">Full formal letter with school letterhead, seal and signature is included in the printable version.</p>
+    </div>
+    <div class="content-card">
+      <h3>Recommendation Letter 2</h3>
+      <p class="meta">Principal, Government Inter College, Murshadpur, Hapur</p>
+      <p class="sub-meta">Mobile: 9354060629</p>
+      <p style="margin-top:0.5rem;font-size:0.88rem;color:#94a3b8;font-style:italic">Full formal letter with government college letterhead is included in the printable version.</p>
+    </div>
+    <div class="content-card" style="text-align:center">
+      <p style="color:#93c5fd;font-size:0.95rem">Use the <strong>Print / Save as PDF</strong> button to view and print the complete recommendation letters on proper letterheads.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Contact -->
+<div class="section-panel" id="contact" role="region" aria-labelledby="contact-title">
+  <div class="section-header">
+    <button class="back-btn" onclick="closeSection('contact')" aria-label="Go back">←</button>
+    <h2 class="section-title" id="contact-title">Contact</h2>
+  </div>
+  <div class="section-body">
+    <div class="contact-list">
+      <a class="contact-item" href="tel:+919536379468" aria-label="Call Majid">
+        <span class="contact-icon" aria-hidden="true">📱</span>
+        <span>+91 95363 79468</span>
+      </a>
+      <a class="contact-item" href="mailto:sendmailtomajid@gmail.com" aria-label="Email Majid">
+        <span class="contact-icon" aria-hidden="true">✉️</span>
+        <span>sendmailtomajid@gmail.com</span>
+      </a>
+      <a class="contact-item" href="https://MajidMurshadpuri.github.io" target="_blank" rel="noopener" aria-label="Visit website">
+        <span class="contact-icon" aria-hidden="true">🌐</span>
+        <span>MajidMurshadpuri.github.io</span>
+      </a>
+      <div class="contact-item" style="cursor:default">
+        <span class="contact-icon" aria-hidden="true">📍</span>
+        <span>Village Murshadpur, Tehsil/District – Hapur, Uttar Pradesh – 245101</span>
       </div>
     </div>
   </div>
-
-  <!-- ========== SECTION: Personal Details ========== -->
-  <div class="section-panel" id="personal" role="region" aria-labelledby="personal-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('personal')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="personal-title">Personal Dossier</h2>
-    </div>
-    <div class="section-body">
-      <div class="content-card">
-        <div class="detail-row"><span class="detail-label">Date of Birth</span><span class="detail-value">10 February 1995</span></div>
-        <div class="detail-row"><span class="detail-label">Marital Status</span><span class="detail-value">Unmarried</span></div>
-        <div class="detail-row"><span class="detail-label">Nationality</span><span class="detail-value">Indian</span></div>
-        <div class="detail-row"><span class="detail-label">Hobbies</span><span class="detail-value">Reading Literature · Writing Poetry · Developing Educational Web Applications</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== SECTION: References ========== -->
-  <div class="section-panel" id="references" role="region" aria-labelledby="ref-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('references')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="ref-title">References</h2>
-    </div>
-    <div class="section-body">
-      <div class="content-card">
-        <h3>Recommendation Letter 1</h3>
-        <p class="meta">Director, Delight Public School, Hapur</p>
-        <p class="sub-meta">Mohd Aadam · Mobile: 9568381658</p>
-        <p style="margin-top:0.5rem;font-size:0.85rem;color:#94a3b8">Full formal letter with school letterhead, seal and signature is included in the printable version.</p>
-      </div>
-      <div class="content-card">
-        <h3>Recommendation Letter 2</h3>
-        <p class="meta">Principal, Government Inter College, Murshadpur, Hapur</p>
-        <p class="sub-meta">Mobile: 9354060629</p>
-        <p style="margin-top:0.5rem;font-size:0.85rem;color:#94a3b8">Full formal letter with government college letterhead is included in the printable version.</p>
-      </div>
-      <div class="content-card" style="text-align:center">
-        <p style="color:#93c5fd;font-size:0.9rem">Use the <strong>Print / Save as PDF</strong> button to view and print the complete recommendation letters on proper letterheads.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== SECTION: Contact ========== -->
-  <div class="section-panel" id="contact" role="region" aria-labelledby="contact-title">
-    <div class="section-header">
-      <button class="back-btn" onclick="closeSection('contact')" aria-label="Go back to home">←</button>
-      <h2 class="section-title" id="contact-title">Contact</h2>
-    </div>
-    <div class="section-body">
-      <div class="contact-list">
-        <a class="contact-item" href="tel:+919536379468" aria-label="Call Majid">
-          <span class="contact-icon" aria-hidden="true">📱</span>
-          <span>+91 95363 79468</span>
-        </a>
-        <a class="contact-item" href="mailto:sendmailtomajid@gmail.com" aria-label="Email Majid">
-          <span class="contact-icon" aria-hidden="true">✉️</span>
-          <span>sendmailtomajid@gmail.com</span>
-        </a>
-        <a class="contact-item" href="https://MajidMurshadpuri.github.io" target="_blank" rel="noopener" aria-label="Visit website">
-          <span class="contact-icon" aria-hidden="true">🌐</span>
-          <span>MajidMurshadpuri.github.io</span>
-        </a>
-        <div class="contact-item" style="cursor:default">
-          <span class="contact-icon" aria-hidden="true">📍</span>
-          <span>Village Murshadpur, Tehsil/District – Hapur, Uttar Pradesh – 245101</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /app-view -->
+</div>
 
 
-<!-- ==================== PRINT VIEW ==================== -->
+<!-- ==================== PRINT VIEW (unchanged) ==================== -->
 <div id="print-view" aria-hidden="true">
 
   <header class="print-header no-break">
@@ -1200,10 +1202,8 @@
     </div>
   </section>
 
-  <!-- ========== REFERENCES (NEW PAGE) ========== -->
   <div class="print-page-break"></div>
 
-  <!-- LETTER 1: Delight Public School -->
   <div class="letter no-break">
     <div class="letter-head">
       <div class="letter-school">DELIGHT PUBLIC SCHOOL</div>
@@ -1242,7 +1242,6 @@
 
   <div class="print-page-break"></div>
 
-  <!-- LETTER 2: Government Inter College -->
   <div class="letter no-break">
     <div class="letter-gov-head">
       <div class="letter-gov-title">Government Inter College</div>
