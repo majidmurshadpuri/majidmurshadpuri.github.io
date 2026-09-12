@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Tools &amp; Apps Studio · Majid Murshadpuri</title>
-  <meta name="description" content="All interactive tools, converters, composers & utilities by Majid Murshadpuri — gathered in one warm, dedicated workspace." />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Tools &amp; Apps Studio · Majid Murshadpuri</title>
+<meta name="description" content="A warm workspace of converters, composers, and creative utilities by Majid Murshadpuri." />
 
-  <!-- ========== BEAUTIFUL FONTS FOR THREE LANGUAGES ========== -->
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-  <!-- ========== SHARED STYLESHEET ========== -->
-  <link rel="stylesheet" href="style.css" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -21,10 +18,16 @@
     <h1>Tools &amp; Apps Studio</h1>
     <h2>A warm workspace of converters, composers &amp; creative utilities</h2>
 
-    <!-- ===== HOME BUTTON (styled like About Me button) ===== -->
     <div class="about-wrapper">
       <a class="about-btn home-btn" href="https://majidmurshadpuri.github.io">✦ Home ✦</a>
     </div>
+  </div>
+
+  <!-- ========== CONTACT STRIP ========== -->
+  <div class="contact-strip">
+    <a href="tel:+919536379468">📱 +91 95363 79468</a>
+    <a href="mailto:sendmailtomajid@gmail.com">✉️ sendmailtomajid@gmail.com</a>
+    <a href="https://majidmurshadpuri.github.io" target="_blank" rel="noopener">🌐 majidmurshadpuri.github.io</a>
   </div>
 
   <!-- ========== CONTENT ========== -->
@@ -41,12 +44,34 @@
     <div class="tools-grid" id="toolsGrid">
 
       <div class="tool-card">
+        <a class="tool-link" href="EnglishStudyMaterial/Maths Practice - Main Page.html">
+          <div class="icon">🔣</div>
+          <div class="tool-title">SA I - Maths Practice</div>
+          <div class="tool-desc">Dear Students! Learn Mathematics at your own pace.</div>
+        </a>
+      </div>
+
+      <div class="tool-card">
+        <a class="tool-link" href="English Study Material.html">
+          <div class="icon">📝</div>
+          <div class="tool-title">English (Literature, Criticism, Theory)</div>
+          <div class="tool-desc">Notes for competitive exams for aspiring English Teachers.</div>
+        </a>
+      </div>
+
+      <div class="tool-card">
+        <a class="tool-link" href="Aakhiri Tasveer Hindi.html">
+          <div class="icon">📜</div>
+          <div class="tool-title">Umair Najmi Shayari Collection (Hindi)</div>
+          <div class="tool-desc">All the Ghazals of Umair Najmi in a beautifully designed format.</div>
+        </a>
+      </div>
 
       <div class="tool-card">
         <a class="tool-link" href="Whatsapp to Ebook.html">
           <div class="icon">📖</div>
           <div class="tool-title">Chat to Ebook Converter</div>
-          <div class="tool-desc">This tool converts your WhatsApp chat into a beautiful html ebook.</div>
+          <div class="tool-desc">Converts your WhatsApp chat into a beautiful HTML ebook.</div>
         </a>
       </div>
 
@@ -54,15 +79,15 @@
         <a class="tool-link" href="Urdu AI OCR & Editor.html">
           <div class="icon">⚙️</div>
           <div class="tool-title">AI OCR &amp; Editor</div>
-          <div class="tool-desc">This tool extracts text from your document and makes it easier for you to read it.</div>
+          <div class="tool-desc">Extracts text from your document and makes it easier to read.</div>
         </a>
       </div>
 
       <div class="tool-card">
         <a class="tool-link" href="Pdf_to_JPG_OCR.html">
-          <div class="icon">⚙️</div>
+          <div class="icon">🖼️</div>
           <div class="tool-title">PDF to JPG + OCR</div>
-          <div class="tool-desc">Convert PDF pages into JPG images and extract Urdu + English text</div>
+          <div class="tool-desc">Convert PDF pages into JPG images and extract Urdu + English text.</div>
         </a>
       </div>
 
@@ -78,7 +103,7 @@
         <a class="tool-link" href="Urdu_Kitab_Saaz.html">
           <div class="icon">📚</div>
           <div class="tool-title">Urdu Kitab Saaz</div>
-          <div class="tool-desc">A browser-based Urdu book composer for organising articles and compiling them into a self-contained, navigable HTML book</div>
+          <div class="tool-desc">A browser-based Urdu book composer — organise articles into a navigable HTML book.</div>
         </a>
       </div>
 
@@ -93,7 +118,6 @@
 </div>
 
 <script>
-  // Reused search filter — identical to home page
   function filterTools() {
     const input = document.getElementById('searchInput').value.toLowerCase();
     const cards = document.querySelectorAll('.tool-card');
@@ -103,17 +127,16 @@
     });
   }
 
-  // Gentle fade-in for cards
   document.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('.tool-card');
     cards.forEach((card, idx) => {
       card.style.opacity = '0';
       card.style.transform = 'translateY(12px)';
       setTimeout(() => {
-        card.style.transition = 'opacity 0.4s ease, transform 0.35s ease';
+        card.style.transition = 'opacity 0.5s ease, transform 0.4s ease';
         card.style.opacity = '1';
         card.style.transform = 'translateY(0)';
-      }, idx * 40);
+      }, idx * 60);
     });
   });
 </script>
