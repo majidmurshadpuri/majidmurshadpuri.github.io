@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Maths Practice Library · Majid Murshadpuri</title>
+<meta name="description" content="Class 6, 7 & 8 Mathematics — SA I interactive practice papers by Majid Murshadpuri." />
+
+<!-- ========== BEAUTIFUL FONTS FOR THREE LANGUAGES ========== -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- ========== SHARED STYLESHEET ========== -->
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="deep-collection">
+
+  <!-- ========== HEADER ========== -->
+  <div class="deep-header">
+    <h1>Maths Practice Library</h1>
+    <h2>SA I · Interactive Practice Papers · Class 6 · 7 · 8</h2>
+
+    <!-- Home button -->
+    <div class="about-wrapper">
+      <a class="about-btn home-btn" href="https://majidmurshadpuri.github.io">✦ Home ✦</a>
+    </div>
+  </div>
+
+  <!-- ========== CONTENT ========== -->
+  <div class="content-panel">
+
+    <!-- Search box -->
+    <div class="search-box">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="🔍 Search · کھوجیں · ढूंढें"
+        oninput="filterTools()"
+        aria-label="Search Maths practice papers"
+      />
+    </div>
+
+    <div class="tools-grid" id="toolsGrid">
+
+      <!-- ===== Card 1: Class 6 ===== -->
+      <div class="tool-card">
+        <a class="tool-link" href="6th Math SA I Practice.html">
+          <div class="icon">6️⃣</div>
+          <div class="tool-title">Class 6 · SA I · Maths Practice</div>
+          <div class="tool-desc">Dear Students! Learn Mathematics at your own pace.</div>
+        </a>
+      </div>
+
+      <!-- ===== Card 2: Class 7 ===== -->
+      <div class="tool-card">
+        <a class="tool-link" href="7th Math SA I Practice.html">
+          <div class="icon">7️⃣</div>
+          <div class="tool-title">Class 7 · SA I · Maths Practice</div>
+          <div class="tool-desc">Dear Students! Learn Mathematics at your own pace.</div>
+        </a>
+      </div>
+
+      <!-- ===== Card 3: Class 8 ===== -->
+      <div class="tool-card">
+        <a class="tool-link" href="8th Math SA I Practice.html">
+          <div class="icon">8️⃣</div>
+          <div class="tool-title">Class 8 · SA I · Maths Practice</div>
+          <div class="tool-desc">Dear Students! Learn Mathematics at your own pace.</div>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <div class="deep-footer">
+    ✦ a living collection · crafted with depth &amp; warmth ✦
+  </div>
+
+</div>
+
+<script>
+  // Live search filter
+  function filterTools() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('.tool-card');
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(input) ? '' : 'none';
+    });
+  }
+
+  // Gentle fade-in for cards
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.tool-card');
+    cards.forEach((card, idx) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(12px)';
+      setTimeout(() => {
+        card.style.transition = 'opacity 0.5s ease, transform 0.4s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, idx * 70);
+    });
+  });
+</script>
+</body>
+</html>
