@@ -2,49 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Professional Resume of Majid – TGT / PGT Mathematics & English">
 <title>Majid | Professional Resume</title>
+
+<!-- ========== BEAUTIFUL FONTS FOR THREE LANGUAGES ========== -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- ========== SHARED STYLESHEET ========== -->
+<link rel="stylesheet" href="style.css" />
+
 <style>
-/* ========== RESET & BASE ========== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.5;
-  color: #1a202c;
-  background: #0f172a;
-  overflow-x: hidden;
-  min-height: 100dvh;
-}
-img { max-width: 100%; height: auto; display: block; }
-button { font-family: inherit; cursor: pointer; border: none; background: none; }
-a { color: inherit; text-decoration: none; }
-ul { list-style: none; }
+/* ============================================================
+   PAGE-SPECIFIC STYLES FOR MyResume.html ONLY
+   (Everything global — reset, body, buttons, section panels,
+    fadeUp, responsive chrome — lives in style.css)
+   ============================================================ */
 
-/* ========== CSS VARIABLES ========== */
-:root {
-  --primary: #1e3a5f;
-  --primary-light: #2b6cb0;
-  --accent: #3182ce;
-  --gold: #c9a227;
-  --bg-dark: #0f172a;
-  --bg-card: rgba(255,255,255,0.08);
-  --glass: rgba(255,255,255,0.12);
-  --glass-border: rgba(255,255,255,0.18);
-  --text: #f8fafc;
-  --text-muted: #94a3b8;
-  --success: #38a169;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 8px 32px rgba(0,0,0,0.3);
-  --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ========== APP VIEW ========== */
+/* ---------- APP BACKGROUND GLOWS (this page uses #app-view) ---------- */
 #app-view {
   min-height: 100dvh;
-  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 45%, #0f172a 100%);
   position: relative;
   overflow-x: hidden;
 }
@@ -59,7 +36,7 @@ ul { list-style: none; }
   z-index: 0;
 }
 
-/* Floating Print Button */
+/* ---------- FLOATING PRINT BUTTON ---------- */
 .print-fab {
   position: fixed;
   bottom: clamp(1rem, 3vw, 1.75rem);
@@ -71,13 +48,17 @@ ul { list-style: none; }
   padding: 0.75rem 1.25rem;
   background: linear-gradient(135deg, #2b6cb0, #1e3a5f);
   color: #fff;
+  font-family: system-ui, -apple-system, sans-serif;
   font-size: clamp(0.8rem, 2vw, 0.95rem);
   font-weight: 600;
   border-radius: 50px;
+  border: 1px solid rgba(147,197,253,0.4);
   box-shadow: 0 6px 24px rgba(43,108,176,0.45);
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(8px);
 }
-.print-fab:hover, .print-fab:focus-visible {
+.print-fab:hover,
+.print-fab:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 10px 32px rgba(43,108,176,0.55);
   outline: 2px solid #fff;
@@ -85,7 +66,7 @@ ul { list-style: none; }
 }
 .print-fab svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-/* ========== HOME SCREEN ========== */
+/* ---------- HOME SCREEN ---------- */
 .home-screen {
   position: relative;
   z-index: 1;
@@ -96,6 +77,8 @@ ul { list-style: none; }
   padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2rem);
   padding-bottom: 6rem;
 }
+
+/* ---------- PROFILE HERO ---------- */
 .profile-hero {
   text-align: center;
   margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
@@ -118,7 +101,8 @@ ul { list-style: none; }
   border: 3px solid #0f172a;
 }
 .profile-name {
-  font-size: clamp(1.75rem, 5.5vw, 2.4rem);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.9rem, 5.5vw, 2.6rem);
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.02em;
@@ -126,7 +110,7 @@ ul { list-style: none; }
 }
 .profile-aka {
   font-size: clamp(0.8rem, 2.2vw, 0.95rem);
-  color: var(--gold);
+  color: #c9a227;
   font-style: italic;
   margin-bottom: 0.5rem;
 }
@@ -138,8 +122,8 @@ ul { list-style: none; }
 }
 .profile-tagline {
   font-size: clamp(0.8rem, 2.2vw, 0.95rem);
-  color: var(--text-muted);
-  max-width: 320px;
+  color: #94a3b8;
+  max-width: 340px;
   margin: 0 auto;
   line-height: 1.55;
 }
@@ -153,31 +137,31 @@ ul { list-style: none; }
 .qual-pill {
   font-size: clamp(0.65rem, 1.8vw, 0.75rem);
   padding: 0.3rem 0.7rem;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
   border-radius: 50px;
   color: #e2e8f0;
   backdrop-filter: blur(8px);
 }
 
-/* Navigation Grid */
+/* ---------- NAV GRID (two/three-column pill cards) ---------- */
 .nav-grid {
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: clamp(0.65rem, 2vw, 0.9rem);
   animation: fadeUp 0.7s ease-out 0.15s both;
 }
 .nav-card {
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 16px;
   padding: clamp(1rem, 3vw, 1.35rem) clamp(0.75rem, 2.5vw, 1rem);
   text-align: center;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -185,8 +169,10 @@ ul { list-style: none; }
   gap: 0.5rem;
   min-height: clamp(90px, 22vw, 110px);
   justify-content: center;
+  cursor: pointer;
 }
-.nav-card:hover, .nav-card:focus-visible {
+.nav-card:hover,
+.nav-card:focus-visible {
   transform: translateY(-4px);
   background: rgba(255,255,255,0.16);
   box-shadow: 0 12px 28px rgba(0,0,0,0.25);
@@ -210,77 +196,19 @@ ul { list-style: none; }
 }
 .nav-card.full-width { grid-column: 1 / -1; }
 
-/* ========== SECTION PANELS ========== */
-.section-panel {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
-  overflow-y: auto;
-  overflow-x: hidden;
-  transform: translateX(100%);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  visibility: hidden;
-  padding-bottom: 5rem;
-}
-.section-panel.active {
-  transform: translateX(0);
-  visibility: visible;
-}
-.section-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: clamp(0.9rem, 2.5vw, 1.15rem) clamp(1rem, 3vw, 1.5rem);
-  background: rgba(15,23,42,0.92);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--glass-border);
-}
-.back-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  color: #fff;
-  font-size: 1.2rem;
-  transition: background var(--transition);
-  flex-shrink: 0;
-}
-.back-btn:hover, .back-btn:focus-visible {
-  background: rgba(255,255,255,0.2);
-  outline: 2px solid #93c5fd;
-}
-.section-title {
-  font-size: clamp(1.1rem, 3.5vw, 1.35rem);
-  font-weight: 700;
-  color: #fff;
-}
-.section-body {
-  padding: clamp(1.25rem, 3.5vw, 1.75rem) clamp(1rem, 3.5vw, 1.5rem);
-  max-width: 640px;
-  margin: 0 auto;
-  color: #e2e8f0;
-}
-
-/* Content Cards */
+/* ---------- CONTENT CARDS INSIDE SECTION PANELS ---------- */
 .content-card {
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 16px;
   padding: clamp(1.1rem, 3vw, 1.4rem);
   margin-bottom: clamp(0.9rem, 2.5vw, 1.15rem);
   backdrop-filter: blur(10px);
   animation: fadeUp 0.45s ease-out both;
 }
 .content-card h3 {
-  font-size: clamp(1rem, 2.8vw, 1.15rem);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.05rem, 2.8vw, 1.2rem);
   font-weight: 700;
   color: #fff;
   margin-bottom: 0.35rem;
@@ -292,15 +220,16 @@ ul { list-style: none; }
 }
 .content-card .sub-meta {
   font-size: clamp(0.7rem, 1.9vw, 0.8rem);
-  color: var(--text-muted);
+  color: #94a3b8;
   margin-bottom: 0.6rem;
 }
-.content-card p, .content-card li {
+.content-card p,
+.content-card li {
   font-size: clamp(0.85rem, 2.3vw, 0.95rem);
   color: #cbd5e1;
   line-height: 1.6;
 }
-.content-card ul { margin-top: 0.5rem; }
+.content-card ul { margin-top: 0.5rem; list-style: none; }
 .content-card li {
   position: relative;
   padding-left: 1.1rem;
@@ -314,10 +243,10 @@ ul { list-style: none; }
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--accent);
+  background: #3182ce;
 }
 
-/* Timeline */
+/* ---------- TIMELINE ---------- */
 .timeline { position: relative; padding-left: 1.5rem; }
 .timeline::before {
   content: "";
@@ -347,7 +276,7 @@ ul { list-style: none; }
 }
 .timeline-item:last-child { margin-bottom: 0; }
 
-/* Skills chips */
+/* ---------- SKILLS CHIPS ---------- */
 .skills-grid {
   display: flex;
   flex-wrap: wrap;
@@ -365,7 +294,7 @@ ul { list-style: none; }
   font-weight: 500;
 }
 
-/* Portfolio cards */
+/* ---------- PORTFOLIO ITEMS ---------- */
 .portfolio-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -377,8 +306,8 @@ ul { list-style: none; }
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   background: rgba(255,255,255,0.06);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
   font-size: clamp(0.8rem, 2.2vw, 0.9rem);
   color: #e2e8f0;
 }
@@ -386,37 +315,39 @@ ul { list-style: none; }
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--gold);
+  background: #c9a227;
   flex-shrink: 0;
 }
 
-/* Quote */
+/* ---------- PHILOSOPHY QUOTE ---------- */
 .philosophy-quote {
-  font-size: clamp(0.95rem, 2.6vw, 1.1rem);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1rem, 2.6vw, 1.15rem);
   font-style: italic;
   color: #e2e8f0;
-  line-height: 1.7;
-  padding: 1.25rem;
-  border-left: 3px solid var(--gold);
+  line-height: 1.75;
+  padding: 1.25rem 1.4rem;
+  border-left: 3px solid #c9a227;
   background: rgba(201,162,39,0.08);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  border-radius: 0 12px 12px 0;
 }
 
-/* Contact links */
+/* ---------- CONTACT LIST (inside panel) ---------- */
 .contact-list { display: flex; flex-direction: column; gap: 0.75rem; }
 .contact-item {
   display: flex;
   align-items: center;
   gap: 0.85rem;
   padding: 0.9rem 1rem;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
   color: #e2e8f0;
   font-size: clamp(0.85rem, 2.3vw, 0.95rem);
-  transition: background var(--transition);
+  transition: background 0.3s ease;
 }
-.contact-item:hover, .contact-item:focus-visible {
+.contact-item:hover,
+.contact-item:focus-visible {
   background: rgba(255,255,255,0.14);
   outline: 2px solid #93c5fd;
 }
@@ -432,20 +363,33 @@ ul { list-style: none; }
   font-size: 1rem;
 }
 
-/* Personal details grid */
+/* ---------- PERSONAL DETAILS GRID ---------- */
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  gap: 1rem;
   padding: 0.6rem 0;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   font-size: clamp(0.85rem, 2.3vw, 0.95rem);
 }
 .detail-row:last-child { border-bottom: none; }
-.detail-label { color: var(--text-muted); }
+.detail-label { color: #94a3b8; }
 .detail-value { color: #fff; font-weight: 500; text-align: right; }
 
-/* ========== PRINT VIEW (hidden on screen) ========== */
+/* ---------- RESPONSIVE (page-specific) ---------- */
+@media (min-width: 600px) {
+  .nav-grid { grid-template-columns: repeat(3, 1fr); }
+  .nav-card.full-width { grid-column: auto; }
+  .portfolio-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 900px) {
+  .home-screen { justify-content: center; }
+}
+
+/* ============================================================
+   PRINT VIEW (hidden on screen; only fires on window.print)
+   ============================================================ */
 #print-view {
   display: none;
   font-family: "Georgia", "Times New Roman", Times, serif;
@@ -454,36 +398,18 @@ ul { list-style: none; }
   line-height: 1.45;
 }
 
-/* ========== ANIMATIONS ========== */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ========== RESPONSIVE ========== */
-@media (min-width: 600px) {
-  .nav-grid { grid-template-columns: repeat(3, 1fr); }
-  .nav-card.full-width { grid-column: auto; }
-  .portfolio-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (min-width: 900px) {
-  .home-screen { justify-content: center; }
-  .section-body { max-width: 680px; }
-}
-
-/* ========== PRINT STYLES ========== */
 @media print {
-  @page {
-    size: A4;
-    margin: 14mm 16mm 16mm 16mm;
-  }
+  @page { size: A4; margin: 14mm 16mm 16mm 16mm; }
+
   body {
     background: #fff !important;
     color: #1a1a1a !important;
+    padding: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  #app-view, .print-fab { display: none !important; }
+
+  #app-view, .print-fab, .deep-collection, .deep-footer { display: none !important; }
   #print-view {
     display: block !important;
     width: 100%;
@@ -492,15 +418,11 @@ ul { list-style: none; }
     padding: 0;
     font-size: 10.5pt;
   }
-  .print-page-break {
-    page-break-before: always;
-    break-before: page;
-  }
-  .no-break {
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
+
+  .print-page-break { page-break-before: always; break-before: page; }
+  .no-break { page-break-inside: avoid; break-inside: avoid; }
   h1, h2, h3, h4 { page-break-after: avoid; break-after: avoid; }
+
   .print-header {
     display: flex;
     align-items: flex-start;
@@ -510,8 +432,7 @@ ul { list-style: none; }
     margin-bottom: 14px;
   }
   .print-photo {
-    width: 92px;
-    height: 92px;
+    width: 92px; height: 92px;
     border-radius: 6px;
     object-fit: cover;
     border: 1.5px solid #cbd5e1;
@@ -519,244 +440,139 @@ ul { list-style: none; }
   }
   .print-header-info { flex: 1; }
   .print-name {
-    font-size: 22pt;
-    font-weight: 700;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 22pt; font-weight: 700;
     color: #1e3a5f;
     letter-spacing: -0.02em;
     margin-bottom: 2px;
-    font-family: system-ui, -apple-system, sans-serif;
   }
-  .print-aka {
-    font-size: 9.5pt;
-    font-style: italic;
-    color: #4a5568;
-    margin-bottom: 3px;
-  }
+  .print-aka { font-size: 9.5pt; font-style: italic; color: #4a5568; margin-bottom: 3px; }
   .print-title {
-    font-size: 11pt;
-    font-weight: 600;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 11pt; font-weight: 600;
     color: #2b6cb0;
     margin-bottom: 6px;
-    font-family: system-ui, -apple-system, sans-serif;
   }
   .print-contact-row {
-    display: flex;
-    flex-wrap: wrap;
+    display: flex; flex-wrap: wrap;
     gap: 4px 14px;
-    font-size: 8.5pt;
-    color: #2d3748;
     font-family: system-ui, -apple-system, sans-serif;
+    font-size: 8.5pt; color: #2d3748;
   }
   .print-contact-row span { white-space: nowrap; }
-  .print-section {
-    margin-bottom: 11px;
-  }
+
+  .print-section { margin-bottom: 11px; }
   .print-section-title {
-    font-size: 11pt;
-    font-weight: 700;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 11pt; font-weight: 700;
     color: #1e3a5f;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     border-bottom: 1.5px solid #2b6cb0;
     padding-bottom: 3px;
     margin-bottom: 7px;
-    font-family: system-ui, -apple-system, sans-serif;
   }
-  .print-body {
-    font-size: 9.5pt;
-    color: #2d3748;
-    text-align: justify;
-  }
+  .print-body { font-size: 9.5pt; color: #2d3748; text-align: justify; }
   .print-body p { margin-bottom: 5px; }
-  .print-job {
-    margin-bottom: 8px;
-  }
+
+  .print-job { margin-bottom: 8px; }
   .print-job-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 2px 10px;
-    margin-bottom: 2px;
+    display: flex; justify-content: space-between;
+    align-items: baseline; flex-wrap: wrap;
+    gap: 2px 10px; margin-bottom: 2px;
   }
-  .print-job-title {
-    font-weight: 700;
-    font-size: 10pt;
-    color: #1a202c;
-  }
-  .print-job-org {
-    font-size: 9.5pt;
-    color: #2b6cb0;
-    font-weight: 600;
-  }
-  .print-job-date {
-    font-size: 8.5pt;
-    color: #4a5568;
-    font-style: italic;
-    white-space: nowrap;
-  }
-  .print-job ul {
-    margin: 3px 0 0 14px;
-    list-style: disc;
-  }
-  .print-job li {
-    font-size: 9pt;
-    margin-bottom: 1.5px;
-    color: #2d3748;
-  }
-  .print-edu-item {
-    margin-bottom: 5px;
-  }
+  .print-job-title { font-weight: 700; font-size: 10pt; color: #1a202c; }
+  .print-job-org { font-size: 9.5pt; color: #2b6cb0; font-weight: 600; }
+  .print-job-date { font-size: 8.5pt; color: #4a5568; font-style: italic; white-space: nowrap; }
+  .print-job ul { margin: 3px 0 0 14px; list-style: disc; }
+  .print-job li { font-size: 9pt; margin-bottom: 1.5px; color: #2d3748; }
+
+  .print-edu-item { margin-bottom: 5px; }
   .print-edu-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    flex-wrap: wrap;
+    display: flex; justify-content: space-between;
+    align-items: baseline; flex-wrap: wrap;
     gap: 2px 8px;
   }
-  .print-edu-degree {
-    font-weight: 700;
-    font-size: 9.5pt;
-    color: #1a202c;
-  }
-  .print-edu-pct {
-    font-size: 9pt;
-    color: #2b6cb0;
-    font-weight: 600;
-  }
-  .print-edu-meta {
-    font-size: 8.5pt;
-    color: #4a5568;
-  }
-  .print-skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 6px;
-  }
+  .print-edu-degree { font-weight: 700; font-size: 9.5pt; color: #1a202c; }
+  .print-edu-pct { font-size: 9pt; color: #2b6cb0; font-weight: 600; }
+  .print-edu-meta { font-size: 8.5pt; color: #4a5568; }
+
+  .print-skills { display: flex; flex-wrap: wrap; gap: 4px 6px; }
   .print-skill {
-    font-size: 8.5pt;
-    padding: 2px 8px;
-    border: 1px solid #a0aec0;
-    border-radius: 3px;
-    color: #2d3748;
-    background: #f7fafc;
+    font-size: 8.5pt; padding: 2px 8px;
+    border: 1px solid #a0aec0; border-radius: 3px;
+    color: #2d3748; background: #f7fafc;
   }
+
   .print-portfolio-list {
-    columns: 2;
-    column-gap: 16px;
-    margin: 0;
-    padding-left: 14px;
+    columns: 2; column-gap: 16px;
+    margin: 0; padding-left: 14px;
     list-style: disc;
   }
   .print-portfolio-list li {
-    font-size: 9pt;
-    margin-bottom: 2px;
-    color: #2d3748;
-    break-inside: avoid;
+    font-size: 9pt; margin-bottom: 2px;
+    color: #2d3748; break-inside: avoid;
   }
+
   .print-philosophy {
-    font-style: italic;
-    font-size: 9.5pt;
+    font-style: italic; font-size: 9.5pt;
     color: #2d3748;
     padding: 6px 10px;
     border-left: 3px solid #c9a227;
     background: #faf8f0;
     margin-top: 4px;
   }
+
   .print-details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3px 20px;
-    font-size: 9pt;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 3px 20px; font-size: 9pt;
   }
   .print-details-grid strong { color: #1a202c; }
 
   /* Recommendation Letters */
   .letter {
     font-family: "Times New Roman", Times, serif;
-    font-size: 10.5pt;
-    line-height: 1.5;
-    color: #1a1a1a;
+    font-size: 10.5pt; line-height: 1.5; color: #1a1a1a;
   }
   .letter-head {
     text-align: center;
     border-bottom: 2px solid #1e3a5f;
-    padding-bottom: 8px;
-    margin-bottom: 12px;
+    padding-bottom: 8px; margin-bottom: 12px;
   }
   .letter-school {
-    font-size: 16pt;
-    font-weight: 700;
-    color: #1e3a5f;
     font-family: system-ui, -apple-system, sans-serif;
+    font-size: 16pt; font-weight: 700;
+    color: #1e3a5f;
     letter-spacing: 0.02em;
   }
-  .letter-addr {
-    font-size: 9pt;
-    color: #4a5568;
-    margin-top: 2px;
-  }
-  .letter-phone {
-    font-size: 9pt;
-    color: #2b6cb0;
-    margin-top: 1px;
-  }
-  .letter-date {
-    text-align: right;
-    font-size: 10pt;
-    margin-bottom: 12px;
-  }
-  .letter-to {
-    margin-bottom: 8px;
-    font-size: 10.5pt;
-  }
+  .letter-addr { font-size: 9pt; color: #4a5568; margin-top: 2px; }
+  .letter-phone { font-size: 9pt; color: #2b6cb0; margin-top: 1px; }
+  .letter-date { text-align: right; font-size: 10pt; margin-bottom: 12px; }
+  .letter-to { margin-bottom: 8px; font-size: 10.5pt; }
   .letter-subject {
-    font-weight: 700;
-    font-size: 10.5pt;
-    margin-bottom: 12px;
-    text-decoration: underline;
+    font-weight: 700; font-size: 10.5pt;
+    margin-bottom: 12px; text-decoration: underline;
   }
-  .letter-body p {
-    margin-bottom: 8px;
-    text-align: justify;
-    font-size: 10.5pt;
-  }
-  .letter-closing {
-    margin-top: 18px;
-  }
-  .letter-sig-block {
-    margin-top: 8px;
-  }
-  .letter-sig-name {
-    font-weight: 700;
-    font-size: 11pt;
-  }
-  .letter-sig-title {
-    font-size: 10pt;
-  }
-  .letter-seal {
-    width: 110px;
-    margin-top: 6px;
-  }
+  .letter-body p { margin-bottom: 8px; text-align: justify; font-size: 10.5pt; }
+  .letter-closing { margin-top: 18px; }
+  .letter-sig-block { margin-top: 8px; }
+  .letter-sig-name { font-weight: 700; font-size: 11pt; }
+  .letter-sig-title { font-size: 10pt; }
+  .letter-seal { width: 110px; margin-top: 6px; }
+
   .letter-gov-head {
     text-align: center;
     border-bottom: 2.5px double #1e3a5f;
-    padding-bottom: 8px;
-    margin-bottom: 12px;
+    padding-bottom: 8px; margin-bottom: 12px;
   }
   .letter-gov-title {
-    font-size: 14pt;
-    font-weight: 700;
-    color: #1e3a5f;
     font-family: system-ui, -apple-system, sans-serif;
+    font-size: 14pt; font-weight: 700;
+    color: #1e3a5f;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
-  .letter-gov-sub {
-    font-size: 9.5pt;
-    color: #4a5568;
-    margin-top: 2px;
-  }
+  .letter-gov-sub { font-size: 9.5pt; color: #4a5568; margin-top: 2px; }
 }
 </style>
 </head>
@@ -775,8 +591,9 @@ ul { list-style: none; }
     Print / Save as PDF
   </button>
 
-  <!-- HOME SCREEN -->
+  <!-- ========== HOME SCREEN ========== -->
   <div class="home-screen" id="home">
+
     <div class="profile-hero">
       <div class="profile-photo-wrap">
         <img class="profile-photo" src="https://drive.google.com/thumbnail?id=1uejfZKntZXcJ756s7kPK85eOaeNPdqmt&sz=w1000" alt="Photograph of Majid" width="150" height="150" loading="eager">
@@ -791,8 +608,21 @@ ul { list-style: none; }
         <span class="qual-pill">B.Ed. 77.07%</span>
         <span class="qual-pill">Diploma in IT</span>
       </div>
+
+      <!-- My Website button (styled by .about-btn in style.css) -->
+      <div class="about-wrapper">
+        <a class="about-btn website-btn" href="https://majidmurshadpuri.github.io">✦ My Website ✦</a>
+      </div>
     </div>
 
+    <!-- ========== CONTACT STRIP ========== -->
+    <div class="contact-strip">
+      <a href="tel:+919536379468">📱 +91 95363 79468</a>
+      <a href="mailto:sendmailtomajid@gmail.com">✉️ sendmailtomajid@gmail.com</a>
+      <a href="https://majidmurshadpuri.github.io" target="_blank" rel="noopener">🌐 majidmurshadpuri.github.io</a>
+    </div>
+
+    <!-- ========== NAV GRID ========== -->
     <nav class="nav-grid" aria-label="Resume sections">
       <button class="nav-card" onclick="openSection('summary')" aria-label="Open Professional Summary">
         <span class="nav-icon" aria-hidden="true">📋</span>
@@ -841,7 +671,7 @@ ul { list-style: none; }
     </nav>
   </div>
 
-  <!-- SECTION: Professional Summary -->
+  <!-- ========== SECTION: Professional Summary ========== -->
   <div class="section-panel" id="summary" role="region" aria-labelledby="summary-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('summary')" aria-label="Go back to home">←</button>
@@ -856,7 +686,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: Teaching Experience -->
+  <!-- ========== SECTION: Teaching Experience ========== -->
   <div class="section-panel" id="experience" role="region" aria-labelledby="experience-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('experience')" aria-label="Go back to home">←</button>
@@ -918,7 +748,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: Education -->
+  <!-- ========== SECTION: Education ========== -->
   <div class="section-panel" id="education" role="region" aria-labelledby="education-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('education')" aria-label="Go back to home">←</button>
@@ -972,7 +802,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: Certification -->
+  <!-- ========== SECTION: Certification ========== -->
   <div class="section-panel" id="certification" role="region" aria-labelledby="cert-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('certification')" aria-label="Go back to home">←</button>
@@ -989,7 +819,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: Tech Portfolio -->
+  <!-- ========== SECTION: Tech Portfolio ========== -->
   <div class="section-panel" id="portfolio" role="region" aria-labelledby="portfolio-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('portfolio')" aria-label="Go back to home">←</button>
@@ -1024,7 +854,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: Skills -->
+  <!-- ========== SECTION: Skills ========== -->
   <div class="section-panel" id="skills" role="region" aria-labelledby="skills-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('skills')" aria-label="Go back to home">←</button>
@@ -1049,7 +879,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: Teaching Philosophy -->
+  <!-- ========== SECTION: Teaching Philosophy ========== -->
   <div class="section-panel" id="philosophy" role="region" aria-labelledby="phil-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('philosophy')" aria-label="Go back to home">←</button>
@@ -1064,7 +894,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: Interests -->
+  <!-- ========== SECTION: Interests ========== -->
   <div class="section-panel" id="interests" role="region" aria-labelledby="interests-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('interests')" aria-label="Go back to home">←</button>
@@ -1088,7 +918,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: Personal Details -->
+  <!-- ========== SECTION: Personal Details ========== -->
   <div class="section-panel" id="personal" role="region" aria-labelledby="personal-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('personal')" aria-label="Go back to home">←</button>
@@ -1104,7 +934,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: References (App preview) -->
+  <!-- ========== SECTION: References ========== -->
   <div class="section-panel" id="references" role="region" aria-labelledby="ref-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('references')" aria-label="Go back to home">←</button>
@@ -1129,7 +959,7 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- SECTION: Contact -->
+  <!-- ========== SECTION: Contact ========== -->
   <div class="section-panel" id="contact" role="region" aria-labelledby="contact-title">
     <div class="section-header">
       <button class="back-btn" onclick="closeSection('contact')" aria-label="Go back to home">←</button>
@@ -1159,10 +989,10 @@ ul { list-style: none; }
 
 </div><!-- /app-view -->
 
+
 <!-- ==================== PRINT VIEW ==================== -->
 <div id="print-view" aria-hidden="true">
 
-  <!-- HEADER -->
   <header class="print-header no-break">
     <img class="print-photo" src="https://drive.google.com/thumbnail?id=1uejfZKntZXcJ756s7kPK85eOaeNPdqmt&sz=w1000" alt="Majid">
     <div class="print-header-info">
@@ -1178,7 +1008,6 @@ ul { list-style: none; }
     </div>
   </header>
 
-  <!-- PROFESSIONAL SUMMARY -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Professional Summary</h2>
     <div class="print-body">
@@ -1188,7 +1017,6 @@ ul { list-style: none; }
     </div>
   </section>
 
-  <!-- PROFESSIONAL CERTIFICATION -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Professional Certification</h2>
     <div class="print-body">
@@ -1196,7 +1024,6 @@ ul { list-style: none; }
     </div>
   </section>
 
-  <!-- TEACHING EXPERIENCE -->
   <section class="print-section">
     <h2 class="print-section-title">Teaching Experience</h2>
 
@@ -1263,7 +1090,6 @@ ul { list-style: none; }
     </div>
   </section>
 
-  <!-- EDUCATIONAL QUALIFICATIONS -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Educational Qualifications</h2>
 
@@ -1311,7 +1137,6 @@ ul { list-style: none; }
     </div>
   </section>
 
-  <!-- TECH PORTFOLIO -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Tech Portfolio &amp; Digital Initiatives</h2>
     <div class="print-body">
@@ -1333,7 +1158,6 @@ ul { list-style: none; }
     </div>
   </section>
 
-  <!-- CORE SKILLS -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Core Skills</h2>
     <div class="print-skills">
@@ -1351,7 +1175,6 @@ ul { list-style: none; }
     </div>
   </section>
 
-  <!-- TEACHING PHILOSOPHY -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Teaching Philosophy</h2>
     <div class="print-philosophy">
@@ -1359,7 +1182,6 @@ ul { list-style: none; }
     </div>
   </section>
 
-  <!-- INTERESTS -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Interests &amp; Extra-Curricular Activities</h2>
     <div class="print-body">
@@ -1368,7 +1190,6 @@ ul { list-style: none; }
     </div>
   </section>
 
-  <!-- PERSONAL DOSSIER -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Personal Dossier</h2>
     <div class="print-details-grid">
@@ -1419,9 +1240,9 @@ ul { list-style: none; }
     </div>
   </div>
 
-  <!-- LETTER 2: Government Inter College (new page if needed, but kept continuous after first letter) -->
   <div class="print-page-break"></div>
 
+  <!-- LETTER 2: Government Inter College -->
   <div class="letter no-break">
     <div class="letter-gov-head">
       <div class="letter-gov-title">Government Inter College</div>
@@ -1465,7 +1286,6 @@ ul { list-style: none; }
     panel.classList.add('active');
     panel.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    // Focus management
     var backBtn = panel.querySelector('.back-btn');
     if (backBtn) setTimeout(function () { backBtn.focus(); }, 100);
   }
@@ -1478,21 +1298,16 @@ ul { list-style: none; }
     document.body.style.overflow = '';
   }
 
-  // Expose globally for inline handlers
   window.openSection = openSection;
   window.closeSection = closeSection;
 
-  // Keyboard: Escape closes active panel
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       var active = document.querySelector('.section-panel.active');
-      if (active) {
-        closeSection(active.id);
-      }
+      if (active) closeSection(active.id);
     }
   });
 
-  // Ensure print view is never visible on screen
   window.addEventListener('beforeprint', function () {
     document.getElementById('print-view').setAttribute('aria-hidden', 'false');
   });
