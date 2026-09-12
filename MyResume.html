@@ -2,39 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="description" content="Professional Resume of Majid – TGT / PGT Mathematics & English">
 <title>Majid | Professional Resume</title>
-
-<!-- ========== BEAUTIFUL FONTS FOR THREE LANGUAGES ========== -->
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-<!-- ========== SHARED STYLESHEET ========== -->
-<link rel="stylesheet" href="style.css" />
-
 <style>
-/* ============================================================
-   PAGE-SPECIFIC STYLES FOR THE RESUME ONLY
-   (Global chrome — reset, body, buttons, section panels shell,
-    fadeUp keyframes, responsive body padding — all in style.css)
-   ============================================================ */
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  color: #1a202c;
+  background: #0f172a;
+  overflow-x: hidden;
+  min-height: 100dvh;
+}
+img { max-width: 100%; height: auto; display: block; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
 
-/* ---------- RESUME SHELL (bounded glass card on the navy backdrop) ---------- */
-.resume-shell {
-  position: relative;
-  z-index: 1;
-  max-width: 1180px;
-  margin: 0 auto;
-  background: linear-gradient(160deg, rgba(30,58,95,0.55) 0%, rgba(15,23,42,0.75) 100%);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 28px;
-  box-shadow: 0 10px 34px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  overflow: hidden;
+/* ========== CSS VARIABLES ========== */
+:root {
+  --primary: #1e3a5f;
+  --primary-light: #2b6cb0;
+  --accent: #3182ce;
+  --gold: #c9a227;
+  --bg-dark: #0f172a;
+  --bg-card: rgba(255,255,255,0.08);
+  --glass: rgba(255,255,255,0.12);
+  --glass-border: rgba(255,255,255,0.18);
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --success: #38a169;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.3);
+  --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ---------- FLOATING PRINT BUTTON ---------- */
+/* ========== APP VIEW ========== */
+#app-view {
+  min-height: 100dvh;
+  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 45%, #0f172a 100%);
+  position: relative;
+  overflow-x: hidden;
+}
+#app-view::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(49,130,206,0.25), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(201,162,39,0.12), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Floating Print Button */
 .print-fab {
   position: fixed;
   bottom: clamp(1rem, 3vw, 1.75rem);
@@ -46,17 +71,13 @@
   padding: 0.75rem 1.25rem;
   background: linear-gradient(135deg, #2b6cb0, #1e3a5f);
   color: #fff;
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: clamp(0.8rem, 2vw, 0.95rem);
   font-weight: 600;
   border-radius: 50px;
-  border: 1px solid rgba(147,197,253,0.4);
   box-shadow: 0 6px 24px rgba(43,108,176,0.45);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  backdrop-filter: blur(8px);
+  transition: transform var(--transition), box-shadow var(--transition);
 }
-.print-fab:hover,
-.print-fab:focus-visible {
+.print-fab:hover, .print-fab:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 10px 32px rgba(43,108,176,0.55);
   outline: 2px solid #fff;
@@ -64,16 +85,25 @@
 }
 .print-fab svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-/* ---------- PROFILE HERO ---------- */
+/* ========== HOME SCREEN ========== */
+.home-screen {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2rem);
+  padding-bottom: 6rem;
+}
 .profile-hero {
   text-align: center;
-  padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem) clamp(1.5rem, 4vw, 2rem);
-  border-bottom: 1px solid rgba(255,255,255,0.18);
+  margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
   animation: fadeUp 0.7s ease-out;
 }
 .profile-photo-wrap {
-  width: clamp(110px, 26vw, 150px);
-  height: clamp(110px, 26vw, 150px);
+  width: clamp(110px, 28vw, 150px);
+  height: clamp(110px, 28vw, 150px);
   margin: 0 auto 1.25rem;
   border-radius: 50%;
   padding: 4px;
@@ -88,74 +118,104 @@
   border: 3px solid #0f172a;
 }
 .profile-name {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(1.9rem, 5.5vw, 2.6rem);
+  font-size: clamp(1.75rem, 5.5vw, 2.4rem);
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.02em;
   margin-bottom: 0.25rem;
 }
 .profile-aka {
-  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
-  color: #c9a227;
+  font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+  color: var(--gold);
   font-style: italic;
   margin-bottom: 0.5rem;
 }
 .profile-title {
-  font-size: clamp(1rem, 2.8vw, 1.15rem);
+  font-size: clamp(0.95rem, 2.8vw, 1.15rem);
   font-weight: 600;
   color: #93c5fd;
   margin-bottom: 0.75rem;
 }
 .profile-tagline {
-  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
-  color: #cbd5e1;
-  max-width: 340px;
+  font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+  color: var(--text-muted);
+  max-width: 320px;
   margin: 0 auto;
   line-height: 1.55;
-  font-style: italic;
 }
 .qual-pills {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.45rem;
-  margin-top: 1.1rem;
+  gap: 0.4rem;
+  margin-top: 1rem;
 }
 .qual-pill {
-  font-size: clamp(0.7rem, 1.9vw, 0.8rem);
-  padding: 0.35rem 0.85rem;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.18);
+  font-size: clamp(0.65rem, 1.8vw, 0.75rem);
+  padding: 0.3rem 0.7rem;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-radius: 50px;
   color: #e2e8f0;
   backdrop-filter: blur(8px);
-  font-weight: 500;
 }
 
-/* ---------- CONTACT STRIP (page-local override for the shell) ---------- */
-.resume-shell .contact-strip {
-  padding: clamp(1rem, 3vw, 1.4rem) clamp(1rem, 3vw, 1.5rem) 0;
+/* ========== HERO ACTION BUTTONS (My Website) ========== */
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+  animation: fadeUp 0.7s ease-out 0.1s both;
+}
+.website-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.35rem;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  color: #fff;
+  font-size: clamp(0.82rem, 2vw, 0.95rem);
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
+  text-decoration: none;
+}
+.website-btn::before {
+  content: "🌐";
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.website-btn:hover, .website-btn:focus-visible {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.3);
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
 }
 
-/* ---------- NAV GRID (glass tile cards) ---------- */
+/* Navigation Grid */
 .nav-grid {
   width: 100%;
+  max-width: 520px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: clamp(0.75rem, 2vw, 1rem);
-  padding: clamp(1.5rem, 4vw, 2.25rem) clamp(1rem, 4vw, 2rem) clamp(1.5rem, 4vw, 2rem);
+  gap: clamp(0.65rem, 2vw, 0.9rem);
   animation: fadeUp 0.7s ease-out 0.15s both;
 }
 .nav-card {
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 16px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
   padding: clamp(1rem, 3vw, 1.35rem) clamp(0.75rem, 2.5vw, 1rem);
   text-align: center;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -163,49 +223,102 @@
   gap: 0.5rem;
   min-height: clamp(90px, 22vw, 110px);
   justify-content: center;
-  cursor: pointer;
-  width: 100%;
 }
-.nav-card:hover,
-.nav-card:focus-visible {
+.nav-card:hover, .nav-card:focus-visible {
   transform: translateY(-4px);
   background: rgba(255,255,255,0.16);
-  border-color: rgba(147,197,253,0.4);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
   outline: none;
 }
 .nav-card:focus-visible { outline: 2px solid #93c5fd; outline-offset: 2px; }
 .nav-icon {
-  width: clamp(32px, 7vw, 40px);
-  height: clamp(32px, 7vw, 40px);
+  width: clamp(28px, 7vw, 36px);
+  height: clamp(28px, 7vw, 36px);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(49,130,206,0.28), rgba(201,162,39,0.18));
-  border: 1px solid rgba(147,197,253,0.28);
+  background: rgba(49,130,206,0.25);
   border-radius: 12px;
   font-size: clamp(1rem, 2.8vw, 1.25rem);
 }
 .nav-label {
-  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
+  font-size: clamp(0.75rem, 2.2vw, 0.9rem);
   font-weight: 600;
   line-height: 1.3;
 }
 .nav-card.full-width { grid-column: 1 / -1; }
 
-/* ---------- CONTENT CARDS INSIDE PANELS ---------- */
+/* ========== SECTION PANELS ========== */
+.section-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  visibility: hidden;
+  padding-bottom: 5rem;
+}
+.section-panel.active {
+  transform: translateX(0);
+  visibility: visible;
+}
+.section-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: clamp(0.9rem, 2.5vw, 1.15rem) clamp(1rem, 3vw, 1.5rem);
+  background: rgba(15,23,42,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border);
+}
+.back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: #fff;
+  font-size: 1.2rem;
+  transition: background var(--transition);
+  flex-shrink: 0;
+}
+.back-btn:hover, .back-btn:focus-visible {
+  background: rgba(255,255,255,0.2);
+  outline: 2px solid #93c5fd;
+}
+.section-title {
+  font-size: clamp(1.1rem, 3.5vw, 1.35rem);
+  font-weight: 700;
+  color: #fff;
+}
+.section-body {
+  padding: clamp(1.25rem, 3.5vw, 1.75rem) clamp(1rem, 3.5vw, 1.5rem);
+  max-width: 640px;
+  margin: 0 auto;
+  color: #e2e8f0;
+}
+
+/* Content Cards */
 .content-card {
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 16px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
   padding: clamp(1.1rem, 3vw, 1.4rem);
   margin-bottom: clamp(0.9rem, 2.5vw, 1.15rem);
   backdrop-filter: blur(10px);
   animation: fadeUp 0.45s ease-out both;
 }
 .content-card h3 {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(1.05rem, 2.8vw, 1.2rem);
+  font-size: clamp(1rem, 2.8vw, 1.15rem);
   font-weight: 700;
   color: #fff;
   margin-bottom: 0.35rem;
@@ -217,16 +330,15 @@
 }
 .content-card .sub-meta {
   font-size: clamp(0.7rem, 1.9vw, 0.8rem);
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 0.6rem;
 }
-.content-card p,
-.content-card li {
+.content-card p, .content-card li {
   font-size: clamp(0.85rem, 2.3vw, 0.95rem);
   color: #cbd5e1;
   line-height: 1.6;
 }
-.content-card ul { margin-top: 0.5rem; list-style: none; }
+.content-card ul { margin-top: 0.5rem; }
 .content-card li {
   position: relative;
   padding-left: 1.1rem;
@@ -240,10 +352,10 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #3182ce;
+  background: var(--accent);
 }
 
-/* ---------- TIMELINE ---------- */
+/* Timeline */
 .timeline { position: relative; padding-left: 1.5rem; }
 .timeline::before {
   content: "";
@@ -273,8 +385,12 @@
 }
 .timeline-item:last-child { margin-bottom: 0; }
 
-/* ---------- SKILLS CHIPS ---------- */
-.skills-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+/* Skills chips */
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
 .skill-chip {
   display: inline-flex;
   align-items: center;
@@ -287,7 +403,7 @@
   font-weight: 500;
 }
 
-/* ---------- PORTFOLIO ITEMS ---------- */
+/* Portfolio cards */
 .portfolio-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -299,8 +415,8 @@
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   font-size: clamp(0.8rem, 2.2vw, 0.9rem);
   color: #e2e8f0;
 }
@@ -308,80 +424,66 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #c9a227;
+  background: var(--gold);
   flex-shrink: 0;
 }
 
-/* ---------- PHILOSOPHY QUOTE ---------- */
+/* Quote */
 .philosophy-quote {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(1rem, 2.6vw, 1.15rem);
+  font-size: clamp(0.95rem, 2.6vw, 1.1rem);
   font-style: italic;
   color: #e2e8f0;
-  line-height: 1.75;
-  padding: 1.25rem 1.4rem;
-  border-left: 3px solid #c9a227;
+  line-height: 1.7;
+  padding: 1.25rem;
+  border-left: 3px solid var(--gold);
   background: rgba(201,162,39,0.08);
-  border-radius: 0 12px 12px 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-/* ---------- CONTACT LIST (inside the Contact panel) ---------- */
+/* Contact links */
 .contact-list { display: flex; flex-direction: column; gap: 0.75rem; }
 .contact-item {
   display: flex;
   align-items: center;
   gap: 0.85rem;
   padding: 0.9rem 1rem;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 10px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   color: #e2e8f0;
   font-size: clamp(0.85rem, 2.3vw, 0.95rem);
-  transition: background 0.3s ease, transform 0.3s ease;
+  transition: background var(--transition);
 }
-a.contact-item:hover,
-a.contact-item:focus-visible {
-  background: rgba(255,255,255,0.16);
-  transform: translateY(-1px);
+.contact-item:hover, .contact-item:focus-visible {
+  background: rgba(255,255,255,0.14);
   outline: 2px solid #93c5fd;
 }
 .contact-icon {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
   background: rgba(49,130,206,0.25);
-  border: 1px solid rgba(147,197,253,0.28);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
-/* ---------- PERSONAL DETAILS GRID ---------- */
+/* Personal details grid */
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 1rem;
-  padding: 0.65rem 0;
+  padding: 0.6rem 0;
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  font-size: clamp(0.88rem, 2.3vw, 0.98rem);
+  font-size: clamp(0.85rem, 2.3vw, 0.95rem);
 }
 .detail-row:last-child { border-bottom: none; }
-.detail-label { color: #94a3b8; }
+.detail-label { color: var(--text-muted); }
 .detail-value { color: #fff; font-weight: 500; text-align: right; }
 
-/* ---------- PAGE-SPECIFIC RESPONSIVE ---------- */
-@media (min-width: 600px) {
-  .nav-grid { grid-template-columns: repeat(3, 1fr); }
-  .nav-card.full-width { grid-column: auto; }
-  .portfolio-grid { grid-template-columns: 1fr 1fr; }
-}
-
-/* ============================================================
-   PRINT VIEW (hidden on screen; unchanged layout)
-   ============================================================ */
+/* ========== PRINT VIEW (hidden on screen) ========== */
 #print-view {
   display: none;
   font-family: "Georgia", "Times New Roman", Times, serif;
@@ -390,18 +492,36 @@ a.contact-item:focus-visible {
   line-height: 1.45;
 }
 
-@media print {
-  @page { size: A4; margin: 14mm 16mm 16mm 16mm; }
+/* ========== ANIMATIONS ========== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
+/* ========== RESPONSIVE ========== */
+@media (min-width: 600px) {
+  .nav-grid { grid-template-columns: repeat(3, 1fr); }
+  .nav-card.full-width { grid-column: auto; }
+  .portfolio-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 900px) {
+  .home-screen { justify-content: center; }
+  .section-body { max-width: 680px; }
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 16mm 16mm 16mm;
+  }
   body {
     background: #fff !important;
     color: #1a1a1a !important;
-    padding: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-
-  .resume-shell, .print-fab, .deep-collection, .deep-footer { display: none !important; }
+  #app-view, .print-fab, .website-btn { display: none !important; }
   #print-view {
     display: block !important;
     width: 100%;
@@ -410,11 +530,15 @@ a.contact-item:focus-visible {
     padding: 0;
     font-size: 10.5pt;
   }
-
-  .print-page-break { page-break-before: always; break-before: page; }
-  .no-break { page-break-inside: avoid; break-inside: avoid; }
+  .print-page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+  .no-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
   h1, h2, h3, h4 { page-break-after: avoid; break-after: avoid; }
-
   .print-header {
     display: flex;
     align-items: flex-start;
@@ -424,7 +548,8 @@ a.contact-item:focus-visible {
     margin-bottom: 14px;
   }
   .print-photo {
-    width: 92px; height: 92px;
+    width: 92px;
+    height: 92px;
     border-radius: 6px;
     object-fit: cover;
     border: 1.5px solid #cbd5e1;
@@ -432,569 +557,655 @@ a.contact-item:focus-visible {
   }
   .print-header-info { flex: 1; }
   .print-name {
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 22pt; font-weight: 700;
+    font-size: 22pt;
+    font-weight: 700;
     color: #1e3a5f;
     letter-spacing: -0.02em;
     margin-bottom: 2px;
-  }
-  .print-aka { font-size: 9.5pt; font-style: italic; color: #4a5568; margin-bottom: 3px; }
-  .print-title {
     font-family: system-ui, -apple-system, sans-serif;
-    font-size: 11pt; font-weight: 600;
+  }
+  .print-aka {
+    font-size: 9.5pt;
+    font-style: italic;
+    color: #4a5568;
+    margin-bottom: 3px;
+  }
+  .print-title {
+    font-size: 11pt;
+    font-weight: 600;
     color: #2b6cb0;
     margin-bottom: 6px;
+    font-family: system-ui, -apple-system, sans-serif;
   }
   .print-contact-row {
-    display: flex; flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
     gap: 4px 14px;
+    font-size: 8.5pt;
+    color: #2d3748;
     font-family: system-ui, -apple-system, sans-serif;
-    font-size: 8.5pt; color: #2d3748;
   }
   .print-contact-row span { white-space: nowrap; }
-
-  .print-section { margin-bottom: 11px; }
+  .print-section {
+    margin-bottom: 11px;
+  }
   .print-section-title {
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 11pt; font-weight: 700;
+    font-size: 11pt;
+    font-weight: 700;
     color: #1e3a5f;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     border-bottom: 1.5px solid #2b6cb0;
     padding-bottom: 3px;
     margin-bottom: 7px;
+    font-family: system-ui, -apple-system, sans-serif;
   }
-  .print-body { font-size: 9.5pt; color: #2d3748; text-align: justify; }
+  .print-body {
+    font-size: 9.5pt;
+    color: #2d3748;
+    text-align: justify;
+  }
   .print-body p { margin-bottom: 5px; }
-
-  .print-job { margin-bottom: 8px; }
-  .print-job-header {
-    display: flex; justify-content: space-between;
-    align-items: baseline; flex-wrap: wrap;
-    gap: 2px 10px; margin-bottom: 2px;
+  .print-job {
+    margin-bottom: 8px;
   }
-  .print-job-title { font-weight: 700; font-size: 10pt; color: #1a202c; }
-  .print-job-org { font-size: 9.5pt; color: #2b6cb0; font-weight: 600; }
-  .print-job-date { font-size: 8.5pt; color: #4a5568; font-style: italic; white-space: nowrap; }
-  .print-job ul { margin: 3px 0 0 14px; list-style: disc; }
-  .print-job li { font-size: 9pt; margin-bottom: 1.5px; color: #2d3748; }
-
-  .print-edu-item { margin-bottom: 5px; }
+  .print-job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    margin-bottom: 2px;
+  }
+  .print-job-title {
+    font-weight: 700;
+    font-size: 10pt;
+    color: #1a202c;
+  }
+  .print-job-org {
+    font-size: 9.5pt;
+    color: #2b6cb0;
+    font-weight: 600;
+  }
+  .print-job-date {
+    font-size: 8.5pt;
+    color: #4a5568;
+    font-style: italic;
+    white-space: nowrap;
+  }
+  .print-job ul {
+    margin: 3px 0 0 14px;
+    list-style: disc;
+  }
+  .print-job li {
+    font-size: 9pt;
+    margin-bottom: 1.5px;
+    color: #2d3748;
+  }
+  .print-edu-item {
+    margin-bottom: 5px;
+  }
   .print-edu-row {
-    display: flex; justify-content: space-between;
-    align-items: baseline; flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
     gap: 2px 8px;
   }
-  .print-edu-degree { font-weight: 700; font-size: 9.5pt; color: #1a202c; }
-  .print-edu-pct { font-size: 9pt; color: #2b6cb0; font-weight: 600; }
-  .print-edu-meta { font-size: 8.5pt; color: #4a5568; }
-
-  .print-skills { display: flex; flex-wrap: wrap; gap: 4px 6px; }
-  .print-skill {
-    font-size: 8.5pt; padding: 2px 8px;
-    border: 1px solid #a0aec0; border-radius: 3px;
-    color: #2d3748; background: #f7fafc;
+  .print-edu-degree {
+    font-weight: 700;
+    font-size: 9.5pt;
+    color: #1a202c;
   }
-
+  .print-edu-pct {
+    font-size: 9pt;
+    color: #2b6cb0;
+    font-weight: 600;
+  }
+  .print-edu-meta {
+    font-size: 8.5pt;
+    color: #4a5568;
+  }
+  .print-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 6px;
+  }
+  .print-skill {
+    font-size: 8.5pt;
+    padding: 2px 8px;
+    border: 1px solid #a0aec0;
+    border-radius: 3px;
+    color: #2d3748;
+    background: #f7fafc;
+  }
   .print-portfolio-list {
-    columns: 2; column-gap: 16px;
-    margin: 0; padding-left: 14px;
+    columns: 2;
+    column-gap: 16px;
+    margin: 0;
+    padding-left: 14px;
     list-style: disc;
   }
   .print-portfolio-list li {
-    font-size: 9pt; margin-bottom: 2px;
-    color: #2d3748; break-inside: avoid;
+    font-size: 9pt;
+    margin-bottom: 2px;
+    color: #2d3748;
+    break-inside: avoid;
   }
-
   .print-philosophy {
-    font-style: italic; font-size: 9.5pt;
+    font-style: italic;
+    font-size: 9.5pt;
     color: #2d3748;
     padding: 6px 10px;
     border-left: 3px solid #c9a227;
     background: #faf8f0;
     margin-top: 4px;
   }
-
   .print-details-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 3px 20px; font-size: 9pt;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 20px;
+    font-size: 9pt;
   }
   .print-details-grid strong { color: #1a202c; }
 
+  /* Recommendation Letters */
   .letter {
     font-family: "Times New Roman", Times, serif;
-    font-size: 10.5pt; line-height: 1.5; color: #1a1a1a;
+    font-size: 10.5pt;
+    line-height: 1.5;
+    color: #1a1a1a;
   }
   .letter-head {
     text-align: center;
     border-bottom: 2px solid #1e3a5f;
-    padding-bottom: 8px; margin-bottom: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
   }
   .letter-school {
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 16pt; font-weight: 700;
+    font-size: 16pt;
+    font-weight: 700;
     color: #1e3a5f;
+    font-family: system-ui, -apple-system, sans-serif;
     letter-spacing: 0.02em;
   }
-  .letter-addr { font-size: 9pt; color: #4a5568; margin-top: 2px; }
-  .letter-phone { font-size: 9pt; color: #2b6cb0; margin-top: 1px; }
-  .letter-date { text-align: right; font-size: 10pt; margin-bottom: 12px; }
-  .letter-to { margin-bottom: 8px; font-size: 10.5pt; }
-  .letter-subject {
-    font-weight: 700; font-size: 10.5pt;
-    margin-bottom: 12px; text-decoration: underline;
+  .letter-addr {
+    font-size: 9pt;
+    color: #4a5568;
+    margin-top: 2px;
   }
-  .letter-body p { margin-bottom: 8px; text-align: justify; font-size: 10.5pt; }
-  .letter-closing { margin-top: 18px; }
-  .letter-sig-block { margin-top: 8px; }
-  .letter-sig-name { font-weight: 700; font-size: 11pt; }
-  .letter-sig-title { font-size: 10pt; }
-  .letter-seal { width: 110px; margin-top: 6px; }
-
+  .letter-phone {
+    font-size: 9pt;
+    color: #2b6cb0;
+    margin-top: 1px;
+  }
+  .letter-date {
+    text-align: right;
+    font-size: 10pt;
+    margin-bottom: 12px;
+  }
+  .letter-to {
+    margin-bottom: 8px;
+    font-size: 10.5pt;
+  }
+  .letter-subject {
+    font-weight: 700;
+    font-size: 10.5pt;
+    margin-bottom: 12px;
+    text-decoration: underline;
+  }
+  .letter-body p {
+    margin-bottom: 8px;
+    text-align: justify;
+    font-size: 10.5pt;
+  }
+  .letter-closing {
+    margin-top: 18px;
+  }
+  .letter-sig-block {
+    margin-top: 8px;
+  }
+  .letter-sig-name {
+    font-weight: 700;
+    font-size: 11pt;
+  }
+  .letter-sig-title {
+    font-size: 10pt;
+  }
+  .letter-seal {
+    width: 110px;
+    margin-top: 6px;
+  }
   .letter-gov-head {
     text-align: center;
     border-bottom: 2.5px double #1e3a5f;
-    padding-bottom: 8px; margin-bottom: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
   }
   .letter-gov-title {
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 14pt; font-weight: 700;
+    font-size: 14pt;
+    font-weight: 700;
     color: #1e3a5f;
+    font-family: system-ui, -apple-system, sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
-  .letter-gov-sub { font-size: 9.5pt; color: #4a5568; margin-top: 2px; }
+  .letter-gov-sub {
+    font-size: 9.5pt;
+    color: #4a5568;
+    margin-top: 2px;
+  }
 }
 </style>
 </head>
 <body>
 
-<!-- ==================== ON-SCREEN RESUME ==================== -->
-<div class="resume-shell" role="application" aria-label="Majid Professional Resume">
+<!-- ==================== APP VIEW ==================== -->
+<div id="app-view" role="application" aria-label="Majid Professional Resume Application">
 
-  <!-- ========== HEADER ========== -->
-  <div class="deep-header">
-    <h1>My Resume</h1>
-    <h2>Majid Murshadpuri · TGT / PGT · Mathematics &amp; English</h2>
+  <!-- Floating Print Button -->
+  <button class="print-fab" onclick="window.print()" aria-label="Print or Save as PDF">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="6 9 6 2 18 2 18 9"></polyline>
+      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+      <rect x="6" y="14" width="12" height="8"></rect>
+    </svg>
+    Print / Save as PDF
+  </button>
 
-    <!-- ===== MY WEBSITE BUTTON ===== -->
-    <div class="about-wrapper">
-      <a class="about-btn website-btn" href="https://majidmurshadpuri.github.io">✦ My Website ✦</a>
+  <!-- HOME SCREEN -->
+  <div class="home-screen" id="home">
+    <div class="profile-hero">
+      <div class="profile-photo-wrap">
+        <img class="profile-photo" src="https://drive.google.com/thumbnail?id=1uejfZKntZXcJ756s7kPK85eOaeNPdqmt&sz=w1000" alt="Photograph of Majid" width="150" height="150" loading="eager">
+      </div>
+      <h1 class="profile-name">MAJID</h1>
+      <p class="profile-aka">Also known as Majid Murshadpuri</p>
+      <p class="profile-title">TGT / PGT – Mathematics &amp; English</p>
+      <p class="profile-tagline">Student-centric educator · CTET Qualified · Technology-driven teaching</p>
+      <div class="qual-pills" aria-label="Key qualifications">
+        <span class="qual-pill">CTET 2024</span>
+        <span class="qual-pill">M.A. English 70.76%</span>
+        <span class="qual-pill">B.Ed. 77.07%</span>
+        <span class="qual-pill">Diploma in IT</span>
+      </div>
+
+      <!-- My Website button -->
+      <div class="hero-actions">
+        <a class="website-btn" href="https://majidmurshadpuri.github.io" target="_blank" rel="noopener">My Website</a>
+      </div>
     </div>
-  </div>
 
-  <!-- ========== PROFILE HERO ========== -->
-  <div class="profile-hero">
-    <div class="profile-photo-wrap">
-      <img class="profile-photo"
-           src="https://drive.google.com/thumbnail?id=1uejfZKntZXcJ756s7kPK85eOaeNPdqmt&sz=w1000"
-           alt="Photograph of Majid"
-           width="150" height="150" loading="eager">
-    </div>
-    <h1 class="profile-name">MAJID</h1>
-    <p class="profile-aka">Also known as Majid Murshadpuri</p>
-    <p class="profile-title">TGT / PGT – Mathematics &amp; English</p>
-    <p class="profile-tagline">Student-centric educator · CTET Qualified · Technology-driven teaching</p>
-    <div class="qual-pills" aria-label="Key qualifications">
-      <span class="qual-pill">CTET 2024</span>
-      <span class="qual-pill">M.A. English 70.76%</span>
-      <span class="qual-pill">B.Ed. 77.07%</span>
-      <span class="qual-pill">Diploma in IT</span>
-    </div>
-
-    <!-- Print button (styled like My Website) -->
-    <div class="about-wrapper">
-      <button class="about-btn print-btn" onclick="window.print()" aria-label="Print or Save as PDF">
-        ✦ Print / Save as PDF ✦
+    <nav class="nav-grid" aria-label="Resume sections">
+      <button class="nav-card" onclick="openSection('summary')" aria-label="Open Professional Summary">
+        <span class="nav-icon" aria-hidden="true">📋</span>
+        <span class="nav-label">Professional Summary</span>
       </button>
+      <button class="nav-card" onclick="openSection('experience')" aria-label="Open Teaching Experience">
+        <span class="nav-icon" aria-hidden="true">🏫</span>
+        <span class="nav-label">Teaching Experience</span>
+      </button>
+      <button class="nav-card" onclick="openSection('education')" aria-label="Open Education">
+        <span class="nav-icon" aria-hidden="true">🎓</span>
+        <span class="nav-label">Education</span>
+      </button>
+      <button class="nav-card" onclick="openSection('certification')" aria-label="Open Professional Certification">
+        <span class="nav-icon" aria-hidden="true">✅</span>
+        <span class="nav-label">Certification</span>
+      </button>
+      <button class="nav-card" onclick="openSection('portfolio')" aria-label="Open Technical Portfolio">
+        <span class="nav-icon" aria-hidden="true">💻</span>
+        <span class="nav-label">Tech Portfolio</span>
+      </button>
+      <button class="nav-card" onclick="openSection('skills')" aria-label="Open Skills">
+        <span class="nav-icon" aria-hidden="true">⚡</span>
+        <span class="nav-label">Core Skills</span>
+      </button>
+      <button class="nav-card" onclick="openSection('philosophy')" aria-label="Open Teaching Philosophy">
+        <span class="nav-icon" aria-hidden="true">💡</span>
+        <span class="nav-label">Teaching Philosophy</span>
+      </button>
+      <button class="nav-card" onclick="openSection('interests')" aria-label="Open Interests">
+        <span class="nav-icon" aria-hidden="true">📖</span>
+        <span class="nav-label">Interests</span>
+      </button>
+      <button class="nav-card" onclick="openSection('personal')" aria-label="Open Personal Details">
+        <span class="nav-icon" aria-hidden="true">👤</span>
+        <span class="nav-label">Personal Details</span>
+      </button>
+      <button class="nav-card" onclick="openSection('references')" aria-label="Open References">
+        <span class="nav-icon" aria-hidden="true">📝</span>
+        <span class="nav-label">References</span>
+      </button>
+      <button class="nav-card full-width" onclick="openSection('contact')" aria-label="Open Contact">
+        <span class="nav-icon" aria-hidden="true">📞</span>
+        <span class="nav-label">Contact</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- SECTION: Professional Summary -->
+  <div class="section-panel" id="summary" role="region" aria-labelledby="summary-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('summary')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="summary-title">Professional Summary</h2>
+    </div>
+    <div class="section-body">
+      <div class="content-card">
+        <p>Student-centric educator with over ten years of teaching experience across school classrooms, volunteer teaching, and home tutoring. Holds a Master's degree in English (70.76%), a Bachelor of Education (77.07%), a Diploma in Information Technology, and has qualified the Central Teacher Eligibility Test (CTET 2024) by securing 109 out of 150 marks.</p>
+        <p style="margin-top:0.75rem">Currently serving as a Mathematics Teacher at Delight Public School, Hapur, since 2019, teaching Mathematics up to Class VIII. Also completed the mandatory six-month B.Ed. teaching internship in the same institution. Previously volunteered as a Mathematics Teacher for Classes IX and X at Government Inter College, Murshadpur, and has been providing home tuition in Mathematics and English up to Class XII since 2014.</p>
+        <p style="margin-top:0.75rem">Possesses a strong passion for integrating technology into education by independently designing standalone HTML web applications that simplify school administration and enhance digital learning experiences. Alongside academics, actively writes Urdu Ghazals and regularly participates in All India Mushairas.</p>
+      </div>
     </div>
   </div>
 
-  <!-- ========== CONTACT STRIP ========== -->
-  <div class="contact-strip">
-    <a href="tel:+919536379468">📱 +91 95363 79468</a>
-    <a href="mailto:sendmailtomajid@gmail.com">✉️ sendmailtomajid@gmail.com</a>
-    <a href="https://majidmurshadpuri.github.io" target="_blank" rel="noopener">🌐 majidmurshadpuri.github.io</a>
-  </div>
-
-  <!-- ========== NAV GRID ========== -->
-  <nav class="nav-grid" aria-label="Resume sections">
-    <button class="nav-card" onclick="openSection('summary')">
-      <span class="nav-icon" aria-hidden="true">📋</span>
-      <span class="nav-label">Professional Summary</span>
-    </button>
-    <button class="nav-card" onclick="openSection('experience')">
-      <span class="nav-icon" aria-hidden="true">🏫</span>
-      <span class="nav-label">Teaching Experience</span>
-    </button>
-    <button class="nav-card" onclick="openSection('education')">
-      <span class="nav-icon" aria-hidden="true">🎓</span>
-      <span class="nav-label">Education</span>
-    </button>
-    <button class="nav-card" onclick="openSection('certification')">
-      <span class="nav-icon" aria-hidden="true">✅</span>
-      <span class="nav-label">Certification</span>
-    </button>
-    <button class="nav-card" onclick="openSection('portfolio')">
-      <span class="nav-icon" aria-hidden="true">💻</span>
-      <span class="nav-label">Tech Portfolio</span>
-    </button>
-    <button class="nav-card" onclick="openSection('skills')">
-      <span class="nav-icon" aria-hidden="true">⚡</span>
-      <span class="nav-label">Core Skills</span>
-    </button>
-    <button class="nav-card" onclick="openSection('philosophy')">
-      <span class="nav-icon" aria-hidden="true">💡</span>
-      <span class="nav-label">Teaching Philosophy</span>
-    </button>
-    <button class="nav-card" onclick="openSection('interests')">
-      <span class="nav-icon" aria-hidden="true">📖</span>
-      <span class="nav-label">Interests</span>
-    </button>
-    <button class="nav-card" onclick="openSection('personal')">
-      <span class="nav-icon" aria-hidden="true">👤</span>
-      <span class="nav-label">Personal Details</span>
-    </button>
-    <button class="nav-card" onclick="openSection('references')">
-      <span class="nav-icon" aria-hidden="true">📝</span>
-      <span class="nav-label">References</span>
-    </button>
-    <button class="nav-card full-width" onclick="openSection('contact')">
-      <span class="nav-icon" aria-hidden="true">📞</span>
-      <span class="nav-label">Contact</span>
-    </button>
-  </nav>
-
-  <!-- ========== FOOTER ========== -->
-  <div class="deep-footer">
-    ✦ a living collection · crafted with depth &amp; warmth ✦
-  </div>
-
-</div><!-- /resume-shell -->
-
-
-<!-- ==================== SECTION PANELS (unchanged content) ==================== -->
-
-<!-- Professional Summary -->
-<div class="section-panel" id="summary" role="region" aria-labelledby="summary-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('summary')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="summary-title">Professional Summary</h2>
-  </div>
-  <div class="section-body">
-    <div class="content-card">
-      <p>Student-centric educator with over ten years of teaching experience across school classrooms, volunteer teaching, and home tutoring. Holds a Master's degree in English (70.76%), a Bachelor of Education (77.07%), a Diploma in Information Technology, and has qualified the Central Teacher Eligibility Test (CTET 2024) by securing 109 out of 150 marks.</p>
-      <p style="margin-top:0.75rem">Currently serving as a Mathematics Teacher at Delight Public School, Hapur, since 2019, teaching Mathematics up to Class VIII. Also completed the mandatory six-month B.Ed. teaching internship in the same institution. Previously volunteered as a Mathematics Teacher for Classes IX and X at Government Inter College, Murshadpur, and has been providing home tuition in Mathematics and English up to Class XII since 2014.</p>
-      <p style="margin-top:0.75rem">Possesses a strong passion for integrating technology into education by independently designing standalone HTML web applications that simplify school administration and enhance digital learning experiences. Alongside academics, actively writes Urdu Ghazals and regularly participates in All India Mushairas.</p>
+  <!-- SECTION: Teaching Experience -->
+  <div class="section-panel" id="experience" role="region" aria-labelledby="experience-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('experience')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="experience-title">Teaching Experience</h2>
     </div>
-  </div>
-</div>
-
-<!-- Teaching Experience -->
-<div class="section-panel" id="experience" role="region" aria-labelledby="experience-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('experience')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="experience-title">Teaching Experience</h2>
-  </div>
-  <div class="section-body">
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>Mathematics Teacher</h3>
-          <p class="meta">Delight Public School · Toll Plaza, Kurana, Hapur</p>
-          <p class="sub-meta">2019 – Present</p>
-          <ul>
-            <li>Teaching Mathematics up to Class VIII.</li>
-            <li>Successfully completed the mandatory six-month B.Ed. Teaching Internship in the same institution.</li>
-            <li>Known for simplifying difficult mathematical concepts.</li>
-            <li>Creates a friendly classroom atmosphere where students freely ask doubts.</li>
-            <li>Integrates technology into teaching wherever beneficial.</li>
-          </ul>
+    <div class="section-body">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>Mathematics Teacher</h3>
+            <p class="meta">Delight Public School · Toll Plaza, Kurana, Hapur</p>
+            <p class="sub-meta">2019 – Present</p>
+            <ul>
+              <li>Teaching Mathematics up to Class VIII.</li>
+              <li>Successfully completed the mandatory six-month B.Ed. Teaching Internship in the same institution.</li>
+              <li>Known for simplifying difficult mathematical concepts.</li>
+              <li>Creates a friendly classroom atmosphere where students freely ask doubts.</li>
+              <li>Integrates technology into teaching wherever beneficial.</li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>Mathematics &amp; English Tutor</h3>
-          <p class="meta">Self-employed Home Tutor</p>
-          <p class="sub-meta">2014 – Present</p>
-          <ul>
-            <li>Teaching Mathematics and English Grammar from Class VI to Class XII.</li>
-            <li>Special emphasis on conceptual clarity.</li>
-            <li>Teaches every topic from the absolute foundation level.</li>
-            <li>Focuses on building confidence along with subject knowledge.</li>
-          </ul>
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>Mathematics &amp; English Tutor</h3>
+            <p class="meta">Self-employed Home Tutor</p>
+            <p class="sub-meta">2014 – Present</p>
+            <ul>
+              <li>Teaching Mathematics and English Grammar from Class VI to Class XII.</li>
+              <li>Special emphasis on conceptual clarity.</li>
+              <li>Teaches every topic from the absolute foundation level.</li>
+              <li>Focuses on building confidence along with subject knowledge.</li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>Mathematics Teacher</h3>
-          <p class="meta">Madarsa Tajweedul Quran (Hifz Plus Programme) · Azad Market, Old Delhi</p>
-          <p class="sub-meta">2022 (Up to Ramzan)</p>
-          <ul>
-            <li>Taught Mathematics in the specialised Hifz Plus Programme.</li>
-            <li>Selected after successfully completing an intensive two-month teacher training programme at Islamic Mission School, Aligarh.</li>
-          </ul>
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>Mathematics Teacher</h3>
+            <p class="meta">Madarsa Tajweedul Quran (Hifz Plus Programme) · Azad Market, Old Delhi</p>
+            <p class="sub-meta">2022 (Up to Ramzan)</p>
+            <ul>
+              <li>Taught Mathematics in the specialised Hifz Plus Programme.</li>
+              <li>Selected after successfully completing an intensive two-month teacher training programme at Islamic Mission School, Aligarh.</li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>Volunteer Mathematics Teacher</h3>
-          <p class="meta">Government Inter College · Murshadpur, Hapur</p>
-          <p class="sub-meta">2022 (Two Months)</p>
-          <ul>
-            <li>Voluntarily taught Mathematics to Classes IX and X.</li>
-            <li>Assisted a newly established Government School facing shortage of Mathematics faculty.</li>
-            <li>Prepared students thoroughly for their Board Examinations.</li>
-          </ul>
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>Volunteer Mathematics Teacher</h3>
+            <p class="meta">Government Inter College · Murshadpur, Hapur</p>
+            <p class="sub-meta">2022 (Two Months)</p>
+            <ul>
+              <li>Voluntarily taught Mathematics to Classes IX and X.</li>
+              <li>Assisted a newly established Government School facing shortage of Mathematics faculty.</li>
+              <li>Prepared students thoroughly for their Board Examinations.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Education -->
-<div class="section-panel" id="education" role="region" aria-labelledby="education-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('education')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="education-title">Educational Qualifications</h2>
-  </div>
-  <div class="section-body">
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>Master of Arts (English)</h3>
-          <p class="meta">Chaudhary Charan Singh University, Meerut</p>
-          <p class="sub-meta">2023 · 70.76%</p>
+  <!-- SECTION: Education -->
+  <div class="section-panel" id="education" role="region" aria-labelledby="education-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('education')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="education-title">Educational Qualifications</h2>
+    </div>
+    <div class="section-body">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>Master of Arts (English)</h3>
+            <p class="meta">Chaudhary Charan Singh University, Meerut</p>
+            <p class="sub-meta">2023 · 70.76%</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>Bachelor of Education (B.Ed.)</h3>
+            <p class="meta">Chaudhary Charan Singh University, Meerut</p>
+            <p class="sub-meta">2025 · 77.07%</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>Bachelor of Arts</h3>
+            <p class="meta">English Literature · History · Political Science</p>
+            <p class="sub-meta">Chaudhary Charan Singh University, Meerut · 2021 · 61.73%</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>Diploma in Information Technology</h3>
+            <p class="meta">Government Polytechnic, Ghaziabad · UPBTE</p>
+            <p class="sub-meta">2018 · 74.50%</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>Intermediate (Class XII)</h3>
+            <p class="meta">Uttar Pradesh Board</p>
+            <p class="sub-meta">2013 · 76.40%</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="content-card">
+            <h3>High School (Class X)</h3>
+            <p class="meta">Uttar Pradesh Board</p>
+            <p class="sub-meta">2010 · 70.33%</p>
+          </div>
         </div>
       </div>
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>Bachelor of Education (B.Ed.)</h3>
-          <p class="meta">Chaudhary Charan Singh University, Meerut</p>
-          <p class="sub-meta">2025 · 77.07%</p>
+    </div>
+  </div>
+
+  <!-- SECTION: Certification -->
+  <div class="section-panel" id="certification" role="region" aria-labelledby="cert-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('certification')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="cert-title">Professional Certification</h2>
+    </div>
+    <div class="section-body">
+      <div class="content-card">
+        <h3>CTET (Central Teacher Eligibility Test) – 2024</h3>
+        <ul>
+          <li>Qualified with 109/150 Marks.</li>
+          <li>Mandatory eligibility qualification for teaching in Central Government Schools and leading CBSE schools.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Tech Portfolio -->
+  <div class="section-panel" id="portfolio" role="region" aria-labelledby="portfolio-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('portfolio')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="portfolio-title">Tech Portfolio &amp; Digital Initiatives</h2>
+    </div>
+    <div class="section-body">
+      <div class="content-card">
+        <p>Leveraging my Diploma in Information Technology together with AI-assisted development, I independently build standalone browser-based HTML applications for educational and administrative purposes. These applications are hosted on my portfolio website.</p>
+      </div>
+      <div class="content-card">
+        <h3>Featured Applications</h3>
+        <div class="portfolio-grid" style="margin-top:0.75rem">
+          <div class="portfolio-item"><span class="dot"></span> AI Text Cleaner</div>
+          <div class="portfolio-item"><span class="dot"></span> Extract Text from PDF</div>
+          <div class="portfolio-item"><span class="dot"></span> PDF Page Extractor</div>
+          <div class="portfolio-item"><span class="dot"></span> Urdu AI OCR &amp; Editor</div>
+          <div class="portfolio-item"><span class="dot"></span> Image Resize Tool</div>
+          <div class="portfolio-item"><span class="dot"></span> MCQ Reels Creator</div>
+          <div class="portfolio-item"><span class="dot"></span> Short Question Answer Practice</div>
+          <div class="portfolio-item"><span class="dot"></span> Notebook Check</div>
+          <div class="portfolio-item"><span class="dot"></span> Hindi Shayari Composer</div>
+          <div class="portfolio-item"><span class="dot"></span> HTML File Downloader</div>
         </div>
       </div>
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>Bachelor of Arts</h3>
-          <p class="meta">English Literature · History · Political Science</p>
-          <p class="sub-meta">Chaudhary Charan Singh University, Meerut · 2021 · 61.73%</p>
+      <div class="content-card">
+        <h3>Additional Initiatives</h3>
+        <ul>
+          <li>Created and published forty-seven educational English-learning videos during the COVID-19 lockdown.</li>
+          <li>Selected through Campus Placement by Wipro in 2018 before deciding to pursue teaching as a lifelong profession.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Skills -->
+  <div class="section-panel" id="skills" role="region" aria-labelledby="skills-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('skills')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="skills-title">Core Skills</h2>
+    </div>
+    <div class="section-body">
+      <div class="content-card">
+        <div class="skills-grid">
+          <span class="skill-chip">English Literature</span>
+          <span class="skill-chip">Advanced English Grammar</span>
+          <span class="skill-chip">School Mathematics (Up to Class XII)</span>
+          <span class="skill-chip">Classroom Management</span>
+          <span class="skill-chip">Student Mentoring</span>
+          <span class="skill-chip">Educational Technology</span>
+          <span class="skill-chip">HTML Application Development</span>
+          <span class="skill-chip">AI-assisted Productivity</span>
+          <span class="skill-chip">Communication Skills</span>
+          <span class="skill-chip">Problem Solving</span>
+          <span class="skill-chip">Creative Writing</span>
         </div>
       </div>
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>Diploma in Information Technology</h3>
-          <p class="meta">Government Polytechnic, Ghaziabad · UPBTE</p>
-          <p class="sub-meta">2018 · 74.50%</p>
+    </div>
+  </div>
+
+  <!-- SECTION: Teaching Philosophy -->
+  <div class="section-panel" id="philosophy" role="region" aria-labelledby="phil-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('philosophy')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="phil-title">Teaching Philosophy</h2>
+    </div>
+    <div class="section-body">
+      <div class="content-card">
+        <blockquote class="philosophy-quote">
+          "I never force students to study. Instead, I create an environment where they naturally want to learn. I teach every topic from its roots, patiently resolve every doubt, and guide students like a mentor. Once the foundation becomes strong, success follows naturally."
+        </blockquote>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Interests -->
+  <div class="section-panel" id="interests" role="region" aria-labelledby="interests-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('interests')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="interests-title">Interests &amp; Extra-Curricular</h2>
+    </div>
+    <div class="section-body">
+      <div class="content-card">
+        <h3>Poetry &amp; Literature</h3>
+        <ul>
+          <li>Passionate Ghazal writer.</li>
+          <li>Formally trained in Urdu prosody (Arooz).</li>
+          <li>Regular participant in All India Mushairas.</li>
+          <li>Strong interest in literature, public speaking and creative writing.</li>
+        </ul>
+      </div>
+      <div class="content-card">
+        <h3>Languages Known</h3>
+        <p>English · Hindi · Urdu</p>
+        <p class="sub-meta" style="margin-top:0.35rem">(Read, Write and Speak)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Personal Details -->
+  <div class="section-panel" id="personal" role="region" aria-labelledby="personal-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('personal')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="personal-title">Personal Dossier</h2>
+    </div>
+    <div class="section-body">
+      <div class="content-card">
+        <div class="detail-row"><span class="detail-label">Date of Birth</span><span class="detail-value">10 February 1995</span></div>
+        <div class="detail-row"><span class="detail-label">Marital Status</span><span class="detail-value">Unmarried</span></div>
+        <div class="detail-row"><span class="detail-label">Nationality</span><span class="detail-value">Indian</span></div>
+        <div class="detail-row"><span class="detail-label">Hobbies</span><span class="detail-value">Reading Literature · Writing Poetry · Developing Educational Web Applications</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: References (App preview) -->
+  <div class="section-panel" id="references" role="region" aria-labelledby="ref-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('references')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="ref-title">References</h2>
+    </div>
+    <div class="section-body">
+      <div class="content-card">
+        <h3>Recommendation Letter 1</h3>
+        <p class="meta">Director, Delight Public School, Hapur</p>
+        <p class="sub-meta">Mohd Aadam · Mobile: 9568381658</p>
+        <p style="margin-top:0.5rem;font-size:0.85rem;color:#94a3b8">Full formal letter with school letterhead, seal and signature is included in the printable version.</p>
+      </div>
+      <div class="content-card">
+        <h3>Recommendation Letter 2</h3>
+        <p class="meta">Principal, Government Inter College, Murshadpur, Hapur</p>
+        <p class="sub-meta">Mobile: 9354060629</p>
+        <p style="margin-top:0.5rem;font-size:0.85rem;color:#94a3b8">Full formal letter with government college letterhead is included in the printable version.</p>
+      </div>
+      <div class="content-card" style="text-align:center">
+        <p style="color:#93c5fd;font-size:0.9rem">Use the <strong>Print / Save as PDF</strong> button to view and print the complete recommendation letters on proper letterheads.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Contact -->
+  <div class="section-panel" id="contact" role="region" aria-labelledby="contact-title">
+    <div class="section-header">
+      <button class="back-btn" onclick="closeSection('contact')" aria-label="Go back to home">←</button>
+      <h2 class="section-title" id="contact-title">Contact</h2>
+    </div>
+    <div class="section-body">
+      <div class="contact-list">
+        <a class="contact-item" href="tel:+919536379468" aria-label="Call Majid">
+          <span class="contact-icon" aria-hidden="true">📱</span>
+          <span>+91 95363 79468</span>
+        </a>
+        <a class="contact-item" href="mailto:sendmailtomajid@gmail.com" aria-label="Email Majid">
+          <span class="contact-icon" aria-hidden="true">✉️</span>
+          <span>sendmailtomajid@gmail.com</span>
+        </a>
+        <a class="contact-item" href="https://MajidMurshadpuri.github.io" target="_blank" rel="noopener" aria-label="Visit website">
+          <span class="contact-icon" aria-hidden="true">🌐</span>
+          <span>MajidMurshadpuri.github.io</span>
+        </a>
+        <div class="contact-item" style="cursor:default">
+          <span class="contact-icon" aria-hidden="true">📍</span>
+          <span>Village Murshadpur, Tehsil/District – Hapur, Uttar Pradesh – 245101</span>
         </div>
       </div>
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>Intermediate (Class XII)</h3>
-          <p class="meta">Uttar Pradesh Board</p>
-          <p class="sub-meta">2013 · 76.40%</p>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="content-card">
-          <h3>High School (Class X)</h3>
-          <p class="meta">Uttar Pradesh Board</p>
-          <p class="sub-meta">2010 · 70.33%</p>
-        </div>
-      </div>
     </div>
   </div>
-</div>
 
-<!-- Certification -->
-<div class="section-panel" id="certification" role="region" aria-labelledby="cert-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('certification')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="cert-title">Professional Certification</h2>
-  </div>
-  <div class="section-body">
-    <div class="content-card">
-      <h3>CTET (Central Teacher Eligibility Test) – 2024</h3>
-      <ul>
-        <li>Qualified with 109/150 Marks.</li>
-        <li>Mandatory eligibility qualification for teaching in Central Government Schools and leading CBSE schools.</li>
-      </ul>
-    </div>
-  </div>
-</div>
+</div><!-- /app-view -->
 
-<!-- Tech Portfolio -->
-<div class="section-panel" id="portfolio" role="region" aria-labelledby="portfolio-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('portfolio')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="portfolio-title">Tech Portfolio &amp; Digital Initiatives</h2>
-  </div>
-  <div class="section-body">
-    <div class="content-card">
-      <p>Leveraging my Diploma in Information Technology together with AI-assisted development, I independently build standalone browser-based HTML applications for educational and administrative purposes. These applications are hosted on my portfolio website.</p>
-    </div>
-    <div class="content-card">
-      <h3>Featured Applications</h3>
-      <div class="portfolio-grid" style="margin-top:0.75rem">
-        <div class="portfolio-item"><span class="dot"></span> AI Text Cleaner</div>
-        <div class="portfolio-item"><span class="dot"></span> Extract Text from PDF</div>
-        <div class="portfolio-item"><span class="dot"></span> PDF Page Extractor</div>
-        <div class="portfolio-item"><span class="dot"></span> Urdu AI OCR &amp; Editor</div>
-        <div class="portfolio-item"><span class="dot"></span> Image Resize Tool</div>
-        <div class="portfolio-item"><span class="dot"></span> MCQ Reels Creator</div>
-        <div class="portfolio-item"><span class="dot"></span> Short Question Answer Practice</div>
-        <div class="portfolio-item"><span class="dot"></span> Notebook Check</div>
-        <div class="portfolio-item"><span class="dot"></span> Hindi Shayari Composer</div>
-        <div class="portfolio-item"><span class="dot"></span> HTML File Downloader</div>
-      </div>
-    </div>
-    <div class="content-card">
-      <h3>Additional Initiatives</h3>
-      <ul>
-        <li>Created and published forty-seven educational English-learning videos during the COVID-19 lockdown.</li>
-        <li>Selected through Campus Placement by Wipro in 2018 before deciding to pursue teaching as a lifelong profession.</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
-<!-- Skills -->
-<div class="section-panel" id="skills" role="region" aria-labelledby="skills-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('skills')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="skills-title">Core Skills</h2>
-  </div>
-  <div class="section-body">
-    <div class="content-card">
-      <div class="skills-grid">
-        <span class="skill-chip">English Literature</span>
-        <span class="skill-chip">Advanced English Grammar</span>
-        <span class="skill-chip">School Mathematics (Up to Class XII)</span>
-        <span class="skill-chip">Classroom Management</span>
-        <span class="skill-chip">Student Mentoring</span>
-        <span class="skill-chip">Educational Technology</span>
-        <span class="skill-chip">HTML Application Development</span>
-        <span class="skill-chip">AI-assisted Productivity</span>
-        <span class="skill-chip">Communication Skills</span>
-        <span class="skill-chip">Problem Solving</span>
-        <span class="skill-chip">Creative Writing</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Teaching Philosophy -->
-<div class="section-panel" id="philosophy" role="region" aria-labelledby="phil-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('philosophy')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="phil-title">Teaching Philosophy</h2>
-  </div>
-  <div class="section-body">
-    <div class="content-card">
-      <blockquote class="philosophy-quote">
-        "I never force students to study. Instead, I create an environment where they naturally want to learn. I teach every topic from its roots, patiently resolve every doubt, and guide students like a mentor. Once the foundation becomes strong, success follows naturally."
-      </blockquote>
-    </div>
-  </div>
-</div>
-
-<!-- Interests -->
-<div class="section-panel" id="interests" role="region" aria-labelledby="interests-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('interests')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="interests-title">Interests &amp; Extra-Curricular</h2>
-  </div>
-  <div class="section-body">
-    <div class="content-card">
-      <h3>Poetry &amp; Literature</h3>
-      <ul>
-        <li>Passionate Ghazal writer.</li>
-        <li>Formally trained in Urdu prosody (Arooz).</li>
-        <li>Regular participant in All India Mushairas.</li>
-        <li>Strong interest in literature, public speaking and creative writing.</li>
-      </ul>
-    </div>
-    <div class="content-card">
-      <h3>Languages Known</h3>
-      <p>English · Hindi · Urdu</p>
-      <p class="sub-meta" style="margin-top:0.35rem">(Read, Write and Speak)</p>
-    </div>
-  </div>
-</div>
-
-<!-- Personal Details -->
-<div class="section-panel" id="personal" role="region" aria-labelledby="personal-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('personal')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="personal-title">Personal Dossier</h2>
-  </div>
-  <div class="section-body">
-    <div class="content-card">
-      <div class="detail-row"><span class="detail-label">Date of Birth</span><span class="detail-value">10 February 1995</span></div>
-      <div class="detail-row"><span class="detail-label">Marital Status</span><span class="detail-value">Unmarried</span></div>
-      <div class="detail-row"><span class="detail-label">Nationality</span><span class="detail-value">Indian</span></div>
-      <div class="detail-row"><span class="detail-label">Hobbies</span><span class="detail-value">Reading Literature · Writing Poetry · Developing Educational Web Applications</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- References -->
-<div class="section-panel" id="references" role="region" aria-labelledby="ref-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('references')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="ref-title">References</h2>
-  </div>
-  <div class="section-body">
-    <div class="content-card">
-      <h3>Recommendation Letter 1</h3>
-      <p class="meta">Director, Delight Public School, Hapur</p>
-      <p class="sub-meta">Mohd Aadam · Mobile: 9568381658</p>
-      <p style="margin-top:0.5rem;font-size:0.88rem;color:#94a3b8;font-style:italic">Full formal letter with school letterhead, seal and signature is included in the printable version.</p>
-    </div>
-    <div class="content-card">
-      <h3>Recommendation Letter 2</h3>
-      <p class="meta">Principal, Government Inter College, Murshadpur, Hapur</p>
-      <p class="sub-meta">Mobile: 9354060629</p>
-      <p style="margin-top:0.5rem;font-size:0.88rem;color:#94a3b8;font-style:italic">Full formal letter with government college letterhead is included in the printable version.</p>
-    </div>
-    <div class="content-card" style="text-align:center">
-      <p style="color:#93c5fd;font-size:0.95rem">Use the <strong>Print / Save as PDF</strong> button to view and print the complete recommendation letters on proper letterheads.</p>
-    </div>
-  </div>
-</div>
-
-<!-- Contact -->
-<div class="section-panel" id="contact" role="region" aria-labelledby="contact-title">
-  <div class="section-header">
-    <button class="back-btn" onclick="closeSection('contact')" aria-label="Go back">←</button>
-    <h2 class="section-title" id="contact-title">Contact</h2>
-  </div>
-  <div class="section-body">
-    <div class="contact-list">
-      <a class="contact-item" href="tel:+919536379468" aria-label="Call Majid">
-        <span class="contact-icon" aria-hidden="true">📱</span>
-        <span>+91 95363 79468</span>
-      </a>
-      <a class="contact-item" href="mailto:sendmailtomajid@gmail.com" aria-label="Email Majid">
-        <span class="contact-icon" aria-hidden="true">✉️</span>
-        <span>sendmailtomajid@gmail.com</span>
-      </a>
-      <a class="contact-item" href="https://MajidMurshadpuri.github.io" target="_blank" rel="noopener" aria-label="Visit website">
-        <span class="contact-icon" aria-hidden="true">🌐</span>
-        <span>MajidMurshadpuri.github.io</span>
-      </a>
-      <div class="contact-item" style="cursor:default">
-        <span class="contact-icon" aria-hidden="true">📍</span>
-        <span>Village Murshadpur, Tehsil/District – Hapur, Uttar Pradesh – 245101</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ==================== PRINT VIEW (unchanged) ==================== -->
+<!-- ==================== PRINT VIEW ==================== -->
 <div id="print-view" aria-hidden="true">
 
+  <!-- HEADER -->
   <header class="print-header no-break">
     <img class="print-photo" src="https://drive.google.com/thumbnail?id=1uejfZKntZXcJ756s7kPK85eOaeNPdqmt&sz=w1000" alt="Majid">
     <div class="print-header-info">
@@ -1010,6 +1221,7 @@ a.contact-item:focus-visible {
     </div>
   </header>
 
+  <!-- PROFESSIONAL SUMMARY -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Professional Summary</h2>
     <div class="print-body">
@@ -1019,6 +1231,7 @@ a.contact-item:focus-visible {
     </div>
   </section>
 
+  <!-- PROFESSIONAL CERTIFICATION -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Professional Certification</h2>
     <div class="print-body">
@@ -1026,6 +1239,7 @@ a.contact-item:focus-visible {
     </div>
   </section>
 
+  <!-- TEACHING EXPERIENCE -->
   <section class="print-section">
     <h2 class="print-section-title">Teaching Experience</h2>
 
@@ -1092,6 +1306,7 @@ a.contact-item:focus-visible {
     </div>
   </section>
 
+  <!-- EDUCATIONAL QUALIFICATIONS -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Educational Qualifications</h2>
 
@@ -1139,6 +1354,7 @@ a.contact-item:focus-visible {
     </div>
   </section>
 
+  <!-- TECH PORTFOLIO -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Tech Portfolio &amp; Digital Initiatives</h2>
     <div class="print-body">
@@ -1160,6 +1376,7 @@ a.contact-item:focus-visible {
     </div>
   </section>
 
+  <!-- CORE SKILLS -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Core Skills</h2>
     <div class="print-skills">
@@ -1177,6 +1394,7 @@ a.contact-item:focus-visible {
     </div>
   </section>
 
+  <!-- TEACHING PHILOSOPHY -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Teaching Philosophy</h2>
     <div class="print-philosophy">
@@ -1184,6 +1402,7 @@ a.contact-item:focus-visible {
     </div>
   </section>
 
+  <!-- INTERESTS -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Interests &amp; Extra-Curricular Activities</h2>
     <div class="print-body">
@@ -1192,6 +1411,7 @@ a.contact-item:focus-visible {
     </div>
   </section>
 
+  <!-- PERSONAL DOSSIER -->
   <section class="print-section no-break">
     <h2 class="print-section-title">Personal Dossier</h2>
     <div class="print-details-grid">
@@ -1202,8 +1422,10 @@ a.contact-item:focus-visible {
     </div>
   </section>
 
+  <!-- ========== REFERENCES (NEW PAGE) ========== -->
   <div class="print-page-break"></div>
 
+  <!-- LETTER 1: Delight Public School -->
   <div class="letter no-break">
     <div class="letter-head">
       <div class="letter-school">DELIGHT PUBLIC SCHOOL</div>
@@ -1303,7 +1525,9 @@ a.contact-item:focus-visible {
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       var active = document.querySelector('.section-panel.active');
-      if (active) closeSection(active.id);
+      if (active) {
+        closeSection(active.id);
+      }
     }
   });
 
