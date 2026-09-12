@@ -6,7 +6,10 @@
 <title>Majid Murshadpuri · Deep &amp; Comfortable Library</title>
 <meta name="description" content="Writings, poetry, tools, and reflections — a warm collection in Hindi, English &amp; Urdu." />
 
+<!-- ========== BEAUTIFUL FONTS FOR THREE LANGUAGES ========== -->
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- ========== SHARED STYLESHEET ========== -->
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -18,21 +21,21 @@
     <h1>Majid Murshadpuri</h1>
     <h2>English Literature · Urdu Poetry · Islamic Thought · Analytical Stems</h2>
 
+    <!-- About Me button -->
     <div class="about-wrapper">
       <a class="about-btn about-me-btn" href="MyResume.html">✦ About Me ✦</a>
     </div>
   </div>
 
+  <!-- ========== CONTACT STRIP ========== -->
+  <div class="contact-strip">
+    <a href="tel:+919536379468">📱 +91 95363 79468</a>
+    <a href="mailto:sendmailtomajid@gmail.com">✉️ sendmailtomajid@gmail.com</a>
+    <a href="https://majidmurshadpuri.github.io" target="_blank" rel="noopener">🌐 majidmurshadpuri.github.io</a>
+  </div>
+
   <!-- ========== CONTENT ========== -->
   <div class="content-panel">
-    <div class="search-box">
-      <input 
-        type="text" 
-        id="searchInput"
-        placeholder="🔍 Search • کھوجیں • ढूंढें"
-        oninput="filterTools()"
-      />
-    </div>
 
     <div class="tools-grid single" id="toolsGrid">
 
@@ -59,7 +62,7 @@
           <div class="tool-desc">All the Ghazals of Umair Najmi in a beautifully designed format.</div>
         </a>
       </div>
-      
+
       <div class="tool-card">
         <a class="tool-link" href="apps.html">
           <div class="icon">🧰</div>
@@ -69,6 +72,7 @@
       </div>
 
     </div>
+
   </div>
 
   <!-- ========== FOOTER ========== -->
@@ -79,15 +83,7 @@
 </div>
 
 <script>
-  function filterTools() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const cards = document.querySelectorAll('.tool-card');
-    cards.forEach(card => {
-      const text = card.textContent.toLowerCase();
-      card.style.display = text.includes(input) ? '' : 'none';
-    });
-  }
-
+  // Gentle fade-in for the card
   document.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('.tool-card');
     cards.forEach((card, idx) => {
@@ -97,7 +93,7 @@
         card.style.transition = 'opacity 0.5s ease, transform 0.4s ease';
         card.style.opacity = '1';
         card.style.transform = 'translateY(0)';
-      }, idx * 60);
+      }, idx * 80);
     });
   });
 </script>
