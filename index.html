@@ -21,9 +21,10 @@
     <h1>Majid Murshadpuri</h1>
     <h2>English Literature · Urdu Poetry · Islamic Thought · Analytical Stems</h2>
 
-    <!-- About Me button -->
+    <!-- About Me + Poetry Collection buttons -->
     <div class="about-wrapper">
       <a class="about-btn about-me-btn" href="MyResume.html">✦ About Me ✦</a>
+      <a class="about-btn poetry-btn" href="#" id="poetryBtn">✦ My Poetry Collection ✦</a>
     </div>
   </div>
 
@@ -75,8 +76,38 @@
 
 </div>
 
+<!-- ========== PASSCODE GATE (POETRY COLLECTION) ========== -->
+<div class="passcode-overlay" id="poetryGate" role="dialog" aria-modal="true" aria-labelledby="poetryGateTitle">
+  <div class="passcode-modal">
+
+    <button class="passcode-close" id="poetryGateClose" type="button" aria-label="Close">✕</button>
+
+    <div class="passcode-emblem">✦</div>
+
+    <h3 class="passcode-title" id="poetryGateTitle">My Poetry Collection</h3>
+    <p class="passcode-sub">A quiet door into my poetic world — whisper the key to enter.</p>
+
+    <form class="passcode-form" id="poetryGateForm" autocomplete="off" novalidate>
+      <input
+        type="password"
+        id="poetryGateInput"
+        class="passcode-input"
+        placeholder="Enter passcode…"
+        aria-label="Passcode"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button type="submit" class="passcode-submit">Unlock ✦</button>
+    </form>
+
+    <p class="passcode-error" id="poetryGateError" role="alert" aria-live="polite"></p>
+
+    <div class="passcode-ornament">✦ &nbsp;❖&nbsp; ✦</div>
+  </div>
+</div>
+
 <script>
-  // Gentle fade-in for the card
+  /* ---------- Gentle fade-in for cards ---------- */
   document.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('.tool-card');
     cards.forEach((card, idx) => {
@@ -89,6 +120,73 @@
       }, idx * 80);
     });
   });
+
+  /* ---------- Poetry Collection passcode gate ---------- */
+  (function () {
+    const PASSCODE = 'dildar';          // case-insensitive match
+    const TARGET   = 'DilDareecha.html';
+
+    const gate    = document.getElementById('poetryGate');
+    const openBtn = document.getElementById('poetryBtn');
+    const closeBtn= document.getElementById('poetryGateClose');
+    const form    = document.getElementById('poetryGateForm');
+    const input   = document.getElementById('poetryGateInput');
+    const errorEl = document.getElementById('poetryGateError');
+    const modal   = gate.querySelector('.passcode-modal');
+
+    let unlocking = false;
+
+    function openGate(e) {
+      if (e) e.preventDefault();
+      unlocking = false;
+      errorEl.textContent = '';
+      input.value = '';
+      modal.classList.remove('shake', 'unlocked');
+      gate.classList.add('open');
+      document.body.classList.add('no-scroll');
+      setTimeout(() => input.focus(), 320);
+    }
+
+    function closeGate() {
+      gate.classList.remove('open');
+      document.body.classList.remove('no-scroll');
+    }
+
+    openBtn.addEventListener('click', openGate);
+    closeBtn.addEventListener('click', closeGate);
+
+    // Click outside the card closes it
+    gate.addEventListener('click', (e) => {
+      if (e.target === gate) closeGate();
+    });
+
+    // Escape closes it
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && gate.classList.contains('open')) closeGate();
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (unlocking) return;
+
+      const entered = input.value.trim().toLowerCase();
+
+      if (entered === PASSCODE) {
+        unlocking = true;
+        errorEl.textContent = '';
+        modal.classList.remove('shake');
+        modal.classList.add('unlocked');
+        document.body.classList.remove('no-scroll');
+        setTimeout(() => { window.location.href = TARGET; }, 620);
+      } else {
+        errorEl.textContent = 'That key does not turn the lock. Try again.';
+        modal.classList.remove('shake');
+        void modal.offsetWidth;          // restart the animation
+        modal.classList.add('shake');
+        input.select();
+      }
+    });
+  })();
 </script>
 </body>
 </html>
