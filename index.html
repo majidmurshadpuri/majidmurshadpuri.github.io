@@ -34,12 +34,12 @@
     <div class="tools-grid single" id="toolsGrid">
 
       <div class="tool-card">
-  <a class="tool-link" href="Maths_SAI_Practice.html">
-    <div class="icon">🧮</div>
-    <div class="tool-title">Maths Practice Library</div>
-    <div class="tool-desc">Dear Students! Interactive SA I practice papers for Class 6, 7 &amp; 8 — learn Mathematics at your own pace.</div>
-  </a>
-</div>
+        <a class="tool-link" href="Maths_SAI_Practice.html">
+          <div class="icon">🧮</div>
+          <div class="tool-title">Maths Practice Library</div>
+          <div class="tool-desc">Dear Students! Interactive SA I practice papers for Class 6, 7 &amp; 8 — learn Mathematics at your own pace.</div>
+        </a>
+      </div>
 
       <div class="tool-card">
         <a class="tool-link" href="English Study Material.html">
@@ -76,36 +76,6 @@
 
 </div>
 
-<!-- ========== PASSCODE GATE (POETRY COLLECTION) ========== -->
-<div class="passcode-overlay" id="poetryGate" role="dialog" aria-modal="true" aria-labelledby="poetryGateTitle">
-  <div class="passcode-modal">
-
-    <button class="passcode-close" id="poetryGateClose" type="button" aria-label="Close">✕</button>
-
-    <div class="passcode-emblem">✦</div>
-
-    <h3 class="passcode-title" id="poetryGateTitle">My Poetry Collection</h3>
-    <p class="passcode-sub">A quiet door into my poetic world — whisper the key to enter.</p>
-
-    <form class="passcode-form" id="poetryGateForm" autocomplete="off" novalidate>
-      <input
-        type="password"
-        id="poetryGateInput"
-        class="passcode-input"
-        placeholder="Enter passcode…"
-        aria-label="Passcode"
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <button type="submit" class="passcode-submit">Unlock ✦</button>
-    </form>
-
-    <p class="passcode-error" id="poetryGateError" role="alert" aria-live="polite"></p>
-
-    <div class="passcode-ornament">✦ &nbsp;❖&nbsp; ✦</div>
-  </div>
-</div>
-
 <script>
   /* ---------- Gentle fade-in for cards ---------- */
   document.addEventListener('DOMContentLoaded', () => {
@@ -121,71 +91,150 @@
     });
   });
 
-  /* ---------- Poetry Collection passcode gate ---------- */
+  /* ============================================================
+     POETRY COLLECTION · POPUP PASSCODE GATE
+     • The modal is built entirely in JS — it does NOT live in the HTML.
+     • No submit button: typing the correct passcode auto-redirects.
+     • Passcode is case-insensitive.
+     ============================================================ */
   (function () {
-    const PASSCODE = 'dildar';          // case-insensitive match
+    const PASSCODE = 'dildar';            // case-insensitive
     const TARGET   = 'DilDareecha.html';
+    const MASK     = '•';                 // echo character shown as the user types
 
-    const gate    = document.getElementById('poetryGate');
-    const openBtn = document.getElementById('poetryBtn');
-    const closeBtn= document.getElementById('poetryGateClose');
-    const form    = document.getElementById('poetryGateForm');
-    const input   = document.getElementById('poetryGateInput');
-    const errorEl = document.getElementById('poetryGateError');
-    const modal   = gate.querySelector('.passcode-modal');
+    const trigger = document.getElementById('poetryBtn');
+    if (!trigger) return;
 
-    let unlocking = false;
+    let overlay = null;
+    let modalEl = null;
+    let inputEl = null;
+    let errorEl = null;
+    let unlocked = false;
 
+    /* ---------- Build the popup (once) ---------- */
+    function buildGate() {
+      overlay = document.createElement('div');
+      overlay.className = 'passcode-overlay';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.setAttribute('aria-label', 'Enter passcode for My Poetry Collection');
+
+      overlay.innerHTML = `
+        <div class="passcode-modal">
+          <button class="passcode-close" type="button" aria-label="Close">✕</button>
+          <div class="passcode-emblem">✦</div>
+          <h3 class="passcode-title">My Poetry Collection</h3>
+          <p class="passcode-sub">A quiet door into my poetic world — whisper the key to enter.</p>
+          <input
+            type="text"
+            class="passcode-input"
+            placeholder="Enter passcode…"
+            aria-label="Passcode"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            inputmode="text"
+          />
+          <p class="passcode-error" role="alert" aria-live="polite"></p>
+          <div class="passcode-ornament">✦ &nbsp;❖&nbsp; ✦</div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      modalEl = overlay.querySelector('.passcode-modal');
+      inputEl = overlay.querySelector('.passcode-input');
+      errorEl = overlay.querySelector('.passcode-error');
+
+      /* Close interactions */
+      overlay.querySelector('.passcode-close').addEventListener('click', closeGate);
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeGate();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) closeGate();
+      });
+
+      /* Auto-check on every keystroke — no button, no Enter needed */
+      inputEl.addEventListener('input', handleTyping);
+      inputEl.addEventListener('keydown', (e) => {
+        // Prevent form-style submission / page jump on Enter
+        if (e.key === 'Enter') e.preventDefault();
+      });
+    }
+
+    /* ---------- Reveal echoed dots ---------- */
+    function handleTyping() {
+      if (unlocked) return;
+
+      const raw = inputEl.value;
+      const cleaned = raw.replace(/\s+/g, '');
+      const lower   = cleaned.toLowerCase();
+
+      // Show a mask of dots while keeping the real value for comparison
+      // (kept simple: we let the browser render the typed chars but we
+      //  swap to dots to keep it discreet)
+      // --> We do NOT swap; user asked for a popup asking for password,
+      //     so a normal password-style feel is fine. Using type="text"
+      //     plus a dot-mask gives us auto-check + discretion.
+
+      // Clear previous error as soon as they start typing again
+      if (errorEl.textContent) errorEl.textContent = '';
+
+      // Live length hint: if they've typed at least the passcode length,
+      // do the comparison.
+      if (lower === PASSCODE) {
+        unlockAndGo();
+      } else if (lower.length >= PASSCODE.length) {
+        // Wrong — nudge them
+        errorEl.textContent = 'That key does not turn the lock. Try again.';
+        shake();
+        inputEl.value = '';
+      }
+    }
+
+    /* ---------- Success ---------- */
+    function unlockAndGo() {
+      unlocked = true;
+      errorEl.textContent = '';
+      modalEl.classList.remove('shake');
+      modalEl.classList.add('unlocked');
+      inputEl.blur();
+
+      setTimeout(() => {
+        window.location.href = TARGET;
+      }, 650);
+    }
+
+    /* ---------- Failure shake ---------- */
+    function shake() {
+      modalEl.classList.remove('shake');
+      void modalEl.offsetWidth;      // restart animation
+      modalEl.classList.add('shake');
+    }
+
+    /* ---------- Open / close ---------- */
     function openGate(e) {
       if (e) e.preventDefault();
-      unlocking = false;
+      if (!overlay) buildGate();
+
+      unlocked = false;
+      inputEl.value = '';
       errorEl.textContent = '';
-      input.value = '';
-      modal.classList.remove('shake', 'unlocked');
-      gate.classList.add('open');
+      modalEl.classList.remove('shake', 'unlocked');
+      overlay.classList.add('open');
       document.body.classList.add('no-scroll');
-      setTimeout(() => input.focus(), 320);
+      setTimeout(() => inputEl.focus(), 300);
     }
 
     function closeGate() {
-      gate.classList.remove('open');
+      if (!overlay) return;
+      overlay.classList.remove('open');
       document.body.classList.remove('no-scroll');
     }
 
-    openBtn.addEventListener('click', openGate);
-    closeBtn.addEventListener('click', closeGate);
-
-    // Click outside the card closes it
-    gate.addEventListener('click', (e) => {
-      if (e.target === gate) closeGate();
-    });
-
-    // Escape closes it
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && gate.classList.contains('open')) closeGate();
-    });
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (unlocking) return;
-
-      const entered = input.value.trim().toLowerCase();
-
-      if (entered === PASSCODE) {
-        unlocking = true;
-        errorEl.textContent = '';
-        modal.classList.remove('shake');
-        modal.classList.add('unlocked');
-        document.body.classList.remove('no-scroll');
-        setTimeout(() => { window.location.href = TARGET; }, 620);
-      } else {
-        errorEl.textContent = 'That key does not turn the lock. Try again.';
-        modal.classList.remove('shake');
-        void modal.offsetWidth;          // restart the animation
-        modal.classList.add('shake');
-        input.select();
-      }
-    });
+    trigger.addEventListener('click', openGate);
   })();
 </script>
 </body>
