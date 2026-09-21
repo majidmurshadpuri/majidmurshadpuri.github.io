@@ -27,7 +27,7 @@ body {
   position: relative;
 }
 
-/* Locks the page while a modal is open */
+/* Locks the page while the popup is open */
 body.no-scroll { overflow: hidden; }
 
 /* Soft ambient glows behind everything */
@@ -116,7 +116,7 @@ ul { list-style: none; }
   letter-spacing: 0.3px;
 }
 
-/* Button wrapper — buttons sit side by side, wrap below on small screens */
+/* Button wrapper — buttons sit side by side, wrap on small screens */
 .about-wrapper {
   margin-top: 1.4rem;
   display: flex;
@@ -389,7 +389,10 @@ button.tool-card:focus-visible {
 /* Full-width card */
 .tool-card.full-width { grid-column: 1 / -1; }
 
-/* ---------- PASSCODE GATE (Poetry Collection) ---------- */
+/* ============================================================
+   PASSCODE GATE  ·  Poetry Collection
+   This overlay is injected by JS — it does not exist in the HTML.
+   ============================================================ */
 .passcode-overlay {
   position: fixed;
   inset: 0;
@@ -519,20 +522,14 @@ button.tool-card:focus-visible {
   margin-bottom: 1.35rem;
 }
 
-/* Form */
-.passcode-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
+/* ---------- Input (no submit button — auto-checks) ---------- */
 .passcode-input {
   width: 100%;
-  padding: 0.85rem 1.2rem;
+  padding: 0.9rem 1.2rem;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1.1rem;
   text-align: center;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   background: rgba(31, 25, 19, 0.75);
   border: 1px solid var(--brown-border);
   border-radius: 50px;
@@ -540,6 +537,7 @@ button.tool-card:focus-visible {
   outline: none;
   transition: all var(--transition);
   box-shadow: inset 0 1px 4px rgba(0,0,0,0.35);
+  caret-color: var(--gold);
 }
 
 .passcode-input::placeholder {
@@ -556,37 +554,16 @@ button.tool-card:focus-visible {
     inset 0 1px 4px rgba(0,0,0,0.35);
 }
 
-.passcode-submit {
-  width: 100%;
-  padding: 0.8rem 1.4rem;
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.6px;
-  color: #2f241b;
-  background: linear-gradient(135deg, #d8b47c, #b89870);
-  border: 1px solid rgba(255,245,210,0.35);
-  border-radius: 50px;
-  transition: all var(--transition);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-}
-
-.passcode-submit:hover,
-.passcode-submit:focus-visible {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #e6c48d, #c8a16b);
-  box-shadow: 0 12px 26px rgba(0,0,0,0.36);
-  outline: none;
-}
-
-.passcode-submit:active {
-  transform: scale(0.97) translateY(0);
+.passcode-modal.unlocked .passcode-input {
+  border-color: var(--gold);
+  background: rgba(40, 30, 20, 0.95);
+  color: var(--gold);
 }
 
 /* Error message */
 .passcode-error {
   min-height: 1.2rem;
-  margin-top: 0.85rem;
+  margin-top: 0.9rem;
   font-size: 0.82rem;
   font-style: italic;
   letter-spacing: 0.2px;
@@ -641,7 +618,7 @@ button.tool-card:focus-visible {
 
   .passcode-modal { border-radius: 24px; padding: 1.6rem 1.1rem 1.3rem; }
   .passcode-close { top: 0.6rem; right: 0.65rem; width: 30px; height: 30px; font-size: 0.8rem; }
-  .passcode-input { letter-spacing: 1px; }
+  .passcode-input { font-size: 1rem; letter-spacing: 2px; }
 }
 
 @media (max-width: 400px) {
