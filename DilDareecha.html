@@ -1,0 +1,3586 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#16291e">
+<title>Dil Dareecha — दिल दरीचा | دل دریچہ (Romantic Edition)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gotu&family=Noto+Nastaliq+Urdu:wght@400..700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ff-hi:'Gotu',var(--ff-ur);
+  --ff-ur:'Noto Nastaliq Urdu','Gotu',serif;
+  
+  /* Romantic Nature Theme Colors */
+  --paper: #fdf2f4;
+  --ink: #572e39; /* Deep burgundy/rose brown */
+  --gold: #b86576; /* Soft rose */
+  --gold-soft: rgba(184, 101, 118, 0.38);
+  --maroon: #7a3446;
+  --forest-dark: #121c15;
+  --sage: #7ca385;
+}
+button,input,select,textarea{font-family:inherit}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;padding:0;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  background: var(--forest-dark);
+  font-family:var(--ff-hi);
+  color: var(--ink);
+  overflow:hidden;
+  position:fixed;
+  inset:0;
+}
+body.lang-ur{font-family:var(--ff-ur)}
+
+#stage{
+  position:fixed;inset:0;
+  /* Deep forest gradient with a soft glowing center */
+  background: radial-gradient(ellipse at 50% 10%, #2a3b2c 0%, #16291e 50%, #0a120d 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:clamp(5px,1.1vmin,14px);
+  touch-action:none;
+}
+/* Adding floating petals in the background using multiple backgrounds */
+#stage::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(184,101,118,0.15) 2px, transparent 3px),
+    radial-gradient(circle at 80% 20%, rgba(184,101,118,0.1) 3px, transparent 4px),
+    radial-gradient(circle at 40% 70%, rgba(184,101,118,0.15) 2px, transparent 3px),
+    radial-gradient(circle at 70% 80%, rgba(184,101,118,0.1) 4px, transparent 5px);
+  background-size: 150px 150px;
+}
+
+#pageArea{
+  position:relative;
+  width:100%;height:100%;
+  background: radial-gradient(ellipse at 50% 35%, #fffafb 0%, #fdf2f4 55%, #f2dce1 100%);
+  border-radius:12px;
+  box-shadow:
+    0 0 0 1px rgba(184,101,118,.45),
+    0 0 0 8px rgba(253,242,244,.1),
+    0 34px 90px rgba(0,0,0,.85),
+    inset 0 0 140px rgba(184,101,118,.15);
+  overflow:hidden;
+}
+/* Subtle textured paper grain */
+#pageArea::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(184,101,118,.02) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(184,101,118,.015) 0 1px, transparent 1px 4px);
+  mix-blend-mode:multiply;
+}
+#pageArea::after{
+  content:'';position:absolute;inset:12px;pointer-events:none;z-index:2;
+  border: 1px solid rgba(184,101,118,.35);
+  border-radius: 6px;
+}
+
+.page{
+  position:absolute;inset:0;z-index:3;
+  display:flex;flex-direction:column;
+  padding:clamp(56px,9vmin,80px) clamp(22px,6vmin,78px) clamp(22px,4.4vmin,52px);
+}
+.page.ghazal-page{
+  padding-top: clamp(44px, 5.5vmin, 58px);
+  padding-bottom: clamp(18px, 3vmin, 38px);
+}
+
+/* FLORAL CORNERS for the pages */
+.page::before, .page::after {
+  content: '';
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  pointer-events: none;
+  z-index: 10;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.85;
+}
+/* Top Left Rose & Leaves */
+.page::before {
+  top: 0; left: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M 0,0 Q 60,30 120,120 Q 170,190 200,200' fill='none' stroke='%237ca385' stroke-width='3'/%3E%3Cpath d='M 40,10 C 70,5 90,25 80,50 C 55,60 30,40 40,10 Z' fill='%239abfa1'/%3E%3Cpath d='M 120,100 C 155,75 180,105 165,140 C 130,155 95,120 120,100 Z' fill='%236d9174'/%3E%3Cpath d='M 140,40 C 175,30 190,65 165,85 C 130,100 115,60 140,40 Z' fill='%239abfa1'/%3E%3Cpath d='M 25,75 C 50,50 75,75 50,100 C 25,125 0,100 25,75 Z' fill='%23e6a3b3'/%3E%3Cpath d='M 30,80 C 45,65 60,80 45,95 C 30,105 15,90 30,80 Z' fill='%23bd5a70'/%3E%3Cpath d='M 180,140 C 205,115 230,140 205,165 C 180,190 155,165 180,140 Z' fill='%23e6a3b3'/%3E%3Cpath d='M 185,145 C 200,130 215,145 200,160 C 185,170 170,155 185,145 Z' fill='%23bd5a70'/%3E%3C/svg%3E");
+}
+/* Bottom Right Rose & Leaves */
+.page::after {
+  bottom: 0; right: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M 200,200 Q 140,170 80,80 Q 30,10 0,0' fill='none' stroke='%237ca385' stroke-width='3'/%3E%3Cpath d='M 160,190 C 130,195 110,175 120,150 C 145,140 170,160 160,190 Z' fill='%239abfa1'/%3E%3Cpath d='M 80,100 C 45,125 20,95 35,60 C 70,45 105,80 80,100 Z' fill='%236d9174'/%3E%3Cpath d='M 60,160 C 25,170 10,135 35,115 C 70,100 85,140 60,160 Z' fill='%239abfa1'/%3E%3Cpath d='M 175,125 C 150,150 125,125 150,100 C 175,75 200,100 175,125 Z' fill='%23e6a3b3'/%3E%3Cpath d='M 170,120 C 155,135 140,120 155,105 C 170,95 185,110 170,120 Z' fill='%23bd5a70'/%3E%3Cpath d='M 20,60 C -5,85 -30,60 -5,35 C 20,10 45,35 20,60 Z' fill='%23e6a3b3'/%3E%3Cpath d='M 15,55 C 0,70 -15,55 0,40 C 15,30 30,45 15,55 Z' fill='%23bd5a70'/%3E%3C/svg%3E");
+}
+
+/* TITLE */
+.title-page{
+  align-items:center;justify-content:center;text-align:center;
+  padding-top:clamp(20px,4.4vmin,52px);
+}
+.t-orn{font-size:clamp(24px,4vmin,36px);color:var(--gold);margin-bottom:clamp(10px,2.4vmin,26px);opacity:.9;letter-spacing:.2em;}
+.t-title{font-size:clamp(38px,10.5vmin,86px);margin:0;line-height:1.25;font-weight:400;color:var(--ink);text-shadow:0 1px 0 rgba(255,255,255,.8);letter-spacing:.01em;}
+.title-page.script-ur .t-title{font-family:var(--ff-ur);font-size:clamp(34px,9vmin,74px);line-height:2;padding-bottom:.2em;}
+.t-rule{display:flex;align-items:center;gap:14px;width:min(300px,64%);margin:clamp(14px,3vmin,30px) auto;color:var(--gold);}
+.t-rule span{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.t-rule i{font-style:normal;font-size:16px;opacity:.9}
+.t-author{font-size:clamp(15px,2.6vmin,22px);color:#6b3f4a;margin:0 0 6px;letter-spacing:.06em;font-family:var(--ff-hi);}
+.title-page.script-ur .t-author{font-family:var(--ff-ur);font-size:clamp(14px,2.4vmin,20px);line-height:2.1;padding-bottom:.15em}
+.t-meta{font-size:clamp(11px,1.7vmin,14px);color:var(--sage);margin:14px 0 0;letter-spacing:.14em;}
+.title-page.script-ur .t-meta{font-family:var(--ff-ur);letter-spacing:0;font-size:clamp(10px,1.5vmin,13px);line-height:2}
+.t-start{
+  margin-top:clamp(24px,5vmin,48px);
+  padding:11px 30px;border-radius:100px;
+  border:1px solid var(--gold-soft);
+  background:linear-gradient(180deg,#fffdfd,#fcedf0);
+  color:#6b3f4a;font-family:inherit;font-size:clamp(12px,1.9vmin,15px);
+  cursor:pointer;letter-spacing:.06em;
+  box-shadow:0 4px 14px rgba(184,101,118,.2);
+  transition:transform .2s, box-shadow .2s, background .2s;
+}
+.title-page.script-ur .t-start{font-family:var(--ff-ur);font-size:clamp(12px,1.8vmin,15px);line-height:2.2;padding:8px 30px 14px}
+.t-start:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(184,101,118,.3);background:#fffdfd}
+
+/* ABOUT / END */
+.text-page{justify-content:flex-start;align-items:center;overflow:hidden;padding-top:clamp(40px,8vmin,70px);padding-bottom:clamp(40px,8vmin,70px);}
+.text-inner{max-width:min(760px,100%);width:100%;display:flex;flex-direction:column;position:relative;z-index:20;}
+.page-head{font-size:clamp(17px,3vmin,25px);color:#6b3f4a;margin:0 0 clamp(14px,3vmin,26px);text-align:center;letter-spacing:.08em;}
+.script-ur .page-head{font-family:var(--ff-ur);line-height:2.2;letter-spacing:0;padding-bottom:.2em}
+.page-head::after{content:'';display:block;width:52px;height:1px;background:var(--gold-soft);margin:14px auto 0;}
+.about-body p{font-size:calc(var(--fs,22px) * 0.85);line-height:2.05;color:var(--ink);margin:0 0 1.05em;text-align:justify;}
+.about-body p.continued{text-indent:2em;margin-top:-0.5em;}
+.script-ur .about-body p{font-family:var(--ff-ur);line-height:2.5;text-align:right;direction:rtl;padding-bottom:.1em;}
+.script-ur .about-body p.continued{text-indent:2em;}
+.about-body p:last-child{margin-bottom:0}
+.about-sign{margin-top:clamp(16px,3.4vmin,32px);text-align:center;font-size:calc(var(--fs,22px) * 0.65);color:var(--gold);letter-spacing:.16em;}
+.script-ur .about-sign{font-family:var(--ff-ur);letter-spacing:0;line-height:2.2;padding-bottom:.2em}
+
+/* GHAZAL */
+.gh-head{
+  display:flex;align-items:center;justify-content:center;
+  gap:12px;flex:0 0 auto;margin-bottom:4px;
+  min-height:20px;
+  position:relative;z-index:20;
+}
+.gh-num{font-size:clamp(10px,1.5vmin,12.5px);letter-spacing:.2em;color:var(--sage);text-transform:uppercase;text-align:center;font-weight:600;}
+.script-ur .gh-num{font-family:var(--ff-ur);letter-spacing:0;font-size:clamp(10px,1.45vmin,12.5px);line-height:2.2;padding-bottom:.2em}
+
+.verses{
+  flex:1 1 auto;min-height:0;
+  display:flex;flex-direction:column;
+  overflow:visible;position:relative;
+  z-index:20;
+}
+.verses-inner{
+  flex:0 0 auto;
+  width:max-content;
+  max-width:100%;
+  padding:0 15px;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.couplet{width:100%;margin-bottom:.95em;text-align:center;}
+.couplet:last-child{margin-bottom:0}
+.couplet span{
+  display:block;line-height:1.78;color:var(--ink);letter-spacing:.005em;
+  white-space:nowrap;text-align:justify;text-align-last:justify;-moz-text-align-last:justify;
+}
+.script-ur .couplet span{font-family:var(--ff-ur);line-height:2.12;padding-bottom:.12em;color:var(--ink);}
+.script-ur .couplet{margin-bottom:.68em}
+.couplet:first-child span{color:#4a232f}
+
+.end-ruler{
+  display:block;
+  width:100%;
+  text-align:center;
+  margin:14px auto 0;
+  color:var(--gold);
+  opacity:.8;
+  font-size:20px;
+  line-height:1;
+  letter-spacing:0;
+  font-family:var(--ff-hi);
+}
+
+/* FOOTER / HUD — page number, clickable to jump */
+#hud{
+  position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:50;
+  font-size:11px;letter-spacing:.16em;color:rgba(184,101,118,.9);
+  pointer-events:auto;cursor:pointer;
+  text-shadow:0 1px 3px rgba(0,0,0,.6);
+  white-space:nowrap;
+  padding:5px 14px;border-radius:100px;
+  transition:background .2s, color .2s, box-shadow .2s;
+  user-select:none;-webkit-user-select:none;
+  font-family:var(--ff-hi);
+}
+#hud:hover{background:rgba(184,101,118,.25);color:rgba(240,210,215,.98);box-shadow:0 3px 12px rgba(0,0,0,.45)}
+#hud.ur{font-family:var(--ff-ur);letter-spacing:0;font-size:11px;line-height:2;padding-bottom:6px}
+#hud.editing{visibility:hidden}
+#hudInput{
+  position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:51;
+  width:120px;padding:6px 14px;border-radius:100px;
+  border:1px solid var(--gold);background:#fffdfd;
+  color:#6b3f4a;font-size:12px;text-align:center;
+  outline:none;display:none;
+  font-family:var(--ff-hi);
+  box-shadow:0 4px 18px rgba(0,0,0,.6), 0 0 0 3px rgba(184,101,118,.25);
+}
+#hudInput.on{display:block}
+#hudInput.ur{font-family:var(--ff-ur);padding-top:9px;line-height:2.2;font-size:13px}
+
+#progress{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:52;background:rgba(184,101,118,.15);}
+#progressFill{height:100%;width:0;background:linear-gradient(90deg,#b86576,#e6a3b3,#b86576);transition:width .45s cubic-bezier(.2,.7,.3,1);}
+
+/* BUTTONS */
+.icon-btn{position:fixed;z-index:60;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;border:1px solid rgba(184,101,118,.45);background:rgba(253,242,244,.95);color:#6b3f4a;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.45);transition:transform .2s, background .2s, box-shadow .2s, left .42s cubic-bezier(.2,.8,.3,1), right .42s cubic-bezier(.2,.8,.3,1);padding:0;top:12px;}
+.icon-btn:hover{background:#fffdfd;transform:scale(1.08);box-shadow:0 7px 24px rgba(0,0,0,.55)}
+.icon-btn:active{transform:scale(.96)}
+#menuBtn .bars{display:flex;flex-direction:column;gap:4.5px;align-items:flex-end}
+#menuBtn .bars i{display:block;height:2px;background:#6b3f4a;border-radius:2px;transition:width .25s}
+#menuBtn .bars i:nth-child(1){width:18px}
+#menuBtn .bars i:nth-child(2){width:12px}
+#menuBtn .bars i:nth-child(3){width:18px}
+#menuBtn:hover .bars i{width:18px}
+body.lang-hi #menuBtn{left:12px;right:auto}
+body.lang-hi #scriptToggleBtn{right:12px;left:auto}
+body.lang-ur #menuBtn{right:12px;left:auto}
+body.lang-ur #scriptToggleBtn{left:12px;right:auto}
+#scriptToggleBtn{position:fixed;z-index:60;top:12px;display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 20px;border-radius:100px;border:1px solid rgba(184,101,118,.45);background:rgba(253,242,244,.95);color:#7a3446;font-family:inherit;font-size:12.5px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.45);transition:transform .2s, background .2s, box-shadow .2s, left .42s cubic-bezier(.2,.8,.3,1), right .42s cubic-bezier(.2,.8,.3,1);white-space:nowrap;letter-spacing:.04em;font-weight:600;}
+#scriptToggleBtn:hover{background:#fffdfd;transform:scale(1.05);box-shadow:0 7px 24px rgba(0,0,0,.55)}
+#scriptToggleBtn:active{transform:scale(.96)}
+#scriptToggleBtn.ur-label{font-family:var(--ff-ur);padding-top:8px;padding-bottom:0;align-items:flex-start;line-height:2.1;font-size:14px;}
+
+.nav-arrow{position:fixed;top:50%;transform:translateY(-50%);z-index:56;width:clamp(38px,5vmin,48px);height:clamp(38px,5vmin,48px);border-radius:50%;border:1px solid rgba(184,101,118,.4);background:rgba(253,242,244,.75);color:#8c4c5a;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;font-size:clamp(19px,2.6vmin,25px);line-height:1;backdrop-filter:blur(6px);transition:background .22s, transform .22s, opacity .22s, box-shadow .22s, left .42s cubic-bezier(.2,.8,.3,1), right .42s cubic-bezier(.2,.8,.3,1);opacity:.7;font-family:var(--ff-hi);}
+.nav-arrow:hover{opacity:1;background:rgba(255,253,254,.98);box-shadow:0 6px 20px rgba(0,0,0,.45)}
+.nav-arrow:disabled{opacity:.15;cursor:default;box-shadow:none}
+.nav-arrow span{display:block;margin-top:-2px}
+#prevBtn{left:10px;right:auto}
+#nextBtn{right:10px;left:auto}
+body.lang-ur #prevBtn{right:10px;left:auto}
+body.lang-ur #nextBtn{left:10px;right:auto}
+body.lang-ur .nav-arrow span{transform:rotate(180deg)}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%, rgba(30,45,35,0.9) 0%, rgba(15,25,20,0.95) 60%, rgba(5,10,7,0.98) 100%);backdrop-filter:blur(5px);transition:opacity .7s ease, transform .7s ease;padding:20px;}
+#splash.gone{opacity:0;transform:scale(1.04);pointer-events:none}
+.splash-card{width:min(520px,100%);background:radial-gradient(ellipse at 50% 30%, #fffdfd 0%, #fdf2f4 60%, #fcedf0 100%);border-radius:16px;padding:clamp(30px,6vmin,58px) clamp(22px,5vmin,48px);text-align:center;box-shadow:0 0 0 2px rgba(184,101,118,.5), 0 0 0 12px rgba(253,242,244,.1), 0 34px 90px rgba(0,0,0,.9);position:relative;animation:cardIn .9s cubic-bezier(.2,.8,.3,1) both;}
+@keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+.splash-card::after{content:'';position:absolute;inset:12px;border:1px solid rgba(184,101,118,.35);border-radius:8px;pointer-events:none;}
+.s-orn{color:var(--gold);font-size:22px;letter-spacing:.3em;margin-bottom:18px;opacity:.9}
+.s-title{font-size:clamp(34px,8vmin,58px);margin:0 0 6px;color:var(--ink);line-height:1.3;font-weight:400;}
+.s-title-ur{font-family:var(--ff-ur);font-size:clamp(22px,5vmin,36px);color:#7a3446;margin:0 0 4px;line-height:2.1;padding-bottom:.2em;}
+.s-author{font-size:clamp(13px,2.1vmin,17px);color:#6b3f4a;margin:16px 0 0;letter-spacing:.1em;}
+.s-author .a-hi{font-family:var(--ff-hi)}
+.s-author .a-ur{font-family:var(--ff-ur);letter-spacing:0;display:inline-block;line-height:2.1;padding-bottom:.15em}
+.s-ask{margin:clamp(26px,5vmin,44px) 0 18px;font-size:clamp(12px,1.85vmin,15px);color:var(--sage);line-height:1.9;}
+.s-ask .ur{font-family:var(--ff-ur);display:block;line-height:2.3;margin-top:6px;font-size:.95em;padding-bottom:.2em}
+.lang-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.lang-btns button{flex:1 1 150px;max-width:210px;padding:14px 18px;border-radius:100px;border:1px solid var(--gold-soft);background:linear-gradient(180deg,#fffdfd,#fcedf0);color:#6b3f4a;font-family:inherit;font-size:clamp(13px,1.9vmin,15.5px);cursor:pointer;position:relative;transition:transform .2s, box-shadow .2s, background .2s, border-color .2s;box-shadow:0 4px 14px rgba(184,101,118,.18);}
+.lang-btns button:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(184,101,118,.3);background:#fffdfd;border-color:var(--gold)}
+.lang-btns button.ur-btn{font-family:var(--ff-ur);padding:8px 18px 16px;line-height:2.3;font-size:clamp(13px,1.85vmin,15px)}
+.lang-btns button .saved{display:block;font-size:9.5px;letter-spacing:.14em;color:var(--sage);margin-top:5px;font-family:var(--ff-hi);}
+
+/* DRAWER */
+#scrim{position:fixed;inset:0;z-index:90;background:rgba(10,15,12,.65);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .35s;}
+#scrim.on{opacity:1;pointer-events:auto}
+#drawer{position:fixed;top:0;bottom:0;z-index:100;width:min(370px,88vw);background:linear-gradient(160deg,#fffafb,#fcedf0);display:flex;flex-direction:column;transition:transform .42s cubic-bezier(.2,.8,.3,1);}
+body.lang-hi #drawer{left:0;right:auto;transform:translateX(-102%);box-shadow:20px 0 60px rgba(0,0,0,.7);border-right:1px solid rgba(184,101,118,.4);}
+body.lang-ur #drawer{right:0;left:auto;transform:translateX(102%);box-shadow:-20px 0 60px rgba(0,0,0,.7);border-left:1px solid rgba(184,101,118,.4);}
+#drawer.on{transform:none !important}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid rgba(184,101,118,.25);flex:0 0 auto;}
+.ph-title{font-size:15px;color:#6b3f4a;letter-spacing:.05em;font-weight:600;}
+.ph-title.ur{font-family:var(--ff-ur);line-height:2.2;padding-bottom:.2em;font-size:14px}
+.close-x{width:36px;height:36px;border-radius:50%;border:1px solid rgba(184,101,118,.35);background:transparent;color:#8c4c5a;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;transition:background .2s, transform .2s;}
+.close-x:hover{background:rgba(184,101,118,.15);transform:rotate(90deg)}
+.panel-body{flex:1 1 auto;overflow-y:auto;padding:16px 16px 26px}
+.panel-body::-webkit-scrollbar{width:6px}
+.panel-body::-webkit-scrollbar-thumb{background:rgba(184,101,118,.35);border-radius:4px}
+.lang-switch{display:flex;gap:0;border:1px solid var(--gold-soft);border-radius:100px;overflow:hidden;margin-bottom:8px;background:rgba(255,255,255,.6);}
+.lang-switch button{flex:1;padding:12px 8px;border:none;background:transparent;font-family:inherit;font-size:13px;color:#8c4c5a;cursor:pointer;transition:background .25s,color .25s;font-weight:600;}
+.lang-switch button.ur{font-family:var(--ff-ur);line-height:2.3;padding:7px 8px 13px;font-size:12.5px}
+.lang-switch button.active{background:linear-gradient(180deg,#b86576,#9e4c5d);color:#fffdfd}
+.menu-label{font-size:9.5px;letter-spacing:.22em;color:var(--sage);text-transform:uppercase;margin:20px 6px 9px;}
+.menu-item{display:flex;align-items:center;gap:13px;width:100%;padding:13px 15px;margin-bottom:8px;border:1px solid rgba(184,101,118,.22);border-radius:12px;background:rgba(253,242,244,.75);color:#572e39;font-family:inherit;font-size:14px;cursor:pointer;text-align:left;letter-spacing:.02em;transition:background .22s, transform .22s, border-color .22s;}
+.menu-item:hover{background:#fffdfd;border-color:var(--gold-soft)}
+body.lang-hi .menu-item:hover{transform:translateX(-4px)}
+body.lang-ur .menu-item:hover{transform:translateX(4px)}
+.menu-item .mi{font-size:18px;opacity:.8;width:22px;text-align:center;flex:0 0 auto;color:#b86576;}
+.menu-item.ur{font-family:var(--ff-ur);line-height:2.35;padding:8px 15px 14px;font-size:13.5px}
+.menu-item.ur .mi{font-family:var(--ff-hi);line-height:1}
+body.lang-ur .menu-item{flex-direction:row-reverse;text-align:right}
+body.lang-ur .menu-item .mi{order:2}
+.font-row{display:flex;align-items:center;gap:10px;padding:4px 4px 10px;}
+.font-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-soft);background:rgba(253,242,244,.9);color:#6b3f4a;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s, transform .2s, box-shadow .2s;font-family:var(--ff-hi);}
+.font-btn:hover{background:#fffdfd;transform:scale(1.07);box-shadow:0 4px 14px rgba(184,101,118,.25)}
+.font-btn:disabled{opacity:.3;cursor:default;transform:none;box-shadow:none}
+.font-val{flex:1;text-align:center;font-size:16px;color:#572e39;letter-spacing:.05em;}
+.font-val small{display:block;font-size:9.5px;letter-spacing:.16em;color:var(--sage);margin-top:4px}
+.font-reset{width:100%;margin-top:6px;padding:10px;border-radius:12px;border:1px dashed rgba(184,101,118,.4);background:transparent;color:#8c4c5a;font-family:inherit;font-size:11.5px;letter-spacing:.1em;cursor:pointer;transition:background .2s;}
+.font-reset:hover{background:rgba(184,101,118,.1)}
+.drawer-foot{flex:0 0 auto;padding:16px 20px 20px;border-top:1px solid rgba(184,101,118,.2);font-size:10.5px;color:var(--sage);letter-spacing:.12em;text-align:center;}
+.drawer-foot.ur{font-family:var(--ff-ur);letter-spacing:0;line-height:2.2;padding-bottom:24px}
+
+/* CONTENTS */
+#contents{position:fixed;inset:0;z-index:110;background:radial-gradient(ellipse at 50% 0%, #fffafb 0%, #fdf2f4 55%, #f2dce1 100%);display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateY(12px);transition:opacity .36s ease, transform .36s ease;}
+#contents.on{opacity:1;pointer-events:auto;transform:none}
+.ov-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:18px clamp(18px,5vw,46px) 14px;border-bottom:1px solid rgba(184,101,118,.25);}
+.ov-head h2{margin:0;font-size:18px;font-weight:600;color:#6b3f4a;letter-spacing:.1em}
+.ov-head h2.ur{font-family:var(--ff-ur);line-height:2.3;padding-bottom:.2em;letter-spacing:0}
+.toc-summary{display:flex;justify-content:center;gap:20px;padding:16px;background:rgba(184,101,118,.1);border-radius:12px;margin-bottom:22px;font-size:12.5px;color:#6b3f4a;text-align:center;flex-wrap:wrap;}
+.toc-summary span{font-weight:600;font-size:15px;display:block;margin-top:5px;}
+.toc-summary .summary-item{flex:1;min-width:100px;}
+.ov-list{flex:1 1 auto;overflow-y:auto;padding:clamp(14px,3vw,28px) clamp(14px,5vw,46px) 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:10px;align-content:start;}
+.ov-list::-webkit-scrollbar{width:6px}
+.ov-list::-webkit-scrollbar-thumb{background:rgba(184,101,118,.35);border-radius:4px}
+.toc-item{display:flex;gap:14px;align-items:baseline;padding:13px 16px;border-radius:12px;border:1px solid rgba(184,101,118,.2);background:rgba(253,242,244,.7);cursor:pointer;text-align:left;font-family:inherit;transition:background .2s, transform .2s, border-color .2s, box-shadow .2s;color:var(--ink);position:relative;}
+.toc-item:hover{background:#fffdfd;transform:translateY(-3px);border-color:var(--gold-soft);box-shadow:0 6px 20px rgba(184,101,118,.18)}
+.toc-item.current{border-color:var(--gold);background:#fffdfd;box-shadow:0 0 0 1px var(--gold-soft) inset}
+.toc-icon{flex:0 0 auto;font-size:18px;width:22px;text-align:center;margin-top:2px;}
+.toc-icon.complete{color:#b86576}
+.toc-icon.incomplete{color:#8ca691}
+.toc-icon.mutafarriq{color:#d4a0a7}
+.toc-num{flex:0 0 auto;font-size:11px;letter-spacing:.1em;color:var(--sage);min-width:24px;font-weight:600;}
+.toc-txt{font-size:14px;line-height:1.7}
+.ov-list.ur .toc-item{flex-direction:row-reverse;text-align:right}
+.ov-list.ur .toc-num{font-family:var(--ff-ur);line-height:2.2}
+.ov-list.ur .toc-txt{font-family:var(--ff-ur);line-height:2.35;font-size:13.5px;padding-bottom:.15em}
+
+/* PAGE TURN */
+.page.paper{
+  background:
+    repeating-linear-gradient(0deg, rgba(184,101,118,.02) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(184,101,118,.015) 0 1px, transparent 1px 4px),
+    radial-gradient(ellipse at 50% 35%, #fffafb 0%, #fdf2f4 55%, #f2dce1 100%);
+  box-shadow:inset 0 0 140px rgba(184,101,118,.15);
+  border-radius:12px;
+}
+.page.paper::after{content:'';position:absolute;inset:12px;pointer-events:none;border:1px solid rgba(184,101,118,.35);border-radius:6px;}
+.flip-shade{position:absolute;inset:0;z-index:4;pointer-events:none;display:none;border-radius:12px;overflow:hidden;}
+.flip-flapwrap{position:absolute;inset:0;z-index:6;pointer-events:none;display:none;filter:drop-shadow(0 0 12px rgba(40,15,20,.5));}
+.flip-flap{position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden;will-change:transform}
+.flip-back{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%, #fcedf0 0%, #f2dce1 60%, #e8c6ce 100%);}
+.flip-flap .page{background:none !important;box-shadow:none !important;z-index:1 !important;opacity:.10;pointer-events:none;clip-path:none !important;}
+.flip-flap .page::after{display:none !important}
+.flip-flap .page::before{display:none !important}
+.flip-fshade{position:absolute;inset:0;z-index:2}
+.page.enter{animation:pageIn .6s ease both}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}
+
+/* PROTECTION */
+html,body,*{-webkit-user-select:none !important;user-select:none !important;-webkit-touch-callout:none !important;-webkit-user-drag:none !important;}
+*::selection{background:transparent !important;color:inherit !important}
+#privacyCover{position:fixed;inset:0;z-index:9999;background:var(--forest-dark);display:none}
+#privacyCover.on{display:block}
+/* (removed: the old @media print rule that hid the whole page — replaced by the print layout in #pdf-export-styles below) */
+#drawer:not(.on){box-shadow:none !important}
+
+@media (max-width:760px), (max-height:620px){
+  .nav-arrow{top:auto;bottom:14px;transform:none;opacity:.85}
+  #prevBtn{left:14px;right:auto}
+  #nextBtn{right:14px;left:auto}
+  body.lang-ur #prevBtn{right:14px;left:auto}
+  body.lang-ur #nextBtn{left:14px;right:auto}
+  #hud{bottom:22px;font-size:10px;padding:5px 12px}
+  #hudInput{bottom:22px;font-size:12px}
+  .page{padding:clamp(56px,10vmin,72px) clamp(16px,5vmin,30px) clamp(100px,14vmin,120px)}
+  .page.ghazal-page{
+    padding-top: clamp(50px, 6.5vmin, 62px);
+    padding-bottom: clamp(62px, 8vmin, 78px);
+  }
+  .title-page{padding:clamp(20px,5vmin,40px) clamp(16px,5vmin,30px)}
+  .text-page{padding-top:clamp(40px,8vmin,60px);padding-bottom:clamp(100px,14vmin,120px);}
+  #pageArea::after{inset:8px}
+  .page::before, .page::after { width: 100px; height: 100px; }
+}
+@media (max-width:420px){
+  .gh-num{font-size:9.5px;letter-spacing:.14em}
+  #scriptToggleBtn{padding:0 15px;font-size:11.5px}
+  #scriptToggleBtn.ur-label{font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+</style>
+<style id="pdf-export-styles">
+/* =========================================================
+   SAVE AS PDF — added feature
+   Everything below is namespaced (#savePdfBtn, #pdfDlg, #pdfBusy,
+   #pdfDocument, .pdf-*) so the existing web ebook is not affected.
+   ========================================================= */
+@page{size:A5 portrait;margin:0}
+
+/* ---------- Hamburger-menu section: collapsed PDF / couplets-per-page (screen only) ---------- */
+.pdf-mn-sep{height:1px;margin:28px 4px 0;background:linear-gradient(90deg,transparent,rgba(184,101,118,.5),transparent)}
+details.pdf-mn{margin-bottom:8px}
+details.pdf-mn > summary{list-style:none;cursor:pointer;margin-bottom:0;user-select:none}
+details.pdf-mn > summary::-webkit-details-marker{display:none}
+details.pdf-mn > summary::marker{content:''}
+details.pdf-mn > summary > span:nth-child(2){flex:1 1 auto;min-width:0}
+details.pdf-mn > summary .pdf-chev{flex:0 0 auto;margin-left:auto;font-size:11px;color:#b86576;transition:transform .25s}
+details.pdf-mn[open] > summary .pdf-chev{transform:rotate(180deg)}
+details.pdf-mn[open] > summary{border-bottom-left-radius:0;border-bottom-right-radius:0;background:#fffdfd;border-color:var(--gold-soft)}
+.pdf-val{flex:0 0 auto;min-width:26px;padding:2px 9px;border-radius:100px;background:linear-gradient(180deg,#b86576,#9e4c5d);color:#fffdfd;font-family:var(--ff-hi);font-size:12px;text-align:center;line-height:1.6}
+.pdf-mn-body{padding:12px 14px 14px;border:1px solid var(--gold-soft);border-top:none;border-radius:0 0 12px 12px;background:rgba(253,242,244,.55)}
+.pdf-mn-note{margin:0 0 12px;font-size:11.5px;line-height:1.75;color:#8c4c5a;letter-spacing:.02em}
+.pdf-mn-note.ur{font-family:var(--ff-ur);font-size:12px;line-height:2.4;letter-spacing:0}
+.pdf-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
+.pdf-chip{min-width:0;height:40px;border-radius:10px;border:1px solid var(--gold-soft);background:rgba(255,255,255,.75);color:#6b3f4a;font-family:var(--ff-hi);font-size:14px;cursor:pointer;transition:background .2s, transform .2s, box-shadow .2s}
+.pdf-chip:hover{background:#fffdfd;transform:translateY(-1px);box-shadow:0 4px 12px rgba(184,101,118,.22)}
+.pdf-chip.on{background:linear-gradient(180deg,#b86576,#9e4c5d);color:#fffdfd;border-color:transparent;box-shadow:0 4px 12px rgba(158,76,93,.35)}
+.pdf-go{width:100%;padding:13px 16px;border-radius:100px;border:none;background:linear-gradient(180deg,#b86576,#9e4c5d);color:#fffdfd;font-family:var(--ff-hi);font-size:14px;letter-spacing:.04em;cursor:pointer;box-shadow:0 5px 16px rgba(158,76,93,.35);transition:transform .2s, box-shadow .2s}
+.pdf-go:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(158,76,93,.45)}
+.pdf-go.ur{font-family:var(--ff-ur);line-height:2.2;padding:8px 16px 14px;font-size:14px;letter-spacing:0}
+
+/* ---------- Language-selection dialog (screen only) ---------- */
+#pdfDlg{
+  position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:20px;
+  background:radial-gradient(ellipse at 50% 30%, rgba(30,45,35,.88) 0%, rgba(10,18,13,.95) 100%);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+#pdfDlg.on{display:flex;animation:pdfDlgIn .28s ease both}
+@keyframes pdfDlgIn{from{opacity:0}to{opacity:1}}
+.pdf-dlg-card{
+  position:relative;width:min(400px,100%);text-align:center;border-radius:16px;
+  padding:clamp(26px,5vmin,40px) clamp(20px,4.5vmin,36px) clamp(22px,4vmin,30px);
+  background:radial-gradient(ellipse at 50% 30%, #fffdfd 0%, #fdf2f4 60%, #fcedf0 100%);
+  box-shadow:0 0 0 2px rgba(184,101,118,.5), 0 0 0 12px rgba(253,242,244,.1), 0 34px 90px rgba(0,0,0,.9);
+  animation:pdfCardIn .5s cubic-bezier(.2,.8,.3,1) both;
+}
+@keyframes pdfCardIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.pdf-dlg-card::after{content:'';position:absolute;inset:10px;border:1px solid rgba(184,101,118,.35);border-radius:8px;pointer-events:none}
+.pdf-dlg-x{
+  position:absolute;top:16px;right:16px;z-index:2;width:34px;height:34px;border-radius:50%;
+  border:1px solid rgba(184,101,118,.35);background:transparent;color:#8c4c5a;cursor:pointer;
+  font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;
+  transition:background .2s, transform .2s;
+}
+.pdf-dlg-x:hover{background:rgba(184,101,118,.15);transform:rotate(90deg)}
+.pdf-dlg-orn{color:var(--gold);font-size:20px;letter-spacing:.3em;margin-bottom:12px;opacity:.9}
+.pdf-dlg-title{margin:0;font-family:var(--ff-hi);font-size:clamp(20px,4.6vmin,26px);font-weight:400;line-height:1.4;color:var(--ink)}
+.pdf-dlg-title-ur{margin:2px 0 0;font-family:var(--ff-ur);font-size:clamp(14px,3.2vmin,17px);line-height:2.2;padding-bottom:.15em;color:#7a3446}
+.pdf-dlg-ask{margin:14px 0 18px;font-family:var(--ff-hi);font-size:13.5px;line-height:1.9;color:var(--sage)}
+.pdf-dlg-ask .ur{display:block;font-family:var(--ff-ur);line-height:2.3;margin-top:4px;font-size:.95em;padding-bottom:.15em}
+.pdf-dlg-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.pdf-dlg-btns button{
+  flex:1 1 130px;max-width:170px;padding:14px 18px;border-radius:100px;
+  border:1px solid var(--gold-soft);background:linear-gradient(180deg,#fffdfd,#fcedf0);color:#6b3f4a;
+  font-family:var(--ff-hi);font-size:16px;cursor:pointer;box-shadow:0 4px 14px rgba(184,101,118,.18);
+  transition:transform .2s, box-shadow .2s, background .2s, border-color .2s;
+}
+.pdf-dlg-btns button:hover, .pdf-dlg-btns button:focus-visible{transform:translateY(-2px);box-shadow:0 8px 24px rgba(184,101,118,.3);background:#fffdfd;border-color:var(--gold);outline:none}
+.pdf-dlg-btns button.ur-btn{font-family:var(--ff-ur);padding:8px 18px 16px;line-height:2.3;font-size:17px}
+.pdf-dlg-cpp{margin:14px 0 18px;font-family:var(--ff-hi);font-size:12px;line-height:1.8;color:#8c4c5a}
+.pdf-dlg-cpp b{color:#7a3446;font-weight:600}
+.pdf-dlg-cpp .ur{display:block;font-family:var(--ff-ur);line-height:2.3;font-size:12px}
+.pdf-dlg-hint{margin:18px 0 0;font-family:var(--ff-hi);font-size:10.5px;line-height:1.8;letter-spacing:.03em;color:#9a7a82}
+.pdf-dlg-hint .ur{display:block;font-family:var(--ff-ur);line-height:2.2;letter-spacing:0;font-size:11px}
+
+/* ---------- "Preparing…" toast (screen only) ---------- */
+#pdfBusy{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:320;display:none;
+  padding:14px 28px;border-radius:100px;background:rgba(253,242,244,.98);color:#6b3f4a;
+  border:1px solid rgba(184,101,118,.45);box-shadow:0 10px 40px rgba(0,0,0,.6);
+  font-family:var(--ff-hi);font-size:14px;letter-spacing:.02em;white-space:nowrap;
+}
+#pdfBusy.on{display:block}
+#pdfBusy.ur{font-family:var(--ff-ur);line-height:2.2;padding:6px 28px 12px;letter-spacing:0}
+
+/* ---------- Dedicated print document ---------- */
+#pdfDocument{display:none}
+#pdfDocument.pdf-measuring{display:block;position:fixed;left:-40000px;top:0;width:148mm;visibility:hidden;pointer-events:none}
+#pdfDocument, #pdfDocument *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+.pdf-page{
+  --pdf-corner-tl:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M 0,0 Q 60,30 120,120 Q 170,190 200,200' fill='none' stroke='%237ca385' stroke-width='3'/%3E%3Cpath d='M 40,10 C 70,5 90,25 80,50 C 55,60 30,40 40,10 Z' fill='%239abfa1'/%3E%3Cpath d='M 120,100 C 155,75 180,105 165,140 C 130,155 95,120 120,100 Z' fill='%236d9174'/%3E%3Cpath d='M 140,40 C 175,30 190,65 165,85 C 130,100 115,60 140,40 Z' fill='%239abfa1'/%3E%3Cpath d='M 25,75 C 50,50 75,75 50,100 C 25,125 0,100 25,75 Z' fill='%23e6a3b3'/%3E%3Cpath d='M 30,80 C 45,65 60,80 45,95 C 30,105 15,90 30,80 Z' fill='%23bd5a70'/%3E%3Cpath d='M 180,140 C 205,115 230,140 205,165 C 180,190 155,165 180,140 Z' fill='%23e6a3b3'/%3E%3Cpath d='M 185,145 C 200,130 215,145 200,160 C 185,170 170,155 185,145 Z' fill='%23bd5a70'/%3E%3C/svg%3E");
+  --pdf-corner-br:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M 200,200 Q 140,170 80,80 Q 30,10 0,0' fill='none' stroke='%237ca385' stroke-width='3'/%3E%3Cpath d='M 160,190 C 130,195 110,175 120,150 C 145,140 170,160 160,190 Z' fill='%239abfa1'/%3E%3Cpath d='M 80,100 C 45,125 20,95 35,60 C 70,45 105,80 80,100 Z' fill='%236d9174'/%3E%3Cpath d='M 60,160 C 25,170 10,135 35,115 C 70,100 85,140 60,160 Z' fill='%239abfa1'/%3E%3Cpath d='M 175,125 C 150,150 125,125 150,100 C 175,75 200,100 175,125 Z' fill='%23e6a3b3'/%3E%3Cpath d='M 170,120 C 155,135 140,120 155,105 C 170,95 185,110 170,120 Z' fill='%23bd5a70'/%3E%3Cpath d='M 20,60 C -5,85 -30,60 -5,35 C 20,10 45,35 20,60 Z' fill='%23e6a3b3'/%3E%3Cpath d='M 15,55 C 0,70 -15,55 0,40 C 15,30 30,45 15,55 Z' fill='%23bd5a70'/%3E%3C/svg%3E");
+  position:relative;width:148mm;height:210mm;overflow:hidden;margin:0;
+  background:radial-gradient(ellipse at 50% 35%, #fffafb 0%, #fdf2f4 55%, #f2dce1 100%);
+  color:var(--ink);
+  break-after:page;page-break-after:always;
+  break-inside:avoid;page-break-inside:avoid;
+}
+.pdf-page:last-child{break-after:auto;page-break-after:auto}
+.pdf-page.pdf-hi{font-family:var(--ff-hi)}
+.pdf-page.pdf-ur{font-family:var(--ff-ur)}
+
+/* frame + floral corners (same artwork as the web pages) */
+.pdf-frame{position:absolute;inset:6mm;border:.35mm solid rgba(184,101,118,.38);border-radius:2mm;pointer-events:none;z-index:1}
+.pdf-frame2{position:absolute;inset:8.2mm;border:.2mm solid rgba(184,101,118,.22);border-radius:1.2mm;pointer-events:none;z-index:1}
+.pdf-page::before, .pdf-page::after{
+  content:'';position:absolute;width:25mm;height:25mm;pointer-events:none;z-index:1;
+  background-repeat:no-repeat;background-size:contain;opacity:.85;
+}
+.pdf-page::before{top:0;left:0;background-image:var(--pdf-corner-tl)}
+.pdf-page::after{bottom:0;right:0;background-image:var(--pdf-corner-br)}
+.pdf-cover::before, .pdf-cover::after{width:36mm;height:36mm}
+.pdf-cn{position:absolute;width:36mm;height:36mm;pointer-events:none;z-index:1;background-repeat:no-repeat;background-size:contain;opacity:.85;display:block}
+.pdf-cn-tr{top:0;right:0;background-image:var(--pdf-corner-tl);transform:scaleX(-1)}
+.pdf-cn-bl{bottom:0;left:0;background-image:var(--pdf-corner-br);transform:scaleX(-1)}
+
+/* text area */
+.pdf-body{position:absolute;left:14mm;right:14mm;top:18mm;bottom:25mm;z-index:3;display:flex;flex-direction:column}
+.pdf-text .pdf-body, .pdf-toc .pdf-body{top:24mm}
+
+/* page number — the ONLY text in the footer is the bare digit(s); the rules are pure CSS lines */
+.pdf-page-number{
+  position:absolute;left:0;right:0;bottom:11mm;z-index:4;
+  display:flex;align-items:center;justify-content:center;gap:3mm;
+  font-family:var(--ff-hi);font-size:11px;line-height:1;letter-spacing:0;color:var(--maroon);
+}
+.pdf-page-number::before, .pdf-page-number::after{content:'';display:block;width:9mm;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.pdf-page-number::after{background:linear-gradient(270deg,transparent,var(--gold))}
+
+/* cover */
+.pdf-cover{background:radial-gradient(ellipse at 50% 38%, #fffdfd 0%, #fdf2f4 50%, #f2dce1 100%)}
+.pdf-cover .pdf-body{inset:0;align-items:center;justify-content:center;text-align:center;padding:0 22mm}
+.pdf-orn{font-size:34px;color:var(--gold);opacity:.9;letter-spacing:.2em;margin-bottom:18px;line-height:1.2}
+.pdf-c-title{font-size:68px;line-height:1.25;margin:0;font-weight:400;color:var(--ink);text-shadow:0 1px 0 rgba(255,255,255,.8);letter-spacing:.01em}
+.pdf-ur .pdf-c-title{font-size:60px;line-height:2;padding-bottom:.2em}
+.pdf-rule{display:flex;align-items:center;gap:14px;width:64%;margin:20px auto;color:var(--gold)}
+.pdf-rule span{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.pdf-rule i{font-style:normal;font-size:16px;opacity:.9}
+.pdf-c-author{font-size:23px;color:#6b3f4a;margin:0 0 6px;letter-spacing:.06em}
+.pdf-ur .pdf-c-author{font-size:21px;line-height:2.1;padding-bottom:.15em;letter-spacing:0}
+
+/* section heading (introduction, contents, end) */
+.pdf-head{flex:0 0 auto;font-size:23px;font-weight:400;color:#6b3f4a;margin:0 0 20px;text-align:center;letter-spacing:.08em;line-height:1.4}
+.pdf-ur .pdf-head{line-height:2.2;letter-spacing:0;padding-bottom:.2em}
+.pdf-head::after{content:'';display:block;width:52px;height:1px;background:var(--gold-soft);margin:12px auto 0}
+
+/* introduction / prose */
+.pdf-prose{flex:1 1 auto;min-height:0;overflow:hidden}
+.pdf-prose-in{display:flow-root}
+.pdf-prose p{margin:0 0 1.05em;font-size:15.5px;line-height:2;color:var(--ink);text-align:justify}
+.pdf-prose p.split{text-align-last:justify}
+.pdf-ur .pdf-prose p{font-size:15px;line-height:2.55;padding-bottom:.1em}
+
+/* contents */
+.pdf-toc-list{flex:1 1 auto;min-height:0;overflow:hidden}
+.pdf-toc-in{display:flow-root}
+.pdf-toc-row{display:flex;align-items:baseline;gap:9px;padding:7px 2px;border-bottom:1px dotted rgba(184,101,118,.38);color:var(--ink)}
+.pdf-toc-ic{flex:0 0 auto;width:18px;text-align:center;font-size:15px;font-family:var(--ff-hi)}
+.pdf-tc-complete{color:#b86576}
+.pdf-tc-incomplete{color:#8ca691}
+.pdf-tc-mutafarriq{color:#d4a0a7}
+.pdf-toc-n{flex:0 0 auto;min-width:22px;font-size:11px;letter-spacing:.1em;color:var(--sage)}
+.pdf-toc-t{flex:1 1 auto;min-width:0;font-size:14px;line-height:1.7}
+.pdf-ur .pdf-toc-t{font-size:13.5px;line-height:2.35;padding-bottom:.1em}
+.pdf-ur .pdf-toc-n{line-height:2.2}
+.pdf-toc-pg{flex:0 0 auto;min-width:2.2em;text-align:end;font-family:var(--ff-hi);font-size:12px;color:var(--maroon)}
+.pdf-ur .pdf-toc-pg{text-align:start}
+
+/* ghazal / sher pages */
+.pdf-gh-head{flex:0 0 auto;text-align:center;padding-bottom:4px}
+.pdf-gh-num{display:block;font-size:11px;font-weight:600;letter-spacing:.2em;line-height:20px;color:var(--sage);text-align:center}
+.pdf-ur .pdf-gh-num{letter-spacing:0;font-size:12px;line-height:2.2;padding-bottom:.2em}
+.pdf-gh-head::after{content:'';display:block;width:14mm;height:1px;background:var(--gold-soft);margin:4px auto 0}
+.pdf-verses{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;position:relative}
+.pdf-verses-inner{flex:0 0 auto;display:flex;flex-direction:column;align-items:center}
+.pdf-unit{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:12px}
+.pdf-couplet{text-align:center}
+.pdf-couplet span{
+  display:block;line-height:1.78;color:var(--ink);letter-spacing:.005em;
+  white-space:nowrap;text-align:justify;text-align-last:justify;-moz-text-align-last:justify;
+}
+.pdf-ur .pdf-couplet span{line-height:2.12;padding-bottom:.12em}
+.pdf-verses-inner > .pdf-unit:first-child .pdf-couplet span{color:#4a232f}
+.pdf-ruler{font-family:var(--ff-hi);font-size:20px;line-height:1;color:var(--gold);opacity:.8;text-align:center}
+
+/* end page */
+.pdf-end .pdf-body{align-items:center;justify-content:center;text-align:center}
+.pdf-end-msg{margin:0 0 6px;font-size:20px;line-height:2;color:#7a3446}
+.pdf-end-foot{margin:16px 0 0;font-size:12.5px;letter-spacing:.16em;color:var(--sage)}
+.pdf-ur .pdf-end-foot{letter-spacing:0;line-height:2.2}
+
+/* ---------- Print ---------- */
+@media print{
+  /* the page shell of the web ebook is position:fixed / overflow:hidden — neutralise it so the print document flows freely */
+  html, body{
+    height:auto !important;min-height:0 !important;overflow:visible !important;
+    position:static !important;inset:auto !important;margin:0 !important;padding:0 !important;
+    background:#fbeef1 !important;
+    -webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;
+  }
+  /* hide the whole interactive web UI: splash, book, menu, arrows, HUD, progress, drawer, contents, button, dialog */
+  body > *:not(#pdfDocument){display:none !important}
+  #pdfDocument{
+    display:block !important;position:static !important;left:auto !important;top:auto !important;
+    visibility:visible !important;width:148mm !important;margin:0 !important;padding:0 !important;
+  }
+  * {-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+}
+</style>
+<style id="gh-editor-prose">.about-body .couplet{margin:.75em 0;width:100%;text-align:center}
+.about-body .couplet:last-child{margin-bottom:0}
+.about-body .couplet span{display:block;line-height:1.9;white-space:normal;text-align:center;text-align-last:center;-moz-text-align-last:center;color:var(--ink,inherit)}
+.script-ur .about-body .couplet span{line-height:2.15;text-align:right;text-align-last:right;-moz-text-align-last:right;padding-bottom:.12em}
+.about-body .prose-subheading{font-size:calc(var(--fs,22px) * 1.05);line-height:1.5;color:var(--gold,#b86576);margin:1.3em 0 .7em;text-align:center;letter-spacing:.06em;font-weight:600}
+.about-body .prose-subheading::after{content:"";display:block;width:44px;height:1px;background:var(--gold-soft,rgba(176,141,87,.4));margin:.5em auto 0}
+.script-ur .about-body .prose-subheading{font-family:var(--ff-ur);line-height:2;padding-bottom:.2em;text-align:center}
+.about-body .prose-subheading:first-child{margin-top:0}
+.about-body .about-sign{white-space:pre-line}</style>
+<style id="gh-editor-typo">
+body.lang-hi .couplet span,
+body.lang-hi .about-body p,
+body.lang-hi .about-sign,
+body.lang-hi .t-title,
+body.lang-hi .t-author,
+body.lang-hi .t-meta,
+body.lang-hi .page-head,
+body.lang-hi .gh-num,
+body.lang-hi .s-title,
+body.lang-hi .s-author .a-hi,
+body.lang-hi .s-ask,
+body.lang-hi .toc-txt,
+body.lang-hi .prose-subheading,
+body.lang-hi #hud,
+body.lang-hi #hudInput { font-weight: 700 !important; }
+</style>
+</head>
+<body class="lang-hi">
+<div id="privacyCover"></div>
+
+<div id="splash">
+  <div class="splash-card">
+    <div class="s-orn">❀ ❀ ❀</div>
+    <h1 class="s-title">दिल दरीचा</h1>
+    <p class="s-title-ur">دل دریچہ</p>
+    <p class="s-author"><span class="a-hi">माजिद मुर्शदपुरी</span> · <span class="a-ur">ماجد مرشدپوری</span></p>
+    <p class="s-ask">
+      इस किताब को किस ज़बान में पढ़ना चाहेंगे?
+      <span class="ur">اس کتاب کو کس زبان میں پڑھنا چاہیں گے؟</span>
+    </p>
+    <div class="lang-btns">
+      <button data-lang="hi">हिन्दी में पढ़ें<span class="saved" id="savedHi"></span></button>
+      <button class="ur-btn" data-lang="ur">اردو میں پڑھیں<span class="saved" id="savedUr"></span></button>
+    </div>
+  </div>
+</div>
+
+<div id="stage"><div id="pageArea"></div></div>
+
+<button id="menuBtn" class="icon-btn" aria-label="Menu"><span class="bars"><i></i><i></i><i></i></span></button>
+<button id="scriptToggleBtn" type="button">اردو</button>
+<button id="prevBtn" class="nav-arrow" aria-label="Previous"><span>‹</span></button>
+<button id="nextBtn" class="nav-arrow" aria-label="Next"><span>›</span></button>
+
+<div id="hud" role="button" tabindex="0" aria-label="Jump to page"></div>
+<input id="hudInput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="Enter page number">
+<div id="progress"><div id="progressFill"></div></div>
+
+<div id="scrim"></div>
+<aside id="drawer">
+  <div class="panel-head">
+    <span class="ph-title" id="drawerTitle">दिल दरीचा</span>
+    <button class="close-x" data-close aria-label="Close">✕</button>
+  </div>
+  <div class="panel-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+
+<section id="contents">
+  <div class="ov-head">
+    <h2 id="contentsTitle">विषय-सूची</h2>
+    <button class="close-x" data-close-contents aria-label="Close">✕</button>
+  </div>
+  <div class="ov-list" id="contentsList"></div>
+</section>
+
+<!-- ===== SAVE AS PDF (added) ===== -->
+<div id="pdfDlg" role="dialog" aria-modal="true" aria-labelledby="pdfDlgTitle">
+  <div class="pdf-dlg-card">
+    <button type="button" class="pdf-dlg-x" data-pdf-close aria-label="Close">✕</button>
+    <div class="pdf-dlg-orn">❀ ✿ ❀</div>
+    <h2 class="pdf-dlg-title" id="pdfDlgTitle">PDF के रूप में सहेजें</h2>
+    <p class="pdf-dlg-title-ur" dir="rtl" lang="ur">پی ڈی ایف کے طور پر محفوظ کریں</p>
+    <p class="pdf-dlg-ask">किताब किस ज़बान में चाहिए?<span class="ur" dir="rtl" lang="ur">کتاب کس زبان میں چاہیے؟</span></p>
+    <p class="pdf-dlg-cpp" id="pdfDlgCpp"></p>
+    <div class="pdf-dlg-btns">
+      <button type="button" data-pdf-lang="hi">हिन्दी</button>
+      <button type="button" class="ur-btn" data-pdf-lang="ur">اردو</button>
+    </div>
+    <p class="pdf-dlg-hint">खुलने वाली प्रिंट विंडो में “Save as PDF” चुनें<span class="ur" dir="rtl" lang="ur">پرنٹ ونڈو میں “Save as PDF” منتخب کریں</span></p>
+  </div>
+</div>
+
+<div id="pdfBusy" role="status" aria-live="polite"></div>
+<div id="pdfDocument" aria-hidden="true"></div>
+<!-- ===== /SAVE AS PDF ===== -->
+
+<script>
+/* =========================================================
+   CONFIGURATION
+   ========================================================= */
+const DEFAULT_BASE = 24;          // comfortable default on large screens
+let COUPLETS_PER_PAGE = (function(){ try{ var v = parseInt(localStorage.getItem('dd-couplets-per-page'), 10); return (v >= 1 && v <= 12) ? v : 5; }catch(e){ return 5; } })();   // page length per ghazal (reader can change it in the menu; default 5)
+const SCALE_MIN = 0.6, SCALE_MAX = 1.6, SCALE_STEP = 0.1, SCALE_DEFAULT = 1.0;
+let heightSafety = 0;
+
+const BOOK   = { hi:'दिल दरीचा', ur:'دل دریچہ', en:'Dil Dareecha' };;
+const AUTHOR = { hi:'माजिद मुर्शदपुरी', ur:'ماجد مرشدپوری' };;;
+
+const HOME_URL = "https://majidmurshadpuri.github.io";
+const BACK_URL = "Paste Link Here";
+
+/* =========================================================
+   GHAZAL DATA
+   ========================================================= */
+const PROSE = [
+  { id:"s1",
+    title:{ hi:'परिचय', ur:'تعارف' },
+    writer:{ hi:'— माजिद मुर्शदपुरी', ur:'— ماجد مرشدپوری' },
+    hi:["माजिद मुर्शदपुरी की शायरी में इश्क़ की नज़ाकत और आज के वक़्त का तंज़ साथ-साथ चलते हैं। उनके यहाँ दिल की दीवार में दर बन जाता है, बुझता हुआ बदन छू कर कँवल हो जाता है, और उदासी आप ही की छुवन से बाहर निकलती है।","'दिल दरीचा' उनका पहला ग़ज़ल-संग्रह है। इन ग़ज़लों में जिगर मुरादाबादी को सुनाने की तमन्ना भी है, दादी की याद भी, और उस दौर की बेचैनी भी जिसमें मोहब्बत करना किसी सुपर-हिट पिक्चर के सीन से कम आसान नहीं रहा।","यहाँ रवायती बहर और ज़मीनें हैं, मगर लहजा आज का है — चूमने वालों की बदनामी से ले कर दिल के 'गेट नंबर तीन' तक। यहाँ शे'र अगर ठीक से हो जाए, तो दिल की दीवार में दर हो जाता है — यही इस पूरे मजमूए का वादा है।"],
+    ur:["ماجد مرشدپوری کی شاعری میں عشق کی نزاکت اور آج کے وقت کا طنز ساتھ ساتھ چلتے ہیں۔ ان کے یہاں دل کی دیوار میں در بن جاتا ہے، بجھتا ہوا بدن چھو کر کنول ہو جاتا ہے، اور اداسی آپ ہی کی چھُوَن سے باہر نکلتی ہے۔","'دل دریچہ' ان کا پہلا غزل مجموعہ ہے۔ ان غزلوں میں جگر مرادآبادی کو سنانے کی تمنّا بھی ہے، دادی کی یاد بھی، اور اس دور کی بے چینی بھی جس میں محبت کرنا کسی سوپر ہٹ پکچر کے سین سے کم آسان نہیں رہا۔","یہاں روایتی بحر اور زمینیں ہیں، مگر لہجہ آج کا ہے — چومنے والوں کی بدنامی سے لے کر دل کے 'گیٹ نمبر تین' تک۔ یہاں شعر اگر ٹھیک سے ہو جائے، تو دل کی دیوار میں در ہو جاتا ہے — یہی اس پورے مجموعے کا وعدہ ہے۔"],
+    atoms:{ hi:[{"kind":"para","html":"माजिद मुर्शदपुरी की शायरी में इश्क़ की नज़ाकत और आज के वक़्त का तंज़ साथ-साथ चलते हैं। उनके यहाँ दिल की दीवार में दर बन जाता है, बुझता हुआ बदन छू कर कँवल हो जाता है, और उदासी आप ही की छुवन से बाहर निकलती है।"},{"kind":"para","html":"'दिल दरीचा' उनका पहला ग़ज़ल-संग्रह है। इन ग़ज़लों में जिगर मुरादाबादी को सुनाने की तमन्ना भी है, दादी की याद भी, और उस दौर की बेचैनी भी जिसमें मोहब्बत करना किसी सुपर-हिट पिक्चर के सीन से कम आसान नहीं रहा।"},{"kind":"para","html":"यहाँ रवायती बहर और ज़मीनें हैं, मगर लहजा आज का है — चूमने वालों की बदनामी से ले कर दिल के 'गेट नंबर तीन' तक। यहाँ शे'र अगर ठीक से हो जाए, तो दिल की दीवार में दर हो जाता है — यही इस पूरे मजमूए का वादा है।"}], ur:[{"kind":"para","html":"ماجد مرشدپوری کی شاعری میں عشق کی نزاکت اور آج کے وقت کا طنز ساتھ ساتھ چلتے ہیں۔ ان کے یہاں دل کی دیوار میں در بن جاتا ہے، بجھتا ہوا بدن چھو کر کنول ہو جاتا ہے، اور اداسی آپ ہی کی چھُوَن سے باہر نکلتی ہے۔"},{"kind":"para","html":"'دل دریچہ' ان کا پہلا غزل مجموعہ ہے۔ ان غزلوں میں جگر مرادآبادی کو سنانے کی تمنّا بھی ہے، دادی کی یاد بھی، اور اس دور کی بے چینی بھی جس میں محبت کرنا کسی سوپر ہٹ پکچر کے سین سے کم آسان نہیں رہا۔"},{"kind":"para","html":"یہاں روایتی بحر اور زمینیں ہیں، مگر لہجہ آج کا ہے — چومنے والوں کی بدنامی سے لے کر دل کے 'گیٹ نمبر تین' تک۔ یہاں شعر اگر ٹھیک سے ہو جائے، تو دل کی دیوار میں در ہو جاتا ہے — یہی اس پورے مجموعے کا وعدہ ہے۔"}] } }
+];
+
+const END_PAGE = {
+  title:{ hi:'तमाम', ur:'تمام' },
+  message:{ hi:'पढ़ने के लिए शुक्रिया', ur:'پڑھنے کا شکریہ' },
+  footer:{ hi:'दिल दरीचा · माजिद मुर्शदपुरी', ur:'دل دریچہ · ماجد مرشدپوری' }
+};
+
+
+const GH = [
+{ v:{
+hi:`ठीक से शे'र अगर हो जाए
+दिल की दीवार में दर हो जाए
+
+फिर नया इश्क़ पुराने की तरह
+क्या ख़बर किस से किधर हो जाए
+
+दिलबर ऐसा हो कि चूमे बे-वक़्त
+वक़्त पर सीना सिपर हो जाए`,
+ur:`ٹھیک سے شعر اگر ہو جائے
+دل کی دیوار میں در ہو جائے
+
+پھر نیا عشق پرانے کی طرح
+کیا خبر کس سے کدھر ہو جائے
+
+دلبر ایسا ہو کہ چومے بے وقت
+وقت پر سینہ سِپر ہو جائے`
+}},
+{ v:{
+hi:`हाए वो मुझ से कहना मेरी दादी का
+शे'र सुना दे जिगर मुरादाबादी का
+
+ग़ुस्से में कोई सस्ती चीज़ नहीं तोड़ी
+दिल तोड़ा और वो भी इक शहज़ादी का
+
+मेरी जवानी इक सूपर–हिट पिक्चर है
+और उस में कोई सीन नहीं है शादी का`,
+ur:`ہائے وہ مجھ سے کہنا میری دادی کا
+شعر سنا دے جگر مراد آبادی کا
+
+غصے میں کوئی سستی چیز نہیں توڑی
+دل توڑا اور وہ بھی اک شہزادی کا
+
+میری جوانی اِک سوپر ہٹ پکچر ہے
+اور اس میں کوئی سین نہیں ہے شادی کا`
+}},
+{ v:{
+hi:`ग़लती पर शर्मिंदा हो?
+शुक्र करो तुम ज़िंदा हो
+
+उस को मुझ से प्यार नहीं
+मुमकिन है आइंदा हो
+
+बच्ची क्या जाने भाई
+घर में कौन दरिंदा हो`,
+ur:`غلطی پر شرمندہ ہو؟
+شکر کرو تم زندہ ہو
+
+اس کو مجھ سے پیار نہیں
+ممکن ہے آئندہ ہو
+
+بچی کیا جانے بھائی
+گھر میں کون درندہ ہو`
+}},
+{ v:{
+hi:`बर सरे आम चूमने वाले
+हम हैं बदनाम चूमने वाले
+
+गुलबदन कर लिया असीर-ए-हवस
+कर लिए काम चूमने वाले
+
+शाहज़ादी कहाँ मिलेंगे तुझे
+हम से नफ़राम चूमने वाले`,
+ur:`بر سرے عام چومنے والے
+ہم ہیں بدنام چومنے والے
+
+گلبدن کر لیا اسیر ہوس
+کر لیے کام چومنے والے
+
+شاہزادی کہاں ملیں گے تجھے
+ہم سے نفرام چومنے والے`
+}},
+{ v:{
+hi:`पर्बतों से गुज़रना पड़ता है
+तब कहीं जा के झरना पड़ता है
+
+दोस्ता मुझ से बेलगाम को भी
+उस के दर पर ठहरना पड़ता है
+
+हाए बाहम पलीद होने को
+कितना सजना सँवरना पड़ता है
+
+हिज्र-ज़ादे शरीफ़ होते हैं
+बाक़ियों को सुधरना पड़ता है
+
+रोकनी पड़ती है सुख़नकारी
+क्या करें पेट भरना पड़ता है`,
+ur:`پربتوں سے گزرنا پڑتا ہے
+تب کہیں جا کے جھرنا پڑتا ہے
+
+دوستا مجھ سے بےلگام کو بھی
+اس کے در پر ٹھہرنا پڑتا ہے
+
+ہائے باہم پلید ہونے کو
+کتنا سجنا سنورنا پڑتا ہے
+
+ہجر زادے شریف ہوتے ہیں
+باقیوں کو سدھرنا پڑتا ہے
+
+روکنی پڑتی ہے سخن کاری
+کیا کریں پیٹ بھرنا پڑتا ہے`
+}},
+{ v:{
+hi:`इश्क़ में हो गया बेकार मेरा अपना बंदा
+देखिए कैसे चला आता है मंदा मंदा
+
+आप अमवाल ग़लत सम्त उठा लाए हैं
+मकतब-ए-इश्क़ नहीं चलता बज़ोर-ए-चंदा
+
+हम ने इक बुझता बदन छू के कँवल करना है
+और फिर चूम के करनी है जबीं रुख़्शंदा
+
+आशिक़ी खेल नहीं पेशावरों का साहिब
+आप ले बैठिए बाज़ार में कोई धंदा
+
+सतह-ए-दीवार-ए-दिल-ए-ज़ाल पड़ी है ख़ाली
+आएँ और कर दें यहाँ इस्म-ए-गिरामी कंदा`,
+ur:`عشق میں ہو گیا بیکار میرا اپنا بندہ
+دیکھیے کیسے چلا آتا ہے مندہ مندہ
+
+آپ اموال غلط سمت اٹھا لائے ہیں
+مکتبِ عشق نہیں چلتا بزورِ چندہ
+
+ہم نے اک بجھتا بدن چھو کے کنول کرنا ہے
+اور پھر چوم کے کرنی ہے جبیں رخشندہ
+
+عاشقی کھیل نہیں پیشہ وروں کا صاحب
+آپ لے بیٹھیے بازار میں کوئی دھندہ
+
+سطح دیوار دل زال پڈی ہے خالی
+آئیں اور کر دیں یہاں اسم گرامی کندہ`
+}},
+{ v:{
+hi:`इश्क़ करना नहीं कि तुझ से कहें
+और तो क्या नहीं कि तुझ से कहें
+
+हिज्र की दास्ताँ है और उस पर
+तू अकेला नहीं कि तुझ से कहें
+
+ग़म ज़ियादा तो है मगर ऐ दोस्त
+इतना ज़्यादा नहीं कि तुझ से कहें
+
+हम फ़क़ीर और तू अना का मरीज़
+हम पे जँचता नहीं कि तुझ से कहें
+
+घर के अंदर की बात है प्यारे
+और तू घर का नहीं कि तुझ से कहें
+
+ख़ुद-कलामी नहीं तो क्या करें हम
+तू तो सुनता नहीं कि तुझ से कहें
+
+एक रस्सी भी है हमें दरकार
+सिर्फ़ पंखा नहीं कि तुझ से कहें`,
+ur:`عشق کرنا نہیں کہ تجھ سے کہیں
+اور تو کیا نہیں کہ تجھ سے کہیں
+
+ہجر کی داستاں ہے اور اس پر
+تو اکیلا نہیں کہ تجھ سے کہیں
+
+غم زیادہ تو ہے مگر اے دوست
+اتنا زیادہ نہیں کہ تجھ سے کہیں
+
+ہم فقیر اور تو انا کا مریض
+ہم پہ جچتا نہیں کہ تجھ سے کہیں
+
+گھر کے اندر کی بات ہے پیارے
+اور تو گھر کا نہیں کہ تجھ سے کہیں
+
+خود کلامی نہیں تو کیا کریں ہم
+تو تو سنتا نہیں کہ تجھ سے کہیں
+
+ایک رسی بھی ہے ہمیں درکار
+صرف پنکھا نہیں کہ تجھ سے کہیں`
+}},
+{ v:{
+hi:`गर आँखों में ख़्वाब नहीं होते भाई
+हम इतने बेताब नहीं होते भाई
+
+हम ऐसों से अबे-तबे करते हैं लोग
+हम ऐसों के आदाब नहीं होते भाई?
+
+हम पर अपना पानी ग़ारत मत कीजिए
+हम सब्ज़-ओ-शादाब नहीं होते भाई
+
+ख़ाक उड़ाओ ख़ाक कि हम से ख़ाक-नशीं
+चश्मों से सेराब नहीं होते भाई
+
+इश्क़ को रस्ता देती है कोई खिड़की
+इश्क़ के हक़ में बाब नहीं होते भाई
+
+कभी तो उस का मन नहीं होता मिलने का
+और कभी असबाब नहीं होते भाई`,
+ur:`گر آنکھوں میں خواب نہیں ہوتے بھائی
+ہم اتنے بےتاب نہیں ہوتے بھائی
+
+ہم ایسوں سے ابے تبے کرتے ہیں لوگ
+ہم ایسوں کے آداب نہیں ہوتے بھائی؟
+
+ہم پر اپنا پانی غارت مت کیجے
+ہم سبز و شاداب نہیں ہوتے بھائی
+
+خاک اڑاؤ خاک کہ ہم سے خاک نشیں
+چشموں سے سیراب نہیں ہوتے بھائی
+
+عشق کو رستہ دیتی ہے کوئی کھڑکی
+عشق کے حق میں باب نہیں ہوتے بھائی
+
+کبھی تو اس کا من نہیں ہوتا ملنے کا
+اور کبھی اسباب نہیں ہوتے بھائی`
+}},
+{ v:{
+hi:`जो थामा हाथ उस ज़ोहरा-जबीं का
+तो बोली हट बड़ा आया कहीं का
+
+अभी तक छः परी-ज़ादे मकीं हैं
+कुशादा दिल है उस पर्दा-नशीं का
+
+न जाने गुज़री होगी क्या लबों पर
+मैं बोसा ले के लौट आया जबीं का
+
+उसे भेजा था इक पैग़ाम दे कर
+वो बंदा रह गया हो कर वहीं का
+
+मुझे मालूम है औक़ात अपनी
+मैं तालिब ही नहीं तुझ से हसीं का
+
+मिरा दिल और तेरी ऐब-जूई
+गला ना घोंट दूं इस नुक्ता–चीं का?
+
+वो साँप अब ताक में बैठा है 'माजिद'
+बटन मत खोल देना आस्तीं का`,
+ur:`جو تھاما ہاتھ اس زہرہ جبیں کا
+تو بولی ہٹ بڑا آیا کہیں کا
+
+ابھی تک چھ پری زادے مکیں ہیں
+کشادہ دل ہے اس پردہ نشیں کا
+
+نہ جانے گزری ہوگی کیا لبوں پر
+میں بوسہ لے کے لوٹ آیا جبیں کا
+
+اسے بھیجا تھا اک پیغام دے کر
+وہ بندہ رہ گیا ہو کر وہیں کا
+
+مجھے معلوم ہے اوقات اپنی
+میں طالب ہی نہیں تجھ سے حسیں کا
+
+میرا دل اور تیری عیب جوئی
+گلا نہ گھونٹ دوں اِس نکتہ چیں کا؟
+
+وہ سانپ اب تاک میں بیٹھا ہے 'ماجد'
+بٹن مت کھول دینا آستیں کا`
+}},
+{ v:{
+hi:`हमारे पास था दिलबर हमारा
+बहुत पुरनूर था बिस्तर हमारा
+
+हमें दरकार कुछ आसानियाँ थीं
+मुसीबत ढूँढती थी घर हमारा
+
+हमारे पाँव में बेड़ी पड़ी थी
+उदासी खा रही थी सर हमारा
+
+कभी होंटों से दाग़ी हो जो गर्दन
+वहाँ कैसे चले ख़ंजर हमारा
+
+इधर हम हार बैठे दिल की बाज़ी
+उधर लड़ता रहा लश्कर हमारा`,
+ur:`ہمارے پاس تھا دلبر ہمارا
+بہت پرنور تھا بستر ہمارا
+
+ہمیں درکار کچھ آسانیاں تھیں
+مصیبت ڈھونڈتی تھی گھر ہمارا
+
+ہمارے پاؤں میں بیڑی پڑی تھی
+اداسی کھا رہی تھی سر ہمارا
+
+کبھی ہونٹوں سے داغی ہو جو گردن
+وہاں کیسے چلے خنجر ہمارا
+
+اِدھر ہم ہار بیٹھے دل کی بازی
+اُدھر لڑتا رہا لشکر ہمارا`
+}},
+{ v:{
+hi:`मेरा दर्द कम मेरा चारागर नहीं कर सका
+कोई हो दवा कोई दम असर नहीं कर सका
+
+तेरे वस्ल ने भी तो तिश्ना-लब ही रखा हमें
+तेरा लम्स भी हमें तर-ब-तर नहीं कर सका
+
+तुझे इल्म है तुझे चूम लेने से पेश्तर
+कई काम थे जो मैं वक़्त पर नहीं कर सका
+
+तुझे सौंप कर भी ये जान-ओ-तन सुन ऐ जान-ए-मन
+मुझे रंज है तेरे दिल में घर नहीं कर सका
+
+तेरे साथ आगे गुज़र-बसर नहीं हो सकी
+मैं ने ख़ूब चाहा करूँ मगर नहीं कर सका
+
+कोई बात थी जो तू रात भर मेरे साथ था
+कोई बात थी जो तू रात भर नहीं कर सका`,
+ur:`مرا درد کم مرا چارہ گر نہیں کر سکا
+کوئی ہو دوا کوئی دم اثر نہیں کر سکا
+
+ترے وصل نے بھی تو تشنہ لب ہی رکھا ہمیں
+ترا لمس بھی ہمیں تر بتر نہیں کر سکا
+
+تجھے علم ہے تجھے چوم لینے سے پیشتر
+کئی کام تھے جو میں وقت پر نہیں کر سکا
+
+تجھے سونپ کر بھی یہ جان و تن سن اے جانِ من
+مجھے رنج ہے ترے دل میں گھر نہیں کر سکا
+
+ترے ساتھ آگے گزر بسر نہیں ہو سکی
+میں نے خوب چاہا کروں مگر نہیں کر سکا
+
+کوئی بات تھی جو تو رات بھر مرے ساتھ تھا
+کوئی بات تھی جو تو رات بھر نہیں کر سکا`
+}},
+{ v:{
+hi:`जाती ही रही आने की उम्मीद किसी की
+गिर्ये में गुज़र जाएगी ये ईद किसी की
+
+हम को भी कोई दिल में जगह देने लगा है
+मुशकूक हुई जाती है तौहीद किसी की
+
+तहरीर के आग़ाज़ के मुश्ताक़ हैं शैदा
+रुकने में नहीं आती है तमहीद किसी की
+
+उस तर्ज़-ए-तकल्लुम का असर था कि परी-शब
+हम ग़ौर से सुनते रहे तनक़ीद किसी की
+
+अज़-ख़ुद ही किया करते हैं हल इश्क़ की मुश्किल
+इस बाब में करते नहीं तक़लीद किसी की
+
+मरने की वजह ढूँढने घर से मैं चला था
+जीने की वजह बनने लगी दीद किसी की
+
+ताईद किसी और की करनी थी हमें और
+हम कर के चले आए हैं ताईद किसी की`,
+ur:`جاتی ہی رہی آنے کی امید کسی کی
+گریے میں گزر جائے گی یہ عید کسی کی
+
+ہم کو بھی کوئی دل میں جگہ دینے لگا ہے
+مشکوک ہوئی جاتی ہے توحید کسی کی
+
+تحریر کے آغاز کے مشتاق ہیں شیدا
+رکنے میں نہیں آتی ہے تمہید کسی کی
+
+اُس طرز تکلم کا اثر تھا کہ پری شب
+ہم غور سے سنتے رہے تنقید کسی کی
+
+از خود ہی کیا کرتے ہیں حل عشق کی مشکل
+اس باب میں کرتے نہیں تقلید کسی کی
+
+مرنے کی وجہ ڈھونڈھنے گھر سے میں چلا تھا
+جینے کی وجہ بننے لگی دید کسی کی
+
+تائید کسی اور کی کرنی تھی ہمیں اور
+ہم کر کے چلے آئے ہیں تائید کسی کی`
+}},
+{ v:{
+hi:`जिन दिनों में तेरा महबूब हुआ करता था
+तू बहुत ख़ूब बहुत ख़ूब हुआ करता था
+
+हम ने ऐसे भी बदन चूम के रोशन किए थे
+देखना तक जिन्हें मा'यूब हुआ करता था
+
+बात यूँ है कि वो इक होंट में रखता था नमक
+दूसरे होंट में मशरूब हुआ करता था
+
+हुस्न की देवी मिरे ज़ेर-ए-असर रहती थी
+मैं कब आसानी से मग़लूब हुआ करता था
+
+मैं फ़क़त शह का मुसाहिब ही नहीं था ग़ालिब
+शाहज़ादी का भी मतलूब हुआ करता था
+
+आँख पुर-नम हुआ करती थी हथेली पुर-नूर
+हाथ में जब तेरा मक्तूब हुआ करता था`,
+ur:`جن دنوں میں ترا محبوب ہوا کرتا تھا
+تو بہت خوب بہت خوب ہوا کرتا تھا
+
+ہم نے ایسے بھی بدن چوم کے روشن کیے تھے
+دیکھنا تک جنہیں معیوب ہوا کرتا تھا
+
+بات یوں ہے کہ وہ اک ہونٹ میں رکھتا تھا نمک
+دوسرے ہونٹ میں مشروب ہوا کرتا تھا
+
+حسن کی دیوی میرے زیر اثر رہتی تھی
+میں کب آسانی سے مغلوب ہوا کرتا تھا
+
+میں فقط شہ کا مصاحب ہی نہیں تھا غالب
+شاہزادی کا بھی مطلوب ہوا کرتا تھا
+
+آنکھ پُر نم ہوا کرتی تھی ہتھیلی پُر نور
+ہاتھ میں جب ترا مکتوب ہوا کرتا تھا`
+}},
+{ v:{
+hi:`ध्यान आप का इस ओर नहीं होना चाहिए
+और हो तो दिल में चोर नहीं होना चाहिए
+
+इस दर्जा होना चाहिए आदाब का लिहाज़
+झगड़ा भी हो तो शोर नहीं होना चाहिए
+
+तू जितना ख़ुश-मिज़ाज है उतना ही ख़ुश-लिबास
+तुझ से तो बंदा बोर नहीं होना चाहिए
+
+पुर-ज़ोर होना चाहिए अल्फ़ाज़ का चुनाव
+लहजे पे ज़्यादा ज़ोर नहीं होना चाहिए`,
+ur:`دھیان آپ کا اس اور نہیں ہونا چاہیے
+اور ہو تو دل میں چور نہیں ہونا چاہیے
+
+اس درجہ ہونا چاہیے آداب کا لحاظ
+جھگڑا بھی ہو تو شور نہیں ہونا چاہیے
+
+تو جتنا خوش مزاج ہے اتنا ہی خوش لباس
+تجھ سے تو بندہ بور نہیں ہونا چاہیے
+
+پور زور ہونا چاہیے الفاظ کا چناؤ
+لہجے پہ اتنا زور نہیں ہونا چاہیے`
+}},
+{ v:{
+hi:`यूँ चमकता हुआ उस कान में हाला पड़ा था
+मानो धरती पे मेरा चाँद से पाला पड़ा था
+
+हम से उश्शाक़ तो गिनती में नहीं आते थे
+एक से एक उसे चाहने वाला पड़ा था
+
+बा'द तामीर-ए-महल चूम लिया रानी ने
+जिस भी मज़दूर के जिस हाथ में छाला पड़ा था
+
+मेरी क़ुर्बत के तमन्नाई ज़रा ग़ौर से देख
+देख वो जिस्म मेरी छाँव में काला पड़ा था`,
+ur:`یوں چمکتا ہوا اس کان میں ہالہ پڑا تھا
+مانو دھرتی پہ مرا چاند سے پالہ پڑا تھا
+
+ہم سے عشاق تو گنتی میں نہیں آتے تھے
+ایک سے ایک اسے چاہنے والا پڑا تھا
+
+بعد تعمیرِ محل چوم لیا رانی نے
+جس بھی مزدور کے جس ہاتھ میں چھالا پڑا تھا
+
+میری قربت کے تمنائی ذرا غور سے دیکھ
+دیکھ وہ جسم مری چھاؤں میں کالا پڑا تھا`
+}},
+{ v:{
+hi:`ऐसी यारी का यार क्या मतलब
+जब तू मिलता नहीं बना मतलब
+
+वक़्त दूँगा तेरी मोहब्बत को
+ढूँढ लूँगा छुपा हुआ मतलब
+
+आप से कैसा वास्ता साहिब
+आप से तो निकल गया मतलब
+
+इतनी उजलत में होंठ मत खींचें
+पूरा होने दें वस्ल का मतलब
+
+दावा-ए-इश्क़ अब भी बाक़ी है
+आप का दिल नहीं भरा मतलब`,
+ur:`ایسی یاری کا یار کیا مطلب
+جب تو ملتا نہیں بنا مطلب
+
+وقت دوں گا تری محبت کو
+ڈھونڈ لوں گا چھپا ہوا مطلب
+
+آپ سے کیسا واسطہ صاحب
+آپ سے تو نکل گیا مطلب
+
+اتنی عجلت میں ہونٹ مت کھینچیں
+پورا ہونے دیں وصل کا مطلب
+
+دعویٔ عشق اب بھی باقی ہے
+آپ کا دل نہیں بھرا مطلب`
+}},
+{ v:{
+hi:`यार जब यारी ही मे'यारी न हो
+कैसे मुमकिन है कि ग़द्दारी न हो
+
+राब्ता यूँ भी नहीं बढ़ने दिया
+फ़िक्र थी कल उस को दुश्वारी न हो
+
+सुनने वाला सोचने में गुम रहे
+बात में इतनी भी तहदारी न हो
+
+पहले पहले कीजिए नख़रे हज़ार
+वस्ल की शब कोई मक्कारी न हो
+
+दिल-लगी करने से पहले दोस्ता
+देख लेना लड़की दुखियारी न हो
+
+छूटती हो छूट जाए नौकरी
+शायरी से दस्तबरदारी न हो
+
+वक़्त है अपना मुझे बेहद अज़ीज़
+मत सुना गर शे'र मे'यारी न हो
+
+अच्छी लड़की देखना मेरे लिए
+देखना ज़ियादा सदा-चारी न हो`,
+ur:`یار جب یاری ہی معیاری نہ ہو
+کیسے ممکن ہے کہ غداری نہ ہو
+
+رابطہ یوں بھی نہیں بڑھنے دیا
+فکر تھی کل اس كو دشواری نہ ہو
+
+سننے والا سوچنے میں گم رہے
+بات میں اتنی بھی تہ داری نہ ہو
+
+پہلے پہلے کیجیے نخرے ہزار
+وصل کی شب کوئی مکاری نہ ہو
+
+دل لگی کرنے سے پہلے دوستا
+دیکھ لینا لڑکی دکھیاری نہ ہو
+
+چھوٹتی ہو چھوٹ جائے نوکری
+شاعری سے دستبرداری نہ ہو
+
+وقت ہے اپنا مجھے بےحد عزیز
+مت سنا گر شعر معیاری نہ ہو
+
+اچھی لڑکی دیکھنا میرے لیے
+دیکھنا زیادہ سَدا چاری نہ ہو`
+}},
+{ v:{
+hi:`बचा तो कुछ नहीं रिश्ता हमारा
+मगर ये फूल सा बच्चा हमारा
+
+हमारे ख़त रखे सब ने सलामत
+किसी ने दिल नहीं रक्खा हमारा
+
+तुझे सब कुछ ज़बानी ही बताएँ?
+तुझे दिखता नहीं चेहरा हमारा?
+
+हमारी आँख मत देखो कि इस से
+नहीं रिसता कोई जज़्बा हमारा
+
+कोई तो तीर आ लगता हमें भी
+कहीं से तो लहू बहता हमारा
+
+नहीं रास आ रहा कार-ए-मोहब्बत
+लो ये पकड़ो तुम इस्तीफ़ा हमारा
+
+याँ अपने एक्स के क़िस्से न छेड़ो
+ज़रा ढीला है अल्जेब्रा हमारा`,
+ur:`بچا تو کچھ نہیں رِشتہ ہمارا
+مگر یہ پھول سا بچہ ہمارا
+
+ہمارے خط رکھے سب نے سلامت
+کسی نے دل نہیں رکھا ہمارا
+
+تجھے سب کچھ زبانی ہی بتائیں؟
+تجھے دکھتا نہیں چہرا ہمارا؟
+
+ہماری آنکھ مت دیکھو کہ اس سے
+نہیں رستا کوئی جذبہ ہمارا
+
+کوئی تو تیر آ لگتا ہمیں بھی
+کہیں سے تو لہو بہتا ہمارا
+
+نہیں راس آ رہا کارِ محبت
+لو یہ پکٹو تم استعفیٰ ہمارا
+
+یاں اپنے ایکس کے قصے نہ چھیڑو
+ذرا ڈھیلا ہے الجبرا ہمارا`
+}},
+{ v:{
+hi:`हुआ तर्क-ए-तअल्लुक़ का मलाल आहिस्ता आहिस्ता
+उसे आने लगा मेरा ख़याल आहिस्ता आहिस्ता
+
+अभी तक हाथ मेरा उस के शाने तक नहीं पहुँचा
+और आ पहुँचे कमर तक उस के बाल आहिस्ता आहिस्ता
+
+तुम आए तो तबीयत में बहुत जल्दी सुधार आया
+वगरना हो रहे थे हम बहाल आहिस्ता आहिस्ता
+
+कभी वो नीम-बाज़ आँखें मेरी जानिब पलटती थीं
+नज़र करती थी मुझ से कुछ सवाल आहिस्ता आहिस्ता
+
+अभी जल्दी में हैं हम को इजाज़त दीजिए जानाँ
+मिले तो फिर कभी चूमेंगे गाल आहिस्ता आहिस्ता
+
+कहीं ले ही न डूबे मुझ को मेरा शौक़-ए-मयनोशी
+चला हूँ मयकशी को पुर्तगाल आहिस्ता आहिस्ता
+
+अभी मसरूफ़ हैं 'माजिद' कहीं कार-ए-मोहब्बत में
+बनेंगे साहिब-ए-अहल-ओ-ऐयाल आहिस्ता आहिस्ता`,
+ur:`ہوا ترِک تعلق کا ملال آہستہ آہستہ
+اسے آنے لگا میرا خیال آہستہ آہستہ
+
+ابھی تک ہاتھ میرا اس کے شانے تک نہیں پہنچا
+اور آ پہنچے کمر تک اس کے بال آہستہ آہستہ
+
+تم آئے تو طبیعت میں بہت جلدی سدھار آیا
+وگرنہ ہو رہے تھے ہم بحال آہستہ آہستہ
+
+کبھی وہ نیم باز آنکھیں مری جانب پلٹتی تھیں
+نظر کرتی تھی مجھ سے کچھ سوال آہستہ آہستہ
+
+ابھی جلدی میں ہیں ہم کو اجازت دیجیے جاناں
+ملے تو پھر کبھی چومیں گے گال آہستہ آہستہ
+
+کہیں لے ہی نہ ڈوبے مجھ کو میرا شوقِ مے نوشی
+چلا ہوں مے کشی کو پرتگال آہستہ آہستہ
+
+ابھی مصروف ہیں 'ماجد' کہیں کارِ محبت میں
+بنیں گے صاحبِ اہل و عیال آہستہ آہستہ`
+}},
+{ v:{
+hi:`इश्क़ हो शिकवा हो या हो काम उस मिस्कीन से
+सीधा अंदर आएँ दिल के गेट नंबर तीन से
+
+मुझ को ग़ुस्सा वालिदा से इश्क़ वालिद से मिला
+मेरे बच्चे शायरी पाएँगे मेरे जीन से
+
+यानी पत्थर दिल को समझाऊँ मैं दिल का इज़्तिराब
+दीन की बातें करूँ और वो भी इक लादीन से
+
+इश्क़ का शो'बा भी यूनिवर्सिटी में लाएँगे
+इश्क़-ज़ादे बात करने जाएँगे कल डीन से
+
+आज़माया जब भी उन मद-मस्त आँखों का नशा
+चार-छः फ़ीसद ज़ियादा ही रहा कोकीन से
+
+शाहज़ादे आपसी रंजिश में लड़ कर मर गए
+लोग लौटे तक नहीं थे शाह की तदफ़ीन से
+
+बा'द-अज़ाँ अशआर पढ़ अख़बार पढ़ जो चाहे पढ़
+इब्तिदा दिन की किया कर सूरह-ए-यासीन से
+
+महफ़िलों में शे'र कहने का मज़ा ही तब है दोस्त
+सामने हों आठ दस बूढ़े ज़रा शौक़ीन से
+
+'आज उस के गाल चूमे हैं तो अंदाज़ा हुआ'
+लोग बहकाए गए हैं लज़्ज़त-ए-नमकीन से
+
+नारा-ए-तकबीर से इक ज़लज़ला सा आएगा
+ख़ैमा-ए-अग़्यार उखड़ेगा तेरी आमीन से`,
+ur:`عشق ہو شکوہ ہو یا ہو کام اس مسکین سے
+سیدھا اندر آئیں دل کے گیٹ نمبر تین سے
+
+مجھ کو غصہ والدہ سے عشق والد سے ملا
+میرے بچے شاعری پائیں گے میرے جین سے
+
+یعنی پتھر دل کو سمجھاؤں میں دل کا اضطراب
+دین کی باتیں کروں اور وہ بھی اک لادین سے
+
+عشق کا شعبہ بھی یونیورسٹی میں لائیں گے
+عشق زادے بات کرنے جائیں گے کل ڈین سے
+
+آزمایا جب بھی ان مد مست آنکھوں کا نشہ
+چار چھ فیسد اضافی ہی رہا کوکین سے
+
+شاہ زادے آپسی رنجش میں لڑ کر مر گئے
+لوگ لوٹے تک نہیں تھے شاہ کی تدفین سے
+
+بعد ازاں اشعار پڑھ اخبار پڑھ جو چاہے پڑھ
+ابتدا دن کی کیا کر سورۀ یاسین سے
+
+محفلوں میں شعر کہنے کا مزہ ہی تب ہے دوست
+سامنے ہوں آٹھ دس بڈھے ذرا شوقین سے
+
+'آج اس کے گال چومے ہیں تو اندازہ ہوا'
+لوگ بہکائے گئے ہیں لذتِ نمکین سے
+
+نارۂِ تکبیر سے اک زلزلہ سا آئے گا
+خیمۂ اغیار اکھڑےگا تری آمین سے`
+}},
+{ v:{
+hi:`एक ज़रा सी उल्टी और अबकाई पर
+सारे घर की नज़र टिकी भोजाई पर
+
+नौ मह तक वो राह ताकेगी पर अफसोस
+माँ से पहले भेद खुलेगा दाई पर
+
+फिर कोई लड़की शहर में बेची जाएगी
+फिर कोई फ़िल्म बनेगी गंगूबाई पर
+
+तुम जो सब को शे'र सुनाते फिरते हो
+क्या मिलता है ज़ख़्मों की तिरपाई पर
+
+हम ने कोई तीर नहीं मारा माजिद
+हम ने डोरे डाले हैं हमसाई पर`,
+ur:`ایک ذرا سی الٹی اور ابکائی پر
+سارے گھر کی نظر ٹکی بھوجائی پر
+
+نو مہ تک وہ راہ تکے گی پر افسوس
+ماں سے پہلے بھید کھلے گا دائی پر
+
+پھر کوئی لڑکی شہر میں بیچی جائےگی
+پھر کوئی فلم بنیگی گنگوبائی پر
+
+تم جو سب کو شعر سناتے پھرتے ہو
+کیا ملتا ہے زخموں کی ترپائی پر
+
+ہم نے کوئی تیر نہیں مارا ماجد
+ہم نے ڈورے ڈالے ہیں ہمسائی پر`
+}},
+{ v:{
+hi:`तंज़ तानों से परेशान बहुत रोती है
+मेरे हमराह मेरी जान बहुत रोती है
+
+उग न आए यहाँ इक रोज़ समर-बार शजर
+वो यहाँ सज्दों के दौरान बहुत रोती है
+
+कहीं बेटों के लिए और कहीं बेटों के तुफ़ैल
+दुख़्तर-ए-हज़रत-ए-इंसान बहुत रोती है`,
+ur:`طنز تانوں سے پریشان بہت روتی ہے
+میرے ہمراہ مری جان بہت روتی ہے
+
+اُگ نہ آئے یہاں اک روز ثمر بار شجر
+وہ یہاں سجدوں کے دوران بہت روتی ہے
+
+کہیں بیٹوں کے لئے اور کہیں بیٹوں کے طفیل
+دختر حضرت انسان بہت روتی ہے`
+}},
+{ v:{
+hi:`पहले ही कम नहीं मेरे आज़ार बाज़ आ
+ऐसे न रिझा ऐ रुख़-ए-गुलनार बाज़ आ
+
+हम ने भी निशाँ छोड़ना होता है बदन पर
+उस ने भी कहना होता है हर बार बाज़ आ
+
+एक एक हज़ार नख़रे हर एक वस्ल से पहले
+इन हरकतों से अब तो मिरे यार बाज़
+
+हम मुफ़लिसों के बच्चों को अपनी तरफ़ न खींच
+कुछ शर्म कर ऐ रौनक़-ए-बाज़ार बाज़ आ`,
+ur:`پہلے ہی کم نہیں میرے آزار باز آ
+ایسے نہ رجھا اے رخِ گلنار باز آ
+
+ہم نے بھی نشاں چھوڑنا ہوتا ہے بدن پر
+اس نے بھی کہنا ہوتا ہے ہر بار باز آ
+
+ایک اک ہزار نخرے ہر اک وصل سے پہلے
+ان حرکتوں سے اب تو مرے یار باز
+
+ہم مفلسوں کے بچوں کو اپنی طرف نہ کھینچ
+کچھ شرم کر اے رونق بازار باز آ`
+}},
+{ v:{
+hi:`अब उदासी जो मन से निकलेगी
+आप ही की छुवन से निकलेगी
+
+आग जो इस बदन से निकलेगी
+क्या किसी के हवन से निकलेगी?
+
+फिर वो खिड़की खुलेगी और इक दम
+बे-कली सी बदन से निकलेगी
+
+मैं भी बाग़-ए-अदन से आऊँगा
+वो भी मुल्क-ए-यमन से निकलेगी
+
+ख़ुद को मह्सूर कर के बैठी है
+अच्छे-ख़ासे जतन से निकलेगी
+
+आग जो इस बदन से निकली थी
+क्या किसी के ख़ून से निकलेगी
+
+बच के रहियो कि आज वो नागिन
+बन-सँवर कर चमन से निकलेगी
+
+इन के मरक़द से आएगी ख़ुशबू
+और तितली कफ़न से निकलेगी
+
+मैं लिखूँगा कोई कथा किसी रोज़
+ओर वो तेरे कथन से निकलेगी
+
+रूह में हो गई है वो पैवस्त
+अच्छे-ख़ासे जतन से निकलेगी`,
+ur:`اب اداسی جو من سے نکلے گی
+آپ ہی کی چھُوَن سے نکلےگی
+
+آگ جو اس بدن سے نکلے گی
+کیا کسی کے ہَوَن سے نکلے گی
+
+پھر وہ کھڑکی کھلے گی اور اک دم
+بے کلی سی بدن سے نکلے گی
+
+میں بھی باغِ عدن سے آؤں گا
+وہ بھی ملکِ یمن سے نکلے گی
+
+خود کو محصور کر کے بیٹھی ہے
+اچھے خاصے جتن سے نکلے گی
+
+آگ جو اس بدن سے نکلی تھی
+کیا کسی کے حون سے نکلے گی
+
+بچ کے رہیو کہ آج وہ ناگن
+بن سنور کر چمن سے نکلے گی
+
+ان کے مرقد سے آئے گی خوشبو
+اور تتلی کفن سے نکلے گی
+
+میں لکھوں گا کوئی کتھا کسی روز
+اور وہ تیرے کتھن سے نکلے گی
+
+روح میں ہو گئی ہے وہ پیوست
+اچھے خاصے جتن سے نکلے گی`
+}},
+{ v:{
+hi:`कुछ इस लिए भी हम इस बगीचे से बे-दिली से पलट रहे हैं
+कि आज मुश्किल से तेरी क़ुरबत में आठ या दस मिनट रहे हैं
+
+हमारे हाथों का हक़ तो ये था कि तेरी ज़ुल्फ़ों के साथ खेलें
+मगर ये क़िस्मत कि हाथ मेरे फ़क़त किताबें उलट रहे हैं
+
+तुम्हें मुबारक हों सर्द रातें, तुम्हीं को सावन की रुत मुबारक
+हमारे बिस्तर पे सारे मौसम फ़क़त उदासी में कट रहे हैं
+
+बदन को बाँहों में कसने वालों हमारा दुख भी तो आ के देखो
+हम ऐसे सिंगल सिलिंड्रिकल शेप के पिलो से लिपट रहे हैं
+
+किसे बताएँ कि हम पे ये दुनिया तंग कर दी गई है कितनी
+है हम पे तारी कुछ ऐसी वहशत ख़ुद अपने अंदर सिमट रहे हैं
+
+नहीं मिरी जान बात समझो ये सर्द मौसम सबब नहीं है
+हमारे लब तो तुम्हारे लब से शराब पीने को फट रहे हैं
+
+ये सच है माजिद तेरी ग़ज़ल से दुखे दिलों को सुकूँ मिला है
+तभी तो ये लोग तेरे अशआर मिस्ल-ए-आयात रट रहे हैं`,
+ur:`کچھ اس لئے بھی ہم اس بگیچے سے بے دلی سے پلٹ رہے ہیں
+کہ آج مشکل سے تیری قربت میں آٹھ یا دس منٹ رہے ہیں
+
+ہمارے ہاتھوں کا حق تو یہ تھا کہ تیری زلفوں کے ساتھ کھیلیں
+مگر یہ قسمت کہ ہاتھ میرے فقت کتابیں اُلٹ رہے ہیں
+
+تمھیں مبارک ہوں سرد راتیں٬ تمھیں کو ساون کی رت مبارت
+ہمارے بستر پہ سارے موسم فقط اداسی میں کٹ رہے ہیں
+
+بدن کو باہوں میں کسنے والوں ہمارا دکھ بھی تو آ کے دیکھو
+ہم ایسے سنگل سلنڈرکل شیپ کے پلو سے لپٹ رہے ہیں
+
+کسے بتائیں کہ ہم پہ یہ دنیا تنگ کر دی گئی ہے کتنی
+ہے ہم پہ تاری کچھ ایسی وحشت خود اپنے اندر سمٹ رہے ہیں
+
+نہیں مری جان بات سمجھو یہ سرد موسم سبب نہیں ہے
+ہمارے لب تو تمھارے لب سے شراب پینے کو پھٹ رہے ہیں
+
+یہ سچ ہے ماجد تری غزل سے دکھے دلوں کو سکوں ملا ہے
+تبھی تو یہ لوگ تیرے اشعار مثلِ آیات رٹ رہے ہیں`
+}},
+{ v:{
+hi:`आज लगता है तो फिर कल नहीं अच्छा लगता
+एक ही चेहरा मुसलसल नहीं अच्छा लगता
+
+बाज़ आ'ज़ा की तरफ़ ध्यान खिंचा करता है
+जिस्म कोई हो मुकम्मल नहीं अच्छा लगता
+
+कोई गड्ढा हो सड़क में या ब्रेकर हो कोई
+रुख़ पे डिंपल हो कि पिंपल नहीं अच्छा लगता
+
+माँ ने इक रोज़ तो इस तौर भी शादी का कहा
+तू डबल बेड पे सिंगल नहीं अच्छा लगता
+
+इसलिए शेर कहा करता हूँ दिलबर जानी
+मुझको मज़मून मुफ़स्सल नहीं अच्छा लगता
+
+किस क़दर महँगा पड़ा करता है बोसा उसका
+बाद-अज़ीं हफ़्तों कोई फल नहीं अच्छा लगता`,
+ur:`آج لگتا ہے تو پھر کل نہیں اچھا لگتا
+ایک ہی چہرہ مسلسل نہیں اچھا لگتا
+
+بعض اعضاء کی طرف دھیان کھنچا کرتا ہے
+جسم کوئی ہو مکمل نہیں اچھا لگتا
+
+کوئی گڈھا ہو سڑک میں یا بریکر ہو کوئی
+رخ پہ ڈمپل ہو کہ پمپل نہیں اچھا لگتا
+
+ماں نے اک روز تو اس طور بھی شادی کا کہا
+تو ڈبل بیڈ پہ سنگل نہیں اچھا لگتا
+
+اس لئے شعر کہا کرتا ہوں دلبر جانی
+مجھ کو مضمون مفصل نہیں اچھا لگتا
+
+کس قدر مہنگا پڑا کرتا ہے بوسہ اس کا
+بعد ازیں ہفتوں کوئی پھل نہیں اچھا لگتا`
+}},
+{ v:{
+hi:`बात क्या करते हो मोहब्बत की
+ये भी ईजाद है ज़रूरत की
+
+मर्द होने का इतना मतलब है
+मैं ज़रूरत हूँ एक औरत की
+
+बात पूरी नहीं हुई और मैं
+सतर-ए-आख़िर भी लिख चुका ख़त की
+
+अपना दुखड़ा सुना लिया तुमने?
+कुछ ख़बर है हमारी हालत की?
+
+तूने लड़की पे हाथ उठाया है
+दाद देनी पड़ेगी हिम्मत की
+
+हम वो मज़दूर-ए-सुख़न हैं कि जिन्हें
+कोई जल्दी नहीं है उजरत की`,
+ur:`بات کیا کرتے ہو محبت کی
+یہ بھی ایجاد ہے ضرورت کی
+
+مرد ہونے کا اتنا مطلب ہے
+میں ضرورت ہوں ایک عورت کی
+
+بات پوری نہیں ہوئی اور میں
+سطرِ آخر بھی لکھ چکا خت کی
+
+اپنا دکھڑا سنا لیا تم نے؟
+کچھ خبر ہے ہماری حالت کی؟
+
+تو نے لڑکی پہ ہاتھ اٹھایا ہے
+داد دینی پڑےگی ہمت کی
+
+ہم وہ مزدورِ سخن ہیں کہ جنھیں
+کوئی جلدی نہیں ہے اجرت کی`
+}},
+{ v:{
+hi:`हवस तो हम में थोड़ी नईं
+पर मर्यादा तोड़ी नईं
+
+मैं और मेरी तन्हाई
+इससे उम्दा जोड़ी नईं
+
+सहरा प्यास बुझा देता
+तुमने रेत निचोड़ी नईं
+
+होंठ मैं अब भी काटूँगा
+गंदी आदत छोड़ी नईं
+
+अगर सुकूँ दरकार है ना
+तुर्बत चढ़ना घोड़ी नईं
+
+राह-ए-इश्क़ में फूल बिछा
+बजरी डामर रोड़ी नईं
+
+अब तो शादी कर लोगी
+अब तो इनकम थोड़ी नईं`,
+ur:`حوس تو ہم میں تھوڑی نئیں
+پر مریادا توڑی نئیں
+
+میں اور میری تنہائی
+اس سے عمدہ جوڑی نئیں
+
+سحرا پیاس بجھا دیتا
+تم نے ریت نچوڑی نئیں
+
+ہونٹ میں اب بھی کاٹوں گا
+گندی عادت چھوڑی نئیں
+
+اگر سکوں درکار ہے نا
+تربت چڑھنا گھوڑی نئیں
+
+راہِ عشق میں پھول بچھا
+بجری ڈامر روڑی نئیں
+
+اب تو شادی کر لوگی
+اب تو انکم تھوڑی نئیں`
+}},
+{ v:{
+hi:`जिस पल वो शख़्स नज़रें चुराने पे आएगा
+इक दम तेरा दिमाग़ ठिकाने पे आएगा
+
+वहम-ओ-गुमान में भी नहीं थी ये बात तो
+वो सर्व-क़द हमारे निशाने पे आएगा।
+कभी दस्त-ए-ग़ैर यार के शाने पे आएगा
+
+सोचा किसी बहाने उसे घर पे रोक लूँ
+यूँ भी वो आज शाम के खाने पे आएगा
+
+तुमको लगेगा मिल गया जैसे की चाह थी
+और फिर वो असली रूप दिखाने पे आएगा
+
+कब तक वो शख़्स आएगा ख़्वाब-ओ-ख़याल में
+और कब मेरा दिमाग़ ठिकाने पे आएगा`,
+ur:`جس پل وہ شخص نظریں چرانے پہ آئےگا
+اک دم ترا دماغ ٹھکانے پہ آئےگا
+
+وہم و گمان میں بھی نہیں تھی یہ بات تو
+وہ سرو قد ہمارے نشانے پہ آئے گا۔
+کبھی دست غیر یار کے شانے پہ آئےگا
+
+سوچا کسی بہانے اسے گھر پہ روک لوں
+یوں بھی وہ آج شام کے کھانے پہ آئے گا
+
+تم کو لگے گا مل گیا جیسے کی چاہ تھی
+اور پھر وہ اصلی روپ دکھانے پہ آئےگا
+
+کب تک وہ شخص آئے گا خاب و خیال میں
+اور کب مرا دماغ ٹھکانے پہ آئے گا`
+}},
+{ v:{
+hi:`तू साथ तो चल हो जाएगी
+हर मुश्किल हल हो जाएगी
+
+अभी जी भर के तक लेने दे
+ये बात तो कल हो जाएगी
+
+चाहो तो देर से आ जाना
+इतने में ग़ज़ल हो जाएगी
+
+तुझे राज़ तो मैं बतला दूँगा
+सरदर्दी डबल हो जाएगी
+
+मुझे क्या मालूम था वो जोगन
+ऐसी लिबरल हो जाएगी
+
+मेरे छूने भर की देरी है
+वो खिल के कंवल हो जाएगी
+
+किसे क्या मालूम मुहब्बत का
+किस से किस पल हो जाएगी`,
+ur:`تو ساتھ تو چل ہو جائے گی
+ہر مشکل حل ہو جائے گی
+
+ابھی جی بھر کے تک لینے دے
+یہ بات تو کل ہو جائے گی
+
+چاہو تو دیر سے آ جانا
+اتنے میں غزل ہو جائےگی
+
+تجھے راز تو میں بتلا دوں گا
+سر دردی ڈبل ہو گائےگی
+
+مجھے کیا معلوم تھا وہ جوگن
+ایسی لبرل ہو جائےگی
+
+مرے چھونے بھر کی دیری ہے
+وہ کِھل کے کنوک ہو جائےگی
+
+کسے کیا معلوم محبت کا
+کس سے کس پل ہو جائےگی`
+}},
+{ v:{
+hi:`चाहे ह़िल्लत की हो या ह़ुर्मत की
+हमको पहचान है हर आयत की
+
+इस पे लेबल लगा है सुन्नत का
+और बू आ रही है बिदअत की
+
+तर्क-ए-बिदअत उस पे लाज़िम है
+हाथ पर जिसने मेरी बैअत की
+
+शान-ए-हज़रत अलीؓ में शेर कहे
+दुश्मनान-ए-उमरؓ पे लानत की
+
+लोग तारीफ़ करते जाते हैं
+रोटियाँ खाते-खाते मय्यत की
+
+हज़रत-ए-थानवीؒ को पढ़ता हूँ
+बात सबसे जुदा है हज़रत की`,
+ur:`چاہے حلّت کی ہو یا حرمت کی
+ہم کو پہچان ہے ہر آیت کی
+
+اِس پہ لیبل لگا ہے سنت کا
+اور بو آ رہی ہے بدعت کی
+
+ترک بدعاد اس پہ لازم ہے
+ہاتھ پر جس نے میرے بیعت کی
+
+شانِ حضرت علیؓ میں شعر کہے
+دشمنانِ عمرؓ پہ لعنت کی
+
+لوگ تعریف کرتے جاتے ہیں
+روٹیاں کھاتے کھاتے میت کی
+
+حضرتِ تھانویؒ کو پڑھتا ہوں
+بات سب سے جدا ہے حضرت کی`
+}}
+];
+
+/* =========================================================
+   ABOUT
+   ========================================================= */
+/* =========================================================
+   STATE
+   ========================================================= */
+const LS_KEY = 'pehli-tasveer-v3-romantic';
+let state = { lang:'hi', fontScale:SCALE_DEFAULT, cursor:{kind:'title'}, chosen:false };
+
+try{
+  const raw = localStorage.getItem(LS_KEY);
+  if(raw){
+    const s = JSON.parse(raw);
+    if(s && typeof s === 'object'){
+      if(s.lang === 'hi' || s.lang === 'ur') state.lang = s.lang;
+      if(typeof s.fontScale === 'number')
+        state.fontScale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, s.fontScale));
+      if(s.cursor && typeof s.cursor === 'object') state.cursor = s.cursor;
+      if(s.chosen) state.chosen = true;
+    }
+  }
+}catch(e){}
+
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const UR_DIGITS = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+const HI_DIGITS = ['०','१','२','३','४','५','६','७','८','९'];
+function urNum(n){ return String(n).split('').map(d => UR_DIGITS[+d] || d).join(''); }
+function num(n, lang){ return lang === 'ur' ? urNum(n) : String(n); }
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function getV(g, L){ return (g && g.v && (g.v[L] || g.v[L === 'ur' ? 'hi' : 'ur'])) || ''; }
+function couplets(str){
+  return String(str || '').replace(/\r\n?/g, '\n').trim()
+    .split(/\n[ \t]*\n+/)
+    .map(c => c.split('\n').map(l => l.trim()).filter(Boolean))
+    .filter(c => c.length);
+}
+function coupletType(cs){ return cs.length === 1 ? 'mutafarriq' : (cs.length < 5 ? 'incomplete' : 'complete'); }
+function bookStats(L){
+  let ghazals = 0, ashaar = 0, mutafarriq = 0;
+  GH.forEach(g => {
+    const cs = couplets(getV(g, L));
+    if(!cs.length) return;
+    ashaar += cs.length;
+    if(cs.length === 1) mutafarriq++; else ghazals++;
+  });
+  return { ghazals, ashaar, mutafarriq };
+}
+function aboutParas(L){
+  const st = bookStats(L);
+  return ABOUT[L].map(p => p.replace(/\{ghazals\}/g, num(st.ghazals, L)).replace(/\{ashaar\}/g, num(st.ashaar, L)));
+}
+function metaLine(L){
+  const st = bookStats(L);
+  return L === 'ur'
+    ? `${num(st.ghazals, L)} غزلیں · ${num(st.ashaar, L)} اشعار`
+    : `${num(st.ghazals, L)} ग़ज़लें · ${num(st.ashaar, L)} अशआर`;
+}
+function fontFamily(lang){
+  return lang === 'ur' ? "'Noto Nastaliq Urdu','Gotu',serif" : "'Gotu','Noto Nastaliq Urdu',serif";
+}
+function coupletHtml(lines, size){
+  return lines.map(l => `<span style="font-size:${size}px">${esc(l)}</span>`).join('');
+}
+const fontsReady = (document.fonts && document.fonts.load)
+  ? Promise.all([
+      document.fonts.load("24px 'Gotu'", 'माजिद abc 123'),
+      document.fonts.load("24px 'Noto Nastaliq Urdu'", 'ماجد مرشدپوری')
+    ]).then(() => document.fonts.ready).catch(() => {})
+  : Promise.resolve();
+
+/* Responsive default font size for comfortable reading on any screen. */
+function getBaseFontSize(){
+  const h = window.innerHeight || 800;
+  if(h < 600) return 18;
+  if(h < 720) return 20;
+  if(h < 900) return 22;
+  return DEFAULT_BASE;
+}
+
+function normalizeDigits(s){
+  const map = {};
+  UR_DIGITS.forEach((d,i) => map[d] = String(i));
+  HI_DIGITS.forEach((d,i) => map[d] = String(i));
+  return String(s || '').split('').map(c => map[c] !== undefined ? map[c] : c).join('');
+}
+
+/* =========================================================
+   DOM
+   ========================================================= */
+const pageArea = document.getElementById('pageArea');
+const hud = document.getElementById('hud');
+const hudInput = document.getElementById('hudInput');
+const progressFill = document.getElementById('progressFill');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const menuBtn = document.getElementById('menuBtn');
+const scriptToggleBtn = document.getElementById('scriptToggleBtn');
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('scrim');
+const contents = document.getElementById('contents');
+const contentsList = document.getElementById('contentsList');
+const drawerBody = document.getElementById('drawerBody');
+const drawerTitle = document.getElementById('drawerTitle');
+const drawerFoot = document.getElementById('drawerFoot');
+const contentsTitle = document.getElementById('contentsTitle');
+
+let flow = [];
+let cursorIdx = 0;
+let currentEl = null;
+
+function measureMaxWidth(lines, sizePx, lang){
+  const probe = document.createElement('div');
+  probe.style.cssText =
+    'position:fixed;left:-99999px;top:0;visibility:hidden;' +
+    'white-space:nowrap;line-height:1;letter-spacing:0.005em;' +
+    'font-size:' + sizePx + 'px;font-family:' + fontFamily(lang) + ';';
+  document.body.appendChild(probe);
+  let maxW = 0;
+  for(let i = 0; i < lines.length; i++){
+    probe.textContent = lines[i];
+    const w = probe.getBoundingClientRect().width;
+    if(w > maxW) maxW = w;
+  }
+  probe.remove();
+  return maxW;
+}
+
+function fitBlock(lines, L, availW, scale){
+  const w100 = measureMaxWidth(lines, 100, L);
+  const defaultSize = getBaseFontSize() * scale;
+
+  const horizFit = w100 > 0 ? (availW / w100) * 100 : 9999;
+
+  let size;
+  if(defaultSize <= horizFit * 0.998){
+    size = defaultSize;
+  } else {
+    size = horizFit * 0.995;
+    for(let g = 0; g < 6; g++){
+      const w = measureMaxWidth(lines, size, L);
+      if(w <= availW) break;
+      size *= (availW / w) * 0.995;
+    }
+  }
+
+  const w = measureMaxWidth(lines, size, L);
+  const maxSize = Math.min(DEFAULT_BASE * SCALE_MAX, horizFit * 0.998);
+
+  return { size, maxSize, width: Math.ceil(w) + 1 };
+}
+
+function buildFlow(){
+  var probe = document.createElement("div");
+  probe.style.cssText = "position:absolute;inset:0;visibility:hidden;pointer-events:none;z-index:0;";
+  pageArea.appendChild(probe);
+  var items = []; items.push({kind:"title"});
+  var L = state.lang;
+  var proseProbe = document.createElement("div");
+  proseProbe.style.cssText = "position:absolute;inset:0;visibility:hidden;pointer-events:none;z-index:0;";
+  pageArea.appendChild(proseProbe);
+  for(var si=0; si<PROSE.length; si++){
+    var section = PROSE[si];
+    var sectionTitle = section.title || { hi:"", ur:"" };
+    var sectionWriter = section.writer || { hi:"", ur:"" };
+    var atoms = (section.atoms && section.atoms[L]) || [];
+    if(!atoms.length) continue;
+    proseProbe.className = "page text-page script-" + L;
+    proseProbe.dir = (L === "ur") ? "rtl" : "ltr";
+    proseProbe.style.setProperty("--fs", (22 * state.fontScale) + "px");
+    proseProbe.innerHTML = '<div class="text-inner about-body"></div>';
+    var aboutBody = proseProbe.querySelector(".about-body");
+    void proseProbe.offsetWidth;
+    var st = window.getComputedStyle(proseProbe);
+    var padTop = parseFloat(st.paddingTop), padBot = parseFloat(st.paddingBottom);
+    var maxH = proseProbe.clientHeight - padTop - padBot;
+    var sectionItems = _paginateProseAtoms(atoms, aboutBody, maxH, si, sectionTitle, sectionWriter);
+    for(var ii=0; ii<sectionItems.length; ii++) items.push(sectionItems[ii]);
+  }
+  proseProbe.remove();
+  probe.className = "page ghazal-page script-" + L;
+  probe.dir = (L === "ur") ? "rtl" : "ltr";
+  probe.innerHTML = '<div class="gh-head"><span class="gh-num">x</span></div><div class="verses"><div class="verses-inner"></div></div>';
+  var versesEl = probe.querySelector(".verses");
+  var innerEl  = probe.querySelector(".verses-inner");
+  void probe.offsetWidth;
+  var availW = Math.max(120, versesEl.clientWidth - 30);
+  var availH = Math.max(120, versesEl.clientHeight - heightSafety - 26);
+  var entries = []; var ghazalTotal = 0, mutTotal = 0;
+  for(var i = 0; i < GH.length; i++){
+    var cs = couplets(getV(GH[i], L));
+    if(!cs.length) continue;
+    var type = coupletType(cs);
+    entries.push({ i: i, cs: cs, type: type });
+    if(type === "mutafarriq") mutTotal++; else ghazalTotal++;
+  }
+  var gNo = 0, mNo = 0;
+  for(var ei=0; ei<entries.length; ei++){
+    var e = entries[ei];
+    var fit = fitBlock(e.cs.flat(), L, availW, state.fontScale);
+    var sample = e.cs.slice(0, COUPLETS_PER_PAGE);
+    innerEl.innerHTML = sample.map(function(cp){ return '<div class="couplet">' + coupletHtml(cp, fit.size) + '</div>'; }).join("");
+    void innerEl.offsetWidth;
+    var sampleH = innerEl.getBoundingClientRect().height;
+    var vsize = fit.size;
+    for(var g = 0; g < 6 && sampleH > availH; g++){
+      vsize *= (availH / sampleH) * 0.99;
+      innerEl.innerHTML = sample.map(function(cp){ return '<div class="couplet">' + coupletHtml(cp, vsize) + '</div>'; }).join("");
+      void innerEl.offsetWidth;
+      sampleH = innerEl.getBoundingClientRect().height;
+    }
+    innerEl.innerHTML = "";
+    if(vsize < fit.size){
+      fit.size = vsize;
+      fit.width = Math.ceil(measureMaxWidth(e.cs.flat(), vsize, L)) + 1;
+    }
+    if(e.type === "mutafarriq"){
+      items.push({ kind:"mutafarriq", g:e.i, cp:e.cs[0], size:fit.size, maxSize:fit.maxSize, width:fit.width, no:++mNo, total:mutTotal });
+      continue;
+    }
+    gNo++;
+    var chunks = [];
+    for(var k = 0; k < e.cs.length; k += COUPLETS_PER_PAGE){
+      chunks.push(e.cs.slice(k, k + COUPLETS_PER_PAGE).map(function(lines){ return { lines: lines, size: fit.size }; }));
+    }
+    for(var ci = 0; ci < chunks.length; ci++){
+      items.push({ kind:"ghazal", g:e.i, c:ci, total:chunks.length, chunk:chunks[ci], fontSize:fit.size, maxSize:fit.maxSize, width:fit.width, type:e.type, no:gNo, noTotal:ghazalTotal });
+    }
+  }
+  items.push({kind:"end"});
+  probe.remove(); return items;
+}
+
+function indexOfG(g, c){
+  let first = -1, count = 0;
+  for(let i = 0; i < flow.length; i++){
+    const it = flow[i];
+    if((it.kind === 'ghazal' || it.kind === 'mutafarriq') && it.g === g){
+      if(first === -1) first = i;
+      count++;
+    }
+  }
+  if(first === -1) return -1;
+  return first + Math.min(Math.max(0, c || 0), Math.max(0, count - 1));
+}
+
+function findCursorIndex(){
+  var c = state.cursor || {kind:"title"};
+  if((c.kind === "ghazal" || c.kind === "mutafarriq") && typeof c.g === "number"){
+    var i = indexOfG(c.g, c.c); return i < 0 ? 0 : i;
+  }
+  if(c.kind === "prose" || c.kind === "about"){
+    var targetS = (c.kind === "about") ? 0 : (typeof c.s === "number" ? c.s : 0);
+    var first = -1, count = 0;
+    for(var i2 = 0; i2 < flow.length; i2++){
+      var it = flow[i2];
+      if(it.kind === "prose" && it.s === targetS){ if(first === -1) first = i2; count++; }
+    }
+    if(first === -1) return 0;
+    return first + Math.min(Math.max(0, c.c || 0), Math.max(0, count - 1));
+  }
+  for(var i3 = 0; i3 < flow.length; i3++){ if(flow[i3].kind === c.kind) return i3; }
+  return 0;
+}
+
+function syncCursor(){
+  var it = flow[cursorIdx]; if(!it) return;
+  if(it.kind === "ghazal" || it.kind === "mutafarriq"){ state.cursor = {kind:it.kind, g:it.g, c:it.c}; }
+  else if(it.kind === "prose"){ state.cursor = {kind:"prose", s:it.s, c:it.c}; }
+  else { state.cursor = {kind:it.kind}; }
+  save();
+}
+
+function buildPageEl(item){ return _buildPageEl_core(item); }
+function _buildPageEl_core(item){
+  if(item.kind === "prose") return buildProse(item);
+  if(item.kind === "title") return buildTitle();
+  if(item.kind === "mutafarriq") return buildMutafarriqEl(item);
+  if(item.kind === "end") return buildEnd();
+  return buildGhazalEl(item);
+}
+
+function buildTitle(){
+  const L = state.lang;
+  const el = document.createElement('div');
+  el.className = 'page title-page script-' + L;
+  el.dir = L === 'ur' ? 'rtl' : 'ltr';
+  el.innerHTML = `
+    <div class="t-orn">❀</div>
+    <h1 class="t-title">${BOOK[L]}</h1>
+    <div class="t-rule"><span></span><i>✿</i><span></span></div>
+    <p class="t-author">${AUTHOR[L]}</p>
+    <p class="t-meta">${metaLine(L)}</p>
+    <button class="t-start">${L === 'ur' ? 'پڑھنا شروع کریں' : 'पढ़ना शुरू करें'}</button>
+  `;
+  el.querySelector('.t-start').addEventListener('click', () => {
+    state.cursor = {kind:'ghazal', g:0, c:0};
+    save();
+    cursorIdx = findCursorIndex();
+    renderCurrent(1, true);
+  });
+  return el;
+}
+
+function buildAbout(item){
+  const L = state.lang;
+  const el = document.createElement('div');
+  el.className = 'page text-page script-' + L;
+  el.dir = L === 'ur' ? 'rtl' : 'ltr';
+  el.style.setProperty('--fs', (22 * state.fontScale) + 'px');
+  const paras = item.chunk.map(t => {
+      const isCont = t.startsWith('CONTINUED: ');
+      const text = isCont ? t.replace('CONTINUED: ', '') : t;
+      return `<p class="${isCont ? 'continued' : ''}">${text}</p>`;
+  }).join('');
+  const showSign = (item.c === item.total - 1);
+  const heading = (item.c === 0) ? `<h2 class="page-head">${L === 'ur' ? 'تعارف' : 'परिचय'}</h2>` : '';
+  el.innerHTML = `
+    <div class="text-inner about-body">
+      ${heading}
+      ${paras}
+      ${showSign ? `<div class="about-sign">${L === 'ur' ? '— ماجد مرشدپوری' : '— माजिद मुर्शदपुरी'}</div>` : ''}
+    </div>
+  `;
+  return el;
+}
+
+function buildMutafarriqEl(item) {
+  const L = state.lang;
+  const el = document.createElement('div');
+  el.className = 'page ghazal-page script-' + L;
+  el.dir = L === 'ur' ? 'rtl' : 'ltr';
+  el.innerHTML = `
+    <div class="verses">
+      <div class="verses-inner" style="width:${item.width + 30}px">
+        <div class="couplet">${coupletHtml(item.cp, item.size)}</div>
+        <div class="end-ruler">✿</div>
+      </div>
+    </div>
+  `;
+  return el;
+}
+
+function buildEnd(){
+  var L = state.lang;
+  var el = document.createElement("div");
+  el.className = "page text-page script-" + L;
+  el.dir = L === "ur" ? "rtl" : "ltr";
+  el.style.setProperty("--fs", (22 * state.fontScale) + "px");
+  var pick = function(o){ return (o && (o[L] || o[L === "ur" ? "hi" : "ur"])) || ""; };
+  el.innerHTML = '<div class="text-inner" style="text-align:center">' +
+    '<div class="t-orn" style="margin-bottom:14px">❦</div>' +
+    '<h2 class="page-head" style="margin-bottom:22px">' + esc(pick(END_PAGE.title)) + '</h2>' +
+    '<p style="font-size:calc(var(--fs,22px)*0.85);color:#6d4a2c;line-height:2;margin:0 0 6px">' + esc(pick(END_PAGE.message)) + '</p>' +
+    '<p style="font-size:calc(var(--fs,22px)*0.6);color:#a08661;letter-spacing:.16em;margin:16px 0 0">' + esc(pick(END_PAGE.footer)) + '</p>' +
+    '</div>';
+  return el;
+}
+
+function buildGhazalEl(item){
+  const L = state.lang;
+  const el = document.createElement('div');
+  el.className = 'page ghazal-page script-' + L;
+  el.dir = L === 'ur' ? 'rtl' : 'ltr';
+  el.style.setProperty('--fs', item.fontSize + 'px');
+  const body = item.chunk.map(data =>
+    `<div class="couplet">${coupletHtml(data.lines, data.size)}</div>`
+  ).join('');
+  const gnum = L === 'ur'
+    ? `غزل ${urNum(item.no)} / ${urNum(item.noTotal)}`
+    : `ग़ज़ल ${item.no} / ${item.noTotal}`;
+  const partTxt = item.total > 1
+    ? (L === 'ur' ? ` · ${urNum(item.c + 1)}/${urNum(item.total)}` : ` · ${item.c + 1}/${item.total}`)
+    : '';
+  const isLast = (item.c === item.total - 1);
+  const rulerHtml = isLast ? `<div class="end-ruler">✿</div>` : '';
+  el.innerHTML = `
+    <div class="gh-head"><span class="gh-num">${gnum}${partTxt}</span></div>
+    <div class="verses">
+      <div class="verses-inner" style="width:${item.width + 30}px">${body}${rulerHtml}</div>
+    </div>
+  `;
+  return el;
+}
+
+const Flip = (function(){
+  const reduced = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const EFFECT = "fade";
+  const DUR = 320;
+  let S = null;
+  function reset(el){ if(!el) return; el.style.transform=""; el.style.opacity=""; el.style.transition=""; el.style.willChange=""; el.style.zIndex=""; el.style.clipPath=""; }
+  function apply(t){
+    if(!S) return; t = Math.max(0, Math.min(1, t)); S.t = t;
+    const top = S.top, under = S.under;
+    if(EFFECT === "fade"){ top.style.opacity = String(1-t); under.style.opacity = String(t); }
+    else if(EFFECT === "zoom"){ top.style.opacity = String(1-t); top.style.transform = "scale("+(1-0.08*t)+")"; under.style.opacity = String(t); under.style.transform = "scale("+(0.92+0.08*t)+")"; }
+  }
+  function finish(keep){
+    if(!S) return null;
+    const fin = keep === "top" ? S.top : S.under;
+    const gone = keep === "top" ? S.under : S.top;
+    reset(S.top); reset(S.under);
+    if(gone && gone.parentNode) gone.remove();
+    S = null; return fin;
+  }
+  function open(top, under, t, orig){
+    if(!top || !under) return;
+    reset(top); reset(under);
+    top.style.zIndex = "5"; under.style.zIndex = "3";
+    S = { top, under, orig, t:(t||0), W:pageArea.clientWidth, H:pageArea.clientHeight };
+    if(EFFECT !== "none" && !reduced){ top.style.willChange = "transform, opacity"; under.style.willChange = "transform, opacity"; apply(t); }
+  }
+  function set(t){ apply(t); }
+  function animateTo(t1, keep, cb){
+    if(!S){ if(cb) cb(null); return; }
+    if(EFFECT === "none" || reduced){
+      const fin = keep === "top" ? S.top : S.under;
+      const gone = keep === "top" ? S.under : S.top;
+      reset(S.top); reset(S.under);
+      if(gone && gone.parentNode) gone.remove();
+      S = null; if(cb) cb(fin); return;
+    }
+    const t0 = S.t || 0;
+    const dur = Math.max(100, DUR * Math.abs(t1 - t0));
+    const ease = "cubic-bezier(.22,.61,.36,1)";
+    S.anim = true; S.targetT = t1; S.keep = keep; S.cb = cb;
+    const trans = "transform " + dur + "ms " + ease + ", opacity " + dur + "ms " + ease;
+    S.top.style.transition = trans; S.under.style.transition = trans;
+    void S.top.offsetWidth; apply(t1);
+    if(S.timer) clearTimeout(S.timer);
+    S.timer = setTimeout(function(){ if(!S) return; const c = S.cb; const fin = finish(S.keep); if(c) try{ c(fin); }catch(e){} }, dur + 20);
+  }
+  function abortAll(){
+    if(!S) return;
+    if(S.timer){ clearTimeout(S.timer); S.timer = null; }
+    if(S.anim){ apply(S.targetT); const c = S.cb; const fin = finish(S.keep); if(c) try{ c(fin); }catch(e){} }
+    else { const cur = (typeof currentEl !== "undefined") ? currentEl : null; if(S.top !== cur && S.top.parentNode) S.top.remove(); if(S.under !== cur && S.under.parentNode) S.under.remove(); reset(S.top); reset(S.under); S = null; }
+  }
+  return { open, set, animateTo, abortAll, reduced, active: function(){ return !!S; }, animating: function(){ return !!(S && S.anim); }, t: function(){ return S ? (S.t||0) : 0; }, width: function(){ return S ? S.W : 1; } };
+})();
+
+function renderCurrent(dir, animate){
+  if(animate === undefined) animate = true;
+  Flip.abortAll();
+  const item = flow[cursorIdx];
+  if(!item) return;
+  const old = currentEl;
+  const el = buildPageEl(item);
+  if(!animate || !old || !old.parentNode || Flip.reduced){
+    if(animate && !old){
+      el.classList.add('enter');
+      el.addEventListener('animationend', () => el.classList.remove('enter'), {once:true});
+    }
+    pageArea.appendChild(el);
+    currentEl = el;
+    if(old && old !== el && old.parentNode) old.remove();
+  } else {
+    pageArea.appendChild(el);
+    currentEl = el;
+    if(dir >= 0){ Flip.open(old, el, 0, 'top');   Flip.animateTo(1, 'under'); }
+    else        { Flip.open(el, old, 1, 'under'); Flip.animateTo(0, 'top');   }
+  }
+  updateHUD();
+  updateScriptToggle();
+}
+
+function flowOverflows(){
+  const host = document.createElement('div');
+  host.style.cssText = 'position:absolute;inset:0;visibility:hidden;pointer-events:none;z-index:0;';
+  pageArea.appendChild(host);
+  let bad = false;
+  for(const it of flow){
+    if(it.kind !== 'ghazal' && it.kind !== 'mutafarriq') continue;
+    const el = buildPageEl(it);
+    host.appendChild(el);
+    const ruler = el.querySelector('.end-ruler');
+    if(ruler) ruler.style.display = 'none';
+    const v = el.querySelector('.verses'), n = el.querySelector('.verses-inner');
+    if(v && n && n.getBoundingClientRect().height > v.clientHeight + 2){ bad = true; break; }
+  }
+  host.remove();
+  return bad;
+}
+
+function rebuildFlow(){
+  heightSafety = 0;
+  flow = buildFlow();
+  for(let tries = 0; tries < 12 && flowOverflows(); tries++){
+    heightSafety += 12;
+    flow = buildFlow();
+  }
+  cursorIdx = findCursorIndex();
+  if(cursorIdx >= flow.length) cursorIdx = flow.length - 1;
+  if(cursorIdx < 0) cursorIdx = 0;
+}
+
+function goToIndex(idx, dir){
+  Flip.abortAll();
+  idx = Math.max(0, Math.min(flow.length - 1, idx));
+  if(idx === cursorIdx && currentEl) return;
+  cursorIdx = idx;
+  syncCursor();
+  renderCurrent(dir, true);
+}
+
+function next(){ Flip.abortAll(); if(cursorIdx < flow.length - 1) goToIndex(cursorIdx + 1, 1); }
+function prev(){ Flip.abortAll(); if(cursorIdx > 0) goToIndex(cursorIdx - 1, -1); }
+
+function updateHUD(){
+  const L = state.lang;
+  hud.classList.toggle('ur', L === 'ur');
+  const label = L === 'ur' ? 'صفحہ' : 'पृष्ठ';
+  hud.textContent = `${label} ${num(cursorIdx + 1, L)} / ${num(flow.length, L)}`;
+
+  prevBtn.disabled = cursorIdx <= 0;
+  nextBtn.disabled = cursorIdx >= flow.length - 1;
+  progressFill.style.width = ((cursorIdx + 1) / flow.length * 100) + '%';
+
+  if(hudInput.classList.contains('on')){
+    hudInput.classList.toggle('ur', L === 'ur');
+  }
+}
+
+function openPageJump(){
+  if(flow.length < 1) return;
+  hud.classList.add('editing');
+  hudInput.classList.toggle('ur', state.lang === 'ur');
+  hudInput.value = String(cursorIdx + 1);
+  hudInput.classList.add('on');
+  requestAnimationFrame(() => {
+    hudInput.focus({ preventScroll:true });
+    try{ hudInput.select(); }catch(_){}
+  });
+}
+
+let jumpCancelled = false;
+function closePageJump(){
+  hudInput.classList.remove('on');
+  hud.classList.remove('editing');
+  hudInput.value = '';
+  try{ hudInput.blur(); }catch(_){}
+}
+function commitPageJump(){
+  const raw = normalizeDigits(hudInput.value).replace(/[^0-9]/g, '');
+  if(raw === ''){
+    closePageJump();
+    return;
+  }
+  let p = parseInt(raw, 10);
+  if(isNaN(p)) p = cursorIdx + 1;
+  p = Math.max(1, Math.min(flow.length, p));
+  const target = p - 1;
+  const dir = target >= cursorIdx ? 1 : -1;
+  closePageJump();
+  if(target === cursorIdx) return;
+  goToIndex(target, dir);
+}
+
+hud.addEventListener('click', openPageJump);
+hud.addEventListener('keydown', e => {
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPageJump(); }
+});
+hudInput.addEventListener('keydown', e => {
+  e.stopPropagation();
+  if(e.key === 'Enter'){ e.preventDefault(); commitPageJump(); }
+  else if(e.key === 'Escape'){ e.preventDefault(); jumpCancelled = true; closePageJump(); }
+});
+hudInput.addEventListener('blur', () => {
+  if(jumpCancelled){ jumpCancelled = false; return; }
+  if(hudInput.classList.contains('on')) commitPageJump();
+});
+document.addEventListener('pointerdown', e => {
+  if(!hudInput.classList.contains('on')) return;
+  if(e.target === hudInput || e.target === hud) return;
+  if(jumpCancelled){ jumpCancelled = false; return; }
+  commitPageJump();
+}, true);
+
+function updateScriptToggle(){
+  const it = flow[cursorIdx];
+  const isGhazal = !!(it && (it.kind === 'ghazal' || it.kind === 'mutafarriq'));
+  scriptToggleBtn.style.display = isGhazal ? 'inline-flex' : 'none';
+  const target = state.lang === 'hi' ? 'ur' : 'hi';
+  scriptToggleBtn.textContent = target === 'ur' ? 'اردو' : 'हिन्दी';
+  scriptToggleBtn.classList.toggle('ur-label', target === 'ur');
+}
+
+function renderDrawer(){
+  var L = state.lang; var ur = L === "ur";
+  drawerTitle.className = "ph-title" + (ur ? " ur" : "");
+  drawerTitle.textContent = BOOK[L];
+  drawerFoot.className = "drawer-foot" + (ur ? " ur" : "");
+  drawerFoot.textContent = AUTHOR[L] + " · " + metaLine(L).split(" · ")[0];
+  var canMinus = state.fontScale > SCALE_MIN + 0.001;
+  var curItem = flow[cursorIdx];
+  var isVerse = !!(curItem && (curItem.kind === "ghazal" || curItem.kind === "mutafarriq"));
+  var curSize = isVerse ? (curItem.fontSize || curItem.size) : 0;
+  var canPlus = state.fontScale < SCALE_MAX - 0.001 && (!isVerse || curItem.maxSize > curSize + 0.4);
+  var pct = Math.round(state.fontScale * 100);
+  var proseItemsHtml = PROSE.map(function(s, idx){
+    var t = (s.title && (s.title[L] || s.title[L === "ur" ? "hi" : "ur"])) || "";
+    return '<button class="menu-item ' + (ur ? "ur" : "") + '" data-prose="' + idx + '"><span class="mi">❋</span>' + esc(t) + '</button>';
+  }).join("");
+  drawerBody.innerHTML = '<div class="lang-switch"><button data-setlang="hi" class="' + (!ur ? "active" : "") + '">हिन्दी</button><button data-setlang="ur" class="' + (ur ? "active" : "") + ' ur">اردو</button></div>' +
+    '<div class="menu-label">' + (ur ? "فونٹ سائز" : "फ़ॉन्ट साइज़") + '</div>' +
+    '<div class="font-row"><button class="font-btn" data-font="-1" ' + (canMinus ? "" : "disabled") + '>−</button><span class="font-val">' + (ur ? urNum(pct) : pct) + '%</span><button class="font-btn" data-font="1" ' + (canPlus ? "" : "disabled") + '>+</button></div>' +
+    '<button class="font-reset" data-font-reset>' + (ur ? "ڈیفالٹ سائز" : "डिफ़ॉल्ट साइज़") + '</button>' +
+    '<div class="menu-label">' + (ur ? "کتاب" : "کتاب") + '</div>' +
+    '<button class="menu-item ' + (ur ? "ur" : "") + '" data-act="title"><span class="mi">◈</span>' + (ur ? "سرورق" : "आवरण पृष्ठ") + '</button>' +
+    proseItemsHtml +
+    '<button class="menu-item ' + (ur ? "ur" : "") + '" data-act="contents"><span class="mi">☰</span>' + (ur ? "فہرستِ غزلیات" : "विषय-सूची") + '</button>';
+  drawerBody.querySelectorAll("[data-setlang]").forEach(function(b){ b.addEventListener("click", function(){ setGlobalLang(b.dataset.setlang); }); });
+  drawerBody.querySelectorAll("[data-font]").forEach(function(b){ b.addEventListener("click", function(){ changeFontScale(+b.dataset.font * SCALE_STEP); }); });
+  var fr = drawerBody.querySelector("[data-font-reset]");
+  if(fr) fr.addEventListener("click", function(){ if(state.fontScale === SCALE_DEFAULT) return; state.fontScale = SCALE_DEFAULT; save(); rebuildFlow(); renderCurrent(0, false); renderDrawer(); });
+  drawerBody.querySelectorAll("[data-act]").forEach(function(b){ b.addEventListener("click", function(){
+    var a = b.dataset.act;
+    if(a === "title"){ closeDrawer(); state.cursor = {kind:"title"}; save(); cursorIdx = findCursorIndex(); renderCurrent(-1, true); }
+    if(a === "contents") openContents();
+    if(a === "home") window.location.href = HOME_URL;
+    if(a === "back") window.location.href = BACK_URL;
+  }); });
+  drawerBody.querySelectorAll("[data-prose]").forEach(function(b){ b.addEventListener("click", function(){
+    var s = +b.dataset.prose; closeDrawer();
+    state.cursor = {kind:"prose", s:s, c:0}; save();
+    cursorIdx = findCursorIndex(); renderCurrent(1, true);
+  }); });
+}
+
+function changeFontScale(delta){
+  const ns = Math.round((state.fontScale + delta) * 100) / 100;
+  const clamped = Math.max(SCALE_MIN, Math.min(SCALE_MAX, ns));
+  if(clamped === state.fontScale) return;
+  state.fontScale = clamped;
+  save();
+  rebuildFlow();
+  renderCurrent(0, false);
+  renderDrawer();
+}
+
+function openDrawer(){ renderDrawer(); drawer.classList.add('on'); scrim.classList.add('on'); }
+function closeDrawer(){ drawer.classList.remove('on'); scrim.classList.remove('on'); }
+
+function openContents(){
+  const L = state.lang;
+  const ur = L === 'ur';
+  contentsTitle.className = ur ? 'ur' : '';
+  contentsTitle.textContent = ur ? 'فہرستِ غزلیات' : 'विषय-सूची';
+  contentsList.className = 'ov-list' + (ur ? ' ur' : '');
+  const it = flow[cursorIdx];
+  const currentGh = (it && (it.kind === 'ghazal' || it.kind === 'mutafarriq')) ? it.g : -1;
+
+  let completeCount = 0, incompleteCount = 0, mutafarriqCount = 0;
+  GH.forEach(g => {
+      let len = couplets(getV(g, L)).length;
+      if (len === 0) return;
+      if (len >= 5) completeCount++;
+      else if (len > 1) incompleteCount++;
+      else mutafarriqCount++;
+  });
+
+  let summaryHtml = `
+    <div class="toc-summary">
+      <div class="summary-item">${ur ? 'مکمل غزلیں' : 'पूर्ण ग़ज़लें'} <span>${num(completeCount, L)}</span></div>
+      <div class="summary-item">${ur ? 'نامکمل غزلیں' : 'अपूर्ण ग़ज़लें'} <span>${num(incompleteCount, L)}</span></div>
+      <div class="summary-item">${ur ? 'متفرق اشعار' : 'मुतफ़र्रिक़ अशआर'} <span>${num(mutafarriqCount, L)}</span></div>
+    </div>
+  `;
+
+  let listHtml = GH.map((g, i) => {
+    const cs0 = couplets(getV(g, L));
+    if(!cs0.length) return '';
+    const first = esc(cs0[0][0]);
+    let len = cs0.length;
+    let typeClass = 'complete';
+    let icon = '❀';
+    if (len === 1) { typeClass = 'mutafarriq'; icon = '❁'; }
+    else if (len < 5) { typeClass = 'incomplete'; icon = '✿'; }
+    return `<button class="toc-item ${i === currentGh ? 'current' : ''}" data-g="${i}">
+      <span class="toc-icon ${typeClass}">${icon}</span>
+      <span class="toc-num">${num(i + 1, L)}</span>
+      <span class="toc-txt">${first}</span>
+    </button>`;
+  }).join('');
+
+  contentsList.innerHTML = summaryHtml + listHtml;
+
+  contentsList.querySelectorAll('[data-g]').forEach(b => {
+    b.addEventListener('click', () => {
+      const gi = +b.dataset.g;
+      const idx = indexOfG(gi, 0);
+      if(idx < 0) return;
+      closeContents();
+      closeDrawer();
+      Flip.abortAll();
+      const dir = idx >= cursorIdx ? 1 : -1;
+      cursorIdx = idx;
+      syncCursor();
+      renderCurrent(dir, true);
+    });
+  });
+
+  contents.classList.add('on');
+}
+function closeContents(){ contents.classList.remove('on'); }
+
+function setGlobalLang(lang){
+  if(lang === state.lang) return;
+  closePageJump();
+  state.lang = lang;
+  document.body.className = 'lang-' + lang;
+  save();
+  rebuildFlow();
+  renderCurrent(0, false);
+  renderDrawer();
+  if(contents.classList.contains('on')) openContents();
+}
+
+menuBtn.addEventListener('click', openDrawer);
+scriptToggleBtn.addEventListener('click', () => setGlobalLang(state.lang === 'hi' ? 'ur' : 'hi'));
+scrim.addEventListener('click', closeDrawer);
+document.querySelector('[data-close]').addEventListener('click', closeDrawer);
+document.querySelector('[data-close-contents]').addEventListener('click', closeContents);
+
+prevBtn.addEventListener('click', prev);
+nextBtn.addEventListener('click', next);
+
+document.addEventListener('keydown', e => {
+  if(document.activeElement === hudInput) return;
+  if(e.key === 'Escape'){
+    if(contents.classList.contains('on')) return closeContents();
+    if(drawer.classList.contains('on')) return closeDrawer();
+  }
+  if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') next();
+  if(e.key === 'ArrowLeft' || e.key === 'PageUp') prev();
+});
+
+let dragStart = null, lastX = null, dragEl = null, dragActive = false;
+pageArea.addEventListener('pointerdown', e => {
+  if(e.button !== 0 || Flip.animating() || contents.classList.contains('on') || drawer.classList.contains('on')) return;
+  if(e.target.closest('button') || e.target.closest('input')) return;
+  const isRight = e.clientX > window.innerWidth / 2;
+  const s = state.lang === 'ur' ? -1 : 1;
+  const dir = isRight ? s : -s;
+  if(dir > 0 && cursorIdx >= flow.length - 1) return;
+  if(dir < 0 && cursorIdx <= 0) return;
+  const targetIdx = cursorIdx + dir;
+  dragStart = {x: e.clientX, t: Date.now(), dir, targetIdx};
+  lastX = e.clientX;
+  dragEl = buildPageEl(flow[targetIdx]);
+  Flip.open(dir > 0 ? currentEl : dragEl, dir > 0 ? dragEl : currentEl, dir > 0 ? 0 : 1, 'top');
+  dragActive = true;
+  document.body.classList.add('dragging');
+});
+
+document.addEventListener('pointermove', e => {
+  if(!dragActive) return;
+  e.preventDefault();
+  lastX = e.clientX;
+  let raw = (dragStart.x - e.clientX) / Flip.width();
+  if(state.lang === 'ur') raw = -raw;
+  let t = dragStart.dir > 0 ? raw : 1 + raw;
+  t = Math.max(0, Math.min(1, t));
+  Flip.set(t);
+});
+
+document.addEventListener('pointerup', e => {
+  if(!dragActive) return;
+  dragActive = false;
+  document.body.classList.remove('dragging');
+  const dx = e.clientX - dragStart.x;
+  const dt = Date.now() - dragStart.t;
+  const s = state.lang === 'ur' ? -1 : 1;
+  const speed = Math.abs(dx) / dt;
+  const movedEnough = Math.abs(dx) > Flip.width() * 0.15;
+  const t = Flip.t();
+  let complete = false;
+  if(dragStart.dir > 0){
+    if(speed > 0.4 && dx * s < 0) complete = true;
+    else if(t > 0.35) complete = true;
+  } else {
+    if(speed > 0.4 && dx * s > 0) complete = true;
+    else if(t < 0.65) complete = true;
+  }
+  if(complete){
+    Flip.animateTo(dragStart.dir > 0 ? 1 : 0, 'under', (fin) => {
+      cursorIdx = dragStart.targetIdx;
+      syncCursor();
+      if(currentEl && currentEl !== fin && currentEl.parentNode) currentEl.remove();
+      currentEl = fin;
+      updateHUD();
+      updateScriptToggle();
+    });
+  } else {
+    Flip.animateTo(dragStart.dir > 0 ? 0 : 1, 'top', () => {
+      if(dragEl && dragEl.parentNode) dragEl.remove();
+    });
+  }
+});
+
+function initApp(){
+  document.body.className = 'lang-' + state.lang;
+  if(state.lang === 'ur'){
+    document.getElementById('savedUr').textContent = 'محفوظ کی گئی';
+  } else {
+    document.getElementById('savedHi').textContent = ' (सहेजा गया)';
+  }
+  document.querySelectorAll('#splash .lang-btns button').forEach(b => {
+    b.addEventListener('click', () => {
+      const l = b.dataset.lang;
+      state.lang = l; state.chosen = true; save();
+      document.body.className = 'lang-' + l;
+      document.getElementById('splash').classList.add('gone');
+      setTimeout(() => document.getElementById('splash').style.display='none', 800);
+      rebuildFlow();
+      renderCurrent(0, false);
+    });
+  });
+  
+  if(state.chosen){
+    document.getElementById('splash').style.display = 'none';
+    rebuildFlow();
+    renderCurrent(0, false);
+  } else {
+    rebuildFlow();
+  }
+  
+  window.addEventListener('resize', () => {
+    if(window.innerWidth < 100 || window.innerHeight < 100) return;
+    const oldC = cursorIdx;
+    rebuildFlow();
+    if(cursorIdx !== oldC && !state.chosen) return;
+    renderCurrent(0, false);
+    if(drawer.classList.contains('on')) renderDrawer();
+  });
+}
+
+fontsReady.then(initApp);
+
+
+
+/* ==== GHZ-EDITOR-INJECT-START ==== */
+function _paginateProseAtoms(atoms, container, maxH, sectionIdx, sectionTitle, sectionWriter){
+  var chunks = [];
+  var currentChunk = [];
+  var currentParaWords = [];
+  var isFirstLineOfPara = true;
+  function renderPage(chunk, paraWords, firstLine){
+    var parts = [];
+    for(var i=0;i<chunk.length;i++){
+      var it = chunk[i];
+      if(it.kind === "couplet"){
+        var span = it.lines.map(function(l){return "<span>"+l+"</span>";}).join("");
+        parts.push('<div class="couplet">'+span+'</div>');
+      } else if(it.kind === "heading"){
+        parts.push('<h3 class="prose-subheading">'+it.html+'</h3>');
+      } else {
+        parts.push('<p class="' + (it.continued ? "continued" : "") + '">' + it.html + '</p>');
+      }
+    }
+    if(paraWords.length){
+      parts.push('<p class="' + (firstLine ? "" : "continued") + '">' + paraWords.join(" ") + '</p>');
+    }
+    return parts.join("");
+  }
+  for(var ai = 0; ai < atoms.length; ai++){
+    var a = atoms[ai];
+    if(a.kind === "couplet"){
+      var trial = currentChunk.concat([{ kind: "couplet", lines: a.lines }]);
+      container.innerHTML = renderPage(trial, [], false);
+      var h = container.getBoundingClientRect().height;
+      if(h <= maxH || currentChunk.length === 0){ currentChunk = trial; }
+      else { chunks.push(currentChunk); currentChunk = [{ kind: "couplet", lines: a.lines }]; }
+      continue;
+    }
+    if(a.kind === "heading"){
+      var trial2 = currentChunk.concat([{ kind: "heading", html: a.html }]);
+      container.innerHTML = renderPage(trial2, [], false);
+      var h2 = container.getBoundingClientRect().height;
+      if(h2 <= maxH || currentChunk.length === 0){ currentChunk = trial2; }
+      else { chunks.push(currentChunk); currentChunk = [{ kind: "heading", html: a.html }]; }
+      continue;
+    }
+    var words = String(a.html || "").split(/\s+/).filter(Boolean);
+    currentParaWords = [];
+    isFirstLineOfPara = true;
+    for(var wi = 0; wi < words.length; wi++){
+      currentParaWords.push(words[wi]);
+      container.innerHTML = renderPage(currentChunk, currentParaWords, isFirstLineOfPara);
+      var hh = container.getBoundingClientRect().height;
+      if(hh > maxH){
+        var removedWord = currentParaWords.pop();
+        if(currentChunk.length > 0 || currentParaWords.length > 0){
+          var fullChunk = currentChunk.slice();
+          if(currentParaWords.length){
+            fullChunk.push({ kind: "para", html: currentParaWords.join(" "), continued: !isFirstLineOfPara });
+          }
+          chunks.push(fullChunk);
+        }
+        currentChunk = [];
+        currentParaWords = [removedWord];
+        isFirstLineOfPara = false;
+      } else { isFirstLineOfPara = false; }
+    }
+    if(currentParaWords.length){
+      currentChunk.push({ kind: "para", html: currentParaWords.join(" "), continued: !isFirstLineOfPara });
+    }
+  }
+  if(currentChunk.length) chunks.push(currentChunk);
+  var items = [];
+  for(var ci = 0; ci < chunks.length; ci++){
+    items.push({ kind: "prose", s: sectionIdx, c: ci, total: chunks.length, chunk: chunks[ci], title: sectionTitle, writer: sectionWriter });
+  }
+  return items;
+}
+function buildProse(item){
+  var L = state.lang;
+  var el = document.createElement("div");
+  el.className = "page text-page script-" + L;
+  el.dir = L === "ur" ? "rtl" : "ltr";
+  el.style.setProperty("--fs", (22 * state.fontScale) + "px");
+  var parts = [];
+  for(var i=0; i<item.chunk.length; i++){
+    var a = item.chunk[i];
+    if(a.kind === "couplet"){
+      var span = a.lines.map(function(l){ return "<span>"+_replaceProsePlaceholders(l,L)+"</span>"; }).join("");
+      parts.push('<div class="couplet">'+span+'</div>');
+    } else if(a.kind === "heading"){
+      parts.push('<h3 class="prose-subheading">' + _replaceProsePlaceholders(a.html,L) + '</h3>');
+    } else {
+      parts.push("<p class=\"" + (a.continued ? "continued" : "") + "\">" + _replaceProsePlaceholders(a.html,L) + "</p>");
+    }
+  }
+  var secTitle = item.title ? (item.title[L] || item.title[L==="ur"?"hi":"ur"] || "") : "";
+  var heading = (item.c === 0) ? '<h2 class="page-head">' + esc(secTitle) + '</h2>' : "";
+  var isLast = (item.c === item.total - 1);
+  var writerText = item.writer ? (item.writer[L] || item.writer[L==="ur"?"hi":"ur"] || "") : "";
+  var writerHtml = (isLast && writerText) ? '<div class="about-sign">' + esc(writerText) + '</div>' : "";
+  el.innerHTML = '<div class="text-inner about-body">' + heading + parts.join("") + writerHtml + '</div>';
+  return el;
+}
+function _replaceProsePlaceholders(html, L){
+  var st = bookStats(L);
+  var gTxt = num(st.ghazals, L);
+  var aTxt = num(st.ashaar, L);
+  return String(html || "").replace(/\{ghazals\}/g, gTxt).replace(/\{ashaar\}/g, aTxt);
+}
+function buildFlow(){
+  var probe = document.createElement("div");
+  probe.style.cssText = "position:absolute;inset:0;visibility:hidden;pointer-events:none;z-index:0;";
+  pageArea.appendChild(probe);
+  var items = []; items.push({kind:"title"});
+  var L = state.lang;
+  var proseProbe = document.createElement("div");
+  proseProbe.style.cssText = "position:absolute;inset:0;visibility:hidden;pointer-events:none;z-index:0;";
+  pageArea.appendChild(proseProbe);
+  for(var si=0; si<PROSE.length; si++){
+    var section = PROSE[si];
+    var sectionTitle = section.title || { hi:"", ur:"" };
+    var sectionWriter = section.writer || { hi:"", ur:"" };
+    var atoms = (section.atoms && section.atoms[L]) || [];
+    if(!atoms.length) continue;
+    proseProbe.className = "page text-page script-" + L;
+    proseProbe.dir = (L === "ur") ? "rtl" : "ltr";
+    proseProbe.style.setProperty("--fs", (22 * state.fontScale) + "px");
+    proseProbe.innerHTML = '<div class="text-inner about-body"></div>';
+    var aboutBody = proseProbe.querySelector(".about-body");
+    void proseProbe.offsetWidth;
+    var st = window.getComputedStyle(proseProbe);
+    var padTop = parseFloat(st.paddingTop), padBot = parseFloat(st.paddingBottom);
+    var maxH = proseProbe.clientHeight - padTop - padBot;
+    var sectionItems = _paginateProseAtoms(atoms, aboutBody, maxH, si, sectionTitle, sectionWriter);
+    for(var ii=0; ii<sectionItems.length; ii++) items.push(sectionItems[ii]);
+  }
+  proseProbe.remove();
+  probe.className = "page ghazal-page script-" + L;
+  probe.dir = (L === "ur") ? "rtl" : "ltr";
+  probe.innerHTML = '<div class="gh-head"><span class="gh-num">x</span></div><div class="verses"><div class="verses-inner"></div></div>';
+  var versesEl = probe.querySelector(".verses");
+  var innerEl  = probe.querySelector(".verses-inner");
+  void probe.offsetWidth;
+  var availW = Math.max(120, versesEl.clientWidth - 30);
+  var availH = Math.max(120, versesEl.clientHeight - heightSafety - 26);
+  var entries = []; var ghazalTotal = 0, mutTotal = 0;
+  for(var i = 0; i < GH.length; i++){
+    var cs = couplets(getV(GH[i], L));
+    if(!cs.length) continue;
+    var type = coupletType(cs);
+    entries.push({ i: i, cs: cs, type: type });
+    if(type === "mutafarriq") mutTotal++; else ghazalTotal++;
+  }
+  var gNo = 0, mNo = 0;
+  for(var ei=0; ei<entries.length; ei++){
+    var e = entries[ei];
+    var fit = fitBlock(e.cs.flat(), L, availW, state.fontScale);
+    var sample = e.cs.slice(0, COUPLETS_PER_PAGE);
+    innerEl.innerHTML = sample.map(function(cp){ return '<div class="couplet">' + coupletHtml(cp, fit.size) + '</div>'; }).join("");
+    void innerEl.offsetWidth;
+    var sampleH = innerEl.getBoundingClientRect().height;
+    var vsize = fit.size;
+    for(var g = 0; g < 6 && sampleH > availH; g++){
+      vsize *= (availH / sampleH) * 0.99;
+      innerEl.innerHTML = sample.map(function(cp){ return '<div class="couplet">' + coupletHtml(cp, vsize) + '</div>'; }).join("");
+      void innerEl.offsetWidth;
+      sampleH = innerEl.getBoundingClientRect().height;
+    }
+    innerEl.innerHTML = "";
+    if(vsize < fit.size){
+      fit.size = vsize;
+      fit.width = Math.ceil(measureMaxWidth(e.cs.flat(), vsize, L)) + 1;
+    }
+    if(e.type === "mutafarriq"){
+      items.push({ kind:"mutafarriq", g:e.i, cp:e.cs[0], size:fit.size, maxSize:fit.maxSize, width:fit.width, no:++mNo, total:mutTotal });
+      continue;
+    }
+    gNo++;
+    var chunks = [];
+    for(var k = 0; k < e.cs.length; k += COUPLETS_PER_PAGE){
+      chunks.push(e.cs.slice(k, k + COUPLETS_PER_PAGE).map(function(lines){ return { lines: lines, size: fit.size }; }));
+    }
+    for(var ci = 0; ci < chunks.length; ci++){
+      items.push({ kind:"ghazal", g:e.i, c:ci, total:chunks.length, chunk:chunks[ci], fontSize:fit.size, maxSize:fit.maxSize, width:fit.width, type:e.type, no:gNo, noTotal:ghazalTotal });
+    }
+  }
+  items.push({kind:"end"});
+  probe.remove(); return items;
+}
+function buildEnd(){
+  var L = state.lang;
+  var el = document.createElement("div");
+  el.className = "page text-page script-" + L;
+  el.dir = L === "ur" ? "rtl" : "ltr";
+  el.style.setProperty("--fs", (22 * state.fontScale) + "px");
+  var pick = function(o){ return (o && (o[L] || o[L === "ur" ? "hi" : "ur"])) || ""; };
+  el.innerHTML = '<div class="text-inner" style="text-align:center">' +
+    '<div class="t-orn" style="margin-bottom:14px">❦</div>' +
+    '<h2 class="page-head" style="margin-bottom:22px">' + esc(pick(END_PAGE.title)) + '</h2>' +
+    '<p style="font-size:calc(var(--fs,22px)*0.85);color:#6d4a2c;line-height:2;margin:0 0 6px">' + esc(pick(END_PAGE.message)) + '</p>' +
+    '<p style="font-size:calc(var(--fs,22px)*0.6);color:#a08661;letter-spacing:.16em;margin:16px 0 0">' + esc(pick(END_PAGE.footer)) + '</p>' +
+    '</div>';
+  return el;
+}
+function findCursorIndex(){
+  var c = state.cursor || {kind:"title"};
+  if((c.kind === "ghazal" || c.kind === "mutafarriq") && typeof c.g === "number"){
+    var i = indexOfG(c.g, c.c); return i < 0 ? 0 : i;
+  }
+  if(c.kind === "prose" || c.kind === "about"){
+    var targetS = (c.kind === "about") ? 0 : (typeof c.s === "number" ? c.s : 0);
+    var first = -1, count = 0;
+    for(var i2 = 0; i2 < flow.length; i2++){
+      var it = flow[i2];
+      if(it.kind === "prose" && it.s === targetS){ if(first === -1) first = i2; count++; }
+    }
+    if(first === -1) return 0;
+    return first + Math.min(Math.max(0, c.c || 0), Math.max(0, count - 1));
+  }
+  for(var i3 = 0; i3 < flow.length; i3++){ if(flow[i3].kind === c.kind) return i3; }
+  return 0;
+}
+function syncCursor(){
+  var it = flow[cursorIdx]; if(!it) return;
+  if(it.kind === "ghazal" || it.kind === "mutafarriq"){ state.cursor = {kind:it.kind, g:it.g, c:it.c}; }
+  else if(it.kind === "prose"){ state.cursor = {kind:"prose", s:it.s, c:it.c}; }
+  else { state.cursor = {kind:it.kind}; }
+  save();
+}
+function renderDrawer(){
+  var L = state.lang; var ur = L === "ur";
+  drawerTitle.className = "ph-title" + (ur ? " ur" : "");
+  drawerTitle.textContent = BOOK[L];
+  drawerFoot.className = "drawer-foot" + (ur ? " ur" : "");
+  drawerFoot.textContent = AUTHOR[L] + " · " + metaLine(L).split(" · ")[0];
+  var canMinus = state.fontScale > SCALE_MIN + 0.001;
+  var curItem = flow[cursorIdx];
+  var isVerse = !!(curItem && (curItem.kind === "ghazal" || curItem.kind === "mutafarriq"));
+  var curSize = isVerse ? (curItem.fontSize || curItem.size) : 0;
+  var canPlus = state.fontScale < SCALE_MAX - 0.001 && (!isVerse || curItem.maxSize > curSize + 0.4);
+  var pct = Math.round(state.fontScale * 100);
+  var proseItemsHtml = PROSE.map(function(s, idx){
+    var t = (s.title && (s.title[L] || s.title[L === "ur" ? "hi" : "ur"])) || "";
+    return '<button class="menu-item ' + (ur ? "ur" : "") + '" data-prose="' + idx + '"><span class="mi">❋</span>' + esc(t) + '</button>';
+  }).join("");
+  drawerBody.innerHTML = '<div class="lang-switch"><button data-setlang="hi" class="' + (!ur ? "active" : "") + '">हिन्दी</button><button data-setlang="ur" class="' + (ur ? "active" : "") + ' ur">اردو</button></div>' +
+    '<div class="menu-label">' + (ur ? "فونٹ سائز" : "फ़ॉन्ट साइज़") + '</div>' +
+    '<div class="font-row"><button class="font-btn" data-font="-1" ' + (canMinus ? "" : "disabled") + '>−</button><span class="font-val">' + (ur ? urNum(pct) : pct) + '%</span><button class="font-btn" data-font="1" ' + (canPlus ? "" : "disabled") + '>+</button></div>' +
+    '<button class="font-reset" data-font-reset>' + (ur ? "ڈیفالٹ سائز" : "डिफ़ॉल्ट साइज़") + '</button>' +
+    '<div class="menu-label">' + (ur ? "کتاب" : "کتاب") + '</div>' +
+    '<button class="menu-item ' + (ur ? "ur" : "") + '" data-act="title"><span class="mi">◈</span>' + (ur ? "سرورق" : "आवरण पृष्ठ") + '</button>' +
+    proseItemsHtml +
+    '<button class="menu-item ' + (ur ? "ur" : "") + '" data-act="contents"><span class="mi">☰</span>' + (ur ? "فہرستِ غزلیات" : "विषय-सूची") + '</button>';
+  drawerBody.querySelectorAll("[data-setlang]").forEach(function(b){ b.addEventListener("click", function(){ setGlobalLang(b.dataset.setlang); }); });
+  drawerBody.querySelectorAll("[data-font]").forEach(function(b){ b.addEventListener("click", function(){ changeFontScale(+b.dataset.font * SCALE_STEP); }); });
+  var fr = drawerBody.querySelector("[data-font-reset]");
+  if(fr) fr.addEventListener("click", function(){ if(state.fontScale === SCALE_DEFAULT) return; state.fontScale = SCALE_DEFAULT; save(); rebuildFlow(); renderCurrent(0, false); renderDrawer(); });
+  drawerBody.querySelectorAll("[data-act]").forEach(function(b){ b.addEventListener("click", function(){
+    var a = b.dataset.act;
+    if(a === "title"){ closeDrawer(); state.cursor = {kind:"title"}; save(); cursorIdx = findCursorIndex(); renderCurrent(-1, true); }
+    if(a === "contents") openContents();
+    if(a === "home") window.location.href = HOME_URL;
+    if(a === "back") window.location.href = BACK_URL;
+  }); });
+  drawerBody.querySelectorAll("[data-prose]").forEach(function(b){ b.addEventListener("click", function(){
+    var s = +b.dataset.prose; closeDrawer();
+    state.cursor = {kind:"prose", s:s, c:0}; save();
+    cursorIdx = findCursorIndex(); renderCurrent(1, true);
+  }); });
+}
+/* ==== GHZ-EDITOR-INJECT-END ==== */
+</script>
+<script>
+/* =========================================================
+   SAVE AS PDF — added feature
+   Builds a dedicated A5 print document (#pdfDocument) from the
+   existing book data (GH, PROSE, END_PAGE, BOOK, AUTHOR and the
+   existing helpers) and hands it to the browser's native print
+   engine. Real text, no screenshots. Wrapped in an IIFE so it
+   cannot clash with any existing global name.
+   ========================================================= */
+(function(){
+'use strict';
+if(window.__ddPdfInit) return;          /* attach everything exactly once */
+window.__ddPdfInit = true;
+
+var dlg     = document.getElementById('pdfDlg');
+var busyEl  = document.getElementById('pdfBusy');
+var pdfDoc  = document.getElementById('pdfDocument');
+if(!dlg || !busyEl || !pdfDoc) return;
+
+/* ---------- settings ---------- */
+var CPP_KEY       = 'dd-couplets-per-page';        /* same key the ebook script reads at start-up */
+var CPP_CHOICES   = [2, 3, 4, 5, 6, 7, 8, 10];
+var CPP_DEFAULT   = 5;
+var PDF_BASE_PX   = 21;     /* target verse size (px) before it is fitted to the page width */
+var SAFETY_PX     = 6;      /* vertical safety margin kept free on every page                */
+
+/* fixed labels — copied verbatim from the existing web UI */
+var TXT = {
+  ghazal:       { hi:'ग़ज़ल',             ur:'غزل' },
+  mutLabel:     { hi:'मुतफ़र्रिक़ अशआर',   ur:'متفرق اشعار' },
+  tocTitle:     { hi:'विषय-सूची',         ur:'فہرستِ غزلیات' },
+  fileName:     { hi:'Dil-Dareecha-Hindi', ur:'Dil-Dareecha-Urdu' }
+};
+var UI = {
+  busy: { hi:'PDF तैयार की जा रही है…', ur:'پی ڈی ایف تیار کی جا رہی ہے…' },
+  fail: { hi:'PDF तैयार नहीं हो सकी। दोबारा कोशिश करें।', ur:'پی ڈی ایف تیار نہیں ہو سکی۔ دوبارہ کوشش کریں۔' }
+};
+
+var busy = false, prepared = false, savedTitle = null, lastFocus = null;
+/* Language chosen with the button. Chrome fires beforeprint/afterprint/beforeprint while it renders and re-renders the
+   preview, so the print document must survive afterprint and keep the chosen language until the user is back in the page. */
+var sessionLang = null;
+
+/* the reader's "max couplets per page" choice — the ebook's own COUPLETS_PER_PAGE, used by the web pages AND the PDF */
+function perPage(){
+  return (typeof COUPLETS_PER_PAGE === 'number' && COUPLETS_PER_PAGE >= 1) ? COUPLETS_PER_PAGE : CPP_DEFAULT;
+}
+function sliceGroups(n, k){
+  var out = [];
+  for(var i = 0; i < n; i += k){
+    var g = [];
+    for(var j = i; j < Math.min(n, i + k); j++) g.push(j);
+    out.push(g);
+  }
+  return out;
+}
+
+/* ---------- tiny helpers ---------- */
+function mk(tag, cls, html){
+  var e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(html != null) e.innerHTML = html;
+  return e;
+}
+function frame(){
+  return new Promise(function(res){
+    var done = false;
+    function f(){ if(!done){ done = true; res(); } }
+    requestAnimationFrame(f);
+    setTimeout(f, 120);              /* rAF does not fire in background tabs */
+  });
+}
+function pick(o, L){ return (o && (o[L] || o[L === 'ur' ? 'hi' : 'ur'])) || ''; }
+function proseParas(sec, L){
+  return (L === 'ur' ? sec.ur : sec.hi) || (L === 'ur' ? sec.hi : sec.ur) || [];
+}
+
+/* every character of the selected language, so every font subset gets loaded */
+function collectText(L){
+  var parts = [BOOK[L], AUTHOR[L],
+               pick(END_PAGE.title, L), pick(END_PAGE.message, L), pick(END_PAGE.footer, L)];
+  Object.keys(TXT).forEach(function(k){ if(TXT[k][L]) parts.push(TXT[k][L]); });
+  for(var i = 0; i < GH.length; i++) parts.push(getV(GH[i], L));
+  PROSE.forEach(function(s){ parts.push(pick(s.title, L)); parts.push(proseParas(s, L).join(' ')); });
+  parts.push('0123456789 / · — ❀ ✿ ❁');
+  return parts.join(' ');
+}
+async function loadFonts(L){
+  if(!(document.fonts && document.fonts.load)) return;
+  var fam  = L === 'ur' ? "'Noto Nastaliq Urdu'" : "'Gotu'";
+  var text = collectText(L);
+  var jobs = [
+    document.fonts.load('400 24px ' + fam, text),
+    document.fonts.load('600 14px ' + fam, text),
+    document.fonts.load("400 14px 'Gotu'", '0123456789 PDF')      /* page numbers */
+  ];
+  await Promise.all(jobs.map(function(p){ return Promise.resolve(p).catch(function(){ return null; }); }));
+  await document.fonts.ready;
+}
+
+/* =========================================================
+   BUILD THE PRINT DOCUMENT
+   ========================================================= */
+function buildPdfDocument(L){
+  var ur = (L === 'ur');
+  var pages = [];                     /* final ordered list of .pdf-page elements */
+  var firstPage = new Map();          /* GH index -> first page element (for the contents page) */
+  var tocRefs = new Map();            /* GH index -> page-number <span> in the contents page   */
+
+  pdfDoc.innerHTML = '';
+  pdfDoc.setAttribute('data-lang', L);
+  pdfDoc.classList.add('pdf-measuring');   /* laid out off-screen so it can be measured */
+
+  function mkPage(kind, isProbe){
+    var p = mk('div', 'pdf-page pdf-' + kind + ' ' + (ur ? 'pdf-ur' : 'pdf-hi'));
+    /* the page shell stays LTR so the footer number is a clean LTR digit run; the text area carries the RTL direction */
+    p.innerHTML =
+      '<div class="pdf-frame"></div>' +
+      (kind === 'cover' ? '<div class="pdf-frame2"></div><i class="pdf-cn pdf-cn-tr"></i><i class="pdf-cn pdf-cn-bl"></i>' : '') +
+      '<div class="pdf-body" lang="' + (ur ? 'ur' : 'hi') + '"' + (ur ? ' dir="rtl"' : '') + '></div><div class="pdf-page-number"></div>';
+    pdfDoc.appendChild(p);
+    if(!isProbe) pages.push(p);
+    return p;
+  }
+  function drop(p){
+    var i = pages.indexOf(p);
+    if(i >= 0) pages.splice(i, 1);
+    if(p.parentNode) p.parentNode.removeChild(p);
+  }
+
+  /* ---- data ---- */
+  var entries = [], ghazalTotal = 0;
+  for(var gi = 0; gi < GH.length; gi++){
+    var cs = couplets(getV(GH[gi], L));
+    if(!cs.length) continue;
+    var type = coupletType(cs);
+    entries.push({ i:gi, cs:cs, type:type });
+    if(type !== 'mutafarriq') ghazalTotal++;
+  }
+
+  /* ---- 1. cover ---- */
+  (function(){
+    var p = mkPage('cover');
+    p.querySelector('.pdf-body').innerHTML =
+      '<div class="pdf-orn">❀</div>' +
+      '<h1 class="pdf-c-title">' + esc(BOOK[L]) + '</h1>' +
+      '<div class="pdf-rule"><span></span><i>✿</i><span></span></div>' +
+      '<p class="pdf-c-author">' + esc(AUTHOR[L]) + '</p>';
+  })();
+
+  /* ---- 2. introduction (PROSE sections) — paragraphs flow across pages by measured height ---- */
+  function addProse(title, paras){
+    var page, box, wrap;
+    function newProsePage(first){
+      page = mkPage('text');
+      var body = page.querySelector('.pdf-body');
+      if(first) body.appendChild(mk('h2', 'pdf-head', esc(title)));
+      box  = mk('div', 'pdf-prose');
+      wrap = mk('div', 'pdf-prose-in');
+      box.appendChild(wrap);
+      body.appendChild(box);
+    }
+    function fits(){ return wrap.getBoundingClientRect().height <= box.getBoundingClientRect().height - SAFETY_PX; }
+
+    newProsePage(true);
+    paras.forEach(function(text){
+      var words = String(text).trim().split(/\s+/);
+      var start = 0;
+      while(start < words.length){
+        var p = mk('p');
+        wrap.appendChild(p);
+        p.textContent = words.slice(start).join(' ');
+        if(fits()){ start = words.length; break; }
+        var lo = 0, hi = words.length - start;          /* lo fits, hi does not */
+        while(hi - lo > 1){
+          var mid = (lo + hi) >> 1;
+          p.textContent = words.slice(start, start + mid).join(' ');
+          if(fits()) lo = mid; else hi = mid;
+        }
+        if(lo === 0){
+          wrap.removeChild(p);
+          if(wrap.children.length === 0){                /* empty page and still nothing fits: force one word */
+            p = mk('p'); p.textContent = words[start]; wrap.appendChild(p); start++;
+          }
+          newProsePage(false);
+          continue;
+        }
+        var rem = words.length - start - lo;             /* avoid a 1–3 word widow on the next page */
+        if(rem > 0 && rem < 4 && lo > 10) lo -= (5 - rem);
+        p.textContent = words.slice(start, start + lo).join(' ');
+        p.className = 'split';
+        start += lo;
+        newProsePage(false);
+      }
+    });
+  }
+  var st = bookStats(L);
+  PROSE.forEach(function(sec){
+    var paras = proseParas(sec, L).map(function(t){
+      return String(t).replace(/\{ghazals\}/g, num(st.ghazals, L)).replace(/\{ashaar\}/g, num(st.ashaar, L));
+    });
+    if(!paras.length) return;
+    addProse(pick(sec.title, L), paras);
+  });
+
+  /* ---- 3. contents (page numbers are filled in once pagination is finished) ---- */
+  function addToc(){
+    if(!entries.length) return;
+    var page, list, wrap, firstToc = true;
+    function newTocPage(){
+      page = mkPage('toc');
+      var body = page.querySelector('.pdf-body');
+      if(firstToc){
+        firstToc = false;
+        body.appendChild(mk('h2', 'pdf-head', esc(TXT.tocTitle[L])));
+      }
+      list = mk('div', 'pdf-toc-list');
+      wrap = mk('div', 'pdf-toc-in');
+      list.appendChild(wrap);
+      body.appendChild(list);
+    }
+    newTocPage();
+    entries.forEach(function(e){
+      var icon = e.type === 'complete' ? '❀' : (e.type === 'incomplete' ? '✿' : '❁');
+      var row = mk('div', 'pdf-toc-row',
+        '<span class="pdf-toc-ic pdf-tc-' + e.type + '">' + icon + '</span>' +
+        '<span class="pdf-toc-n">' + num(e.i + 1, L) + '</span>' +
+        '<span class="pdf-toc-t">' + esc(e.cs[0][0]) + '</span>' +
+        '<span class="pdf-toc-pg">00</span>');
+      wrap.appendChild(row);
+      if(wrap.children.length > 1 &&
+         wrap.getBoundingClientRect().height > list.getBoundingClientRect().height - SAFETY_PX){
+        wrap.removeChild(row);
+        newTocPage();
+        wrap.appendChild(row);
+      }
+      tocRefs.set(e.i, row.querySelector('.pdf-toc-pg'));
+    });
+  }
+  addToc();
+
+  /* ---- 4. ghazals & shers ---- */
+  function verseShell(label, isProbe){
+    var p = mkPage('verse', isProbe);
+    var body = p.querySelector('.pdf-body');
+    body.appendChild(mk('div', 'pdf-gh-head', '<span class="pdf-gh-num">' + esc(label) + '</span>'));
+    var verses = mk('div', 'pdf-verses');
+    var inner  = mk('div', 'pdf-verses-inner');
+    verses.appendChild(inner);
+    body.appendChild(verses);
+    return { page:p, verses:verses, inner:inner };
+  }
+  var probe = verseShell(ur ? 'غزل ۱۰ / ۱۰ · ۲/۲' : 'ग़ज़ल 10 / 10 · 2/2', true);
+  var probeRect = probe.verses.getBoundingClientRect();
+  var availW  = Math.max(120, probeRect.width - 4);
+  var capBase = probeRect.height;
+
+  function unitEl(u){
+    var d = mk('div', 'pdf-unit');
+    var c = mk('div', 'pdf-couplet',
+      u.lines.map(function(l){ return '<span>' + esc(l) + '</span>'; }).join(''));
+    c.style.width = u.width + 'px';
+    c.style.fontSize = u.size + 'px';
+    d.appendChild(c);
+    if(u.ruler) d.appendChild(mk('div', 'pdf-ruler', '✿'));
+    return d;
+  }
+  function measureUnits(units, gap){
+    probe.inner.innerHTML = '';
+    probe.inner.style.rowGap = gap + 'px';
+    units.forEach(function(u){ probe.inner.appendChild(unitEl(u)); });
+    var hs = Array.prototype.map.call(probe.inner.children, function(c){ return c.getBoundingClientRect().height; });
+    probe.inner.innerHTML = '';
+    return hs;
+  }
+  /* Split units into the fewest pages, then balance them (minimise the tallest page).
+     Units are never split, so a couplet can never be cut across two pages. */
+  function packUnits(hs, gap, cap){
+    var n = hs.length, maxH = Math.max.apply(null, hs);
+    if(maxH > cap) return null;
+    function countPages(T){
+      var c = 1, cur = 0, k = 0;
+      for(var i = 0; i < n; i++){
+        var add = (k ? gap : 0) + hs[i];
+        if(k && cur + add > T){ c++; cur = hs[i]; k = 1; } else { cur += add; k++; }
+      }
+      return c;
+    }
+    var pagesNeeded = countPages(cap), lo = maxH, hi = cap;
+    while(lo < hi){
+      var mid = Math.floor((lo + hi) / 2);
+      if(countPages(mid) <= pagesNeeded) hi = mid; else lo = mid + 1;
+    }
+    var groups = [], cur = [], h = 0;
+    for(var i = 0; i < n; i++){
+      var add = (cur.length ? gap : 0) + hs[i];
+      if(cur.length && h + add > lo){ groups.push(cur); cur = [i]; h = hs[i]; }
+      else { cur.push(i); h += add; }
+    }
+    groups.push(cur);
+    return groups;
+  }
+  function materialize(units, groups, gap, labelFor){
+    var out = { pages:[], map:[], ok:true };
+    groups.forEach(function(g, gIdx){
+      var sh = verseShell(labelFor(gIdx, groups.length), false);
+      sh.inner.style.rowGap = gap + 'px';
+      g.forEach(function(k){ sh.inner.appendChild(unitEl(units[k])); });
+      out.pages.push(sh.page);
+      out.map.push({ page:sh.page, units:g.map(function(k){ return units[k]; }) });
+      if(sh.inner.getBoundingClientRect().height > sh.verses.getBoundingClientRect().height + 0.5) out.ok = false;
+      Array.prototype.forEach.call(sh.inner.querySelectorAll('.pdf-couplet span'), function(s){
+        if(s.scrollWidth > s.clientWidth + 1) out.ok = false;
+      });
+    });
+    return out;
+  }
+  function placeUnits(cfg){
+    var size = cfg.size0, extra = 0, LAST = 10;
+    for(var attempt = 0; attempt <= LAST; attempt++){
+      var last  = (attempt === LAST);
+      var units = cfg.unitsAt(size);
+      var gap   = cfg.gapAt(size);
+      var hs    = measureUnits(units, gap);
+      var cap   = capBase - SAFETY_PX - extra;
+      var groups;
+      if(cfg.groups){
+        /* the page split is dictated by the reader's "couplets per page" choice: shrink the type until that many fit */
+        groups = cfg.groups(units.length);
+        var tallest = 0;
+        groups.forEach(function(g){
+          var h = 0;
+          g.forEach(function(k, jx){ h += hs[k] + (jx ? gap : 0); });
+          if(h > tallest) tallest = h;
+        });
+        if(tallest > cap && !last && size > 8){ size *= (cap / tallest) * 0.99; continue; }
+      } else {
+        groups = packUnits(hs, gap, cap);
+        if(!groups){
+          if(!last){ size *= 0.94; continue; }
+          groups = hs.map(function(_, k){ return [k]; });
+        }
+      }
+      var made = materialize(units, groups, gap, cfg.labelFor);
+      if(made.ok || last){
+        made.map.forEach(function(m){
+          m.units.forEach(function(u){ if(!firstPage.has(u.ei)) firstPage.set(u.ei, m.page); });
+        });
+        return;
+      }
+      made.pages.forEach(drop);                         /* measured vs. real mismatch: retry with more headroom */
+      extra += 8;
+    }
+  }
+  function widthFor(lines, size){ return Math.ceil(measureMaxWidth(lines, size, L) * 1.012) + 2; }
+  function fitLines(lines){
+    var w100 = measureMaxWidth(lines, 100, L) || 1;
+    var size = Math.min(PDF_BASE_PX, (availW / w100) * 100 * 0.985);
+    for(var g = 0; g < 6; g++){
+      var need = measureMaxWidth(lines, size, L) * 1.012 + 2;
+      if(need <= availW) break;
+      size *= (availW / need) * 0.995;
+    }
+    return size;
+  }
+
+  var gNo = 0, ei = 0;
+  while(ei < entries.length){
+    var e = entries[ei];
+    if(e.type === 'mutafarriq'){
+      var run = [];
+      while(ei < entries.length && entries[ei].type === 'mutafarriq'){ run.push(entries[ei]); ei++; }
+      (function(run){
+        var n = perPage();
+        for(var s = 0; s < run.length; s += n){                       /* never more than N shers on one page */
+          (function(part){
+            var units = part.map(function(x){
+              var lines = x.cs[0], size = fitLines(lines);
+              return { lines:lines, size:size, width:widthFor(lines, size), ruler:true, ei:x.i };
+            });
+            placeUnits({
+              size0:0,
+              unitsAt:function(){ return units; },
+              gapAt:function(){ return 26; },
+              labelFor:function(g, total){ return TXT.mutLabel[L] + (total > 1 ? ' · ' + num(g + 1, L) + '/' + num(total, L) : ''); }
+            });
+          })(run.slice(s, s + n));
+        }
+      })(run);
+    } else {
+      gNo++;
+      (function(e, no){
+        var lines = e.cs.flat();
+        placeUnits({
+          size0:fitLines(lines),
+          groups:function(n){ return sliceGroups(n, perPage()); },
+          unitsAt:function(size){
+            var w = widthFor(lines, size);
+            return e.cs.map(function(c, k){ return { lines:c, size:size, width:w, ruler:(k === e.cs.length - 1), ei:e.i }; });
+          },
+          gapAt:function(size){ return size * (ur ? 0.68 : 0.95); },
+          labelFor:function(g, total){
+            var base = TXT.ghazal[L] + ' ' + num(no, L) + ' / ' + num(ghazalTotal, L);
+            return total > 1 ? base + ' · ' + num(g + 1, L) + '/' + num(total, L) : base;
+          }
+        });
+      })(e, gNo);
+      ei++;
+    }
+  }
+  if(probe.page.parentNode) probe.page.parentNode.removeChild(probe.page);
+
+  /* ---- 5. closing page ---- */
+  (function(){
+    var p = mkPage('end');
+    p.querySelector('.pdf-body').innerHTML =
+      '<div class="pdf-orn">❀ ❀ ❀</div>' +
+      '<h2 class="pdf-head" style="margin-bottom:22px">' + esc(pick(END_PAGE.title, L)) + '</h2>' +
+      '<p class="pdf-end-msg">' + esc(pick(END_PAGE.message, L)) + '</p>' +
+      '<p class="pdf-end-foot">' + esc(pick(END_PAGE.footer, L)) + '</p>';
+  })();
+
+  /* ---- 6. bare page numbers: 1, 2, 3 … (first printed page = 1; never any wording) ---- */
+  pages.forEach(function(p, i){
+    p.querySelector('.pdf-page-number').textContent = String(i + 1);
+  });
+  tocRefs.forEach(function(span, gIdx){
+    var pg = firstPage.get(gIdx);
+    span.textContent = pg ? String(pages.indexOf(pg) + 1) : '';
+  });
+
+  pdfDoc.classList.remove('pdf-measuring');
+  return pages.length;
+}
+
+/* =========================================================
+   PRINT FLOW
+   ========================================================= */
+function showBusy(L, on, msgKey){
+  busyEl.className = (on ? 'on ' : '') + (L === 'ur' ? 'ur' : '');
+  if(on) busyEl.textContent = UI[msgKey || 'busy'][L === 'ur' ? 'ur' : 'hi'];
+}
+function setPrintTitle(L){
+  if(savedTitle === null) savedTitle = document.title;
+  document.title = TXT.fileName[L];
+}
+function cleanup(){
+  if(!prepared && savedTitle === null && !pdfDoc.firstChild) return;
+  pdfDoc.classList.remove('pdf-measuring');
+  pdfDoc.innerHTML = '';
+  if(savedTitle !== null){ document.title = savedTitle; savedTitle = null; }
+  prepared = false;
+}
+
+async function preparePDF(language){
+  if(busy) return;
+  var L = (language === 'ur') ? 'ur' : 'hi';
+  busy = true;
+  showBusy(L, true);
+  try{
+    await frame();                                   /* let the toast paint */
+    await loadFonts(L);                              /* selected font + every glyph we need */
+    buildPdfDocument(L);                             /* generate the dedicated print document */
+    if(document.fonts && document.fonts.status === 'loading'){   /* something started loading during layout: redo once */
+      await document.fonts.ready;
+      buildPdfDocument(L);
+    }
+    setPrintTitle(L);
+    await frame(); await frame();                    /* DOM + fonts are settled */
+    prepared = true;
+    sessionLang = L;                                 /* remember the choice for every print event that follows */
+    showBusy(L, false);
+    window.print();
+  }catch(err){
+    console.error('Save as PDF failed:', err);
+    sessionLang = null;
+    cleanup();
+    showBusy(L, true, 'fail');
+    setTimeout(function(){ showBusy(L, false); }, 2600);
+  }finally{
+    busy = false;
+  }
+}
+window.preparePDF = preparePDF;
+
+
+/* =========================================================
+   HAMBURGER MENU — collapsed "PDF" and "couplets per page" sections
+   appended below the existing menu (after the contents/links), separated by a rule.
+   renderDrawer() is wrapped, not edited, so the original menu code is untouched.
+   ========================================================= */
+var mnOpen = { pdf:false, cpp:false };
+
+function setPerPage(n){
+  n = Math.max(1, Math.min(12, parseInt(n, 10) || CPP_DEFAULT));
+  var old = perPage();
+  if(n === old) return;
+  try{
+    Flip.abortAll();
+    var cur = (typeof flow !== 'undefined') ? flow[cursorIdx] : null;
+    if(cur && cur.kind === 'ghazal' && typeof cur.c === 'number'){
+      /* keep the reader on the page that contains the couplet they were looking at */
+      state.cursor = { kind:'ghazal', g:cur.g, c:Math.floor(cur.c * old / n) };
+    }
+  }catch(e){}
+  COUPLETS_PER_PAGE = n;
+  try{ localStorage.setItem(CPP_KEY, String(n)); }catch(e){}
+  save();
+  rebuildFlow();
+  renderCurrent(0, false);
+  renderDrawer();
+}
+
+function addMenuSection(){
+  var body = document.getElementById('drawerBody');
+  if(!body || body.querySelector('.pdf-mn-wrap')) return;
+  var ur = (state.lang === 'ur'), cls = ur ? ' ur' : '', n = perPage();
+  var fmt = function(v){ return ur ? urNum(v) : String(v); };
+  var S = ur ? {
+    label:'پی ڈی ایف اور طباعت',
+    pdf:'پی ڈی ایف کے طور پر محفوظ کریں',
+    pdfNote:'پوری کتاب A5 سائز کی پی ڈی ایف میں — ہندی یا اردو میں۔',
+    go:'پی ڈی ایف بنائیں',
+    cpp:'فی صفحہ زیادہ سے زیادہ اشعار',
+    cppNote:'یہ تعداد پڑھنے کے صفحات اور چھپی ہوئی پی ڈی ایف، دونوں پر لاگو ہوتی ہے۔',
+    reset:'ڈیفالٹ (' + fmt(CPP_DEFAULT) + ')'
+  } : {
+    label:'PDF और छपाई',
+    pdf:'PDF के रूप में सहेजें',
+    pdfNote:'पूरी किताब A5 आकार की PDF में — हिन्दी या उर्दू में।',
+    go:'PDF बनाएँ',
+    cpp:'प्रति पृष्ठ अधिकतम अशआर',
+    cppNote:'यह संख्या पढ़ने के पन्नों और छपी PDF, दोनों पर लागू होती है।',
+    reset:'डिफ़ॉल्ट (' + fmt(CPP_DEFAULT) + ')'
+  };
+  var chips = CPP_CHOICES.map(function(v){
+    return '<button type="button" class="pdf-chip' + (v === n ? ' on' : '') + '" data-cpp="' + v + '" aria-pressed="' + (v === n) + '">' + fmt(v) + '</button>';
+  }).join('');
+  var wrap = mk('div', 'pdf-mn-wrap',
+    '<div class="pdf-mn-sep"></div>' +
+    '<div class="menu-label">' + S.label + '</div>' +
+    '<details class="pdf-mn" data-k="pdf"' + (mnOpen.pdf ? ' open' : '') + '>' +
+      '<summary class="menu-item' + cls + '"><span class="mi">⤓</span><span>' + S.pdf + '</span><span class="pdf-chev">▾</span></summary>' +
+      '<div class="pdf-mn-body">' +
+        '<p class="pdf-mn-note' + cls + '">' + S.pdfNote + '</p>' +
+        '<button type="button" class="pdf-go' + cls + '" data-pdf-open>' + S.go + '</button>' +
+      '</div>' +
+    '</details>' +
+    '<details class="pdf-mn" data-k="cpp"' + (mnOpen.cpp ? ' open' : '') + '>' +
+      '<summary class="menu-item' + cls + '"><span class="mi">≡</span><span>' + S.cpp + '</span><span class="pdf-val">' + fmt(n) + '</span><span class="pdf-chev">▾</span></summary>' +
+      '<div class="pdf-mn-body">' +
+        '<p class="pdf-mn-note' + cls + '">' + S.cppNote + '</p>' +
+        '<div class="pdf-chips">' + chips + '</div>' +
+        '<button type="button" class="font-reset' + cls + '" data-cpp-reset>' + S.reset + '</button>' +
+      '</div>' +
+    '</details>');
+  body.appendChild(wrap);
+
+  wrap.addEventListener('keydown', function(e){
+    if(e.key === ' ' || e.key === 'Enter') e.stopPropagation();    /* the book's Space = "next page" must not fire */
+  });
+  Array.prototype.forEach.call(wrap.querySelectorAll('details.pdf-mn'), function(d){
+    d.addEventListener('toggle', function(){
+      mnOpen[d.getAttribute('data-k')] = d.open;
+      if(d.open) setTimeout(function(){ try{ d.scrollIntoView({ block:'nearest', behavior:'smooth' }); }catch(_){} }, 60);
+    });
+  });
+  Array.prototype.forEach.call(wrap.querySelectorAll('[data-cpp]'), function(b){
+    b.addEventListener('click', function(){ setPerPage(b.getAttribute('data-cpp')); });
+  });
+  wrap.querySelector('[data-cpp-reset]').addEventListener('click', function(){ setPerPage(CPP_DEFAULT); });
+  wrap.querySelector('[data-pdf-open]').addEventListener('click', function(){
+    if(typeof closeDrawer === 'function') closeDrawer();
+    openDlg();
+  });
+}
+
+if(typeof window.renderDrawer === 'function'){
+  var origRenderDrawer = window.renderDrawer;
+  window.renderDrawer = function(){
+    var r = origRenderDrawer.apply(this, arguments);
+    try{ addMenuSection(); }catch(err){ console.error(err); }
+    return r;
+  };
+}
+
+/* ---------- dialog ---------- */
+function openDlg(){
+  lastFocus = document.activeElement;
+  var cppEl = document.getElementById('pdfDlgCpp');
+  if(cppEl) cppEl.innerHTML = 'प्रति पृष्ठ अधिकतम अशआर: <b>' + perPage() + '</b>' +
+    '<span class="ur" dir="rtl" lang="ur">فی صفحہ زیادہ سے زیادہ اشعار: <b>' + urNum(perPage()) + '</b></span>';
+  dlg.classList.add('on');
+  var first = dlg.querySelector('[data-pdf-lang="hi"]');
+  if(first) first.focus({ preventScroll:true });
+}
+function closeDlg(){
+  dlg.classList.remove('on');
+  if(lastFocus && lastFocus.focus){ try{ lastFocus.focus({ preventScroll:true }); }catch(_){} }
+  lastFocus = null;
+}
+dlg.addEventListener('click', function(e){ if(e.target === dlg) closeDlg(); });
+dlg.addEventListener('keydown', function(e){
+  e.stopPropagation();                                              /* keep arrow/space keys away from the book */
+  if(e.key === 'Escape'){ e.preventDefault(); closeDlg(); }
+});
+dlg.querySelector('[data-pdf-close]').addEventListener('click', closeDlg);
+Array.prototype.forEach.call(dlg.querySelectorAll('[data-pdf-lang]'), function(b){
+  b.addEventListener('click', function(){
+    var L = b.getAttribute('data-pdf-lang');
+    dlg.classList.remove('on');
+    lastFocus = null;
+    preparePDF(L);
+  });
+});
+
+/* ---------- restore the normal web state after printing (registered once) ---------- */
+/* The print document is only ever visible in print media, so keeping it after the dialog closes changes nothing on
+   screen. It is removed (and the page title restored) as soon as the user touches the page again. */
+function endSession(){
+  if(sessionLang === null) return;
+  sessionLang = null;
+  cleanup();
+}
+function onPrintDone(){
+  if(sessionLang !== null) return;                   /* button-started export: wait for the first interaction */
+  cleanup();
+}
+['pointerdown', 'keydown', 'touchstart'].forEach(function(ev){
+  document.addEventListener(ev, function(){ if(!busy) endSession(); }, true);
+});
+window.addEventListener('afterprint', onPrintDone);
+if(window.matchMedia){
+  var mq = window.matchMedia('print');
+  var onMq = function(e){ if(!e.matches) onPrintDone(); };
+  if(mq.addEventListener) mq.addEventListener('change', onMq);
+  else if(mq.addListener) mq.addListener(onMq);
+}
+/* Any print event: make sure the print document exists in the right language.
+   - started from the button  -> the language chosen in the dialog (never the reader's language)
+   - Ctrl/Cmd+P pressed directly -> the reader's current language */
+window.addEventListener('beforeprint', function(){
+  var L = sessionLang || ((typeof state !== 'undefined' && state.lang === 'ur') ? 'ur' : 'hi');
+  if(prepared && pdfDoc.firstChild && pdfDoc.getAttribute('data-lang') === L) return;
+  if(busy && sessionLang === null) return;
+  try{
+    buildPdfDocument(L);
+    setPrintTitle(L);
+    prepared = true;
+  }catch(err){ console.error(err); }
+});
+
+})();
+</script>
+</body>
+</html>
