@@ -253,6 +253,62 @@
     .tag-classic { background: #dbd0c0; border-color: #b9a994; }
     .tag-modern { background: #d4c9b8; border-color: #b0a18c; }
 
+    /* ----- Featured Card Specific Styles ----- */
+    .featured-card {
+      grid-column: 1 / -1; /* Spans full width */
+      background: linear-gradient(135deg, #fdfbf7 0%, #f4ebe1 100%);
+      border: 2px solid #c9a96e; /* Gold border */
+      box-shadow: 0 10px 25px -10px rgba(201, 169, 110, 0.4);
+      position: relative;
+      overflow: hidden;
+      padding: 2rem 1.8rem;
+    }
+
+    .featured-card:hover {
+      border-color: #b08d4a;
+      box-shadow: 0 20px 40px -15px rgba(201, 169, 110, 0.6);
+      background: #ffffff;
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: 20px;
+      right: -30px;
+      background: #c9a96e;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 5px 40px;
+      transform: rotate(45deg);
+      letter-spacing: 1px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    .featured-card .icon {
+      font-size: 3rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .featured-card .tool-title {
+      font-size: 1.8rem;
+      color: #1a1a1a;
+      font-weight: 700;
+    }
+
+    .featured-card .tool-desc {
+      font-size: 1.05rem;
+      color: #3f4a5a;
+      margin-bottom: 1rem;
+    }
+
+    .featured-card .tag {
+      background: #c9a96e;
+      color: white;
+      border-color: #b08d4a;
+      font-weight: bold;
+    }
+
     /* ----- footer ----- */
     .deep-footer {
       margin-top: 2.8rem;
@@ -338,6 +394,23 @@
     </div>
 
     <div class="tools-grid" id="toolsGrid">
+      
+      <!-- Featured Card: UP PGT Syllabus 2026 -->
+      <div class="tool-card featured-card">
+        <div class="featured-badge">NEW</div>
+        <a class="tool-link" href="uppgt2026literature.html">
+          <div class="icon">🎯</div>
+          <div class="tool-title">UP PGT English 2026: Literature Syllabus</div>
+          <div class="tool-desc">Your ultimate, structured roadmap to conquer Section 2 - Literature for the UP PGT Exam. Click here to begin your preparation!</div>
+          <div class="tag-group">
+            <span class="tag">Exam Prep</span>
+            <span class="tag">UP PGT 2026</span>
+            <span class="tag">Syllabus</span>
+            <span class="tag">Must Read</span>
+          </div>
+        </a>
+      </div>
+
       <!-- Card 1: Renaissance -->
       <div class="tool-card">
         <a class="tool-link" href="EnglishStudyMaterial/Renaissance UP GIC.html">
