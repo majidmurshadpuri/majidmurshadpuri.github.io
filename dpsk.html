@@ -38,6 +38,19 @@
         .dark .card-hover:hover {
             box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.4);
         }
+
+        /* Drive iframe styling */
+        .drive-frame {
+            width: 100%;
+            height: 520px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+        }
+        .dark .drive-frame {
+            border-color: #334155;
+            background: #1e293b;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
@@ -162,6 +175,26 @@
                 </div>
             </a>
 
+        </div>
+
+        <!-- ==================== DRIVE FOLDER EMBED ==================== -->
+        <div class="mt-12">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-sm">
+                    <i class="fa-brands fa-google-drive"></i>
+                </div>
+                <h3 class="text-sm font-bold text-slate-800 dark:text-white">Google Drive Folder</h3>
+                <span class="text-[10px] text-slate-400 dark:text-slate-500">· Live view of uploaded files</span>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+                Browse all files currently in the shared Drive folder. Any new uploads will appear here automatically.
+            </p>
+            <iframe 
+                class="drive-frame scroll-thin" 
+                src="https://drive.google.com/embeddedfolderview?id=16haErwaG_BmFdyvoJUz6RAFV1DepwDkI#list" 
+                title="Google Drive Folder Contents"
+                loading="lazy">
+            </iframe>
         </div>
 
         <!-- Note about file names -->
