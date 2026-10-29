@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastery Checklist · 5A / 5B / 6A / 6B</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff', 100: '#e0effe', 500: '#2563eb',
+                            600: '#1d4ed8', 700: '#1e40af', 800: '#1e3a8a', 900: '#172554',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['Fira Code', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500;600;700&display=swap');
+
+        .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+        .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+        .scroll-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .scroll-thin::-webkit-scrollbar-thumb { background: #475569; }
+
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 40;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .drawer-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 380px;
+            max-width: 88vw;
+            background: white;
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+        }
+        .dark .drawer-panel { background: #1e293b; }
+        .drawer-panel.open { transform: translateX(0); }
+
+        .student-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            border-left: 3px solid transparent;
+        }
+        .student-item:hover { background: #f1f5f9; }
+        .dark .student-item:hover { background: #334155; }
+        .student-item.active {
+            background: #eff6ff;
+            border-left-color: #2563eb;
+        }
+        .dark .student-item.active {
+            background: #1e3a5f;
+            border-left-color: #3b82f6;
+        }
+
+        .avatar {
+            width: 2.1rem;
+            height: 2.1rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.72rem;
+            flex-shrink: 0;
+        }
+
+        .mastery-item {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 0.6rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid #e2e8f0;
+            background: white;
+            user-select: none;
+        }
+        .dark .mastery-item { background: #1e293b; border-color: #334155; }
+        .mastery-item:hover {
+            border-color: #93c5fd;
+            background: #f0f7ff;
+            transform: translateX(2px);
+        }
+        .dark .mastery-item:hover {
+            border-color: #3b82f6;
+            background: #1e3a5f;
+        }
+        .mastery-item.mastered-item {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+        .dark .mastery-item.mastered-item {
+            background: #052e16;
+            border-color: #166534;
+        }
+        .mastery-item.mastered-item:hover {
+            background: #dcfce7;
+            border-color: #86efac;
+        }
+        .dark .mastery-item.mastered-item:hover {
+            background: #064e3b;
+            border-color: #22c55e;
+        }
+
+        .check-circle {
+            width: 1.35rem;
+            height: 1.35rem;
+            border-radius: 9999px;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+            color: transparent;
+            font-size: 0.6rem;
+        }
+        .dark .check-circle { border-color: #475569; }
+        .mastery-item.mastered-item .check-circle {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+        .mastery-item:not(.mastered-item):hover .check-circle {
+            border-color: #3b82f6;
+        }
+
+        .progress-track { height: 6px; background: #e2e8f0; border-radius: 9999px; overflow: hidden; }
+        .dark .progress-track { background: #334155; }
+        .progress-fill { height: 100%; border-radius: 9999px; transition: width 0.4s ease; background: #10b981; }
+
+        .group-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            padding: 0.5rem 0.2rem 0.3rem;
+        }
+        .dark .group-label { color: #64748b; }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .dark .section-header { border-color: #334155; }
+
+        .class-tab {
+            flex: 1;
+            padding: 0.5rem 0.2rem;
+            text-align: center;
+            font-size: 0.68rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.15s ease;
+            color: #64748b;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .class-tab:hover { background: #f1f5f9; }
+        .dark .class-tab:hover { background: #334155; }
+        .class-tab.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .absent-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .dark .absent-badge { background: #7f1d1d; color: #fca5a5; }
+        .absent-badge.zero { background: #f1f5f9; color: #94a3b8; }
+        .dark .absent-badge.zero { background: #334155; color: #64748b; }
+
+        .att-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .att-btn-mark {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+        .dark .att-btn-mark { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
+        .att-btn-mark:hover { background: #fee2e2; border-color: #f87171; }
+        .dark .att-btn-mark:hover { background: #7f1d1d; }
+
+        .att-btn-undo {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-color: #bfdbfe;
+        }
+        .dark .att-btn-undo { background: #172554; color: #93c5fd; border-color: #1e40af; }
+        .att-btn-undo:hover { background: #dbeafe; border-color: #60a5fa; }
+        .dark .att-btn-undo:hover { background: #1e3a8a; }
+
+        .attendance-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            border-radius: 0.6rem;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        .dark .attendance-row { background: #0f172a; border-color: #334155; }
+
+        .mgmt-card {
+            background: white;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+        }
+        .dark .mgmt-card { background: #1e293b; border-color: #334155; }
+
+        .mgmt-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.9rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .mgmt-btn-primary { background: #2563eb; color: white; }
+        .mgmt-btn-primary:hover { background: #1d4ed8; }
+        .mgmt-btn-success { background: #10b981; color: white; }
+        .mgmt-btn-success:hover { background: #059669; }
+
+        .nb-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.75rem;
+        }
+        .nb-table thead th {
+            background: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 0.6rem 0.5rem;
+            text-align: center;
+            font-weight: 700;
+            color: #475569;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .dark .nb-table thead th { background: #0f172a; border-color: #334155; color: #cbd5e1; }
+
+        .nb-table thead th.nb-student-header {
+            text-align: left;
+            min-width: 160px;
+            position: sticky;
+            left: 0;
+            z-index: 6;
+        }
+
+        .nb-table tbody td {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.4rem 0.5rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .dark .nb-table tbody td { border-color: #334155; }
+
+        .nb-table tbody tr:nth-child(even) td { background: #fafbfc; }
+        .dark .nb-table tbody tr:nth-child(even) td { background: #0f172a; }
+        .nb-table tbody tr:hover td { background: #f1f5f9; }
+        .dark .nb-table tbody tr:hover td { background: #1e293b; }
+
+        .nb-table tbody td.nb-student-cell {
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+            background: white;
+            position: sticky;
+            left: 0;
+            z-index: 4;
+            min-width: 160px;
+        }
+        .dark .nb-table tbody td.nb-student-cell { background: #1e293b; color: #f1f5f9; }
+
+        .nb-exercise-col {
+            min-width: 90px;
+            max-width: 130px;
+        }
+
+        .nb-exercise-col-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.65rem;
+            position: relative;
+        }
+
+        .nb-exercise-col-name {
+            font-weight: 700;
+            color: #334155;
+            word-break: break-word;
+            line-height: 1.1;
+            max-width: 120px;
+        }
+        .dark .nb-exercise-col-name { color: #e2e8f0; }
+
+        .nb-exercise-col-date {
+            font-size: 0.55rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .dark .nb-exercise-col-date { color: #64748b; }
+
+        .nb-exercise-col-delete {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            background: transparent;
+            color: #cbd5e1;
+            border: none;
+            cursor: pointer;
+            font-size: 0.6rem;
+            opacity: 0;
+            transition: all 0.15s;
+        }
+        .nb-exercise-col-header:hover .nb-exercise-col-delete {
+            opacity: 1;
+            color: #ef4444;
+        }
+        .nb-exercise-col-delete:hover { background: #fee2e2; }
+
+        .nb-tick-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.4rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.15s ease;
+        }
+        .dark .nb-tick-btn { background: #0f172a; border-color: #334155; }
+
+        .nb-tick-btn.pending {
+            color: #cbd5e1;
+            background: #f8fafc;
+        }
+        .dark .nb-tick-btn.pending { background: #1e293b; color: #475569; }
+
+        .nb-tick-btn.done {
+            color: #ffffff;
+            background: #10b981;
+            border-color: #10b981;
+        }
+        .dark .nb-tick-btn.done { background: #059669; border-color: #059669; }
+
+        .nb-tick-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .nb-corner-cell {
+            background: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+            position: sticky;
+            left: 0;
+            top: 0;
+            z-index: 7;
+            min-width: 160px;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        .dark .nb-corner-cell { background: #0f172a; border-color: #334155; }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #0f172a;
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border-radius: 0.6rem;
+            font-size: 0.78rem;
+            font-weight: 500;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.success { background: #059669; }
+        .toast.error { background: #dc2626; }
+        .dark .toast { background: #334155; }
+        .dark .toast.success { background: #059669; }
+        .dark .toast.error { background: #dc2626; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <!-- ==================== TOP NAVIGATION ==================== -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button id="hamburgerBtn" class="p-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Student list">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold leading-tight text-slate-900 dark:text-white">Mastery Checklist</h1>
+                    <p id="headerSubtitle" class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Math Problem Types</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="themeToggleBtn" title="Toggle Theme" class="p-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+                <button id="resetAllBtn" class="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs shadow-sm transition">
+                    <i class="fa-solid fa-rotate-left text-xs"></i> <span class="hidden sm:inline">Reset Class</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== DRAWER OVERLAY ==================== -->
+    <div id="drawerOverlay" class="drawer-overlay"></div>
+
+    <!-- ==================== STUDENT DRAWER ==================== -->
+    <aside id="studentDrawer" class="drawer-panel">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-users text-brand-600 dark:text-brand-400"></i>
+                    <h2 class="font-bold text-sm text-slate-800 dark:text-white">Students</h2>
+                    <span id="studentCountBadge" class="text-[10px] bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-semibold">0</span>
+                </div>
+                <button id="closeDrawerBtn" class="p-2 rounded-lg text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="flex gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl" id="classTabs">
+                <div class="class-tab active" data-class="5A">5A</div>
+                <div class="class-tab" data-class="5B">5B</div>
+                <div class="class-tab" data-class="6A">6A</div>
+                <div class="class-tab" data-class="6B">6B</div>
+            </div>
+        </div>
+
+        <div class="px-3 pt-3 pb-1">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input id="studentSearch" type="text" placeholder="Search student..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-100">
+            </div>
+        </div>
+
+        <nav id="studentList" class="flex-1 overflow-y-auto scroll-thin py-1"></nav>
+
+        <div class="p-3 border-t border-slate-200 dark:border-slate-700 text-[10px] text-slate-400 dark:text-slate-500 text-center">
+            <i class="fa-regular fa-floppy-disk mr-1"></i> Auto-saved in browser
+        </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Welcome / empty state -->
+        <div id="welcomeState">
+
+            <!-- Hero card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 md:p-8 text-center mb-6">
+                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-hand-pointer"></i>
+                </div>
+                <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-1.5">Select a Student</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
+                    Open the hamburger menu <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-slate-100 dark:bg-slate-700 mx-0.5"><i class="fa-solid fa-bars text-[9px]"></i></span> to choose a class and student, then track their mastery and attendance.
+                </p>
+                <button id="openDrawerWelcomeBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-sm transition">
+                    <i class="fa-solid fa-users"></i> View Student List
+                </button>
+            </div>
+
+            <!-- ==================== NOTEBOOK CHECK (INDEPENDENT SECTION) ==================== -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-6">
+                <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800 dark:text-white">Notebook Check</h3>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 hidden sm:inline">· Separate from progress tracker</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="flex gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-lg" id="nbClassTabs">
+                            <div class="class-tab active" data-nb-class="5A">5A</div>
+                            <div class="class-tab" data-nb-class="5B">5B</div>
+                            <div class="class-tab" data-nb-class="6A">6A</div>
+                            <div class="class-tab" data-nb-class="6B">6B</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+                        <i class="fa-solid fa-circle-info text-brand-500 mr-1"></i>
+                        Add exercises as columns, then tick <span class="text-emerald-600 dark:text-emerald-400 font-semibold">✅</span> against each student when their work is complete. Default is <span class="text-rose-500 font-semibold">❌</span>.
+                    </p>
+
+                    <div class="mb-4 flex flex-wrap items-end gap-2">
+                        <div class="flex-1 min-w-[200px]">
+                            <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wide">New exercise name</label>
+                            <input id="nbNewExercise" type="text" placeholder="e.g. Exercise 5.1, Page 42" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 outline-none focus:ring-2 focus:ring-brand-500 text-slate-800 dark:text-slate-100">
+                        </div>
+                        <button id="nbAddExerciseBtn" class="mgmt-btn mgmt-btn-primary !py-2">
+                            <i class="fa-solid fa-plus"></i> Add exercise
+                        </button>
+                        <button id="nbClearClassBtn" class="mgmt-btn !py-2 bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 hover:bg-rose-200 dark:hover:bg-rose-900/60 border-rose-200 dark:border-rose-900">
+                            <i class="fa-solid fa-trash"></i> Clear all
+                        </button>
+                    </div>
+
+                    <div id="nbTableContainer" class="overflow-auto scroll-thin rounded-xl border border-slate-200 dark:border-slate-700" style="max-height: 70vh;"></div>
+                </div>
+            </div>
+
+            <!-- ==================== DATA MANAGEMENT PANEL ==================== -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-white">Data Management</h3>
+                    <span class="text-[10px] text-slate-400 dark:text-slate-500 hidden sm:inline">· Import / Export</span>
+                </div>
+
+                <div class="p-4">
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+                        <i class="fa-solid fa-circle-info text-brand-500 mr-1"></i>
+                        Export all data as a JSON backup file, or import a previously exported JSON to restore your records.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="mgmt-card !p-3">
+                            <h4 class="text-xs font-bold text-slate-700 dark:text-slate-200 mb-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-download text-emerald-500"></i> Export
+                            </h4>
+                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mb-2">Download a complete backup of all classes, students, mastery, attendance, and notebook checks.</p>
+                            <button id="exportBtn" class="mgmt-btn mgmt-btn-success w-full">
+                                <i class="fa-solid fa-file-arrow-down"></i> Download JSON
+                            </button>
+                        </div>
+                        <div class="mgmt-card !p-3">
+                            <h4 class="text-xs font-bold text-slate-700 dark:text-slate-200 mb-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-upload text-brand-500"></i> Import
+                            </h4>
+                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mb-2">Restore from a JSON file. <strong class="text-rose-500">This will overwrite all current data.</strong></p>
+                            <input type="file" id="importFile" accept=".json,application/json" class="hidden">
+                            <button id="importBtn" class="mgmt-btn mgmt-btn-primary w-full">
+                                <i class="fa-solid fa-file-arrow-up"></i> Select JSON file
+                            </button>
+                        </div>
+                    </div>
+                    <div id="importPreview" class="mt-3 text-[11px] text-slate-500 dark:text-slate-400"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Student detail view (progress tracker) -->
+        <div id="studentDetailView" class="hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 mb-5">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div id="detailAvatar" class="w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-lg text-white shadow-md">AH</div>
+                        <div>
+                            <h2 id="detailStudentName" class="text-xl font-bold text-slate-900 dark:text-white">Student Name</h2>
+                            <p id="detailClassLabel" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Class 5A · Mastery Record</p>
+                        </div>
+                    </div>
+                    <button id="changeStudentBtn" class="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium text-xs transition">
+                        <i class="fa-solid fa-arrow-left text-xs"></i> Change Student
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1.5">
+                        <span id="progressCountLabel">0 of 0 mastered</span>
+                        <span id="overallPctLabel">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div id="overallProgressBar" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 mb-5">
+                <div class="section-header">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-calendar-xmark"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800 dark:text-white">Attendance</h3>
+                    </div>
+                    <span id="absentTotalBadge" class="absent-badge zero"><i class="fa-solid fa-user-xmark"></i> 0 absent</span>
+                </div>
+                <div class="attendance-row">
+                    <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                        <i class="fa-solid fa-circle-info text-slate-400"></i>
+                        <span>Mark this student absent for today, or undo the last absence.</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="markAbsentBtn" class="att-btn att-btn-mark">
+                            <i class="fa-solid fa-user-xmark"></i> Mark absent
+                        </button>
+                        <button id="undoAbsentBtn" class="att-btn att-btn-undo">
+                            <i class="fa-solid fa-rotate-left"></i> Undo last
+                        </button>
+                    </div>
+                </div>
+                <div id="absentHistory" class="mt-3 text-[11px] text-slate-500 dark:text-slate-400"></div>
+            </div>
+
+            <!-- Mastery lists -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="section-header">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-white">To Master</h3>
+                        </div>
+                        <span id="toMasterCount" class="text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">0</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 mb-3">Click a problem type to mark it as mastered →</p>
+                    <div id="toMasterList" class="space-y-1.5 max-h-[60vh] overflow-y-auto scroll-thin pr-1"></div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="section-header">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-check-double"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-white">Mastered</h3>
+                        </div>
+                        <span id="masteredCount" class="text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">0</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 mb-3">Click a mastered type to move it back ←</p>
+                    <div id="masteredList" class="space-y-1.5 max-h-[60vh] overflow-y-auto scroll-thin pr-1"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        (function() {
+            // ==================== SHARED PROBLEM TYPES ====================
+            const PROBLEM_TYPES_5 = [
+                { code: '1.1', label: '2-digit + 2-digit', group: 'Addition' },
+                { code: '1.2', label: '3-digit + 3-digit', group: 'Addition' },
+                { code: '1.3', label: '4-digit + 4-digit', group: 'Addition' },
+                { code: '1.4', label: '5-digit + 5-digit', group: 'Addition' },
+                { code: '2.1', label: '2-digit − 2-digit', group: 'Subtraction' },
+                { code: '2.2', label: '3-digit − 3-digit', group: 'Subtraction' },
+                { code: '2.3', label: '4-digit − 4-digit', group: 'Subtraction' },
+                { code: '2.4', label: '5-digit − 5-digit', group: 'Subtraction' },
+                { code: '3.1', label: '2-digit × 1-digit (0–5)', group: 'Multiplication (0–5)' },
+                { code: '3.2', label: '2-digit × 2-digit (0–5)', group: 'Multiplication (0–5)' },
+                { code: '3.3', label: '3-digit × 1-digit (0–5)', group: 'Multiplication (0–5)' },
+                { code: '3.4', label: '3-digit × 2-digit (0–5)', group: 'Multiplication (0–5)' },
+                { code: '3.5', label: '3-digit × 3-digit (0–5)', group: 'Multiplication (0–5)' },
+                { code: '4.1', label: '2-digit × 1-digit (6–9)', group: 'Multiplication (6–9)' },
+                { code: '4.2', label: '2-digit × 2-digit (6–9)', group: 'Multiplication (6–9)' },
+                { code: '4.3', label: '3-digit × 1-digit (6–9)', group: 'Multiplication (6–9)' },
+                { code: '4.4', label: '3-digit × 2-digit (6–9)', group: 'Multiplication (6–9)' },
+                { code: '4.5', label: '3-digit × 3-digit (6–9)', group: 'Multiplication (6–9)' },
+                { code: '5.1', label: '2-digit ÷ 1-digit', group: 'Division' },
+                { code: '5.2', label: '3-digit ÷ 1-digit', group: 'Division' },
+                { code: '5.3', label: '3-digit ÷ 2-digit (divisor 10–20)', group: 'Division' },
+                { code: '5.4', label: '3-digit ÷ 2-digit (divisor 21–99)', group: 'Division' },
+                { code: '5.5', label: '4-digit ÷ 1-digit', group: 'Division' },
+                { code: '5.6', label: '4-digit ÷ 2-digit (divisor 10–20)', group: 'Division' },
+                { code: '5.7', label: '4-digit ÷ 2-digit (divisor 21–99)', group: 'Division' },
+                { code: '5.8', label: '5-digit ÷ 1-digit', group: 'Division' },
+                { code: '5.9', label: '5-digit ÷ 2-digit (divisor 10–20)', group: 'Division' },
+                { code: '5.10', label: '5-digit ÷ 2-digit (divisor 21–99)', group: 'Division' },
+            ];
+
+            const PROBLEM_TYPES_6 = [
+                { code: '6.1', label: 'Tables upto 9', group: 'Basics' },
+                { code: '6.2', label: 'Multiplication', group: 'Basics' },
+                { code: '6.3', label: 'Division', group: 'Basics' },
+                { code: '6.4', label: 'Divisibility Test by 2, 3, 5', group: 'Basics' },
+                { code: '6.5', label: 'Successive Division', group: 'Basics' },
+                { code: '6.6', label: 'Prime Factorisation', group: 'Number Theory' },
+                { code: '6.7', label: 'LCM', group: 'Number Theory' },
+                { code: '6.8', label: 'HCF', group: 'Number Theory' },
+                { code: '6.9', label: 'Addition of Fractions', group: 'Fractions' },
+                { code: '6.10', label: 'Subtraction of Fractions', group: 'Fractions' },
+                { code: '6.11', label: 'Simplest Form of Fraction', group: 'Fractions' },
+                { code: '6.12', label: 'Multiplication of Fractions', group: 'Fractions' },
+                { code: '6.13', label: 'Division of Fractions', group: 'Fractions' },
+                { code: '6.14', label: 'Improper Fractions to Decimal', group: 'Decimals' },
+                { code: '6.15', label: 'Proper Fractions to Decimal', group: 'Decimals' },
+                { code: '6.16', label: 'Comparison of Decimals', group: 'Decimals' },
+                { code: '6.17', label: 'Addition of Decimals', group: 'Decimals' },
+                { code: '6.18', label: 'Subtraction of Decimals', group: 'Decimals' },
+                { code: '6.19', label: 'Multiplication of Decimals', group: 'Decimals' },
+                { code: '6.20', label: 'Division of Decimals', group: 'Decimals' },
+                { code: '6.21', label: 'Comparison of Integers', group: 'Integers' },
+                { code: '6.22', label: 'Addition & Subtraction of Integers', group: 'Integers' },
+                { code: '6.23', label: 'Simple Equations', group: 'Algebra' },
+            ];
+
+            // ==================== CLASS DATA ====================
+            const DEFAULT_CLASSES = {
+                '5A': {
+                    name: '5th A',
+                    students: [
+                        'Abdul Hadi', 'Alijaan', 'Asad', 'Aban', 'Abdul Ahad', 'Arham',
+                        'Ali Ist', 'Ali II', 'Farhan', 'Hasan', 'Hamza', 'Junaid',
+                        'Shameer', 'Saim', 'Shahran', 'Sharif Alam', 'Samweel', 'Umar',
+                        'Junaid', 'Razi', 'Rihan', 'Ahmad', 'Naimuddin'
+                    ],
+                    problemTypes: PROBLEM_TYPES_5
+                },
+                '5B': {
+                    name: '5th B',
+                    students: [
+                        'Aliza', 'Aafreen', 'Ashad', 'Arsh', 'Ayan', 'Hiba',
+                        'Humaira', 'Inab', 'Junaid', 'Liza', 'Raid', 'Shifa I',
+                        'Shifa II', 'Safiya', 'Seema', 'Shuneza', 'Saif', 'Sadab',
+                        'Subhan', 'Yashab', 'Yahiya', 'Zayna'
+                    ],
+                    problemTypes: PROBLEM_TYPES_5
+                },
+                '6A': {
+                    name: '6th A',
+                    students: [
+                        'Aatif', 'Abdul Basit', 'Abdul Ahad', 'Asad I', 'Asad II', 'Aadil',
+                        'Anas I', 'Anas II', 'Arham', 'Ali', 'Amzad', 'Mohd Ayan',
+                        'Azeem', 'Farhan', 'Faiz', 'Faaiz', 'Gagan', 'Hamza',
+                        'Huzaifa', 'Mohd Ibrahim', 'Muaviya', 'Nazim', 'Nayim', 'Razi',
+                        'Rihan', 'Shahzeb', 'Sanif', 'Saud', 'Ubaid', 'Usman',
+                        'Umar I', 'Umar II', 'Ali II', 'Mohd Yazan'
+                    ],
+                    problemTypes: PROBLEM_TYPES_6
+                },
+                '6B': {
+                    name: '6th B',
+                    students: [
+                        'Afsheen', 'Alsiya', 'Aksha', 'Asra', 'Aakifa', 'Aaliya',
+                        'Daniya', 'Humaira', 'Iqra', 'Kahkasha', 'Layba', 'Muskan',
+                        'Namra', 'Roshin', 'Shifa', 'Sana', 'Zikra', 'Zoya',
+                        'Humaira II', 'Kausar'
+                    ],
+                    problemTypes: PROBLEM_TYPES_6
+                }
+            };
+
+            const STORAGE_KEY = 'mastery_checklist_multi_class_v6';
+
+            // ==================== STATE ====================
+            let classes = {};
+            let masteryData = {};
+            let attendanceData = {};
+            let notebookData = {};
+            let currentClass = '5A';
+            let currentNbClass = '5A';
+            let selectedStudent = null;
+
+            // ==================== DOM REFS ====================
+            const drawerOverlay = document.getElementById('drawerOverlay');
+            const studentDrawer = document.getElementById('studentDrawer');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+            const studentList = document.getElementById('studentList');
+            const studentSearch = document.getElementById('studentSearch');
+            const studentCountBadge = document.getElementById('studentCountBadge');
+            const classTabs = document.getElementById('classTabs');
+            const welcomeState = document.getElementById('welcomeState');
+            const studentDetailView = document.getElementById('studentDetailView');
+            const openDrawerWelcomeBtn = document.getElementById('openDrawerWelcomeBtn');
+            const changeStudentBtn = document.getElementById('changeStudentBtn');
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const resetAllBtn = document.getElementById('resetAllBtn');
+            const headerSubtitle = document.getElementById('headerSubtitle');
+
+            const detailAvatar = document.getElementById('detailAvatar');
+            const detailStudentName = document.getElementById('detailStudentName');
+            const detailClassLabel = document.getElementById('detailClassLabel');
+            const overallProgressBar = document.getElementById('overallProgressBar');
+            const overallPctLabel = document.getElementById('overallPctLabel');
+            const progressCountLabel = document.getElementById('progressCountLabel');
+            const toMasterList = document.getElementById('toMasterList');
+            const masteredList = document.getElementById('masteredList');
+            const toMasterCount = document.getElementById('toMasterCount');
+            const masteredCount = document.getElementById('masteredCount');
+
+            const markAbsentBtn = document.getElementById('markAbsentBtn');
+            const undoAbsentBtn = document.getElementById('undoAbsentBtn');
+            const absentTotalBadge = document.getElementById('absentTotalBadge');
+            const absentHistory = document.getElementById('absentHistory');
+
+            const nbClassTabs = document.getElementById('nbClassTabs');
+            const nbNewExercise = document.getElementById('nbNewExercise');
+            const nbAddExerciseBtn = document.getElementById('nbAddExerciseBtn');
+            const nbClearClassBtn = document.getElementById('nbClearClassBtn');
+            const nbTableContainer = document.getElementById('nbTableContainer');
+
+            const exportBtn = document.getElementById('exportBtn');
+            const importBtn = document.getElementById('importBtn');
+            const importFile = document.getElementById('importFile');
+            const importPreview = document.getElementById('importPreview');
+            const toastEl = document.getElementById('toast');
+
+            // ==================== HELPERS ====================
+            // Alphabetical sort helper — case-insensitive, trims whitespace
+            function sortStudents(arr) {
+                return [...arr].sort((a, b) =>
+                    a.trim().toLowerCase().localeCompare(b.trim().toLowerCase(), undefined, { sensitivity: 'base' })
+                );
+            }
+
+            // ==================== STORAGE ====================
+            function loadData() {
+                let stored = null;
+                try {
+                    stored = localStorage.getItem(STORAGE_KEY);
+                } catch (e) {
+                    console.warn('localStorage read failed', e);
+                }
+
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (parsed && parsed.classes) {
+                            classes = parsed.classes;
+                            masteryData = parsed.mastery || {};
+                            attendanceData = parsed.attendance || {};
+                            notebookData = parsed.notebook || {};
+                        } else {
+                            classes = JSON.parse(JSON.stringify(DEFAULT_CLASSES));
+                            masteryData = {};
+                            attendanceData = {};
+                            notebookData = {};
+                        }
+                    } catch (e) {
+                        console.warn('Failed to parse stored data, using defaults.', e);
+                        classes = JSON.parse(JSON.stringify(DEFAULT_CLASSES));
+                        masteryData = {};
+                        attendanceData = {};
+                        notebookData = {};
+                    }
+                } else {
+                    classes = JSON.parse(JSON.stringify(DEFAULT_CLASSES));
+                    masteryData = {};
+                    attendanceData = {};
+                    notebookData = {};
+                }
+
+                // Ensure all class/student entries exist + sort students alphabetically
+                Object.keys(classes).forEach(cls => {
+                    if (!classes[cls].students) classes[cls].students = [];
+                    // Always enforce alphabetical order
+                    classes[cls].students = sortStudents(classes[cls].students);
+                    if (!classes[cls].problemTypes) {
+                        classes[cls].problemTypes = cls.startsWith('6') ? PROBLEM_TYPES_6 : PROBLEM_TYPES_5;
+                    }
+                    if (!masteryData[cls]) masteryData[cls] = {};
+                    if (!attendanceData[cls]) attendanceData[cls] = {};
+                    classes[cls].students.forEach(name => {
+                        if (!masteryData[cls][name]) masteryData[cls][name] = {};
+                        if (!attendanceData[cls][name]) attendanceData[cls][name] = [];
+                    });
+                    if (!notebookData[cls]) notebookData[cls] = { exercises: [], checks: {} };
+                    if (!notebookData[cls].exercises) notebookData[cls].exercises = [];
+                    if (!notebookData[cls].checks) notebookData[cls].checks = {};
+                });
+
+                if (!classes[currentClass]) {
+                    currentClass = Object.keys(classes)[0];
+                }
+                if (!classes[currentNbClass]) {
+                    currentNbClass = currentClass;
+                }
+            }
+
+            function saveData() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        classes: classes,
+                        mastery: masteryData,
+                        attendance: attendanceData,
+                        notebook: notebookData
+                    }));
+                } catch (e) {
+                    console.warn('Failed to save data.', e);
+                    showToast('Could not save to local storage', 'error');
+                }
+            }
+
+            function getInitials(name) {
+                const parts = name.trim().split(/\s+/);
+                if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+                return name.substring(0, 2).toUpperCase();
+            }
+
+            const AVATAR_COLORS = [
+                '#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6',
+                '#f43f5e', '#06b6d4', '#84cc16', '#eab308', '#6366f1',
+                '#d946ef', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444',
+                '#8b5cf6', '#14b8a6', '#f97316', '#3b82f6', '#ec4899',
+                '#84cc16', '#6366f1', '#a855f7', '#22c55e', '#0ea5e9',
+                '#f43f5e', '#eab308', '#14b8a6', '#8b5cf6', '#f97316',
+                '#3b82f6', '#d946ef', '#22c55e', '#6366f1'
+            ];
+
+            function getAvatarColor(name) {
+                let hash = 0;
+                for (let i = 0; i < name.length; i++) {
+                    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+            }
+
+            function getMasteredCount(cls, name) {
+                const data = (masteryData[cls] && masteryData[cls][name]) || {};
+                return classes[cls].problemTypes.filter(pt => data[pt.code]).length;
+            }
+
+            function getAbsentCount(cls, name) {
+                const list = (attendanceData[cls] && attendanceData[cls][name]) || [];
+                return list.length;
+            }
+
+            function formatDate(isoDate) {
+                if (!isoDate) return '';
+                const [y, m, d] = isoDate.split('-');
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                return `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}`;
+            }
+
+            function formatShortDate(isoDate) {
+                if (!isoDate) return '';
+                const [y, m, d] = isoDate.split('-');
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                return `${parseInt(d)} ${months[parseInt(m) - 1]}`;
+            }
+
+            function todayISO() {
+                const d = new Date();
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${y}-${m}-${day}`;
+            }
+
+            function escapeHtml(str) {
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function showToast(msg, type = '') {
+                toastEl.textContent = '';
+                toastEl.className = 'toast' + (type ? ' ' + type : '');
+                const icon = type === 'success'
+                    ? '<i class="fa-solid fa-check-circle"></i>'
+                    : type === 'error'
+                        ? '<i class="fa-solid fa-circle-exclamation"></i>'
+                        : '<i class="fa-solid fa-circle-info"></i>';
+                toastEl.innerHTML = icon + ' ' + msg;
+                void toastEl.offsetWidth;
+                toastEl.classList.add('show');
+                clearTimeout(toastEl._timer);
+                toastEl._timer = setTimeout(() => {
+                    toastEl.classList.remove('show');
+                }, 2800);
+            }
+
+            // ==================== DRAWER ====================
+            function openDrawer() {
+                studentDrawer.classList.add('open');
+                drawerOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeDrawer() {
+                studentDrawer.classList.remove('open');
+                drawerOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            // ==================== CLASS TABS ====================
+            function updateClassTabs() {
+                classTabs.innerHTML = '';
+                Object.keys(classes).forEach(cls => {
+                    const tab = document.createElement('div');
+                    tab.className = 'class-tab' + (cls === currentClass ? ' active' : '');
+                    tab.setAttribute('data-class', cls);
+                    tab.textContent = cls;
+                    classTabs.appendChild(tab);
+                });
+            }
+
+            function updateNbClassTabs() {
+                nbClassTabs.innerHTML = '';
+                Object.keys(classes).forEach(cls => {
+                    const tab = document.createElement('div');
+                    tab.className = 'class-tab' + (cls === currentNbClass ? ' active' : '');
+                    tab.setAttribute('data-nb-class', cls);
+                    tab.textContent = cls;
+                    nbClassTabs.appendChild(tab);
+                });
+            }
+
+            function switchClass(cls) {
+                if (cls === currentClass) return;
+                currentClass = cls;
+                selectedStudent = null;
+                updateClassTabs();
+                renderStudentList();
+                updateHeaderSubtitle();
+
+                welcomeState.classList.remove('hidden');
+                studentDetailView.classList.add('hidden');
+            }
+
+            function switchNbClass(cls) {
+                if (cls === currentNbClass) return;
+                currentNbClass = cls;
+                updateNbClassTabs();
+                renderNotebookTable();
+            }
+
+            function updateHeaderSubtitle() {
+                const cls = classes[currentClass];
+                headerSubtitle.textContent = `${cls.name} · ${cls.problemTypes.length} Problem Types`;
+            }
+
+            // ==================== STUDENT LIST (ALPHABETICAL) ====================
+            function renderStudentList(filter = '') {
+                const query = filter.toLowerCase().trim();
+                const cls = classes[currentClass];
+                studentList.innerHTML = '';
+                studentCountBadge.textContent = cls.students.length;
+
+                // Ensure alphabetical order (in case underlying array changed)
+                const sortedStudents = sortStudents(cls.students);
+                const filtered = sortedStudents.filter(name => name.toLowerCase().includes(query));
+
+                if (filtered.length === 0) {
+                    studentList.innerHTML = `
+                        <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-xs">
+                            <i class="fa-solid fa-user-slash text-2xl mb-2 block"></i>
+                            No students found
+                        </div>
+                    `;
+                    return;
+                }
+
+                let currentLetter = '';
+
+                filtered.forEach(name => {
+                    const firstLetter = name.charAt(0).toUpperCase();
+                    if (firstLetter !== currentLetter && query === '') {
+                        currentLetter = firstLetter;
+                        const letterHeader = document.createElement('div');
+                        letterHeader.className = 'px-4 pt-3 pb-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider';
+                        letterHeader.textContent = firstLetter;
+                        studentList.appendChild(letterHeader);
+                    }
+
+                    const mastered = getMasteredCount(currentClass, name);
+                    const total = cls.problemTypes.length;
+                    const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
+                    const absents = getAbsentCount(currentClass, name);
+
+                    const item = document.createElement('div');
+                    item.className = 'student-item' + (selectedStudent === name ? ' active' : '');
+                    item.setAttribute('data-student', name);
+
+                    const avatar = document.createElement('div');
+                    avatar.className = 'avatar';
+                    avatar.style.backgroundColor = getAvatarColor(name) + '20';
+                    avatar.style.color = getAvatarColor(name);
+                    avatar.textContent = getInitials(name);
+
+                    const info = document.createElement('div');
+                    info.className = 'flex-1 min-w-0';
+
+                    const nameRow = document.createElement('div');
+                    nameRow.className = 'flex items-center justify-between gap-2';
+
+                    const nameEl = document.createElement('span');
+                    nameEl.className = 'text-xs font-semibold text-slate-800 dark:text-slate-100 truncate';
+                    nameEl.textContent = name;
+
+                    const rightWrap = document.createElement('div');
+                    rightWrap.className = 'flex items-center gap-1.5 flex-shrink-0';
+
+                    if (absents > 0) {
+                        const ab = document.createElement('span');
+                        ab.className = 'absent-badge';
+                        ab.innerHTML = `<i class="fa-solid fa-user-xmark text-[7px]"></i> ${absents}`;
+                        rightWrap.appendChild(ab);
+                    }
+
+                    const pctEl = document.createElement('span');
+                    pctEl.className = 'text-[10px] font-bold';
+                    pctEl.style.color = pct > 0 ? '#059669' : '#94a3b8';
+                    pctEl.textContent = pct + '%';
+
+                    rightWrap.appendChild(pctEl);
+                    nameRow.appendChild(nameEl);
+                    nameRow.appendChild(rightWrap);
+
+                    const progressTrack = document.createElement('div');
+                    progressTrack.className = 'progress-track mt-1.5';
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'progress-fill';
+                    progressFill.style.width = pct + '%';
+                    progressTrack.appendChild(progressFill);
+
+                    const countLabel = document.createElement('div');
+                    countLabel.className = 'text-[9px] text-slate-400 dark:text-slate-500 mt-1';
+                    countLabel.textContent = mastered + ' / ' + total + ' mastered';
+
+                    info.appendChild(nameRow);
+                    info.appendChild(progressTrack);
+                    info.appendChild(countLabel);
+
+                    item.appendChild(avatar);
+                    item.appendChild(info);
+
+                    item.addEventListener('click', () => selectStudent(name));
+                    studentList.appendChild(item);
+                });
+            }
+
+            // ==================== STUDENT SELECTION ====================
+            function selectStudent(name) {
+                selectedStudent = name;
+                closeDrawer();
+                renderStudentList(studentSearch.value);
+                showStudentDetail(name);
+            }
+
+            function showStudentDetail(name) {
+                welcomeState.classList.add('hidden');
+                studentDetailView.classList.remove('hidden');
+
+                const cls = classes[currentClass];
+
+                detailAvatar.textContent = getInitials(name);
+                detailAvatar.style.backgroundColor = getAvatarColor(name);
+                detailStudentName.textContent = name;
+                detailClassLabel.textContent = `${cls.name} · Mastery Record`;
+
+                renderLists(name);
+                updateProgress(name);
+                renderAttendance(name);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // ==================== ATTENDANCE ====================
+            function renderAttendance(studentName) {
+                const list = (attendanceData[currentClass] && attendanceData[currentClass][studentName]) || [];
+                const count = list.length;
+
+                absentTotalBadge.textContent = '';
+                absentTotalBadge.innerHTML = `<i class="fa-solid fa-user-xmark"></i> ${count} absent`;
+                absentTotalBadge.className = 'absent-badge' + (count === 0 ? ' zero' : '');
+
+                if (count === 0) {
+                    absentHistory.innerHTML = `
+                        <span class="text-emerald-600 dark:text-emerald-400 font-medium">
+                            <i class="fa-solid fa-circle-check mr-1"></i> Perfect attendance — no absences recorded.
+                        </span>
+                    `;
+                } else {
+                    const sorted = [...list].sort((a, b) => b.ts - a.ts);
+                    const shown = sorted.slice(0, 8).map(rec =>
+                        `<span class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 px-2 py-0.5 rounded-md mr-1 mb-1">
+                            <i class="fa-regular fa-calendar-xmark text-[9px]"></i>${formatDate(rec.date)}
+                        </span>`
+                    ).join('');
+                    const more = sorted.length > 8 ? `<span class="text-slate-400">+${sorted.length - 8} more…</span>` : '';
+                    absentHistory.innerHTML = `<div class="flex flex-wrap items-center gap-1">${shown}${more}</div>`;
+                }
+
+                if (count === 0) {
+                    undoAbsentBtn.disabled = true;
+                    undoAbsentBtn.style.opacity = '0.4';
+                    undoAbsentBtn.style.cursor = 'not-allowed';
+                } else {
+                    undoAbsentBtn.disabled = false;
+                    undoAbsentBtn.style.opacity = '1';
+                    undoAbsentBtn.style.cursor = 'pointer';
+                }
+            }
+
+            function markAbsent() {
+                if (!selectedStudent) return;
+                if (!attendanceData[currentClass]) attendanceData[currentClass] = {};
+                if (!attendanceData[currentClass][selectedStudent]) attendanceData[currentClass][selectedStudent] = [];
+
+                const today = todayISO();
+                const list = attendanceData[currentClass][selectedStudent];
+
+                if (list.some(rec => rec.date === today)) {
+                    if (!confirm(`${selectedStudent} is already marked absent today (${formatDate(today)}). Add another absence anyway?`)) {
+                        return;
+                    }
+                }
+
+                list.push({ date: today, ts: Date.now() });
+                saveData();
+                renderAttendance(selectedStudent);
+                renderStudentList(studentSearch.value);
+                showToast(`Marked absent: ${formatDate(today)}`, 'success');
+            }
+
+            function undoAbsent() {
+                if (!selectedStudent) return;
+                const list = attendanceData[currentClass] && attendanceData[currentClass][selectedStudent];
+                if (!list || list.length === 0) return;
+
+                const sorted = [...list].sort((a, b) => b.ts - a.ts);
+                const mostRecent = sorted[0];
+                const idx = list.findIndex(r => r.ts === mostRecent.ts && r.date === mostRecent.date);
+                if (idx !== -1) {
+                    list.splice(idx, 1);
+                    saveData();
+                    renderAttendance(selectedStudent);
+                    renderStudentList(studentSearch.value);
+                    showToast('Last absence removed', 'success');
+                }
+            }
+
+            // ==================== NOTEBOOK CHECK (CLASS-WIDE TABLE) ====================
+            function getNotebookClassData(cls) {
+                if (!notebookData[cls]) notebookData[cls] = { exercises: [], checks: {} };
+                if (!notebookData[cls].exercises) notebookData[cls].exercises = [];
+                if (!notebookData[cls].checks) notebookData[cls].checks = {};
+                return notebookData[cls];
+            }
+
+            function renderNotebookTable() {
+                const cls = classes[currentNbClass];
+                const nb = getNotebookClassData(currentNbClass);
+                const exercises = nb.exercises;
+
+                if (exercises.length === 0) {
+                    nbTableContainer.innerHTML = `
+                        <div class="text-center py-12 px-4">
+                            <i class="fa-solid fa-book-open text-4xl text-slate-300 dark:text-slate-600 mb-3 block"></i>
+                            <p class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">No exercises added yet for ${cls.name}</p>
+                            <p class="text-xs text-slate-400 dark:text-slate-500">Use the "Add exercise" field above to create your first column.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Alphabetical order for students in the table
+                const sortedStudents = sortStudents(cls.students);
+
+                let html = '<table class="nb-table">';
+                html += '<thead><tr>';
+                html += '<th class="nb-student-header nb-corner-cell"><i class="fa-solid fa-user mr-1.5 text-slate-400"></i> Student</th>';
+
+                exercises.forEach(ex => {
+                    html += `
+                        <th class="nb-exercise-col">
+                            <div class="nb-exercise-col-header">
+                                <button class="nb-exercise-col-delete" data-ex-id="${ex.id}" title="Delete exercise">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                                <div class="nb-exercise-col-name">${escapeHtml(ex.name)}</div>
+                                <div class="nb-exercise-col-date">${formatShortDate(ex.date)}</div>
+                            </div>
+                        </th>
+                    `;
+                });
+
+                html += '</tr></thead>';
+                html += '<tbody>';
+
+                sortedStudents.forEach(name => {
+                    const checks = (nb.checks && nb.checks[name]) || {};
+                    html += '<tr>';
+                    html += `<td class="nb-student-cell">
+                        <div class="flex items-center gap-2">
+                            <span class="avatar !w-7 !h-7 !text-[10px]" style="background:${getAvatarColor(name)}20;color:${getAvatarColor(name)}">${getInitials(name)}</span>
+                            <span>${escapeHtml(name)}</span>
+                        </div>
+                    </td>`;
+
+                    exercises.forEach(ex => {
+                        const isDone = !!checks[ex.id];
+                        html += `
+                            <td>
+                                <button class="nb-tick-btn ${isDone ? 'done' : 'pending'}" 
+                                    data-student="${escapeHtml(name)}" 
+                                    data-ex-id="${ex.id}"
+                                    title="${isDone ? 'Mark as not done' : 'Mark as done'}">
+                                    ${isDone ? '✅' : '❌'}
+                                </button>
+                            </td>
+                        `;
+                    });
+
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+                nbTableContainer.innerHTML = html;
+
+                nbTableContainer.querySelectorAll('.nb-tick-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const studentName = btn.getAttribute('data-student');
+                        const exId = btn.getAttribute('data-ex-id');
+                        toggleNotebookTick(currentNbClass, studentName, exId);
+                    });
+                });
+
+                nbTableContainer.querySelectorAll('.nb-exercise-col-delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const exId = btn.getAttribute('data-ex-id');
+                        const ex = exercises.find(x => x.id === exId);
+                        if (!ex) return;
+                        if (confirm(`Delete exercise "${ex.name}"? All checkmarks for this exercise will be removed.`)) {
+                            deleteExercise(currentNbClass, exId);
+                        }
+                    });
+                });
+            }
+
+            function toggleNotebookTick(cls, studentName, exId) {
+                const nb = getNotebookClassData(cls);
+                if (!nb.checks[studentName]) nb.checks[studentName] = {};
+                if (nb.checks[studentName][exId]) {
+                    delete nb.checks[studentName][exId];
+                } else {
+                    nb.checks[studentName][exId] = true;
+                }
+                saveData();
+                renderNotebookTable();
+            }
+
+            function addNotebookExercise() {
+                const name = nbNewExercise.value.trim();
+                if (!name) {
+                    showToast('Please enter an exercise name', 'error');
+                    nbNewExercise.focus();
+                    return;
+                }
+
+                const nb = getNotebookClassData(currentNbClass);
+                if (nb.exercises.some(ex => ex.name.toLowerCase() === name.toLowerCase())) {
+                    showToast(`"${name}" already exists in ${currentNbClass}`, 'error');
+                    return;
+                }
+
+                const newEx = {
+                    id: 'ex_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+                    name: name,
+                    date: todayISO(),
+                    addedAt: Date.now()
+                };
+                nb.exercises.push(newEx);
+                saveData();
+                nbNewExercise.value = '';
+                renderNotebookTable();
+                showToast(`Added exercise: ${name}`, 'success');
+                nbNewExercise.focus();
+            }
+
+            function deleteExercise(cls, exId) {
+                const nb = getNotebookClassData(cls);
+                const idx = nb.exercises.findIndex(e => e.id === exId);
+                if (idx === -1) return;
+                nb.exercises.splice(idx, 1);
+                Object.keys(nb.checks).forEach(studentName => {
+                    if (nb.checks[studentName] && nb.checks[studentName][exId]) {
+                        delete nb.checks[studentName][exId];
+                    }
+                });
+                saveData();
+                renderNotebookTable();
+                showToast('Exercise removed', 'success');
+            }
+
+            function clearAllNotebook() {
+                const cls = classes[currentNbClass];
+                if (!confirm(`Delete ALL notebook exercises and checkmarks for ${cls.name}? This cannot be undone.`)) {
+                    return;
+                }
+                notebookData[currentNbClass] = { exercises: [], checks: {} };
+                saveData();
+                renderNotebookTable();
+                showToast(`Cleared notebook checks for ${cls.name}`, 'success');
+            }
+
+            // ==================== MASTERY LISTS ====================
+            function renderLists(studentName) {
+                const cls = classes[currentClass];
+                const data = (masteryData[currentClass] && masteryData[currentClass][studentName]) || {};
+
+                const toMaster = [];
+                const mastered = [];
+
+                cls.problemTypes.forEach(pt => {
+                    if (data[pt.code]) mastered.push(pt);
+                    else toMaster.push(pt);
+                });
+
+                toMasterList.innerHTML = '';
+                if (toMaster.length === 0) {
+                    toMasterList.innerHTML = `
+                        <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-xs">
+                            <i class="fa-solid fa-trophy text-2xl mb-2 block text-amber-400"></i>
+                            All problem types mastered! 🎉
+                        </div>
+                    `;
+                } else {
+                    let currentGroup = '';
+                    toMaster.forEach(pt => {
+                        if (pt.group !== currentGroup) {
+                            currentGroup = pt.group;
+                            const groupLabel = document.createElement('div');
+                            groupLabel.className = 'group-label';
+                            groupLabel.textContent = pt.group;
+                            toMasterList.appendChild(groupLabel);
+                        }
+                        toMasterList.appendChild(createMasteryItem(pt, studentName, false));
+                    });
+                }
+
+                masteredList.innerHTML = '';
+                if (mastered.length === 0) {
+                    masteredList.innerHTML = `
+                        <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-xs">
+                            <i class="fa-regular fa-circle-check text-2xl mb-2 block"></i>
+                            No problem types mastered yet.<br>Click items on the left to add them here.
+                        </div>
+                    `;
+                } else {
+                    let currentGroup = '';
+                    mastered.forEach(pt => {
+                        if (pt.group !== currentGroup) {
+                            currentGroup = pt.group;
+                            const groupLabel = document.createElement('div');
+                            groupLabel.className = 'group-label';
+                            groupLabel.textContent = pt.group;
+                            masteredList.appendChild(groupLabel);
+                        }
+                        masteredList.appendChild(createMasteryItem(pt, studentName, true));
+                    });
+                }
+
+                toMasterCount.textContent = toMaster.length;
+                masteredCount.textContent = mastered.length;
+            }
+
+            function createMasteryItem(pt, studentName, isMastered) {
+                const item = document.createElement('div');
+                item.className = 'mastery-item' + (isMastered ? ' mastered-item' : '');
+                item.setAttribute('data-code', pt.code);
+
+                const circle = document.createElement('div');
+                circle.className = 'check-circle';
+                circle.innerHTML = isMastered ? '<i class="fa-solid fa-check"></i>' : '';
+
+                const info = document.createElement('div');
+                info.className = 'flex-1 min-w-0';
+
+                const codeLabel = document.createElement('span');
+                codeLabel.className = 'text-[9px] font-mono font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded mr-1.5';
+                codeLabel.textContent = pt.code;
+
+                const label = document.createElement('span');
+                label.className = 'text-xs font-medium text-slate-700 dark:text-slate-200';
+                label.textContent = pt.label;
+
+                info.appendChild(codeLabel);
+                info.appendChild(label);
+
+                const arrow = document.createElement('div');
+                arrow.className = 'text-slate-300 dark:text-slate-600 text-xs flex-shrink-0';
+                arrow.innerHTML = isMastered
+                    ? '<i class="fa-solid fa-arrow-left"></i>'
+                    : '<i class="fa-solid fa-arrow-right"></i>';
+
+                item.appendChild(circle);
+                item.appendChild(info);
+                item.appendChild(arrow);
+
+                item.addEventListener('click', () => toggleMastery(studentName, pt.code));
+
+                return item;
+            }
+
+            function toggleMastery(studentName, typeCode) {
+                if (!masteryData[currentClass]) masteryData[currentClass] = {};
+                if (!masteryData[currentClass][studentName]) masteryData[currentClass][studentName] = {};
+
+                if (masteryData[currentClass][studentName][typeCode]) {
+                    delete masteryData[currentClass][studentName][typeCode];
+                } else {
+                    masteryData[currentClass][studentName][typeCode] = true;
+                }
+
+                saveData();
+                renderLists(studentName);
+                updateProgress(studentName);
+                renderStudentList(studentSearch.value);
+            }
+
+            function updateProgress(studentName) {
+                const total = classes[currentClass].problemTypes.length;
+                const mastered = getMasteredCount(currentClass, studentName);
+                const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
+
+                overallProgressBar.style.width = pct + '%';
+                overallPctLabel.textContent = pct + '%';
+                progressCountLabel.textContent = mastered + ' of ' + total + ' mastered';
+            }
+
+            function resetAll() {
+                const cls = classes[currentClass];
+                if (!confirm(`Reset ALL mastery, attendance, and notebook data for ${cls.name}? This cannot be undone.\n\n(Other classes will NOT be affected.)`)) {
+                    return;
+                }
+
+                masteryData[currentClass] = {};
+                attendanceData[currentClass] = {};
+                notebookData[currentClass] = { exercises: [], checks: {} };
+                cls.students.forEach(name => {
+                    masteryData[currentClass][name] = {};
+                    attendanceData[currentClass][name] = [];
+                });
+                saveData();
+
+                if (selectedStudent) {
+                    renderLists(selectedStudent);
+                    updateProgress(selectedStudent);
+                    renderAttendance(selectedStudent);
+                }
+                renderStudentList(studentSearch.value);
+                renderNotebookTable();
+                showToast(`Reset ${cls.name} successfully`, 'success');
+            }
+
+            // ==================== EXPORT / IMPORT ====================
+            function exportData() {
+                const payload = {
+                    exportedAt: new Date().toISOString(),
+                    version: 6,
+                    classes: classes,
+                    mastery: masteryData,
+                    attendance: attendanceData,
+                    notebook: notebookData
+                };
+                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+                a.href = url;
+                a.download = `mastery-checklist-backup-${stamp}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Backup downloaded successfully', 'success');
+            }
+
+            function triggerImport() {
+                importFile.value = '';
+                importFile.click();
+            }
+
+            function handleImportFile(e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const parsed = JSON.parse(ev.target.result);
+                        if (!parsed || !parsed.classes || !parsed.mastery || !parsed.attendance) {
+                            throw new Error('Missing required top-level fields (classes, mastery, attendance)');
+                        }
+
+                        const classKeys = Object.keys(parsed.classes);
+                        if (classKeys.length === 0) throw new Error('No classes found in file');
+
+                        classKeys.forEach(k => {
+                            if (!parsed.classes[k].students || !Array.isArray(parsed.classes[k].students)) {
+                                throw new Error(`Class ${k} is missing a students array`);
+                            }
+                            if (!parsed.classes[k].problemTypes || !Array.isArray(parsed.classes[k].problemTypes)) {
+                                throw new Error(`Class ${k} is missing a problemTypes array`);
+                            }
+                        });
+
+                        if (parsed.notebook && typeof parsed.notebook !== 'object') {
+                            throw new Error('Notebook data is malformed');
+                        }
+
+                        const nb = parsed.notebook || {};
+                        Object.keys(nb).forEach(cls => {
+                            const val = nb[cls];
+                            if (val && !val.exercises && !val.checks) {
+                                nb[cls] = { exercises: [], checks: {} };
+                            } else if (val) {
+                                if (!val.exercises) val.exercises = [];
+                                if (!val.checks) val.checks = {};
+                            }
+                        });
+
+                        const totalStudents = classKeys.reduce((sum, k) => sum + parsed.classes[k].students.length, 0);
+                        const totalNotebook = classKeys.reduce((sum, k) => {
+                            const c = nb[k];
+                            return sum + (c && c.exercises ? c.exercises.length : 0);
+                        }, 0);
+                        const dateStr = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleString() : 'unknown date';
+                        const summary = `Backup from ${dateStr}\nClasses: ${classKeys.join(', ')}\nTotal students: ${totalStudents}\nNotebook exercises: ${totalNotebook}`;
+
+                        if (!confirm(`About to import data. This will OVERWRITE all current data.\n\n${summary}\n\nProceed?`)) {
+                            return;
+                        }
+
+                        classes = parsed.classes;
+                        masteryData = parsed.mastery;
+                        attendanceData = parsed.attendance;
+                        notebookData = nb;
+
+                        // Ensure alphabetical order + complete structure
+                        Object.keys(classes).forEach(cls => {
+                            classes[cls].students = sortStudents(classes[cls].students || []);
+                            if (!masteryData[cls]) masteryData[cls] = {};
+                            if (!attendanceData[cls]) attendanceData[cls] = {};
+                            if (!notebookData[cls]) notebookData[cls] = { exercises: [], checks: {} };
+                            if (!notebookData[cls].exercises) notebookData[cls].exercises = [];
+                            if (!notebookData[cls].checks) notebookData[cls].checks = {};
+                            classes[cls].students.forEach(name => {
+                                if (!masteryData[cls][name]) masteryData[cls][name] = {};
+                                if (!attendanceData[cls][name]) attendanceData[cls][name] = [];
+                            });
+                        });
+
+                        if (!classes[currentClass]) currentClass = classKeys[0];
+                        if (!classes[currentNbClass]) currentNbClass = currentClass;
+                        selectedStudent = null;
+
+                        saveData();
+                        updateClassTabs();
+                        updateNbClassTabs();
+                        updateHeaderSubtitle();
+                        renderStudentList();
+                        renderNotebookTable();
+                        welcomeState.classList.remove('hidden');
+                        studentDetailView.classList.add('hidden');
+
+                        showToast(`Imported ${totalStudents} students across ${classKeys.length} classes`, 'success');
+                    } catch (err) {
+                        console.error(err);
+                        showToast('Import failed: ' + err.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            // ==================== THEME ====================
+            function initTheme() {
+                const stored = localStorage.getItem('theme_pref');
+                if (stored === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else if (stored === 'light') {
+                    document.documentElement.classList.remove('dark');
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.classList.add('dark');
+                }
+            }
+
+            function toggleTheme() {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme_pref', isDark ? 'dark' : 'light');
+            }
+
+            // ==================== EVENTS ====================
+            function bindEvents() {
+                hamburgerBtn.addEventListener('click', () => {
+                    renderStudentList(studentSearch.value);
+                    openDrawer();
+                });
+
+                closeDrawerBtn.addEventListener('click', closeDrawer);
+                drawerOverlay.addEventListener('click', closeDrawer);
+
+                openDrawerWelcomeBtn.addEventListener('click', () => {
+                    renderStudentList();
+                    openDrawer();
+                });
+
+                changeStudentBtn.addEventListener('click', () => {
+                    renderStudentList(studentSearch.value);
+                    openDrawer();
+                });
+
+                studentSearch.addEventListener('input', (e) => {
+                    renderStudentList(e.target.value);
+                });
+
+                classTabs.addEventListener('click', (e) => {
+                    const tab = e.target.closest('.class-tab');
+                    if (tab) {
+                        switchClass(tab.getAttribute('data-class'));
+                    }
+                });
+
+                nbClassTabs.addEventListener('click', (e) => {
+                    const tab = e.target.closest('.class-tab');
+                    if (tab) {
+                        switchNbClass(tab.getAttribute('data-nb-class'));
+                    }
+                });
+
+                markAbsentBtn.addEventListener('click', markAbsent);
+                undoAbsentBtn.addEventListener('click', undoAbsent);
+
+                nbAddExerciseBtn.addEventListener('click', addNotebookExercise);
+                nbNewExercise.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') addNotebookExercise();
+                });
+                nbClearClassBtn.addEventListener('click', clearAllNotebook);
+
+                themeToggleBtn.addEventListener('click', toggleTheme);
+                resetAllBtn.addEventListener('click', resetAll);
+
+                exportBtn.addEventListener('click', exportData);
+                importBtn.addEventListener('click', triggerImport);
+                importFile.addEventListener('change', handleImportFile);
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') closeDrawer();
+                });
+            }
+
+            // ==================== INIT ====================
+            document.addEventListener('DOMContentLoaded', () => {
+                initTheme();
+                loadData();
+                updateClassTabs();
+                updateNbClassTabs();
+                updateHeaderSubtitle();
+                renderStudentList();
+                renderNotebookTable();
+                bindEvents();
+            });
+        })();
+    </script>
+</body>
+</html>

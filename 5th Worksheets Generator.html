@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Worksheet Generator · 5th A / 5th B</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff', 100: '#e0effe', 500: '#2563eb',
+                            600: '#1d4ed8', 700: '#1e40af', 800: '#1e3a8a', 900: '#172554',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['Fira Code', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500;600;700&display=swap');
+
+        .math-digit { font-variant-numeric: tabular-nums; letter-spacing: 0.1em; }
+
+        @media print {
+            @page { size: portrait; margin: 10mm; }
+            
+            /* Reset min-h-screen to prevent a blank second page */
+            body, html {
+                background: white !important; 
+                color: black !important; 
+                min-height: auto !important;
+                height: auto !important;
+                font-size: 14pt;
+            }
+            
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            
+            #printableWorksheet {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .printable-card {
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                break-inside: avoid;
+                page-break-inside: avoid;
+                background: transparent !important;
+                padding: 1rem !important;
+            }
+
+            /* Adjusted print font sizes to prevent overflow */
+            .printable-card .font-mono {
+                font-size: 1.5rem !important; 
+                line-height: 1.4 !important;
+            }
+            .printable-card .text-xs {
+                font-size: 0.9rem !important;
+            }
+            
+            /* Prevent footer from being pushed to the next page */
+            .worksheet-footer {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <!-- Top Navigation -->
+    <header class="no-print bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight text-slate-900 dark:text-white">MathSheet Pro</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Worksheet Generator</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="themeToggleBtn" title="Toggle Theme" class="p-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+                <button id="printBtn" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm shadow-sm transition">
+                    <i class="fa-solid fa-print"></i> <span>Print / Save PDF</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Control Panel (non-printable) -->
+        <div class="no-print bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 mb-6">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-700/60">
+                <h2 class="text-base font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-brand-600"></i> Worksheet Configuration
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+                <div>
+                    <label for="classSelect" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Class</label>
+                    <select id="classSelect" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        <option value="5th A">5th A</option>
+                        <option value="5th B" selected>5th B</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="problemType" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Problem Type</label>
+                    <select id="problemType" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        <optgroup label="Addition (1.x)">
+                            <option value="add2" data-code="1.1">2-digit + 2-digit</option>
+                            <option value="add3" data-code="1.2">3-digit + 3-digit</option>
+                            <option value="add4" data-code="1.3">4-digit + 4-digit</option>
+                            <option value="add5" data-code="1.4">5-digit + 5-digit</option>
+                        </optgroup>
+                        <optgroup label="Subtraction (2.x)">
+                            <option value="sub2" data-code="2.1">2-digit − 2-digit</option>
+                            <option value="sub3" data-code="2.2">3-digit − 3-digit</option>
+                            <option value="sub4" data-code="2.3">4-digit − 4-digit</option>
+                            <option value="sub5" data-code="2.4">5-digit − 5-digit</option>
+                        </optgroup>
+                        <optgroup label="Multiplication (multiplier 0–5) (3.x)">
+                            <option value="mul2x1_low" data-code="3.1">2-digit × 1-digit (0–5)</option>
+                            <option value="mul2x2_low" data-code="3.2">2-digit × 2-digit (0–5)</option>
+                            <option value="mul3x1_low" data-code="3.3">3-digit × 1-digit (0–5)</option>
+                            <option value="mul3x2_low" data-code="3.4">3-digit × 2-digit (0–5)</option>
+                            <option value="mul3x3_low" data-code="3.5">3-digit × 3-digit (0–5)</option>
+                        </optgroup>
+                        <optgroup label="Multiplication (multiplier 6–9) (4.x)">
+                            <option value="mul2x1_high" data-code="4.1">2-digit × 1-digit (6–9)</option>
+                            <option value="mul2x2_high" data-code="4.2">2-digit × 2-digit (6–9)</option>
+                            <option value="mul3x1_high" data-code="4.3">3-digit × 1-digit (6–9)</option>
+                            <option value="mul3x2_high" data-code="4.4">3-digit × 2-digit (6–9)</option>
+                            <option value="mul3x3_high" data-code="4.5">3-digit × 3-digit (6–9)</option>
+                        </optgroup>
+                        <optgroup label="Division (5.x)">
+                            <option value="div2x1" data-code="5.1">2-digit ÷ 1-digit</option>
+                            <option value="div3x1" data-code="5.2">3-digit ÷ 1-digit</option>
+                            <option value="div3x2_low" data-code="5.3">3-digit ÷ 2-digit (divisor 10–20)</option>
+                            <option value="div3x2_high" data-code="5.4">3-digit ÷ 2-digit (divisor 21–99)</option>
+                            <option value="div4x1" data-code="5.5">4-digit ÷ 1-digit</option>
+                            <option value="div4x2_low" data-code="5.6">4-digit ÷ 2-digit (divisor 10–20)</option>
+                            <option value="div4x2_high" data-code="5.7">4-digit ÷ 2-digit (divisor 21–99)</option>
+                            <option value="div5x1" data-code="5.8">5-digit ÷ 1-digit</option>
+                            <option value="div5x2_low" data-code="5.9">5-digit ÷ 2-digit (divisor 10–20)</option>
+                            <option value="div5x2_high" data-code="5.10">5-digit ÷ 2-digit (divisor 21–99)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="questionCount" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Number of Questions (1-100)</label>
+                    <input type="number" id="questionCount" min="1" max="100" value="5" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+
+                <div class="flex items-center mt-2 md:mt-6">
+                    <label class="inline-flex items-center gap-2 text-sm font-medium cursor-pointer">
+                        <input type="checkbox" id="showAnswersToggle" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
+                        <span>Show answers</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-slate-700/60">
+                <button id="generateBtn" class="px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm flex items-center gap-2 shadow-sm transition">
+                    <i class="fa-solid fa-arrows-rotate"></i> Generate worksheet
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= WORKSHEET ================= -->
+        <div id="printableWorksheet" class="bg-white text-slate-900 rounded-2xl shadow-md border border-slate-200 p-6 md:p-12 transition-all">
+
+            <!-- Single main heading + date + class -->
+            <div class="border-b-2 border-slate-800 pb-4 mb-6">
+                <div class="flex flex-wrap justify-between items-end gap-4">
+                    <div>
+                        <h1 id="displayTitle" class="text-2xl font-bold tracking-tight text-slate-900">Worksheet – 1.1</h1>
+                        <p id="displayClass" class="text-sm font-semibold text-slate-600 mt-0.5">5th B</p>
+                    </div>
+                    <div class="text-sm font-medium text-slate-700">
+                        Date: <span id="displayDate" class="font-semibold text-slate-900"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instruction banner -->
+            <div id="instructionBanner" class="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-lg mb-6 flex items-center gap-3">
+                <i class="fa-solid fa-circle-info text-amber-600 text-lg"></i>
+                <span id="displayInstructions" class="text-sm font-medium text-amber-900">Do this homework in the math notebook.</span>
+            </div>
+
+            <!-- Questions grid -->
+            <div id="questionsGrid" class="grid gap-5 my-6">
+                <!-- Dynamically Inserted Cards -->
+            </div>
+
+            <!-- Footer -->
+            <div class="worksheet-footer mt-12 pt-4 border-t border-slate-300 flex justify-between items-center text-xs text-slate-500 font-medium">
+                <span>Math Worksheet</span>
+                <span id="footerClassLabel">5th B</span>
+                <span id="footerCountLabel">5 Questions</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            
+            // Helpers for specific digit constraints
+            const randLowDigits = (digits) => {
+                let numStr = String(randInt(1, 5));
+                for (let i = 1; i < digits; i++) numStr += String(randInt(0, 5));
+                return parseInt(numStr, 10);
+            };
+            const randHighDigits = (digits) => {
+                let numStr = '';
+                for (let i = 0; i < digits; i++) numStr += String(randInt(6, 9));
+                return parseInt(numStr, 10);
+            };
+
+            // Helper for division that optionally includes a remainder
+            const makeDivision = (divisor, minQuotient, maxQuotient, forceRemainder) => {
+                const q = randInt(minQuotient, maxQuotient);
+                let r = 0;
+                if (forceRemainder) {
+                    r = randInt(1, divisor - 1);
+                }
+                const a = (divisor * q) + r;
+                return { a, b: divisor, op: '÷', answer: q, remainder: r };
+            };
+
+            const generators = {
+                // Addition
+                add2: () => { const a = randInt(10, 99), b = randInt(10, 99); return { a, b, op: '+', answer: a + b }; },
+                add3: () => { const a = randInt(100, 999), b = randInt(100, 999); return { a, b, op: '+', answer: a + b }; },
+                add4: () => { const a = randInt(1000, 9999), b = randInt(1000, 9999); return { a, b, op: '+', answer: a + b }; },
+                add5: () => { const a = randInt(10000, 99999), b = randInt(10000, 99999); return { a, b, op: '+', answer: a + b }; },
+
+                // Subtraction
+                sub2: () => { let a = randInt(10, 99), b = randInt(10, 99); if (a < b) [a, b] = [b, a]; return { a, b, op: '−', answer: a - b }; },
+                sub3: () => { let a = randInt(100, 999), b = randInt(100, 999); if (a < b) [a, b] = [b, a]; return { a, b, op: '−', answer: a - b }; },
+                sub4: () => { let a = randInt(1000, 9999), b = randInt(1000, 9999); if (a < b) [a, b] = [b, a]; return { a, b, op: '−', answer: a - b }; },
+                sub5: () => { let a = randInt(10000, 99999), b = randInt(10000, 99999); if (a < b) [a, b] = [b, a]; return { a, b, op: '−', answer: a - b }; },
+
+                // Multiplication
+                mul2x1_low: () => { const a = randInt(10, 99), b = randInt(0, 5); return { a, b, op: '×', answer: a * b }; },
+                mul2x2_low: () => { const a = randInt(10, 99), b = randLowDigits(2); return { a, b, op: '×', answer: a * b }; },
+                mul3x1_low: () => { const a = randInt(100, 999), b = randInt(0, 5); return { a, b, op: '×', answer: a * b }; },
+                mul3x2_low: () => { const a = randInt(100, 999), b = randLowDigits(2); return { a, b, op: '×', answer: a * b }; },
+                mul3x3_low: () => { const a = randInt(100, 999), b = randLowDigits(3); return { a, b, op: '×', answer: a * b }; },
+
+                mul2x1_high: () => { const a = randInt(10, 99), b = randInt(6, 9); return { a, b, op: '×', answer: a * b }; },
+                mul2x2_high: () => { const a = randInt(10, 99), b = randHighDigits(2); return { a, b, op: '×', answer: a * b }; },
+                mul3x1_high: () => { const a = randInt(100, 999), b = randInt(6, 9); return { a, b, op: '×', answer: a * b }; },
+                mul3x2_high: () => { const a = randInt(100, 999), b = randHighDigits(2); return { a, b, op: '×', answer: a * b }; },
+                mul3x3_high: () => { const a = randInt(100, 999), b = randHighDigits(3); return { a, b, op: '×', answer: a * b }; },
+
+                // Division
+                div2x1: (forceRem) => makeDivision(randInt(2, 9), 2, 9, forceRem),
+                div3x1: (forceRem) => makeDivision(randInt(2, 9), 12, 99, forceRem),
+                div3x2_low: (forceRem) => makeDivision(randInt(10, 20), 5, 49, forceRem),
+                div3x2_high: (forceRem) => makeDivision(randInt(21, 99), 2, 9, forceRem),
+                div4x1: (forceRem) => makeDivision(randInt(2, 9), 120, 999, forceRem),
+                div4x2_low: (forceRem) => makeDivision(randInt(10, 20), 50, 499, forceRem),
+                div4x2_high: (forceRem) => makeDivision(randInt(21, 99), 12, 99, forceRem),
+                div5x1: (forceRem) => makeDivision(randInt(2, 9), 1200, 9999, forceRem),
+                div5x2_low: (forceRem) => makeDivision(randInt(10, 20), 500, 4999, forceRem),
+                div5x2_high: (forceRem) => makeDivision(randInt(21, 99), 120, 999, forceRem)
+            };
+
+            let currentProblems = [];
+            let currentType = 'add2';
+
+            // DOM refs
+            const classSelect = document.getElementById('classSelect');
+            const problemTypeSelect = document.getElementById('problemType');
+            const questionCountInput = document.getElementById('questionCount');
+            const showAnswersToggle = document.getElementById('showAnswersToggle');
+            const generateBtn = document.getElementById('generateBtn');
+            const printBtn = document.getElementById('printBtn');
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+            const displayTitle = document.getElementById('displayTitle');
+            const displayClass = document.getElementById('displayClass');
+            const displayDate = document.getElementById('displayDate');
+            const questionsGrid = document.getElementById('questionsGrid');
+            const footerClassLabel = document.getElementById('footerClassLabel');
+            const footerCountLabel = document.getElementById('footerCountLabel');
+
+            function getFormattedDate() {
+                const now = new Date();
+                return now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+
+            // UPDATE: Set the document title here so it's ready BEFORE printing
+            function updateMetadata() {
+                displayDate.textContent = getFormattedDate();
+                displayClass.textContent = classSelect.value;
+                footerClassLabel.textContent = classSelect.value;
+                
+                // Set the document title based on [Class] [Exercise No]
+                const exerciseNo = getWorksheetCode();
+                document.title = `${classSelect.value} ${exerciseNo}`;
+            }
+
+            function getWorksheetCode() {
+                const opt = problemTypeSelect.options[problemTypeSelect.selectedIndex];
+                return opt.getAttribute('data-code') || '1.1';
+            }
+
+            // Dynamic Grid Calculation based on the width of the content
+            function getGridClass(count, isDivision) {
+                if (isDivision) return 'grid-cols-1';
+                
+                // Calculate maximum character length of numbers + operators to determine required width
+                let maxChars = 0;
+                currentProblems.forEach(p => {
+                    const numChars = String(p.a).length + String(p.b).length + 2; 
+                    if (numChars > maxChars) maxChars = numChars;
+                });
+
+                // If numbers are very wide (e.g., 3-digit x 3-digit = 7 chars result), use fewer columns
+                if (maxChars >= 10) {
+                    return count <= 6 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3';
+                } else if (maxChars >= 7) {
+                    return count <= 6 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4';
+                } else {
+                    return count <= 5 ? 'grid-cols-1 sm:grid-cols-3 md:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4 md:grid-cols-5';
+                }
+            }
+
+            function renderQuestions() {
+                const showAnswers = showAnswersToggle.checked;
+                const type = currentType;
+                const isDivision = type.startsWith('div');
+                
+                // Dynamically set the grid layout
+                const gridLayout = getGridClass(currentProblems.length, isDivision);
+                questionsGrid.className = `grid gap-5 my-6 ${gridLayout}`;
+
+                let html = '';
+                currentProblems.forEach((prob, idx) => {
+                    if (isDivision) {
+                        let ansDisplay = '&nbsp;';
+                        if (showAnswers) {
+                            ansDisplay = prob.remainder > 0 ? `${prob.answer} r ${prob.remainder}` : `${prob.answer}`;
+                        }
+                        
+                        // Clean horizontal layout for division
+                        html += `
+                            <div class="printable-card bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-row items-center justify-between gap-2 relative">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-sm font-bold text-slate-400 w-6 text-right shrink-0">${idx + 1}.</span>
+                                    <div class="font-mono text-xl md:text-2xl font-semibold text-slate-900 flex flex-nowrap items-center gap-2">
+                                        <span>${prob.a}</span>
+                                        <span class="text-brand-600 font-bold">÷</span>
+                                        <span>${prob.b}</span>
+                                        <span>=</span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow flex justify-end">
+                                    <span class="${showAnswers ? 'text-emerald-700 font-bold font-mono text-xl md:text-2xl' : 'inline-block w-24 border-b-2 border-slate-800 text-center'}">${ansDisplay}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Vertical math layout wrapped in an inline-block so the line exactly matches the content width
+                        html += `
+                            <div class="printable-card bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-start w-full">
+                                <span class="text-xs font-bold text-slate-400 mb-1">${idx + 1}.</span>
+                                <div class="w-full flex justify-center my-2">
+                                    <div class="font-mono text-xl md:text-2xl font-semibold text-slate-900 inline-block">
+                                        <div class="text-right px-2">${prob.a}</div>
+                                        <div class="border-b-2 border-slate-800 pb-1 flex items-center gap-2 px-2">
+                                            <span class="text-brand-600 font-bold text-left w-5">${prob.op}</span>
+                                            <span class="text-right flex-grow">${prob.b}</span>
+                                        </div>
+                                        <div class="pt-1.5 min-h-[2.5rem] text-right px-2">
+                                            <span class="${showAnswers ? 'text-emerald-700 font-bold' : 'block w-full'}">${showAnswers ? prob.answer : '&nbsp;'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                questionsGrid.innerHTML = html;
+            }
+
+            function updateWorksheetHeading() {
+                displayTitle.textContent = 'Worksheet – ' + getWorksheetCode();
+                footerCountLabel.textContent = currentProblems.length + ' Questions';
+            }
+
+            function generateWorksheet() {
+                const type = problemTypeSelect.value;
+                
+                // Safely parse and clamp the question count between 1 and 100
+                let count = parseInt(questionCountInput.value, 10);
+                if (isNaN(count) || count < 1) {
+                    count = 1;
+                } else if (count > 100) {
+                    count = 100;
+                }
+                questionCountInput.value = count; // Update UI if clamped
+
+                const genFn = generators[type];
+                if (!genFn) return;
+
+                currentType = type;
+                updateWorksheetHeading();
+
+                const isDivision = type.startsWith('div');
+                
+                // For division, we want ~40% of problems with NO remainder, and 60% with remainder.
+                let forceRemainders = [];
+                if (isDivision) {
+                    const noRemCount = Math.round(count * 0.4);
+                    const remCount = count - noRemCount;
+                    
+                    for (let i = 0; i < noRemCount; i++) forceRemainders.push(false);
+                    for (let i = 0; i < remCount; i++) forceRemainders.push(true);
+                    
+                    forceRemainders.sort(() => Math.random() - 0.5);
+                }
+
+                currentProblems = [];
+                for (let i = 0; i < count; i++) {
+                    let prob;
+                    let guard = 0;
+                    
+                    do {
+                        if (isDivision) {
+                            prob = genFn(forceRemainders[i]);
+                        } else {
+                            prob = genFn();
+                        }
+                        guard++;
+                    } while (currentProblems.some(p => p.a === prob.a && p.b === prob.b && p.op === prob.op) && guard < 100);
+
+                    currentProblems.push(prob);
+                }
+
+                renderQuestions();
+                updateMetadata();
+                updateWorksheetHeading();
+            }
+
+            function onProblemTypeChange() {
+                updateWorksheetHeading();
+                updateMetadata(); // Ensure title updates immediately when type changes
+                generateWorksheet();
+            }
+
+            function bindEvents() {
+                generateBtn.addEventListener('click', generateWorksheet);
+                problemTypeSelect.addEventListener('change', onProblemTypeChange);
+                questionCountInput.addEventListener('change', generateWorksheet);
+                showAnswersToggle.addEventListener('change', renderQuestions);
+                
+                // Just call window.print() directly. The title is already correctly set!
+                printBtn.addEventListener('click', () => {
+                    window.print();
+                });
+
+                themeToggleBtn.addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                });
+                classSelect.addEventListener('change', () => {
+                    updateMetadata();
+                    generateWorksheet();
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                bindEvents();
+                generateWorksheet();
+            });
+        })();
+    </script>
+</body>
+</html>
