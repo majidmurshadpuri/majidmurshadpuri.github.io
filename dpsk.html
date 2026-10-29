@@ -51,6 +51,226 @@
             border-color: #334155;
             background: #1e293b;
         }
+
+        /* ===== IN-PAGE TOOL VIEWER ===== */
+        .tool-viewer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 60;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .tool-viewer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tool-viewer {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px) scale(0.985);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            padding: 0.75rem;
+        }
+        .tool-viewer.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tool-viewer-shell {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.45);
+            border: 1px solid #e2e8f0;
+            min-height: 0;
+        }
+        .dark .tool-viewer-shell {
+            background: #0f172a;
+            border-color: #334155;
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.8);
+        }
+
+        .tool-viewer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        .dark .tool-viewer-header {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .tool-viewer-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 0;
+        }
+        .tool-viewer-title .tv-icon {
+            width: 1.85rem;
+            height: 1.85rem;
+            border-radius: 0.55rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        .tool-viewer-title .tv-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dark .tool-viewer-title .tv-name { color: #f1f5f9; }
+        .tool-viewer-title .tv-sub {
+            font-size: 0.62rem;
+            font-weight: 500;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+
+        .tv-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0.42rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .tv-btn-ghost {
+            background: #f1f5f9;
+            color: #475569;
+            border-color: #e2e8f0;
+        }
+        .tv-btn-ghost:hover { background: #e2e8f0; }
+        .dark .tv-btn-ghost { background: #334155; color: #cbd5e1; border-color: #475569; }
+        .dark .tv-btn-ghost:hover { background: #475569; }
+
+        .tv-btn-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+        .tv-btn-danger:hover { background: #fecaca; }
+        .dark .tv-btn-danger { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
+        .dark .tv-btn-danger:hover { background: #7f1d1d; }
+
+        /* Tool switcher chips inside viewer */
+        .tv-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.68rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .tv-tab:hover { border-color: #93c5fd; color: #1d4ed8; }
+        .dark .tv-tab { background: #1e293b; border-color: #334155; color: #94a3b8; }
+        .dark .tv-tab:hover { border-color: #3b82f6; color: #93c5fd; }
+        .tv-tab.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+        .dark .tv-tab.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        .tool-viewer-body {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            background: #f8fafc;
+        }
+        .dark .tool-viewer-body { background: #0f172a; }
+
+        .tool-viewer-frame {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+        .dark .tool-viewer-frame { background: #0f172a; }
+
+        .tool-viewer-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: #f8fafc;
+            z-index: 2;
+            transition: opacity 0.3s ease;
+        }
+        .dark .tool-viewer-loading { background: #0f172a; }
+        .tool-viewer-loading.hidden { opacity: 0; pointer-events: none; }
+        .tool-viewer-loading .spinner {
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 9999px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #2563eb;
+            animation: tv-spin 0.8s linear infinite;
+        }
+        .dark .tool-viewer-loading .spinner { border-color: #334155; border-top-color: #60a5fa; }
+        @keyframes tv-spin { to { transform: rotate(360deg); } }
+        .tool-viewer-loading p {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+        .dark .tool-viewer-loading p { color: #94a3b8; }
+
+        /* On small screens, tabs scroll horizontally */
+        .tv-tabs-scroll {
+            display: flex;
+            gap: 0.35rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tv-tabs-scroll::-webkit-scrollbar { display: none; }
+
+        body.viewer-open { overflow: hidden; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
@@ -83,7 +303,7 @@
         <div class="text-center mb-10">
             <h2 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-2">Choose a Tool</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-                Three powerful tools for mastering math — all in one place. Click any card to launch.
+                Three powerful tools for mastering math — all in one place. Click any card to launch it right here.
             </p>
         </div>
 
@@ -91,7 +311,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
             <!-- ===== CARD 1: MASTERY CHECKLIST ===== -->
-            <a href="Mastery%20Checklist%20%C2%B7%205A%205B%206A%206B%20(4).html" target="_blank" class="card-hover block bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button"
+                    data-tool="mastery"
+                    data-tool-name="Mastery Checklist"
+                    data-tool-sub="5A · 5B · 6A · 6B"
+                    data-tool-url="Mastery%20Checklist%20%C2%B7%205A%205B%206A%206B%20(4).html"
+                    data-tool-icon="fa-list-check"
+                    data-tool-icon-bg="bg-blue-100 dark:bg-blue-900/40"
+                    data-tool-icon-fg="text-blue-600 dark:text-blue-400"
+                    class="tool-launcher card-hover text-left block w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <div class="p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl">
@@ -112,15 +340,23 @@
                     </div>
                 </div>
                 <div class="px-6 py-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Opens in new tab</span>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Opens in-page viewer</span>
                     <span class="text-xs font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1">
-                        Launch <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        Open <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </span>
                 </div>
-            </a>
+            </button>
 
             <!-- ===== CARD 2: WORKSHEET GENERATOR ===== -->
-            <a href="5th%20Worksheets%20Generator.html" target="_blank" class="card-hover block bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button"
+                    data-tool="worksheets"
+                    data-tool-name="Worksheet Generator"
+                    data-tool-sub="5th A · 5th B"
+                    data-tool-url="5th%20Worksheets%20Generator.html"
+                    data-tool-icon="fa-calculator"
+                    data-tool-icon-bg="bg-emerald-100 dark:bg-emerald-900/40"
+                    data-tool-icon-fg="text-emerald-600 dark:text-emerald-400"
+                    class="tool-launcher card-hover text-left block w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <div class="p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl">
@@ -140,15 +376,23 @@
                     </div>
                 </div>
                 <div class="px-6 py-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Opens in new tab</span>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Opens in-page viewer</span>
                     <span class="text-xs font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1">
-                        Launch <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        Open <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </span>
                 </div>
-            </a>
+            </button>
 
             <!-- ===== CARD 3: 5-QUESTION GENERATOR ===== -->
-            <a href="5th%205%20Questions%20Generator.html" target="_blank" class="card-hover block bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button"
+                    data-tool="quick5"
+                    data-tool-name="5-Question Quick Set"
+                    data-tool-sub="5th A · 5th B"
+                    data-tool-url="5th%205%20Questions%20Generator.html"
+                    data-tool-icon="fa-bolt"
+                    data-tool-icon-bg="bg-violet-100 dark:bg-violet-900/40"
+                    data-tool-icon-fg="text-violet-600 dark:text-violet-400"
+                    class="tool-launcher card-hover text-left block w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <div class="p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xl">
@@ -168,12 +412,12 @@
                     </div>
                 </div>
                 <div class="px-6 py-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Opens in new tab</span>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Opens in-page viewer</span>
                     <span class="text-xs font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1">
-                        Launch <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        Open <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </span>
                 </div>
-            </a>
+            </button>
 
         </div>
 
@@ -201,7 +445,7 @@
         <div class="mt-10 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
             <p class="text-[11px] text-slate-400 dark:text-slate-500">
                 <i class="fa-solid fa-info-circle mr-1"></i>
-                These links point to the HTML files by name. Upload all three files to the same GitHub folder (or repository root) for them to work automatically.
+                Tools now open in an in-page viewer. Upload all three HTML files to the same GitHub folder (or repository root) for them to load automatically.
             </p>
         </div>
 
@@ -214,8 +458,69 @@
         </div>
     </footer>
 
+    <!-- ==================== IN-PAGE TOOL VIEWER ==================== -->
+    <div id="toolViewerOverlay" class="tool-viewer-overlay"></div>
+
+    <div id="toolViewer" class="tool-viewer" role="dialog" aria-modal="true" aria-labelledby="tvName">
+        <div class="tool-viewer-shell">
+
+            <!-- Viewer Header -->
+            <div class="tool-viewer-header">
+                <div class="tool-viewer-title">
+                    <div id="tvIcon" class="tv-icon bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div id="tvName" class="tv-name">Mastery Checklist</div>
+                        <div id="tvSub" class="tv-sub">5A · 5B · 6A · 6B</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button id="tvReloadBtn" class="tv-btn tv-btn-ghost" title="Reload tool">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span class="hidden sm:inline">Reload</span>
+                    </button>
+                    <a id="tvOpenTabBtn" href="#" target="_blank" rel="noopener" class="tv-btn tv-btn-ghost" title="Open in new tab">
+                        <i class="fa-solid fa-up-right-from-square"></i>
+                        <span class="hidden sm:inline">New tab</span>
+                    </a>
+                    <button id="tvCloseBtn" class="tv-btn tv-btn-danger" title="Close viewer">
+                        <i class="fa-solid fa-xmark"></i>
+                        <span class="hidden sm:inline">Close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tool switcher tabs -->
+            <div class="px-3 py-2 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                <div class="tv-tabs-scroll">
+                    <button type="button" class="tv-tab active" data-tool-tab="mastery">
+                        <i class="fa-solid fa-list-check"></i> Mastery
+                    </button>
+                    <button type="button" class="tv-tab" data-tool-tab="worksheets">
+                        <i class="fa-solid fa-calculator"></i> Worksheets
+                    </button>
+                    <button type="button" class="tv-tab" data-tool-tab="quick5">
+                        <i class="fa-solid fa-bolt"></i> Quick 5
+                    </button>
+                </div>
+            </div>
+
+            <!-- Viewer Body (iframe) -->
+            <div class="tool-viewer-body">
+                <div id="tvLoading" class="tool-viewer-loading">
+                    <div class="spinner"></div>
+                    <p>Loading tool…</p>
+                </div>
+                <iframe id="tvFrame" class="tool-viewer-frame" title="Tool viewer" src="about:blank"></iframe>
+            </div>
+
+        </div>
+    </div>
+
     <script>
-        // Theme toggle
+        // ==================== THEME ====================
         (function() {
             const themeToggleBtn = document.getElementById('themeToggleBtn');
 
@@ -237,6 +542,165 @@
 
             themeToggleBtn.addEventListener('click', toggleTheme);
             initTheme();
+        })();
+
+        // ==================== IN-PAGE TOOL VIEWER ====================
+        (function() {
+            const TOOLS = {
+                mastery: {
+                    name: 'Mastery Checklist',
+                    sub: '5A · 5B · 6A · 6B',
+                    url: 'Mastery%20Checklist%20%C2%B7%205A%205B%206A%206B%20(4).html',
+                    icon: 'fa-list-check',
+                    iconBg: 'bg-blue-100 dark:bg-blue-900/40',
+                    iconFg: 'text-blue-600 dark:text-blue-400'
+                },
+                worksheets: {
+                    name: 'Worksheet Generator',
+                    sub: '5th A · 5th B',
+                    url: '5th%20Worksheets%20Generator.html',
+                    icon: 'fa-calculator',
+                    iconBg: 'bg-emerald-100 dark:bg-emerald-900/40',
+                    iconFg: 'text-emerald-600 dark:text-emerald-400'
+                },
+                quick5: {
+                    name: '5-Question Quick Set',
+                    sub: '5th A · 5th B',
+                    url: '5th%205%20Questions%20Generator.html',
+                    icon: 'fa-bolt',
+                    iconBg: 'bg-violet-100 dark:bg-violet-900/40',
+                    iconFg: 'text-violet-600 dark:text-violet-400'
+                }
+            };
+
+            const overlay = document.getElementById('toolViewerOverlay');
+            const viewer = document.getElementById('toolViewer');
+            const frame = document.getElementById('tvFrame');
+            const loading = document.getElementById('tvLoading');
+            const tvIcon = document.getElementById('tvIcon');
+            const tvName = document.getElementById('tvName');
+            const tvSub = document.getElementById('tvSub');
+            const tvReloadBtn = document.getElementById('tvReloadBtn');
+            const tvOpenTabBtn = document.getElementById('tvOpenTabBtn');
+            const tvCloseBtn = document.getElementById('tvCloseBtn');
+            const tabButtons = Array.from(document.querySelectorAll('[data-tool-tab]'));
+
+            let activeTool = null;
+            let loadTimer = null;
+
+            function applyToolMeta(meta) {
+                tvName.textContent = meta.name;
+                tvSub.textContent = meta.sub;
+
+                // Reset icon classes then apply
+                tvIcon.className = 'tv-icon';
+                tvIcon.classList.add(...meta.iconBg.split(' '));
+                tvIcon.classList.add(...meta.iconFg.split(' '));
+                tvIcon.innerHTML = '<i class="fa-solid ' + meta.icon + '"></i>';
+
+                // Update tab active state
+                tabButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-tool-tab') === activeTool);
+                });
+
+                // Update "open in new tab" link
+                tvOpenTabBtn.setAttribute('href', meta.url);
+            }
+
+            function showLoading() {
+                loading.classList.remove('hidden');
+            }
+
+            function hideLoading() {
+                loading.classList.add('hidden');
+            }
+
+            function loadTool(toolKey, opts = {}) {
+                const meta = TOOLS[toolKey];
+                if (!meta) return;
+
+                activeTool = toolKey;
+                applyToolMeta(meta);
+
+                // Show loading, then swap iframe src
+                showLoading();
+                clearTimeout(loadTimer);
+
+                // Give a tiny tick so the loading state paints before navigation
+                requestAnimationFrame(() => {
+                    frame.src = meta.url;
+                });
+
+                // Safety timeout in case load event doesn't fire
+                loadTimer = setTimeout(hideLoading, 6000);
+            }
+
+            function openViewer(toolKey) {
+                viewer.classList.add('open');
+                overlay.classList.add('open');
+                document.body.classList.add('viewer-open');
+                loadTool(toolKey);
+            }
+
+            function closeViewer() {
+                viewer.classList.remove('open');
+                overlay.classList.remove('open');
+                document.body.classList.remove('viewer-open');
+                // Defer clearing the frame so the close animation stays smooth
+                setTimeout(() => {
+                    if (!viewer.classList.contains('open')) {
+                        frame.src = 'about:blank';
+                    }
+                }, 260);
+            }
+
+            // Launch buttons
+            document.querySelectorAll('.tool-launcher').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const toolKey = btn.getAttribute('data-tool');
+                    openViewer(toolKey);
+                });
+            });
+
+            // Tabs inside viewer
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const toolKey = btn.getAttribute('data-tool-tab');
+                    if (toolKey === activeTool) return;
+                    loadTool(toolKey);
+                });
+            });
+
+            // Reload button
+            tvReloadBtn.addEventListener('click', () => {
+                if (activeTool) loadTool(activeTool);
+            });
+
+            // Close buttons
+            tvCloseBtn.addEventListener('click', closeViewer);
+            overlay.addEventListener('click', closeViewer);
+
+            // Escape to close
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && viewer.classList.contains('open')) {
+                    closeViewer();
+                }
+            });
+
+            // Iframe load handling
+            frame.addEventListener('load', () => {
+                // Ignore about:blank
+                if (!frame.src || frame.src === 'about:blank') return;
+                hideLoading();
+                clearTimeout(loadTimer);
+            });
+
+            // If a tool's frame fails to load (e.g., file not uploaded yet),
+            // still hide the spinner after the safety timeout.
+            frame.addEventListener('error', () => {
+                hideLoading();
+                clearTimeout(loadTimer);
+            });
         })();
     </script>
 </body>
