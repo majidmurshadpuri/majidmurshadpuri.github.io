@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Tools Hub · Mastery & Worksheets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff', 100: '#e0effe', 500: '#2563eb',
+                            600: '#1d4ed8', 700: '#1e40af', 800: '#1e3a8a', 900: '#172554',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['Fira Code', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500;600;700&display=swap');
+
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
+        }
+        .dark .card-hover:hover {
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <!-- ==================== TOP NAVIGATION ==================== -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-cubes"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight text-slate-900 dark:text-white">Math Tools Hub</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Mastery · Worksheets · Quick Practice</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="themeToggleBtn" title="Toggle Theme" class="p-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- Intro -->
+        <div class="text-center mb-10">
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-2">Choose a Tool</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+                Three powerful tools for mastering math — all in one place. Click any card to launch.
+            </p>
+        </div>
+
+        <!-- Tool Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- ===== CARD 1: MASTERY CHECKLIST ===== -->
+            <a href="Mastery%20Checklist%20%C2%B7%205A%205B%206A%206B%20(4).html" target="_blank" class="card-hover block bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">Mastery Checklist</h3>
+                            <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">5A · 5B · 6A · 6B</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+                        Track student mastery of math problem types, manage attendance, and record notebook checks. Includes import/export backup.
+                    </p>
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="text-[10px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">Mastery tracking</span>
+                        <span class="text-[10px] font-semibold bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 px-2 py-0.5 rounded-full">Attendance</span>
+                        <span class="text-[10px] font-semibold bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 px-2 py-0.5 rounded-full">Notebook</span>
+                    </div>
+                </div>
+                <div class="px-6 py-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Opens in new tab</span>
+                    <span class="text-xs font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1">
+                        Launch <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- ===== CARD 2: WORKSHEET GENERATOR ===== -->
+            <a href="5th%20Worksheets%20Generator.html" target="_blank" class="card-hover block bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">Worksheet Generator</h3>
+                            <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">5th A · 5th B</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+                        Generate custom worksheets for addition, subtraction, multiplication, and division. Choose problem types, set question counts, and print or save as PDF.
+                    </p>
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">Custom worksheets</span>
+                        <span class="text-[10px] font-semibold bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full">Print / PDF</span>
+                    </div>
+                </div>
+                <div class="px-6 py-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Opens in new tab</span>
+                    <span class="text-xs font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1">
+                        Launch <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- ===== CARD 3: 5-QUESTION GENERATOR ===== -->
+            <a href="5th%205%20Questions%20Generator.html" target="_blank" class="card-hover block bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">5-Question Quick Set</h3>
+                            <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">5th A · 5th B</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+                        Instantly generate a fixed set of 5 mixed problems — multiplication and division. Perfect for quick daily practice or warm-ups.
+                    </p>
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="text-[10px] font-semibold bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full">Mixed practice</span>
+                        <span class="text-[10px] font-semibold bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full">One-click</span>
+                    </div>
+                </div>
+                <div class="px-6 py-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Opens in new tab</span>
+                    <span class="text-xs font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1">
+                        Launch <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </span>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Note about file names -->
+        <div class="mt-10 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
+            <p class="text-[11px] text-slate-400 dark:text-slate-500">
+                <i class="fa-solid fa-info-circle mr-1"></i>
+                These links point to the HTML files by name. Upload all three files to the same GitHub folder (or repository root) for them to work automatically.
+            </p>
+        </div>
+
+    </main>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="border-t border-slate-200 dark:border-slate-700 py-6 mt-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-[11px] text-slate-400 dark:text-slate-500">
+            Math Tools Hub · All-in-one system for mastery tracking & worksheet generation
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle
+        (function() {
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+            function initTheme() {
+                const stored = localStorage.getItem('theme_pref_hub');
+                if (stored === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else if (stored === 'light') {
+                    document.documentElement.classList.remove('dark');
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.classList.add('dark');
+                }
+            }
+
+            function toggleTheme() {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme_pref_hub', isDark ? 'dark' : 'light');
+            }
+
+            themeToggleBtn.addEventListener('click', toggleTheme);
+            initTheme();
+        })();
+    </script>
+</body>
+</html>
