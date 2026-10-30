@@ -1,0 +1,3059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fee Management System</title>
+<!-- Google Identity Services Library for OAuth 2.0 -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #eef2f7; color: #1f2d3d; padding: 16px; padding-top: 70px;
+  }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .subtitle { color: #5b6b7c; font-size: 13px; margin-bottom: 16px; }
+
+  /* ============ TOP BAR ============ */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 56px;
+    background: #1e293b; color: #fff; display: flex; align-items: center;
+    padding: 0 14px; gap: 12px; z-index: 60; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .hamburger {
+    background: transparent; border: none; color: #fff; font-size: 24px;
+    cursor: pointer; padding: 6px 10px; border-radius: 6px;
+  }
+  .hamburger:hover { background: #334155; }
+  .topbar-title { font-size: 15px; font-weight: 700; flex: 1; }
+  .topbar-back {
+    background: #334155; color: #fff; border: none; padding: 6px 12px;
+    border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+  .topbar-back:hover { background: #475569; }
+
+  .drawer-bg { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 80; display: none; }
+  .drawer-bg.open { display: block; }
+  .drawer {
+    position: fixed; top: 56px; left: 0; bottom: 0; width: 320px; max-width: 85vw;
+    background: #fff; z-index: 90; transform: translateX(-100%);
+    transition: transform 0.2s; overflow-y: auto; box-shadow: 2px 0 14px rgba(0,0,0,0.15);
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head {
+    padding: 14px 16px; border-bottom: 1px solid #e3eaf2;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .drawer-head h3 { font-size: 15px; }
+  .drawer-head button {
+    background: #eef2f7; border: none; border-radius: 6px;
+    padding: 6px 10px; font-size: 12px; cursor: pointer; font-weight: 600;
+  }
+  .drawer-student {
+    padding: 12px 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  }
+  .drawer-student:hover { background: #f8fafc; }
+  .drawer-student .name { font-weight: 600; font-size: 13.5px; flex: 1; }
+  .drawer-student .meta { font-size: 11px; color: #64748b; text-align: right; }
+  .drawer-student .meta .due-amt { color: #dc2626; font-weight: 700; }
+  .drawer-student .meta .ok-amt { color: #16a34a; font-weight: 700; }
+  .drawer-student .meta .slip-count { color: #7c3aed; font-weight: 700; }
+  .drawer-empty { padding: 24px; text-align: center; color: #94a3b8; font-size: 13px; }
+  .drawer-section-title {
+    padding: 10px 16px 4px; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.5px; color: #94a3b8; font-weight: 700;
+  }
+
+  .hidden { display: none !important; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px; background: #eef2f7;
+    border: none; padding: 8px 14px; border-radius: 6px;
+    font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 14px;
+  }
+  .back-btn:hover { background: #e2e8f0; }
+
+  .card {
+    background: #fff; border-radius: 10px; padding: 16px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .card h2 {
+    font-size: 16px; margin-bottom: 12px; border-bottom: 2px solid #e3eaf2;
+    padding-bottom: 8px; display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 8px;
+  }
+
+  button { font-family: inherit; cursor: pointer; }
+  .btn-primary { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 600; }
+  .btn-success { background: #16a34a; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 600; }
+  .btn-danger  { background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 600; }
+  .btn-warning { background: #f59e0b; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 600; }
+  .btn-print   { background: #7c3aed; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 600; }
+  .btn-whatsapp { background: #25D366; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-ghost   { background: #e6edf5; color: #1f2d3d; border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 600; }
+  .btn-custom  { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 6px; padding: 4px 9px; font-size: 11.5px; font-weight: 700; }
+  .btn-custom:hover { background: #fde68a; }
+  .btn-custom.has-custom { background: #fffbeb; color: #b45309; border-color: #f59e0b; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td {
+    padding: 8px 6px; text-align: left; border-bottom: 1px solid #e8eef5; white-space: nowrap;
+  }
+  th {
+    background: #f4f8fc; font-size: 12px; text-transform: uppercase;
+    letter-spacing: 0.4px; color: #4a5a6a;
+  }
+  tr:hover td { background: #fafcff; }
+  .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e8eef5; }
+
+  input, select, textarea {
+    padding: 7px 9px; border: 1px solid #cbd5e1; border-radius: 6px;
+    font-size: 13px; font-family: inherit; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { outline: 2px solid #2563eb33; border-color: #2563eb; }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .field { flex: 1; min-width: 130px; }
+  .field label {
+    display: block; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; color: #64748b; margin-bottom: 4px; letter-spacing: 0.4px;
+  }
+
+  .paid { color: #16a34a; font-weight: 600; }
+  .due  { color: #dc2626; font-weight: 600; }
+  .amt-col { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;
+  }
+  .stat {
+    background: #f4f8fc; border-radius: 8px; padding: 12px; border-left: 4px solid #2563eb;
+  }
+  .stat .label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat .value { font-size: 18px; font-weight: 700; margin-top: 4px; }
+  .stat.green { border-left-color: #16a34a; }
+  .stat.red { border-left-color: #dc2626; }
+  .stat.orange { border-left-color: #f59e0b; }
+  .stat.purple { border-left-color: #7c3aed; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-ok { background: #dcfce7; color: #15803d; }
+  .badge-due { background: #fee2e2; color: #b91c1c; }
+  .badge-partial { background: #fef3c7; color: #b45309; }
+
+  .toast {
+    position: fixed; bottom: 20px; right: 20px; background: #1f2d3d; color: #fff;
+    padding: 12px 18px; border-radius: 8px; font-size: 13px;
+    opacity: 0; transform: translateY(10px); transition: 0.25s; z-index: 200; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.error { background: #dc2626; }
+  .toast.success { background: #16a34a; }
+
+  .empty { text-align: center; padding: 24px; color: #94a3b8; font-size: 13px; }
+  .actions { display: flex; gap: 4px; flex-wrap: wrap; }
+  .section-hint { font-size: 12px; color: #64748b; font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+  .school-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px; }
+
+  .range-banner {
+    background: #f5f3ff; border: 1px solid #ddd6fe; border-left: 4px solid #7c3aed;
+    border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #4c1d95;
+    margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center;
+  }
+  .range-banner strong { color: #5b21b6; }
+
+  .slip-tabs {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;
+    padding: 8px; background: #f8fafc; border-radius: 8px; border: 1px solid #e3eaf2;
+  }
+  .slip-tab {
+    padding: 8px 14px; border-radius: 6px; border: 1.5px solid #dbe4ee;
+    background: #fff; font-size: 12.5px; font-weight: 600; cursor: pointer;
+    display: flex; flex-direction: column; gap: 2px; min-width: 130px; text-align: left; transition: 0.15s;
+  }
+  .slip-tab:hover { border-color: #7c3aed; }
+  .slip-tab.active { background: #f5f3ff; border-color: #7c3aed; color: #5b21b6; }
+  .slip-tab small { font-size: 10.5px; color: #64748b; font-weight: 500; }
+  .slip-tab.active small { color: #7c3aed; }
+  .slip-tab .tab-badge {
+    display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 9.5px;
+    background: #dc2626; color: #fff; font-weight: 700; margin-left: 4px;
+  }
+  .slip-tab.add { border-style: dashed; color: #7c3aed; align-items: center; justify-content: center; min-width: 90px; }
+  .slip-tab.add:hover { background: #f5f3ff; }
+
+  .slip-toolbar {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 12px; padding: 10px 14px; background: #fafcff;
+    border: 1px solid #e3eaf2; border-radius: 8px;
+  }
+  .slip-toolbar h3 { font-size: 14px; flex: 1; }
+  .slip-toolbar .label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.4px; }
+
+  .personal-info-block {
+    background: #f8fafc; border: 1px solid #e3eaf2; border-radius: 8px;
+    padding: 12px 14px; margin-bottom: 12px;
+  }
+  .personal-info-block h4 {
+    font-size: 12px; text-transform: uppercase; color: #64748b;
+    letter-spacing: 0.4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .personal-info-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px 14px;
+  }
+  .personal-info-grid .pi-item {
+    font-size: 12px; padding: 6px 10px; background: #fff; border: 1px solid #e3eaf2; border-radius: 6px;
+  }
+  .personal-info-grid .pi-item .k { font-size: 10px; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.3px; display: block; }
+  .personal-info-grid .pi-item .v { font-weight: 600; font-size: 12.5px; color: #1f2d3d; }
+
+  .pay-matrix { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .pay-matrix th, .pay-matrix td {
+    border: 1px solid #dde5ee; padding: 6px 6px; text-align: center; white-space: nowrap;
+  }
+  .pay-matrix th {
+    background: #f4f8fc; font-size: 10.5px; color: #4a5a6a;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .pay-matrix td.fh-name {
+    text-align: left; font-weight: 600; white-space: normal; min-width: 210px; background: #fafcff;
+  }
+  .pay-matrix td.fh-name small {
+    font-weight: 400; color: #94a3b8; display: block; font-size: 10.5px;
+  }
+  .pay-matrix tr.summary-row td {
+    background: #f4f8fc; font-weight: 700; border-top: 2px solid #1f2d3d;
+  }
+  .pay-matrix td.amount-col {
+    text-align: right; font-variant-numeric: tabular-nums; padding-right: 10px;
+  }
+  .pay-matrix tr.fh-disabled td { opacity: 0.45; }
+  .pay-matrix tr.fh-disabled td.fh-name { text-decoration: line-through; }
+  .pay-matrix tr.fh-disabled td.fh-name small { text-decoration: none; }
+
+  .tick-btn {
+    border: none; background: transparent; cursor: pointer; font-size: 18px;
+    line-height: 1; padding: 2px 4px; border-radius: 6px; transition: 0.15s;
+  }
+  .tick-btn:hover { background: #e6edf5; transform: scale(1.15); }
+  .tick-btn.on { color: #16a34a; }
+  .tick-btn.off { color: #dc2626; opacity: 0.65; }
+  .tick-btn.on:hover { background: #dcfce7; }
+  .tick-btn.off:hover { background: #fee2e2; opacity: 1; }
+
+  .cell-out-of-range { background: #f8fafc; }
+  .range-marker { font-size: 9px; color: #7c3aed; display: block; margin-top: 1px; }
+
+  .fh-switch {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600;
+    cursor: pointer; user-select: none; padding: 3px 8px; border-radius: 20px;
+    background: #eef2f7; color: #475569; border: 1px solid #dbe4ee;
+  }
+  .fh-switch input { display: none; }
+  .fh-switch .dot {
+    width: 26px; height: 14px; background: #cbd5e1; border-radius: 20px;
+    position: relative; transition: 0.15s;
+  }
+  .fh-switch .dot::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 10px; height: 10px; background: #fff; border-radius: 50%; transition: 0.15s;
+  }
+  .fh-switch input:checked + .dot { background: #16a34a; }
+  .fh-switch input:checked + .dot::after { left: 14px; }
+  .fh-switch.on { background: #dcfce7; color: #15803d; border-color: #86efac; }
+  .fh-switch.off { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+  .fh-switch.off .dot { background: #f87171; }
+
+  .io-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 6px;
+  }
+  .io-card {
+    border: 1px solid #e3eaf2; border-radius: 8px; padding: 12px; background: #fafcff;
+  }
+  .io-card h4 { font-size: 13px; margin-bottom: 6px; }
+  .io-card p { font-size: 11.5px; color: #64748b; margin-bottom: 8px; line-height: 1.4; }
+  .storage-status {
+    font-size: 12px; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px;
+  }
+  .storage-status.ok { background: #dcfce7; color: #15803d; }
+  .storage-status.warn { background: #fef3c7; color: #b45309; }
+  .storage-status.err { background: #fee2e2; color: #b91c1c; }
+
+  .modal-bg {
+    display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5);
+    z-index: 100; align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 12px; padding: 20px; width: 100%;
+    max-width: 680px; max-height: 92vh; overflow-y: auto;
+  }
+  .modal h3 { font-size: 17px; margin-bottom: 6px; }
+  .modal .modal-sub { font-size: 12px; color: #64748b; margin-bottom: 14px; }
+  .modal-actions {
+    display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+  }
+  textarea {
+    font-family: monospace; font-size: 11px; padding: 8px;
+    border: 1px solid #cbd5e1; border-radius: 6px; width: 100%; min-height: 160px; resize: vertical;
+  }
+
+  .custom-mode-picker {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+    padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e3eaf2;
+  }
+  .custom-mode-picker label {
+    display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
+    cursor: pointer; padding: 6px 12px; border-radius: 6px; border: 1.5px solid #dbe4ee; background: #fff;
+  }
+  .custom-mode-picker label.active { border-color: #b45309; background: #fffbeb; color: #b45309; }
+  .custom-mode-picker input { width: auto; }
+  .custom-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .custom-table th, .custom-table td {
+    padding: 7px 8px; border: 1px solid #e3eaf2; text-align: center; white-space: nowrap;
+  }
+  .custom-table th {
+    background: #f4f8fc; font-size: 11px; text-transform: uppercase; color: #4a5a6a;
+  }
+  .custom-table td.month-name {
+    text-align: left; font-weight: 600; background: #fafcff; min-width: 100px;
+  }
+  .custom-table td input {
+    width: 90px; padding: 5px 7px; font-size: 12px; text-align: right; margin: 0 auto;
+  }
+  .custom-table tr.out-of-range td { background: #f8fafc; opacity: 0.55; }
+  .custom-table .universal-hint { font-size: 10.5px; color: #94a3b8; display: block; }
+  .custom-note {
+    font-size: 11.5px; color: #64748b; background: #fffbeb;
+    border-left: 3px solid #f59e0b; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;
+  }
+
+  /* ============ COLLAPSIBLE CARD STYLES ============ */
+  .card.collapsible {
+    transition: all 0.2s ease;
+  }
+  .card-header-toggle {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e3eaf2;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  .card-header-toggle h2 {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    width: 100%;
+  }
+  .toggle-icon {
+    font-size: 14px;
+    font-weight: bold;
+    color: #64748b;
+    transition: transform 0.2s;
+  }
+  .card.collapsed .card-content {
+    display: none !important;
+  }
+  .card.collapsed .card-header-toggle {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  .card.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+  }
+
+  /* ============ MONTH EXEMPTION GRID ============ */
+  .exempt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e3eaf2;
+  }
+  .exempt-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 8px;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid #dbe4ee;
+    transition: 0.15s;
+  }
+  .exempt-item:hover { border-color: #fca5a5; }
+  .exempt-item.checked { border-color: #fca5a5; background: #fef2f2; color: #b91c1c; }
+  .exempt-item input { width: auto; accent-color: #dc2626; }
+
+  /* ============ PRINT SLIP ============ */
+  #printArea { display: none; }
+  
+  .slip-print-page {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 auto;
+    background: #fff;
+    box-sizing: border-box;
+    page-break-after: always;
+    break-after: page;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 15mm;
+  }
+  .slip-print-page:last-child { 
+    page-break-after: auto !important; 
+    break-after: auto !important; 
+  }
+
+  .slip {
+    width: 100%;
+    max-width: 180mm;
+    border: 1.5px solid #1f2d3d; 
+    border-radius: 4px;
+    padding: 15px 20px;
+    font-size: 11px; 
+    color: #1a202c; 
+    background: #fff;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slip-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 1.5px solid #1f2d3d; padding-bottom: 8px; margin-bottom: 10px; gap: 10px;
+  }
+  .slip-school-name { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; color: #0f172a; }
+  .slip-school-sub { font-size: 10px; color: #475569; margin-top: 2px; line-height: 1.3; }
+  .slip-title {
+    text-align: right; font-size: 12px; font-weight: 800;
+    text-transform: uppercase; color: #4c1d95; letter-spacing: 0.8px;
+  }
+  .slip-personal {
+    display: grid;
+    grid-template-columns: 1.2fr 0.9fr 1.2fr;
+    gap: 4px 14px;
+    margin-bottom: 10px;
+    font-size: 11px;
+  }
+  .slip-personal .kv { padding: 1px 0; }
+  .slip-personal .kv .k { color: #475569; font-weight: 500; }
+  .slip-personal .kv .v { font-weight: 600; color: #0f172a; white-space: nowrap; }
+  
+  .slip table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 8px; }
+  .slip table th, .slip table td {
+    border: 1px solid #cbd5e1; padding: 4px 6px; white-space: normal; text-align: center;
+  }
+  .slip table th {
+    background: #f1f5f9; font-size: 9.5px; text-transform: uppercase;
+    color: #334155; letter-spacing: 0.3px; border-bottom: 1.5px solid #94a3b8;
+  }
+  .slip table td.fh-name { text-align: left; font-weight: 600; color: #0f172a; }
+  .slip table td.amt { text-align: right; font-variant-numeric: tabular-nums; padding-right: 8px; }
+  .slip table tr:nth-child(even) td { background: #f8fafc; }
+  .slip table tr.total-row td {
+    background: #e2e8f0; font-weight: 800; border-top: 1.5px solid #1f2d3d;
+    font-size: 11px; color: #0f172a;
+  }
+  .slip .tick-p { color: #15803d; font-weight: 800; }
+  .slip .tick-x { color: #b91c1c; font-weight: 800; }
+  .slip .discount-mark { color: #b45309; font-size: 8.5px; font-weight: 700; }
+  
+  .slip-summary {
+    display: flex; justify-content: flex-end; gap: 22px;
+    margin: 10px 0; font-size: 12px; flex-wrap: wrap;
+  }
+  .slip-summary div { text-align: right; }
+  .slip-summary .lbl { font-size: 9.5px; text-transform: uppercase; color: #475569; letter-spacing: 0.4px; font-weight: 600; }
+  .slip-summary .val { font-weight: 800; font-size: 14px; color: #0f172a; }
+  .slip-summary .val.due { color: #b91c1c; }
+  .slip-summary .val.paid { color: #15803d; }
+  
+  .slip-status {
+    display: inline-block; padding: 2px 8px; border-radius: 12px;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.6px; border: 1px solid;
+  }
+  .slip-status.paid { color: #15803d; border-color: #15803d; background: #f0fdf4; }
+  .slip-status.due { color: #b91c1c; border-color: #b91c1c; background: #fef2f2; }
+  .slip-status.partial { color: #b45309; border-color: #b45309; background: #fffbeb; }
+  
+  .slip-range-badge {
+    display: inline-block; margin-top: 4px; font-size: 9px; color: #4c1d95;
+    background: #f5f3ff; padding: 2px 8px; border-radius: 8px; border: 1px solid #ddd6fe;
+    font-weight: 600;
+  }
+  .slip-custom-badge {
+    display: inline-block; margin-left: 4px; margin-top: 4px; font-size: 8.5px; color: #b45309;
+    background: #fffbeb; padding: 2px 8px; border-radius: 8px;
+    border: 1px solid #fde68a; font-weight: 700;
+  }
+
+  .slip-credit-note {
+    margin-top: 10px;
+    border-top: 1.5px dashed #94a3b8;
+    padding-top: 8px;
+    font-size: 9.5px;
+    color: #334155;
+    background: #f8fafc;
+    border-radius: 4px;
+    padding: 8px 12px;
+  }
+  .slip-credit-note .credit-title {
+    font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: #6d28d9; font-weight: 800; margin-bottom: 4px;
+  }
+  .slip-credit-note .credit-name {
+    font-weight: 800; font-size: 11px; color: #0f172a;
+  }
+  .slip-credit-note .credit-body {
+    font-size: 9.5px; color: #475569; line-height: 1.4; font-style: italic; margin-top: 4px;
+  }
+  .slip-credit-note .credit-footer {
+    font-size: 9.5px; font-weight: 700; color: #1e40af; margin-top: 6px; border-top: 1px dashed #cbd5e1; padding-top: 4px;
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; margin: 0; }
+    body > *:not(#printArea) { display: none !important; }
+    #printArea { display: block !important; }
+    
+    .slip-print-page {
+      width: 100%;
+      height: auto;
+      max-height: 100vh;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    
+    .slip {
+      border: 1.5px solid #000; 
+      border-radius: 0;
+      box-shadow: none;
+      margin-top: 5mm;
+      width: 180mm;
+    }
+    
+    .slip-credit-note { 
+      background: #f8fafc !important; 
+      -webkit-print-color-adjust: exact; 
+      print-color-adjust: exact; 
+    }
+    @page { margin: 0; size: A4 portrait; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="hamburger" id="hamburgerBtn" title="Open student list">☰</button>
+  <div class="topbar-title" id="topbarTitle">Fee Manager</div>
+  <button class="topbar-back hidden" id="topbarBack">← Back</button>
+</div>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>Students</h3>
+    <div style="display:flex;gap:6px">
+      <button onclick="addStudentPrompt()" style="background:#2563eb;color:#fff">+ Add</button>
+      <button onclick="closeDrawer()">✕</button>
+    </div>
+  </div>
+  <div id="drawerList"></div>
+</div>
+
+<div id="homePage">
+
+  <h1>📚 Fee Management System</h1>
+  <p class="subtitle">Manage multiple classes and sections. Use ☰ to view the student list.</p>
+
+  <!-- 1. CLASS MANAGEMENT & SELECTOR -->
+  <div class="card" style="background:#f8fafc; border: 1px solid #e3eaf2;">
+    <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+      <div class="field" style="flex:2; min-width:250px;">
+        <label>Active Class</label>
+        <select id="activeClassSelector" onchange="changeActiveClass(this.value)" style="font-weight:700; font-size:15px; color:#1e293b;"></select>
+      </div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="btn-primary btn-sm" onclick="addClassPrompt()">+ Add Class</button>
+        <button class="btn-warning btn-sm" onclick="editClassPrompt()">✏️ Edit Class</button>
+        <button class="btn-danger btn-sm" onclick="deleteClassPrompt()">🗑️ Delete Class</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. SLIP HEADER & ACADEMIC YEAR CARD (Collapsed by default) -->
+  <div class="card collapsible collapsed" id="cardSlipHeader">
+    <div class="card-header-toggle" onclick="toggleCard('cardSlipHeader')">
+      <h2 style="margin:0">
+        <span>Slip Header & Academic Year <span class="section-hint">(universal defaults)</span></span>
+        <span class="toggle-icon">▼</span>
+      </h2>
+    </div>
+    <div class="card-content">
+      <div class="school-bar">
+        <div class="field" style="flex:2">
+          <label>School Name</label>
+          <input id="schoolName" placeholder="e.g. Sunrise Public School" oninput="saveSchoolInfo()">
+        </div>
+        <div class="field" style="flex:2">
+          <label>Address / Contact (optional)</label>
+          <input id="schoolAddr" placeholder="e.g. 12 Park Road, City — Ph: 98765 43210" oninput="saveSchoolInfo()">
+        </div>
+        <div class="field">
+          <label>Global Academic Year</label>
+          <input id="academicYear" placeholder="e.g. 2025–26" oninput="saveSchoolInfo()">
+        </div>
+      </div>
+
+      <div class="school-bar" style="margin-top:12px;border-top:1px dashed #dbe4ee;padding-top:12px">
+        <div class="field">
+          <label>Universal Start Month</label>
+          <select id="rangeFrom" onchange="saveRange()"></select>
+        </div>
+        <div class="field">
+          <label>Universal End Month</label>
+          <select id="rangeTo" onchange="saveRange()"></select>
+        </div>
+        <div class="field" style="flex:0 0 auto;min-width:auto">
+          <button class="btn-ghost btn-sm" onclick="setRangeFullYear()">Reset to Full Year</button>
+        </div>
+      </div>
+      <p class="section-hint" style="margin-top:8px;color:#b45309">
+        ⚠️ Changing the Universal Start or End Month will automatically update the month range for <strong>all existing slips across all classes</strong>. 
+      </p>
+
+      <div class="range-banner" id="rangeBanner"></div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <button class="btn-print" onclick="printAllSlips()">🖨️ Print All Student Slips</button>
+        <button class="btn-print" onclick="printDueSlips()">🖨️ Print Only DUE Student Slips</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ADDRESS ROUTES & TRANSPORT CHARGES MANAGEMENT (Collapsed by default) -->
+  <div class="card collapsible collapsed" id="cardAddresses" style="background:#fff; border: 1px solid #e3eaf2;">
+    <div class="card-header-toggle" onclick="toggleCard('cardAddresses')">
+      <h2 style="margin:0">
+        <span>📍 Address Routes & Transport Charges</span>
+        <span class="toggle-icon">▼</span>
+      </h2>
+    </div>
+    <div class="card-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+        <p class="section-hint" style="margin-bottom:0">
+          Create addresses with their respective monthly transport charges. Selecting an address in a student's fee slip automatically applies its specific transportation fee.
+        </p>
+        <button class="btn-primary btn-sm" onclick="addAddressPrompt()">+ Add Address</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Address / Route Name</th>
+              <th class="amt-col">Monthly Transport Charge (₹)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="addressesTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. FEE HEADS CARD (Collapsed by default) -->
+  <div class="card collapsible collapsed" id="cardFeeHeads">
+    <div class="card-header-toggle" onclick="toggleCard('cardFeeHeads')">
+      <h2 style="margin:0">
+        <span>Fee Heads <span id="feeHeadsClassLabel" style="color:#7c3aed;font-weight:800;"></span></span>
+        <span class="toggle-icon">▼</span>
+      </h2>
+    </div>
+    <div class="card-content">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:8px">
+        <button class="btn-primary btn-sm" onclick="addFeeHeadPrompt()">+ Add Fee Head</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Fee Head</th><th>Type</th>
+              <th class="amt-col">Rate (₹)</th>
+              <th class="amt-col">Full-Year Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="feeHeadsBody"></tbody>
+        </table>
+      </div>
+      <p class="section-hint" style="margin-top:10px">
+        💡 These amounts apply only to the <strong>Active Class</strong>. They are used by every slip in this class unless the student customizes a specific fee head or selects an address with a specific transport charge.
+      </p>
+    </div>
+  </div>
+
+  <!-- 5. SUMMARY OVERVIEW (Collapsed by default) -->
+  <div class="card collapsible collapsed" id="cardSummary">
+    <div class="card-header-toggle" onclick="toggleCard('cardSummary')">
+      <h2 style="margin:0">
+        <span>Summary Overview</span>
+        <span class="toggle-icon">▼</span>
+      </h2>
+    </div>
+    <div class="card-content">
+      <div class="summary-grid" id="summaryGrid"></div>
+    </div>
+  </div>
+
+  <!-- 6. DATA MANAGEMENT CARD -->
+  <div class="card">
+    <h2>💾 Data Management</h2>
+    <div class="storage-status ok" id="storageStatus">✅ All data is saved in this browser.</div>
+
+    <!-- GOOGLE DRIVE SYNC PANEL -->
+    <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:14px; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <h4 style="font-size:14px; color:#0369a1; display:flex; align-items:center; gap:6px;">
+          <span>☁️ Google Drive Auto-Sync</span>
+        </h4>
+        <span id="gdriveStatusBadge" class="badge" style="background:#f1f5f9; color:#64748b;">Not Connected</span>
+      </div>
+      <p style="font-size:11.5px; color:#334155; margin-top:4px; margin-bottom:10px;">
+        Connect your Google Drive to automatically sync and update a single backup file (<code>school_fee_manager_backup.json</code>).
+      </p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="gdriveConnectBtn" class="btn-primary btn-sm" onclick="connectGoogleDrive()">🔑 Connect Google Drive</button>
+        <button id="gdriveRestoreBtn" class="btn-warning btn-sm hidden" onclick="restoreFromGoogleDrive()">📥 Restore from Drive</button>
+        <button id="gdriveDisconnectBtn" class="btn-ghost btn-sm hidden" onclick="disconnectGoogleDrive()">Disconnect</button>
+      </div>
+      <div id="gdriveSyncInfo" style="font-size:10.5px; color:#0284c7; margin-top:8px;" class="hidden"></div>
+    </div>
+
+    <div class="io-grid">
+      <div class="io-card">
+        <h4>📤 Export Data</h4>
+        <p>Download a JSON backup of everything: classes, addresses, students, slips, personal info, fee heads, ticks, customizations.</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn-success btn-sm" onclick="exportJSON()">Export JSON</button>
+          <button class="btn-ghost btn-sm" onclick="exportCSV()">Export CSV</button>
+        </div>
+      </div>
+      <div class="io-card">
+        <h4>📥 Import Data</h4>
+        <p>Restore from a previously exported JSON file. This will <strong>replace</strong> all current data.</p>
+        <button class="btn-primary btn-sm" onclick="openImport()">Choose JSON File…</button>
+      </div>
+      <div class="io-card">
+        <h4>🗑️ Reset App</h4>
+        <p>Clear all data and start fresh with a default class and students.</p>
+        <button class="btn-danger btn-sm" onclick="resetApp()">Reset to Defaults</button>
+      </div>
+    </div>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="handleImportFile(event)">
+  </div>
+
+</div>
+
+<div id="studentPage" class="hidden">
+  <button class="back-btn" onclick="goHome()">← Back to Home</button>
+  <div class="card">
+    <h2 id="studentPageTitle" style="border-bottom:none;padding-bottom:0;margin-bottom:6px"></h2>
+    <p class="section-hint" id="studentPageRangeHint"></p>
+  </div>
+
+  <div class="card">
+    <h2>
+      <span>Fee Slips</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn-print btn-sm" onclick="printAllStudentSlips()">🖨️ Print All Slips</button>
+        <button class="btn-primary btn-sm" onclick="addSlipPrompt()">+ New Slip</button>
+      </div>
+    </h2>
+    <div class="slip-tabs" id="slipTabs"></div>
+
+    <div class="slip-toolbar" id="slipToolbar"></div>
+    <div id="personalInfoBlockContainer"></div>
+    <div class="range-banner" id="studentRangeBanner"></div>
+    <div id="paymentMatrixContainer"></div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn-print" onclick="printCurrentSlip()">🖨️ Print This Slip</button>
+      <button class="btn-whatsapp" onclick="sendWhatsApp()">💬 Send via WhatsApp</button>
+      <button class="btn-ghost btn-sm" onclick="editPersonalInfoPrompt()">👤 Edit Personal Info</button>
+      <button class="btn-warning btn-sm" onclick="moveStudentPrompt()">⇄ Move to Class</button>
+      <button class="btn-danger btn-sm" onclick="deleteCurrentStudent()">Delete Student</button>
+    </div>
+  </div>
+</div>
+
+<div id="printArea"></div>
+
+<!-- MOVE STUDENT MODAL -->
+<div class="modal-bg" id="moveStudentModal">
+  <div class="modal">
+    <h3>⇄ Move Student to Another Class</h3>
+    <p class="modal-sub" id="moveStudentSub"></p>
+    <div class="row" style="margin-top:10px">
+      <div class="field">
+        <label>Select Target Class *</label>
+        <select id="moveTargetClassSelect"></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('moveStudentModal')">Cancel</button>
+      <button class="btn-warning" onclick="confirmMoveStudent()">Move Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADDRESS MODAL -->
+<div class="modal-bg" id="addressModal">
+  <div class="modal">
+    <h3 id="addressModalTitle">Add Address</h3>
+    <div class="row" style="margin-top:10px">
+      <div class="field" style="flex:2"><label>Address / Route Name *</label><input id="addrName" placeholder="e.g. Model Town / Sector 4"></div>
+      <div class="field"><label>Monthly Transport Charge (₹) *</label><input id="addrAmount" type="number" min="0" step="1" placeholder="800"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('addressModal')">Cancel</button>
+      <button class="btn-primary" id="addressSaveBtn" onclick="saveAddress()">Save Address</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLASS MODAL -->
+<div class="modal-bg" id="classModal">
+  <div class="modal">
+    <h3 id="classModalTitle">Add Class</h3>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>Class Name</label><input id="newClassName" placeholder="e.g. 6"></div>
+      <div class="field"><label>Section</label><input id="newSectionName" placeholder="e.g. B"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('classModal')">Cancel</button>
+      <button class="btn-primary" id="classSaveBtn" onclick="saveClass()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMIZE MODAL -->
+<div class="modal-bg" id="customizeModal">
+  <div class="modal">
+    <h3 id="customizeTitle">Customize Fee</h3>
+    <p class="modal-sub" id="customizeSub"></p>
+    <div class="custom-mode-picker">
+      <label id="modeDefaultLabel"><input type="radio" name="customMode" value="default" onchange="setCustomMode('default')"><span>Universal Amount</span></label>
+      <label id="modeOverrideLabel"><input type="radio" name="customMode" value="override" onchange="setCustomMode('override')"><span>Discount / Full Override</span></label>
+      <label id="modeMonthlyLabel"><input type="radio" name="customMode" value="monthly" onchange="setCustomMode('monthly')"><span>Per-Month Amounts</span></label>
+      <label id="modePaidLabel"><input type="radio" name="customMode" value="paid" onchange="setCustomMode('paid')"><span>Partial Payment / Custom Paid</span></label>
+    </div>
+    <div id="customBody"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('customizeModal')">Cancel</button>
+      <button class="btn-success" onclick="saveCustomization()">Save Customization</button>
+    </div>
+  </div>
+</div>
+
+<!-- SLIP MODAL -->
+<div class="modal-bg" id="slipModal">
+  <div class="modal">
+    <h3 id="slipModalTitle">New Fee Slip</h3>
+    <p class="modal-sub">Each slip is independent — its own range, ticks, customizations and personal info.</p>
+
+    <div class="row">
+      <div class="field"><label>Academic Year (Optional)</label><input id="slipAcademicYear" placeholder="e.g. 2025–26"></div>
+    </div>
+    <p class="section-hint" style="margin-top:4px;margin-bottom:10px;font-size:11px">Leave Academic Year blank to use the global one from the home page.</p>
+    <div class="row">
+      <div class="field"><label>From Month</label><select id="slipFrom"></select></div>
+      <div class="field"><label>To Month</label><select id="slipTo"></select></div>
+    </div>
+
+    <hr style="margin:14px 0;border:none;border-top:1px dashed #dbe4ee">
+    <h4 style="font-size:13px;margin-bottom:8px">👤 Student Personal Information (for this slip)</h4>
+    <div id="copyInfoBanner"></div>
+
+    <div class="row" style="margin-top:6px">
+      <div class="field"><label>Class / Section *</label><input id="slipClass" readonly style="background:#f1f5f9;cursor:not-allowed;"></div>
+      <div class="field"><label>Date of Birth</label><input id="slipDOB" type="date"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>Father's Name</label><input id="slipFather" placeholder="Optional"></div>
+      <div class="field"><label>Mother's Name</label><input id="slipMother" placeholder="Optional"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>Contact No.</label><input id="slipContact" placeholder="Optional"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field">
+        <label>Select Saved Address / Route *</label>
+        <select id="slipAddressSelect"></select>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('slipModal')">Cancel</button>
+      <button class="btn-success" id="slipSaveBtn" onclick="saveSlip()">Create Slip</button>
+    </div>
+  </div>
+</div>
+
+<!-- PERSONAL INFO MODAL -->
+<div class="modal-bg" id="personalInfoModal">
+  <div class="modal">
+    <h3>👤 Edit Personal Information</h3>
+    <div class="row">
+      <div class="field"><label>Class / Section *</label><input id="piClass" readonly style="background:#f1f5f9;cursor:not-allowed;"></div>
+      <div class="field"><label>Date of Birth</label><input id="piDOB" type="date"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>Father's Name</label><input id="piFather" placeholder="Optional"></div>
+      <div class="field"><label>Mother's Name</label><input id="piMother" placeholder="Optional"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>Contact No.</label><input id="piContact" placeholder="Optional"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field">
+        <label>Select Saved Address / Route *</label>
+        <select id="piAddressSelect"></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('personalInfoModal')">Cancel</button>
+      <button class="btn-primary" onclick="savePersonalInfo()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- FEE HEAD MODAL -->
+<div class="modal-bg" id="feeHeadModal">
+  <div class="modal">
+    <h3 id="feeHeadTitle">Fee Head</h3>
+    <div class="row">
+      <div class="field"><label>Fee Head Name</label><input id="fhName" placeholder="e.g. Monthly Tuition Fee"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field">
+        <label>Type</label>
+        <select id="fhType">
+          <option value="monthly">Monthly</option>
+          <option value="one-time">One-time</option>
+          <option value="per-exam">Per Exam</option>
+        </select>
+      </div>
+      <div class="field"><label>Rate (₹)</label><input id="fhAmount" type="number" min="0" step="1" placeholder="0"></div>
+      <div class="field" id="fhMonthsField"><label>Months Applicable</label><input id="fhMonths" type="number" min="1" max="12" value="12" oninput="renderExemptMonths()"></div>
+    </div>
+    
+    <div id="exemptMonthsPanel" style="display:none; margin-top:14px;">
+      <p class="section-hint" style="color:#b45309; font-weight:600; margin-bottom:6px;">
+        ⚠️ You selected fewer than 12 months. Please check the month(s) that should be <strong>exempted</strong>.
+      </p>
+      <div class="exempt-grid" id="exemptGrid"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('feeHeadModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveFeeHead()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT MODAL -->
+<div class="modal-bg" id="studentModal">
+  <div class="modal">
+    <h3 id="studentTitle">Student</h3>
+    <div class="row"><div class="field"><label>Student Name *</label><input id="stName" placeholder="Full name"></div></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('studentModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveStudent()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="importModal">
+  <div class="modal">
+    <h3>Import Data (paste JSON)</h3>
+    <p style="font-size:12px;color:#64748b;margin-bottom:8px">Paste the JSON you exported earlier. This will replace all current data.</p>
+    <textarea id="importText"></textarea>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('importModal')">Cancel</button>
+      <button class="btn-primary" onclick="applyImportedText()">Import</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   APP CONSTANTS & DATABASE
+   ============================================================ */
+const STORAGE_KEY = 'school_fee_manager_v13';
+const SCHEMA_VERSION = 13;
+const GOOGLE_CLIENT_ID = '649212085073-hc5ihl2poi8h4l6q6r854352jk4l2oip.apps.googleusercontent.com';
+const GDRIVE_FILENAME = 'school_fee_manager_backup.json';
+const GDRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS_FULL = ["January","February","March","April","May","June",
+                     "July","August","September","October","November","December"];
+
+const DEFAULT_STUDENTS = [
+  "Afseen","Alshiya","Aksha","Asra","Aakifa","Aaliya","Daniya","Humaira",
+  "Iqra","Kahkasha","Layba","Muskan","Namra","Roshin","Shifa","Sana",
+  "Zikra","Zoya","Humaira II","Koshar"
+];
+
+const DEFAULT_ADDRESSES = [
+  { id: "addr_main", name: "Main City Center", amount: 600 },
+  { id: "addr_north", name: "North Avenue / Suburb", amount: 850 },
+  { id: "addr_east", name: "East Ring Road", amount: 1100 }
+];
+
+const DEFAULT_FEE_HEADS = [
+  { id: "fh_tuition",  name: "Monthly Tuition Fee", type: "monthly",  amount: 1500, months: 12, exemptMonths: [] },
+  { id: "fh_transport",name: "Monthly Transport",    type: "monthly",  amount: 800,  months: 12, exemptMonths: [] },
+  { id: "fh_building", name: "Building Fee",         type: "one-time", amount: 2000, months: 1, exemptMonths: [] },
+  { id: "fh_diary",    name: "Diary Fee",            type: "one-time", amount: 300,  months: 1, exemptMonths: [] },
+  { id: "fh_tour",     name: "Tour Fee",             type: "one-time", amount: 1200, months: 1, exemptMonths: [] },
+  { id: "fh_exam",     name: "Exam Fee",             type: "per-exam", amount: 500,  months: 4, exemptMonths: [] }
+];
+
+let db = {
+  schema: SCHEMA_VERSION,
+  classes: [],
+  addresses: [],
+  activeClassId: null,
+  school: { name: '', addr: '', year: '', range: { from: 0, to: 11 } }
+};
+
+/* ============================================================
+   STORAGE & INITIALIZATION
+   ============================================================ */
+let storageOK = true;
+let gdriveAccessToken = null;
+let gdriveFileId = null;
+let tokenClient = null;
+let autoSyncTimeout = null;
+
+function saveDB() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    storageOK = true;
+  } catch (e) {
+    console.error("Storage save failed:", e);
+    storageOK = false;
+    updateStorageStatus();
+    toast("⚠️ Could not save — storage may be full.", "error");
+  }
+
+  // Trigger Google Drive auto-sync if connected
+  triggerAutoDriveSync();
+}
+
+function loadDB() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    try {
+      db = JSON.parse(raw);
+      if (!db.classes) db.classes = [];
+      if (!db.addresses) db.addresses = JSON.parse(JSON.stringify(DEFAULT_ADDRESSES));
+      if (!db.school) db.school = { name: '', addr: '', year: '', range: { from: 0, to: 11 } };
+      if (!db.school.range) db.school.range = { from: 0, to: 11 };
+      if (!db.activeClassId && db.classes.length > 0) db.activeClassId = db.classes[0].id;
+      db.schema = SCHEMA_VERSION;
+      return;
+    } catch (e) { console.warn("Reset storage:", e); }
+  }
+  resetToDefaults();
+}
+
+function resetToDefaults() {
+  const defaultClass = {
+    id: uid('cls'),
+    name: '6',
+    section: 'B',
+    feeHeads: JSON.parse(JSON.stringify(DEFAULT_FEE_HEADS)),
+    students: DEFAULT_STUDENTS.map(n => ({
+      id: uid('st'), name: n,
+      slips: [createBlankSlip('Session 1', '6-B')]
+    }))
+  };
+
+  db = {
+    schema: SCHEMA_VERSION,
+    classes: [defaultClass],
+    addresses: JSON.parse(JSON.stringify(DEFAULT_ADDRESSES)),
+    activeClassId: defaultClass.id,
+    school: { name: '', addr: '', year: '', range: { from: 0, to: 11 } }
+  };
+  saveDB();
+}
+
+function createBlankSlip(label, className) {
+  return {
+    id: uid('slip'), label,
+    from: db.school.range.from, to: db.school.range.to,
+    academicYear: '',
+    info: { className: className || '', father: '', mother: '', dob: '', contact: '', addressId: '' },
+    data: {}
+  };
+}
+
+function updateStorageStatus() {
+  const el = document.getElementById('storageStatus'); if (!el) return;
+  if (storageOK) { el.className = 'storage-status ok'; el.textContent = '✅ All data is saved in this browser and survives reloads.'; }
+  else { el.className = 'storage-status err'; el.textContent = '⚠️ Storage unavailable or full. Export your data to keep it safe!'; }
+}
+
+function toggleCard(cardId) {
+  const card = document.getElementById(cardId);
+  if (card) card.classList.toggle('collapsed');
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const rupee = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+function monthsInRangeOf(from, to) {
+  const out = [];
+  if (to >= from) { for (let m = from; m <= to; m++) out.push(m); }
+  else { for (let m = from; m <= 11; m++) out.push(m); for (let m = 0; m <= to; m++) out.push(m); }
+  return out;
+}
+function rangeMonthsOf(from, to) { return to >= from ? to - from + 1 : (12 - from) + to + 1; }
+function rangeLabelOf(from, to) { return from === to ? MONTHS_FULL[from] : MONTHS_FULL[from] + ' → ' + MONTHS_FULL[to]; }
+function rangeMonths() { return rangeMonthsOf(db.school.range.from, db.school.range.to); }
+
+function getActiveClass() { return db.classes.find(c => c.id === db.activeClassId) || null; }
+function getStudent(studentId) {
+  for (const cls of db.classes) {
+    const st = cls.students.find(s => s.id === studentId);
+    if (st) return st;
+  }
+  return null;
+}
+function getStudentClass(studentId) {
+  for (const cls of db.classes) {
+    if (cls.students.some(s => s.id === studentId)) return cls;
+  }
+  return null;
+}
+function getSlip(studentId, slipId) { const st = getStudent(studentId); if (!st) return null; return (st.slips || []).find(sl => sl.id === slipId) || null; }
+
+function getSortedAddresses() {
+  return [...(db.addresses || [])].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function getAddress(addressId) {
+  return (db.addresses || []).find(a => a.id === addressId) || null;
+}
+
+function getSlipData(studentId, slipId, feeHeadId) {
+  const slip = getSlip(studentId, slipId); if (!slip) return {};
+  return (slip.data && slip.data[feeHeadId]) || {};
+}
+function isFeeEnabled(studentId, slipId, feeHeadId) { return getSlipData(studentId, slipId, feeHeadId).enabled !== false; }
+function getCustom(studentId, slipId, feeHeadId) { return getSlipData(studentId, slipId, feeHeadId).custom || null; }
+function hasCustom(studentId, slipId, feeHeadId) {
+  const c = getCustom(studentId, slipId, feeHeadId);
+  if (!c) return false;
+  if (c.mode === 'override') return true;
+  if (c.mode === 'monthly') return c.monthly && Object.keys(c.monthly).length > 0;
+  if (c.mode === 'paid') return c.paidAmounts && Object.keys(c.paidAmounts).length > 0;
+  return false;
+}
+
+// Fee Calculations
+function feeHeadApplicableMonths(fh) {
+  if (fh.type === 'monthly') {
+    const exempt = fh.exemptMonths || [];
+    const out = [];
+    for (let i = 0; i < 12; i++) if (!exempt.includes(i)) out.push(i);
+    return out;
+  }
+  return [];
+}
+
+function getFeeHeadBaseAmount(fh, studentId, slipId) {
+  if (fh.id === 'fh_transport') {
+    const slip = getSlip(studentId, slipId);
+    if (slip && slip.info && slip.info.addressId) {
+      const addr = getAddress(slip.info.addressId);
+      if (addr) return addr.amount;
+    }
+  }
+  return fh.amount;
+}
+
+function effectiveMonthlyRate(fh, studentId, slipId, monthIdx) {
+  const c = getCustom(studentId, slipId, fh.id);
+  if (c) {
+    if (c.mode === 'override') return Number(c.amount) || 0;
+    if (c.mode === 'monthly') {
+      const v = c.monthly && c.monthly[monthIdx];
+      if (v !== undefined && v !== null && v !== '') return Number(v) || 0;
+    }
+  }
+  return getFeeHeadBaseAmount(fh, studentId, slipId);
+}
+function effectiveFlatRate(fh, studentId, slipId) {
+  const c = getCustom(studentId, slipId, fh.id);
+  if (c && c.mode === 'override') return Number(c.amount) || 0;
+  return getFeeHeadBaseAmount(fh, studentId, slipId);
+}
+
+function feeHeadPayable(fh, studentId, slipId, from, to) {
+  if (!isFeeEnabled(studentId, slipId, fh.id)) return 0;
+  if (fh.type === 'monthly') {
+    const inRange = monthsInRangeOf(from, to);
+    const applicable = feeHeadApplicableMonths(fh);
+    let sum = 0;
+    inRange.forEach(m => { if (applicable.includes(m)) sum += effectiveMonthlyRate(fh, studentId, slipId, m); });
+    return sum;
+  }
+  if (fh.type === 'per-exam') return effectiveFlatRate(fh, studentId, slipId) * (fh.months || 1);
+  return effectiveFlatRate(fh, studentId, slipId);
+}
+
+function feeHeadPaid(fh, studentId, slipId, from, to) {
+  if (!isFeeEnabled(studentId, slipId, fh.id)) return 0;
+  const p = getSlipData(studentId, slipId, fh.id);
+  const c = getCustom(studentId, slipId, fh.id);
+  
+  if (fh.type === 'monthly') {
+    const inRange = monthsInRangeOf(from, to);
+    const applicable = feeHeadApplicableMonths(fh);
+    let sum = 0;
+    inRange.forEach(m => {
+      if (!applicable.includes(m) || p['m' + m] !== true) return;
+      if (c && c.mode === 'paid' && c.paidAmounts && c.paidAmounts[m] !== undefined) sum += Number(c.paidAmounts[m]);
+      else sum += effectiveMonthlyRate(fh, studentId, slipId, m);
+    });
+    return sum;
+  }
+  if (p.paid !== true) return 0;
+  if (c && c.mode === 'paid' && c.paidAmounts && c.paidAmounts['flat'] !== undefined) return Number(c.paidAmounts['flat']);
+  return feeHeadPayable(fh, studentId, slipId, from, to);
+}
+
+function slipTotal(slip, studentId) { 
+  const cls = getStudentClass(studentId); if (!cls) return 0;
+  return cls.feeHeads.reduce((s, fh) => s + feeHeadPayable(fh, studentId, slip.id, slip.from, slip.to), 0); 
+}
+function slipPaid(slip, studentId) { 
+  const cls = getStudentClass(studentId); if (!cls) return 0;
+  return cls.feeHeads.reduce((s, fh) => s + feeHeadPaid(fh, studentId, slip.id, slip.from, slip.to), 0); 
+}
+function studentTotal(studentId) { const st = getStudent(studentId); if (!st) return 0; return (st.slips || []).reduce((s, sl) => s + slipTotal(sl, studentId), 0); }
+function studentPaid(studentId) { const st = getStudent(studentId); if (!st) return 0; return (st.slips || []).reduce((s, sl) => s + slipPaid(sl, studentId), 0); }
+
+function getGlobalTotal() {
+  return db.classes.reduce((total, cls) => {
+    return total + cls.students.reduce((s, st) => s + studentTotal(st.id), 0);
+  }, 0);
+}
+function getGlobalPaid() {
+  return db.classes.reduce((total, cls) => {
+    return total + cls.students.reduce((s, st) => s + studentPaid(st.id), 0);
+  }, 0);
+}
+
+function toast(msg, kind) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (kind ? ' ' + kind : '');
+  clearTimeout(t._tid); t._tid = setTimeout(() => t.classList.remove('show'), 2600);
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function uid(prefix) { return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function typeLabel(fh) { if (fh.type === 'monthly') return 'Monthly'; if (fh.type === 'per-exam') return 'Per Exam'; return 'One-time'; }
+function formatDate(iso) {
+  if (!iso) return '';
+  try { const [y,m,d] = iso.split('-'); return `${d}-${MONTHS[Number(m)-1]}-${y}`; } catch (_) { return iso; }
+}
+
+/* ============================================================
+   NAVIGATION & DRAWER
+   ============================================================ */
+let currentStudentId = null;
+let currentSlipId = null;
+
+function openDrawer() { document.getElementById('drawer').classList.add('open'); document.getElementById('drawerBg').classList.add('open'); renderDrawer(); }
+function closeDrawer() { document.getElementById('drawer').classList.remove('open'); document.getElementById('drawerBg').classList.remove('open'); }
+function goHome() {
+  currentStudentId = null; currentSlipId = null;
+  document.getElementById('homePage').classList.remove('hidden');
+  document.getElementById('studentPage').classList.add('hidden');
+  document.getElementById('topbarBack').classList.add('hidden');
+  document.getElementById('topbarTitle').textContent = 'Fee Manager';
+  renderAll(); window.scrollTo({top: 0, behavior: 'instant'});
+}
+function openStudent(studentId) {
+  currentStudentId = studentId;
+  const st = getStudent(studentId); const cls = getStudentClass(studentId); if (!st || !cls) return;
+  const clsName = `${cls.name}${cls.section ? '-' + cls.section : ''}`;
+  if (!st.slips || !st.slips.length) {
+    st.slips = [createBlankSlip('Session 1', clsName)];
+    saveDB();
+  } else {
+    // Ensure active slip has current class name
+    const activeSlip = st.slips[0];
+    if (activeSlip && activeSlip.info) activeSlip.info.className = clsName;
+  }
+  currentSlipId = st.slips[0].id;
+  document.getElementById('homePage').classList.add('hidden');
+  document.getElementById('studentPage').classList.remove('hidden');
+  document.getElementById('topbarBack').classList.remove('hidden');
+  document.getElementById('topbarTitle').textContent = 'Student: ' + st.name;
+  closeDrawer(); renderStudentPage(); window.scrollTo({top: 0, behavior: 'instant'});
+}
+
+function renderDrawer() {
+  const list = document.getElementById('drawerList');
+  const cls = getActiveClass();
+  if (!cls) { list.innerHTML = '<div class="drawer-empty">No active class selected.</div>'; return; }
+  
+  if (!cls.students.length) { list.innerHTML = '<div class="drawer-empty">No students yet. Click "+ Add".</div>'; return; }
+  
+  list.innerHTML = `<div class="drawer-section-title">Students in Class ${esc(cls.name)}${cls.section?'-'+cls.section:''}</div>` +
+    cls.students.map((st, i) => {
+      const total = studentTotal(st.id), paid = studentPaid(st.id), bal = total - paid;
+      const slips = st.slips || [];
+      const meta = bal > 0 ? `<span class="due-amt">${rupee(bal)} due</span>` : `<span class="ok-amt">Paid</span>`;
+      return `<div class="drawer-student" onclick="openStudent('${st.id}')">
+        <div class="name">${i+1}. ${esc(st.name)}</div>
+        <div class="meta">${slips.length > 1 ? `<span class="slip-count">${slips.length} slips</span><br>` : ''}${meta}</div>
+      </div>`;
+    }).join('');
+}
+
+/* ============================================================
+   ADDRESS MANAGEMENT (CRUD)
+   ============================================================ */
+let editingAddressId = null;
+
+function renderAddressesTable() {
+  const body = document.getElementById('addressesTableBody');
+  const addresses = getSortedAddresses();
+  if (!addresses.length) {
+    body.innerHTML = '<tr><td colspan="4" class="empty">No addresses/routes added yet. Click "+ Add Address".</td></tr>';
+    return;
+  }
+  body.innerHTML = addresses.map((addr, i) => `<tr>
+    <td>${i + 1}</td>
+    <td><strong>${esc(addr.name)}</strong></td>
+    <td class="amt-col"><strong>${rupee(addr.amount)}</strong> / month</td>
+    <td><div class="actions">
+      <button class="btn-warning btn-sm" onclick="editAddressPrompt('${addr.id}')">Edit</button>
+      <button class="btn-danger btn-sm" onclick="deleteAddressPrompt('${addr.id}')">Delete</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function addAddressPrompt() {
+  editingAddressId = null;
+  document.getElementById('addressModalTitle').textContent = 'Add Address / Route';
+  document.getElementById('addrName').value = '';
+  document.getElementById('addrAmount').value = '';
+  openModal('addressModal');
+  setTimeout(() => document.getElementById('addrName').focus(), 50);
+}
+
+function editAddressPrompt(id) {
+  const addr = getAddress(id); if (!addr) return;
+  editingAddressId = id;
+  document.getElementById('addressModalTitle').textContent = 'Edit Address / Route';
+  document.getElementById('addrName').value = addr.name;
+  document.getElementById('addrAmount').value = addr.amount;
+  openModal('addressModal');
+}
+
+function saveAddress() {
+  const name = document.getElementById('addrName').value.trim();
+  const amount = Number(document.getElementById('addrAmount').value);
+  if (!name) { toast('Enter address name.', 'error'); return; }
+  if (isNaN(amount) || amount < 0) { toast('Enter a valid monthly transport charge.', 'error'); return; }
+
+  if (editingAddressId) {
+    const addr = getAddress(editingAddressId);
+    if (addr) { addr.name = name; addr.amount = amount; }
+    toast('Address updated.', 'success');
+  } else {
+    db.addresses.push({ id: uid('addr'), name, amount });
+    toast('Address added.', 'success');
+  }
+  saveDB(); closeModal('addressModal'); renderAddressesTable();
+  if (currentStudentId) renderStudentPage();
+}
+
+function deleteAddressPrompt(id) {
+  const addr = getAddress(id); if (!addr) return;
+  if (!confirm(`Delete address "${addr.name}"? Students using this address will revert to standard transport charge.`)) return;
+  db.addresses = db.addresses.filter(a => a.id !== id);
+  saveDB(); renderAddressesTable();
+  if (currentStudentId) renderStudentPage();
+  toast('Address deleted.', 'success');
+}
+
+function populateAddressSelectOptions(selectEl, selectedId) {
+  const addresses = getSortedAddresses();
+  let html = `<option value="">-- No Specific Route / Standard Rate --</option>`;
+  html += addresses.map(a => `<option value="${a.id}" ${a.id === selectedId ? 'selected' : ''}>${esc(a.name)} (${rupee(a.amount)}/mo)</option>`).join('');
+  selectEl.innerHTML = html;
+}
+
+/* ============================================================
+   CLASS MANAGEMENT
+   ============================================================ */
+let editingClassId = null;
+
+function changeActiveClass(clsId) {
+  db.activeClassId = clsId;
+  saveDB();
+  renderAll();
+  toast('Switched active class.', 'success');
+}
+
+function addClassPrompt() {
+  editingClassId = null;
+  document.getElementById('classModalTitle').textContent = 'Add New Class';
+  document.getElementById('classSaveBtn').textContent = 'Create Class';
+  document.getElementById('newClassName').value = '';
+  document.getElementById('newSectionName').value = '';
+  openModal('classModal');
+  setTimeout(() => document.getElementById('newClassName').focus(), 50);
+}
+
+function editClassPrompt() {
+  const cls = getActiveClass(); if (!cls) return;
+  editingClassId = cls.id;
+  document.getElementById('classModalTitle').textContent = 'Edit Class';
+  document.getElementById('classSaveBtn').textContent = 'Save Changes';
+  document.getElementById('newClassName').value = cls.name;
+  document.getElementById('newSectionName').value = cls.section || '';
+  openModal('classModal');
+}
+
+function saveClass() {
+  const name = document.getElementById('newClassName').value.trim();
+  const section = document.getElementById('newSectionName').value.trim();
+  if (!name) { toast('Enter a class name.', 'error'); return; }
+
+  const formattedClassName = `${name}${section ? '-' + section : ''}`;
+
+  if (editingClassId) {
+    const cls = db.classes.find(c => c.id === editingClassId);
+    if (cls) {
+      cls.name = name;
+      cls.section = section;
+      // Sync only the current/latest slip for students in this class
+      cls.students.forEach(st => {
+        if (st.slips && st.slips.length > 0) {
+          const activeSlip = st.slips[0];
+          if (activeSlip && activeSlip.info) activeSlip.info.className = formattedClassName;
+        }
+      });
+    }
+    toast('Class updated.', 'success');
+  } else {
+    const newClass = {
+      id: uid('cls'), name, section,
+      feeHeads: JSON.parse(JSON.stringify(DEFAULT_FEE_HEADS)),
+      students: []
+    };
+    db.classes.push(newClass);
+    db.activeClassId = newClass.id;
+    toast('Class added with default fee heads.', 'success');
+  }
+  saveDB(); closeModal('classModal'); renderAll();
+}
+
+function deleteClassPrompt() {
+  const cls = getActiveClass(); if (!cls) return;
+  if (db.classes.length <= 1) { toast('Cannot delete the only class.', 'error'); return; }
+  if (!confirm(`Are you sure you want to delete Class ${cls.name}${cls.section?'-'+cls.section:''} and ALL its students? This cannot be undone.`)) return;
+  
+  db.classes = db.classes.filter(c => c.id !== cls.id);
+  db.activeClassId = db.classes[0].id;
+  saveDB(); renderAll();
+  toast('Class deleted.', 'success');
+}
+
+/* ============================================================
+   MOVE STUDENT TO ANOTHER CLASS
+   ============================================================ */
+function moveStudentPrompt() {
+  if (!currentStudentId) return;
+  const st = getStudent(currentStudentId);
+  const currentCls = getStudentClass(currentStudentId);
+  if (!st || !currentCls) return;
+
+  const targetClasses = db.classes.filter(c => c.id !== currentCls.id);
+  if (targetClasses.length === 0) {
+    toast('No other classes available to move student to. Please create another class first.', 'error');
+    return;
+  }
+
+  document.getElementById('moveStudentSub').innerHTML =
+    `Moving student <strong>${esc(st.name)}</strong> from Class <strong>${esc(currentCls.name)}${currentCls.section ? '-' + esc(currentCls.section) : ''}</strong> to another class. All existing fee records and slips will be retained.`;
+
+  const sel = document.getElementById('moveTargetClassSelect');
+  sel.innerHTML = targetClasses.map(c => `<option value="${c.id}">Class ${esc(c.name)}${c.section ? ' - ' + esc(c.section) : ''}</option>`).join('');
+
+  openModal('moveStudentModal');
+}
+
+function confirmMoveStudent() {
+  if (!currentStudentId) return;
+  const targetClassId = document.getElementById('moveTargetClassSelect').value;
+  const targetCls = db.classes.find(c => c.id === targetClassId);
+  const currentCls = getStudentClass(currentStudentId);
+  const st = getStudent(currentStudentId);
+
+  if (!targetCls || !currentCls || !st) return;
+
+  const newClassName = `${targetCls.name}${targetCls.section ? '-' + targetCls.section : ''}`;
+
+  if (!confirm(`Are you sure you want to move ${st.name} to Class ${newClassName}?`)) return;
+
+  // Remove from current class
+  currentCls.students = currentCls.students.filter(s => s.id !== currentStudentId);
+
+  // Update current slip class info
+  if (st.slips && st.slips.length > 0) {
+    const activeSlip = st.slips[0];
+    if (activeSlip && activeSlip.info) activeSlip.info.className = newClassName;
+  }
+
+  // Add to target class
+  targetCls.students.push(st);
+  db.activeClassId = targetCls.id;
+
+  saveDB();
+  closeModal('moveStudentModal');
+  toast(`Student ${st.name} moved to Class ${newClassName}.`, 'success');
+  renderStudentPage();
+}
+
+/* ============================================================
+   RENDER HOME
+   ============================================================ */
+function renderAll() {
+  const cls = getActiveClass();
+  
+  // Render Class Dropdown
+  const clsSel = document.getElementById('activeClassSelector');
+  clsSel.innerHTML = db.classes.map(c => `<option value="${c.id}">Class ${esc(c.name)}${c.section ? ' - ' + esc(c.section) : ''}</option>`).join('');
+  if (cls) clsSel.value = cls.id;
+
+  // School info
+  document.getElementById('schoolName').value = db.school.name || '';
+  document.getElementById('schoolAddr').value = db.school.addr || '';
+  document.getElementById('academicYear').value = db.school.year || '';
+  
+  // Range selects
+  const fromSel = document.getElementById('rangeFrom');
+  const toSel = document.getElementById('rangeTo');
+  if (fromSel.options.length === 0) {
+    fromSel.innerHTML = MONTHS_FULL.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+    toSel.innerHTML   = MONTHS_FULL.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+  }
+  fromSel.value = db.school.range.from; toSel.value = db.school.range.to;
+  renderRangeBanner();
+
+  // Fee Heads Label
+  if (cls) {
+    document.getElementById('feeHeadsClassLabel').textContent = `(Class ${cls.name}${cls.section?'-'+cls.section:''})`;
+  } else {
+    document.getElementById('feeHeadsClassLabel').textContent = '';
+  }
+
+  renderAddressesTable();
+  renderSummary();
+  renderFeeHeads();
+  renderDrawer();
+  updateStorageStatus();
+}
+
+function saveSchoolInfo() {
+  db.school.name = document.getElementById('schoolName').value;
+  db.school.addr = document.getElementById('schoolAddr').value;
+  db.school.year = document.getElementById('academicYear').value;
+  saveDB();
+  if (currentStudentId) renderStudentPage(); 
+}
+
+function saveRange() {
+  const f = Number(document.getElementById('rangeFrom').value);
+  const t = Number(document.getElementById('rangeTo').value);
+  db.school.range = { from: f, to: t };
+  
+  // Apply globally to ALL classes and ALL slips
+  db.classes.forEach(c => c.students.forEach(st => st.slips.forEach(sl => { sl.from = f; sl.to = t; })));
+  
+  saveDB(); renderAll();
+  if (currentStudentId) renderStudentPage();
+  toast('Universal month range applied to all slips.', 'success');
+}
+function setRangeFullYear() { document.getElementById('rangeFrom').value = 0; document.getElementById('rangeTo').value = 11; saveRange(); }
+function renderRangeBanner() {
+  const n = rangeMonths();
+  document.getElementById('rangeBanner').innerHTML = `
+    <span>🧮 <strong>Universal Year:</strong> ${esc(MONTHS_FULL[db.school.range.from])} → ${esc(MONTHS_FULL[db.school.range.to])} — <strong>${n}</strong> month${n>1?'s':''}</span>
+    ${db.school.range.to < db.school.range.from ? '<span style="color:#7c3aed">↻ Circular (wraps Dec → Jan)</span>' : ''}
+    <span>Applied to all slips.</span>`;
+}
+
+function renderSummary() {
+  const totalPayable = getGlobalTotal();
+  const totalPaid = getGlobalPaid();
+  const balance = totalPayable - totalPaid;
+  const collectedPct = totalPayable ? Math.round((totalPaid / totalPayable) * 100) : 0;
+  
+  let dueCount = 0;
+  let totalSlips = 0;
+  let totalStudents = 0;
+
+  db.classes.forEach(cls => {
+    cls.students.forEach(st => {
+      totalStudents++;
+      totalSlips += (st.slips || []).length;
+      if (studentTotal(st.id) - studentPaid(st.id) > 0) dueCount++;
+    });
+  });
+
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="stat"><div class="label">Total Students</div><div class="value">${totalStudents}</div></div>
+    <div class="stat purple"><div class="label">Total Slips</div><div class="value">${totalSlips}</div></div>
+    <div class="stat"><div class="label">Total Payable</div><div class="value">${rupee(totalPayable)}</div></div>
+    <div class="stat green"><div class="label">Total Collected</div><div class="value">${rupee(totalPaid)}</div></div>
+    <div class="stat red"><div class="label">Outstanding</div><div class="value">${rupee(balance)}</div></div>
+    <div class="stat red"><div class="label">Students With Dues</div><div class="value">${dueCount}</div></div>
+    <div class="stat orange"><div class="label">Collection Rate</div><div class="value">${collectedPct}%</div></div>`;
+}
+
+function renderFeeHeads() {
+  const cls = getActiveClass();
+  const body = document.getElementById('feeHeadsBody');
+  if (!cls || !cls.feeHeads.length) { body.innerHTML = '<tr><td colspan="6" class="empty">No fee heads for this class.</td></tr>'; return; }
+  
+  body.innerHTML = cls.feeHeads.map((fh, i) => {
+    const isTransport = fh.id === 'fh_transport';
+    const rateDisplay = isTransport ? 'Address-based' : rupee(fh.amount);
+    const full = fh.type === 'monthly' ? fh.amount * (12 - (fh.exemptMonths?.length || 0))
+              : fh.type === 'per-exam' ? fh.amount * (fh.months || 1) : fh.amount;
+    const suffix = fh.type === 'monthly'
+      ? ` <span style="color:#94a3b8;font-size:11px">× ${12 - (fh.exemptMonths?.length || 0)} mo</span>`
+      : fh.type === 'per-exam' ? ` <span style="color:#94a3b8;font-size:11px">× ${fh.months || 1} exams</span>` : '';
+    return `<tr>
+      <td>${i + 1}</td>
+      <td><strong>${esc(fh.name)}</strong>${isTransport ? ' <span style="font-size:10px;color:#0284c7;background:#e0f2fe;padding:2px 6px;border-radius:10px">📍 Dynamic Address</span>' : ''}</td>
+      <td>${typeLabel(fh)}</td>
+      <td class="amt-col">${rateDisplay}${suffix}</td>
+      <td class="amt-col"><strong>${isTransport ? 'Varies' : rupee(full)}</strong></td>
+      <td><div class="actions">
+        <button class="btn-warning btn-sm" onclick="editFeeHead('${fh.id}')">Edit</button>
+        <button class="btn-danger btn-sm" onclick="deleteFeeHead('${fh.id}')">Delete</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   STUDENT CRUD
+   ============================================================ */
+let editingStudentId = null;
+
+function addStudentPrompt() {
+  const cls = getActiveClass(); if (!cls) { toast('Select a class first.', 'error'); return; }
+  editingStudentId = null;
+  document.getElementById('studentTitle').textContent = 'Add Student';
+  document.getElementById('stName').value = '';
+  openModal('studentModal');
+  setTimeout(() => document.getElementById('stName').focus(), 50);
+}
+
+function saveStudent() {
+  const name = document.getElementById('stName').value.trim();
+  if (!name) { toast('Please enter a name.', 'error'); return; }
+  const cls = getActiveClass();
+  const clsName = `${cls.name}${cls.section ? '-' + cls.section : ''}`;
+  
+  if (editingStudentId) {
+    const st = cls.students.find(s => s.id === editingStudentId);
+    if (st) st.name = name;
+    toast('Student updated.', 'success');
+  } else {
+    cls.students.push({
+      id: uid('st'), name,
+      slips: [createBlankSlip('Session 1', clsName)]
+    });
+    toast('Student added.', 'success');
+  }
+  saveDB(); closeModal('studentModal'); renderDrawer(); renderSummary();
+  if (currentStudentId) renderStudentPage();
+}
+
+function deleteCurrentStudent() {
+  if (!currentStudentId) return;
+  const cls = getStudentClass(currentStudentId);
+  if (!cls) return;
+  if (!confirm(`Delete student "${getStudent(currentStudentId).name}" and all their slips?`)) return;
+  cls.students = cls.students.filter(s => s.id !== currentStudentId);
+  saveDB(); toast('Student deleted.', 'success'); goHome();
+}
+
+/* ============================================================
+   STUDENT PAGE
+   ============================================================ */
+function renderStudentPage(focusKey) {
+  if (!currentStudentId) return;
+  const st = getStudent(currentStudentId); 
+  const cls = getStudentClass(currentStudentId);
+  if (!st || !cls) { goHome(); return; }
+
+  // Sync current active slip class name with current class
+  const currentClassName = `${cls.name}${cls.section ? '-' + cls.section : ''}`;
+  if (st.slips && st.slips.length > 0) {
+    const activeSlip = (currentSlipId ? st.slips.find(s => s.id === currentSlipId) : null) || st.slips[0];
+    if (activeSlip && activeSlip.info) activeSlip.info.className = currentClassName;
+  }
+
+  document.getElementById('studentPageTitle').textContent = '👤 ' + st.name + ` (Class ${currentClassName})`;
+  const total = studentTotal(st.id), paid = studentPaid(st.id), bal = total - paid;
+  const statusText = bal === 0 ? '<span class="badge badge-ok">Paid in full</span>'
+    : paid === 0 ? '<span class="badge badge-due">Unpaid</span>'
+    : '<span class="badge badge-partial">Partially paid</span>';
+  document.getElementById('studentPageRangeHint').innerHTML =
+    `Across all ${(st.slips||[]).length} slip(s) • ` +
+    `Payable <strong>${rupee(total)}</strong> • Paid <strong class="paid">${rupee(paid)}</strong> • ` +
+    `Balance <strong class="${bal>0?'due':'paid'}">${rupee(bal)}</strong> ${statusText}`;
+
+  renderSlipTabs();
+  renderSlipToolbarAndMatrix(focusKey);
+}
+
+function renderSlipTabs() {
+  const st = getStudent(currentStudentId); if (!st) return;
+  const tabs = document.getElementById('slipTabs');
+  let html = '';
+  (st.slips || []).forEach((slip, i) => {
+    const total = slipTotal(slip, st.id), paid = slipPaid(slip, st.id), bal = total - paid;
+    const active = slip.id === currentSlipId;
+    const dueBadge = bal > 0 ? `<span class="tab-badge">${rupee(bal)}</span>` : '';
+    html += `<button class="slip-tab ${active?'active':''}" onclick="switchSlip('${slip.id}')">
+      <span>${esc(slip.label || ('Slip ' + (i+1)))} ${dueBadge}</span>
+      <small>${esc(rangeLabelOf(slip.from, slip.to))} • ${rangeMonthsOf(slip.from, slip.to)} mo</small>
+    </button>`;
+  });
+  html += `<button class="slip-tab add" onclick="addSlipPrompt()">+ New Slip</button>`;
+  tabs.innerHTML = html;
+}
+
+function switchSlip(slipId) { currentSlipId = slipId; renderStudentPage(); window.scrollTo({top: 0, behavior: 'instant'}); }
+
+function renderSlipToolbarAndMatrix(focusKey) {
+  const st = getStudent(currentStudentId); if (!st) return;
+  const slip = getSlip(currentStudentId, currentSlipId); if (!slip) return;
+
+  document.getElementById('slipToolbar').innerHTML = `
+    <div style="flex:1;min-width:200px">
+      <div class="label">Current Slip</div>
+      <h3>${esc(slip.label || 'Slip')}</h3>
+      <div style="font-size:11.5px;color:#64748b">${esc(rangeLabelOf(slip.from, slip.to))} • ${rangeMonthsOf(slip.from, slip.to)} month(s) • AY: ${esc(slip.academicYear || db.school.year || '—')}</div>
+    </div>
+    <button class="btn-ghost btn-sm" onclick="editSlipPrompt('${slip.id}')">✏️ Edit</button>
+    <button class="btn-danger btn-sm" onclick="deleteSlip('${slip.id}')" ${(st.slips||[]).length <= 1 ? 'disabled title="At least one slip must remain"' : ''}>🗑️ Delete</button>
+    <button class="btn-print btn-sm" onclick="printCurrentSlip()">🖨️ Print This Slip</button>`;
+
+  const pi = slip.info || {};
+  const addr = getAddress(pi.addressId);
+  const addressText = addr ? addr.name : '—';
+  const transportRouteText = addr ? `${addr.name} (${rupee(addr.amount)}/mo)` : 'Standard Rate';
+
+  document.getElementById('personalInfoBlockContainer').innerHTML = `
+    <div class="personal-info-block">
+      <h4>👤 Student Information (for this slip)
+        <button class="btn-ghost btn-sm" onclick="editPersonalInfoPrompt()">Edit</button>
+      </h4>
+      <div class="personal-info-grid">
+        <div class="pi-item"><span class="k">Name</span><span class="v">${esc(st.name)}</span></div>
+        <div class="pi-item"><span class="k">Class *</span><span class="v">${esc(pi.className || '—')}</span></div>
+        <div class="pi-item"><span class="k">Father's Name</span><span class="v">${esc(pi.father || '—')}</span></div>
+        <div class="pi-item"><span class="k">Mother's Name</span><span class="v">${esc(pi.mother || '—')}</span></div>
+        <div class="pi-item"><span class="k">Date of Birth</span><span class="v">${pi.dob ? esc(formatDate(pi.dob)) : '—'}</span></div>
+        <div class="pi-item"><span class="k">Contact No.</span><span class="v">${esc(pi.contact || '—')}</span></div>
+        <div class="pi-item" style="grid-column:1/-1"><span class="k">Transport Route</span><span class="v" style="color:#0284c7">${esc(transportRouteText)}</span></div>
+        <div class="pi-item" style="grid-column:1/-1"><span class="k">Address</span><span class="v">${esc(addressText)}</span></div>
+      </div>
+    </div>`;
+
+  document.getElementById('studentRangeBanner').innerHTML =
+    `<span>This slip: <strong>${esc(rangeLabelOf(slip.from, slip.to))}</strong> (${rangeMonthsOf(slip.from, slip.to)} months)</span>
+     <span>Toggle a fee head <strong>OFF</strong> to exclude it.</span>
+     <span>Use <strong>⚙️ Customize</strong> to set a discounted or partial payment amount for this slip only.</span>`;
+
+  renderPaymentMatrix(monthsInRangeOf(slip.from, slip.to), focusKey);
+}
+
+function renderPaymentMatrix(inRange, focusKey) {
+  const sid = currentStudentId, slipId = currentSlipId;
+  if (!sid || !slipId) return;
+  const st = getStudent(sid); const cls = getStudentClass(sid);
+  const slip = getSlip(sid, slipId); if (!slip) return;
+  
+  const scrollY = window.scrollY;
+  const container = document.getElementById('paymentMatrixContainer');
+  let focusInfo = null;
+  const active = document.activeElement;
+  if (active && container.contains(active) && active.dataset.focusKey) focusInfo = active.dataset.focusKey;
+
+  let html = `<div class="table-wrap" style="overflow-x:auto">
+    <table class="pay-matrix">
+      <thead><tr>
+        <th style="text-align:left;min-width:230px">Fee Head</th>
+        ${inRange.map(m => `<th>${MONTHS[m]}<span class="range-marker">•</span></th>`).join('')}
+        <th>Apply</th><th>Payable</th><th>Paid</th><th>Balance</th><th>Customize</th>
+      </tr></thead><tbody>`;
+
+  if (!cls.feeHeads.length) {
+    html += `<tr><td colspan="${inRange.length + 6}" class="empty">No fee heads configured for this class.</td></tr>`;
+  } else {
+    cls.feeHeads.forEach(fh => {
+      const p = getSlipData(sid, slipId, fh.id);
+      const enabled = isFeeEnabled(sid, slipId, fh.id);
+      const payable = feeHeadPayable(fh, sid, slipId, slip.from, slip.to);
+      const paid = feeHeadPaid(fh, sid, slipId, slip.from, slip.to);
+      const bal = payable - paid;
+      const disabledClass = enabled ? '' : 'fh-disabled';
+      const isCustom = hasCustom(sid, slipId, fh.id);
+      const c = getCustom(sid, slipId, fh.id);
+      const baseRate = getFeeHeadBaseAmount(fh, sid, slipId);
+      
+      const switchHtml = `<label class="fh-switch ${enabled?'on':'off'}">
+          <input type="checkbox" ${enabled?'checked':''} data-focus-key="sw-${fh.id}"
+            onchange="toggleFeeEnabled('${sid}','${slipId}','${fh.id}', this.checked)">
+          <span class="dot"></span>${enabled ? 'ON' : 'OFF'}</label>`;
+      const customizeBtn = `<button type="button" class="btn-custom ${isCustom?'has-custom':''}"
+          data-focus-key="cust-${fh.id}"
+          onclick="openCustomize('${sid}','${slipId}','${fh.id}')">
+          ⚙️ ${isCustom ? 'Custom ✓' : 'Customize'}</button>`;
+      
+      let rateNoteText = `${typeLabel(fh)} • ${fh.type === 'one-time' ? rupee(baseRate) : (12 - (fh.exemptMonths?.length || 0)) + ' mo × ' + rupee(baseRate)}`;
+      if (fh.id === 'fh_transport') {
+        const addr = getAddress(slip.info?.addressId);
+        if (addr) rateNoteText = `📍 ${addr.name}: ${rupee(addr.amount)}/mo`;
+      }
+
+      const rateNote = isCustom
+        ? `<small style="color:#b45309;font-weight:600">⚠ Custom setting active</small>`
+        : `<small>${rateNoteText}</small>`;
+
+      if (fh.type === 'monthly') {
+        const applicable = feeHeadApplicableMonths(fh);
+        html += `<tr class="${disabledClass}">
+          <td class="fh-name">${esc(fh.name)}${rateNote}</td>`;
+        inRange.forEach(m => {
+          if (!applicable.includes(m)) { html += `<td style="color:#cbd5e1">—</td>`; return; }
+          const ticked = p['m' + m] === true;
+          const rate = effectiveMonthlyRate(fh, sid, slipId, m);
+          
+          let partialMark = '';
+          if (ticked && c && c.mode === 'paid' && c.paidAmounts && c.paidAmounts[m] !== undefined) {
+            partialMark = `<span style="display:block;font-size:9px;color:#dc2626;font-weight:700">${rupee(c.paidAmounts[m])}</span>`;
+          }
+
+          html += `<td title="${MONTHS_FULL[m]}: ${rupee(rate)}">
+            <button type="button" class="tick-btn ${ticked?'on':'off'}" ${enabled?'':'disabled'}
+              data-focus-key="tm-${fh.id}-${m}"
+              onclick="toggleMonth('${sid}','${slipId}','${fh.id}',${m}, this)">${ticked ? '✅' : '❌'}</button>
+            ${partialMark}
+          </td>`;
+        });
+        html += `<td style="text-align:center">${switchHtml}</td>
+          <td class="amount-col">${rupee(payable)}</td>
+          <td class="amount-col paid">${rupee(paid)}</td>
+          <td class="amount-col ${bal>0?'due':'paid'}">${rupee(bal)}</td>
+          <td style="text-align:center">${customizeBtn}</td></tr>`;
+      } else {
+        const ticked = p.paid === true;
+        
+        let partialMark = '';
+        if (ticked && c && c.mode === 'paid' && c.paidAmounts && c.paidAmounts['flat'] !== undefined) {
+          partialMark = ` <span style="font-size:11px;color:#dc2626;font-weight:700">(Paid: ${rupee(c.paidAmounts['flat'])})</span>`;
+        }
+
+        html += `<tr class="${disabledClass}">
+          <td class="fh-name">${esc(fh.name)}${rateNote}</td>
+          <td colspan="${inRange.length}" style="text-align:left;padding-left:10px">
+            <button type="button" class="tick-btn ${ticked?'on':'off'}" style="font-size:14px" ${enabled?'':'disabled'}
+              data-focus-key="ts-${fh.id}"
+              onclick="toggleSingle('${sid}','${slipId}','${fh.id}', this)">${ticked?'✅ Paid':'❌ Unpaid'}</button>
+            ${partialMark}
+          </td>
+          <td style="text-align:center">${switchHtml}</td>
+          <td class="amount-col">${rupee(payable)}</td>
+          <td class="amount-col paid">${rupee(paid)}</td>
+          <td class="amount-col ${bal>0?'due':'paid'}">${rupee(bal)}</td>
+          <td style="text-align:center">${customizeBtn}</td></tr>`;
+      }
+    });
+    const total = slipTotal(slip, sid), paidTotal = slipPaid(slip, sid), balTotal = total - paidTotal;
+    html += `<tr class="summary-row">
+      <td class="fh-name" colspan="${inRange.length + 1}">SLIP TOTAL</td>
+      <td class="amount-col">${rupee(total)}</td>
+      <td class="amount-col">${rupee(paidTotal)}</td>
+      <td class="amount-col ${balTotal>0?'due':'paid'}">${rupee(balTotal)}</td>
+      <td></td></tr>`;
+  }
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+  window.scrollTo({ top: scrollY, behavior: 'instant' });
+  const keyToRestore = focusInfo || focusKey;
+  if (keyToRestore) {
+    const target = container.querySelector(`[data-focus-key="${keyToRestore}"]`);
+    if (target) { try { target.focus({ preventScroll: true }); } catch(_) { target.focus(); } }
+  }
+}
+
+function toggleMonth(studentId, slipId, feeHeadId, monthIdx, btn) {
+  const key = btn ? btn.dataset.focusKey : null;
+  const slip = getSlip(studentId, slipId); if (!slip) return;
+  if (!slip.data[feeHeadId]) slip.data[feeHeadId] = {};
+  const cur = slip.data[feeHeadId];
+  cur['m' + monthIdx] = !cur['m' + monthIdx];
+  saveDB(); renderStudentPage(key); renderSummary(); renderDrawer();
+}
+function toggleSingle(studentId, slipId, feeHeadId, btn) {
+  const key = btn ? btn.dataset.focusKey : null;
+  const slip = getSlip(studentId, slipId); if (!slip) return;
+  if (!slip.data[feeHeadId]) slip.data[feeHeadId] = {};
+  const cur = slip.data[feeHeadId];
+  cur.paid = !cur.paid;
+  saveDB(); renderStudentPage(key); renderSummary(); renderDrawer();
+}
+function toggleFeeEnabled(studentId, slipId, feeHeadId, checked) {
+  const slip = getSlip(studentId, slipId); if (!slip) return;
+  if (!slip.data[feeHeadId]) slip.data[feeHeadId] = {};
+  slip.data[feeHeadId].enabled = checked;
+  saveDB(); renderStudentPage('sw-' + feeHeadId); renderSummary(); renderDrawer();
+  toast(checked ? 'Fee head enabled.' : 'Fee head disabled.', 'success');
+}
+
+/* ============================================================
+   SLIP CRUD
+   ============================================================ */
+let slipEditId = null;
+
+function addSlipPrompt() {
+  slipEditId = null;
+  const st = getStudent(currentStudentId); const cls = getStudentClass(currentStudentId); if (!st) return;
+  
+  document.getElementById('slipModalTitle').textContent = 'New Fee Slip';
+  document.getElementById('slipSaveBtn').textContent = 'Create Slip';
+
+  document.getElementById('slipAcademicYear').value = '';
+
+  const fromSel = document.getElementById('slipFrom');
+  const toSel = document.getElementById('slipTo');
+  fromSel.innerHTML = MONTHS_FULL.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+  toSel.innerHTML   = MONTHS_FULL.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+  fromSel.value = db.school.range.from; toSel.value = db.school.range.to;
+
+  document.getElementById('slipClass').value = `Class ${cls.name}${cls.section?'-'+cls.section:''}`;
+
+  const base = (st.slips && st.slips[0] && st.slips[0].info) ? st.slips[0].info : {};
+  document.getElementById('slipDOB').value = base.dob || '';
+  document.getElementById('slipFather').value = base.father || '';
+  document.getElementById('slipMother').value = base.mother || '';
+  document.getElementById('slipContact').value = base.contact || '';
+  
+  populateAddressSelectOptions(document.getElementById('slipAddressSelect'), base.addressId || '');
+
+  document.getElementById('copyInfoBanner').innerHTML = `<div class="custom-note" style="border-left-color:#7c3aed;background:#f5f3ff;color:#4c1d95">
+      📋 Personal info from previous slip has been pre-filled below.
+    </div>`;
+
+  openModal('slipModal');
+}
+
+function editSlipPrompt(slipId) {
+  const st = getStudent(currentStudentId); const cls = getStudentClass(currentStudentId);
+  const slip = getSlip(currentStudentId, slipId); if (!slip) return;
+  
+  slipEditId = slipId;
+  document.getElementById('slipModalTitle').textContent = 'Edit Fee Slip';
+  document.getElementById('slipSaveBtn').textContent = 'Save Changes';
+  
+  document.getElementById('slipAcademicYear').value = slip.academicYear || '';
+  
+  const fromSel = document.getElementById('slipFrom');
+  const toSel = document.getElementById('slipTo');
+  fromSel.innerHTML = MONTHS_FULL.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+  toSel.innerHTML   = MONTHS_FULL.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+  fromSel.value = slip.from; toSel.value = slip.to;
+
+  document.getElementById('slipClass').value = `Class ${cls.name}${cls.section?'-'+cls.section:''}`;
+  document.getElementById('slipDOB').value = slip.info.dob || '';
+  document.getElementById('slipFather').value = slip.info.father || '';
+  document.getElementById('slipMother').value = slip.info.mother || '';
+  document.getElementById('slipContact').value = slip.info.contact || '';
+  
+  populateAddressSelectOptions(document.getElementById('slipAddressSelect'), slip.info.addressId || '');
+  document.getElementById('copyInfoBanner').innerHTML = '';
+  
+  openModal('slipModal');
+}
+
+function saveSlip() {
+  const st = getStudent(currentStudentId); const cls = getStudentClass(currentStudentId); if (!st) return;
+  const academicYear = document.getElementById('slipAcademicYear').value.trim();
+  const from = Number(document.getElementById('slipFrom').value);
+  const to = Number(document.getElementById('slipTo').value);
+  
+  const info = {
+    className: `${cls.name}${cls.section?'-'+cls.section:''}`,
+    father:    document.getElementById('slipFather').value.trim(),
+    mother:    document.getElementById('slipMother').value.trim(),
+    dob:       document.getElementById('slipDOB').value.trim(),
+    contact:   document.getElementById('slipContact').value.trim(),
+    addressId: document.getElementById('slipAddressSelect').value
+  };
+
+  if (slipEditId) {
+    const slip = st.slips.find(s => s.id === slipEditId); if (!slip) return;
+    slip.from = from; slip.to = to; slip.info = info; slip.academicYear = academicYear;
+    toast('Slip updated.', 'success');
+  } else {
+    const newSlip = { 
+      id: uid('slip'), 
+      label: 'Slip ' + ((st.slips || []).length + 1), 
+      from, to, info, academicYear, data: {} 
+    };
+    st.slips = st.slips || [];
+    st.slips.push(newSlip);
+    currentSlipId = newSlip.id;
+    toast('Slip created.', 'success');
+  }
+  saveDB(); closeModal('slipModal'); renderStudentPage(); renderDrawer(); renderSummary();
+}
+
+function deleteSlip(slipId) {
+  const st = getStudent(currentStudentId); if (!st) return;
+  if ((st.slips || []).length <= 1) { toast('Cannot delete the only slip.', 'error'); return; }
+  const slip = st.slips.find(s => s.id === slipId); if (!slip) return;
+  if (!confirm(`Delete slip "${slip.label}" and all its ticks/info?`)) return;
+  st.slips = st.slips.filter(s => s.id !== slipId);
+  if (currentSlipId === slipId) currentSlipId = st.slips[0].id;
+  saveDB(); renderStudentPage(); renderDrawer(); renderSummary();
+  toast('Slip deleted.', 'success');
+}
+
+/* ============================================================
+   PERSONAL INFO EDIT
+   ============================================================ */
+function editPersonalInfoPrompt() {
+  const slip = getSlip(currentStudentId, currentSlipId); const cls = getStudentClass(currentStudentId); if (!slip) return;
+  const info = slip.info || {};
+  
+  document.getElementById('piClass').value = `Class ${cls.name}${cls.section?'-'+cls.section:''}`;
+  document.getElementById('piDOB').value = info.dob || '';
+  document.getElementById('piFather').value = info.father || '';
+  document.getElementById('piMother').value = info.mother || '';
+  document.getElementById('piContact').value = info.contact || '';
+  
+  populateAddressSelectOptions(document.getElementById('piAddressSelect'), info.addressId || '');
+  
+  openModal('personalInfoModal');
+}
+
+function savePersonalInfo() {
+  const slip = getSlip(currentStudentId, currentSlipId); if (!slip) return;
+  const cls = getStudentClass(currentStudentId);
+  
+  slip.info = {
+    className: `${cls.name}${cls.section?'-'+cls.section:''}`,
+    father:    document.getElementById('piFather').value.trim(),
+    mother:    document.getElementById('piMother').value.trim(),
+    dob:       document.getElementById('piDOB').value.trim(),
+    contact:   document.getElementById('piContact').value.trim(),
+    addressId: document.getElementById('piAddressSelect').value
+  };
+  
+  saveDB(); closeModal('personalInfoModal'); renderStudentPage(); renderDrawer();
+  toast('Personal info updated.', 'success');
+}
+
+/* ============================================================
+   CUSTOMIZATION MODAL
+   ============================================================ */
+let customStudentId = null, customSlipId = null, customFeeHeadId = null, customMode = 'default';
+
+function openCustomize(studentId, slipId, feeHeadId) {
+  const st = getStudent(studentId), slip = getSlip(studentId, slipId); 
+  const cls = getStudentClass(studentId); if (!cls) return;
+  const fh = cls.feeHeads.find(f => f.id === feeHeadId);
+  if (!st || !slip || !fh) return;
+  
+  customStudentId = studentId; customSlipId = slipId; customFeeHeadId = feeHeadId;
+  const existing = getCustom(studentId, slipId, feeHeadId);
+  customMode = (existing && existing.mode) ? existing.mode : 'default';
+  
+  const baseRate = getFeeHeadBaseAmount(fh, studentId, slipId);
+  document.getElementById('customizeTitle').textContent = '⚙️ Customize: ' + fh.name;
+  document.getElementById('customizeSub').innerHTML =
+    `For <strong>${esc(st.name)}</strong> — slip <strong>${esc(slip.label || '')}</strong> (${esc(rangeLabelOf(slip.from, slip.to))}).<br>
+     Effective base rate: <strong>${rupee(baseRate)}</strong>${fh.type==='monthly' ? ' per month' : ''}.`;
+  renderCustomBody();
+  openModal('customizeModal');
+}
+function setCustomMode(mode) { customMode = mode; renderCustomBody(); }
+function renderCustomBody() {
+  const sid = customStudentId, slipId = customSlipId;
+  const slip = getSlip(sid, slipId); const cls = getStudentClass(sid); if (!slip || !cls) return;
+  const fh = cls.feeHeads.find(f => f.id === customFeeHeadId); if (!fh) return;
+  const existing = getCustom(sid, slipId, fh.id);
+  const baseRate = getFeeHeadBaseAmount(fh, sid, slipId);
+  
+  document.querySelectorAll('input[name="customMode"]').forEach(r => { r.checked = r.value === customMode; });
+  document.querySelectorAll('.custom-mode-picker label').forEach(l => l.classList.remove('active'));
+  const activeLabel = document.getElementById('mode' + customMode.charAt(0).toUpperCase() + customMode.slice(1) + 'Label');
+  if (activeLabel) activeLabel.classList.add('active');
+  
+  document.getElementById('modeMonthlyLabel').style.display = fh.type === 'monthly' ? '' : 'none';
+  if (fh.type !== 'monthly' && customMode === 'monthly') customMode = 'default';
+
+  let body = '';
+  if (customMode === 'default') {
+    body = `<div class="custom-note">Universal / Base amount <strong>${rupee(baseRate)}</strong>${fh.type==='monthly'?' per month':''} will be used for this slip.</div>`;
+  } else if (customMode === 'override') {
+    const val = (existing && existing.mode === 'override') ? existing.amount : baseRate;
+    body = `<div class="custom-note">This custom amount <strong>replaces</strong> the universal rate for this slip${fh.type==='monthly'?' for every month':''}.</div>
+    <div class="row"><div class="field"><label>Custom ${fh.type==='monthly'?'Monthly Rate':'Amount'} (₹)</label>
+    <input id="customOverrideAmount" type="number" min="0" step="1" value="${val}"></div></div>`;
+  } else if (customMode === 'monthly') {
+    const inRangeSet = new Set(monthsInRangeOf(slip.from, slip.to));
+    const applicable = feeHeadApplicableMonths(fh);
+    const cm = (existing && existing.mode === 'monthly' && existing.monthly) ? existing.monthly : {};
+    let rows = '';
+    for (let m = 0; m < 12; m++) {
+      if (!applicable.includes(m)) continue;
+      const currentVal = (cm[m] !== undefined && cm[m] !== null && cm[m] !== '') ? cm[m] : '';
+      const inRange = inRangeSet.has(m);
+      rows += `<tr class="${inRange ? '' : 'out-of-range'}">
+        <td class="month-name">${MONTHS_FULL[m]}${inRange ? '' : ' <em style="font-size:10px;color:#94a3b8">(out of range)</em>'}</td>
+        <td><input type="number" min="0" step="1" data-month="${m}" value="${currentVal}" placeholder="${baseRate}"></td>
+        <td class="universal-hint">${rupee(baseRate)}</td></tr>`;
+    }
+    body = `<div class="custom-note">Set different payable amounts for <strong>individual months</strong> within this slip. Blank = universal.</div>
+    <table class="custom-table"><thead><tr><th>Month</th><th>Custom Payable (₹)</th><th>Base Rate</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+  } else if (customMode === 'paid') {
+    const p = getSlipData(sid, slipId, fh.id);
+    const inRangeSet = new Set(monthsInRangeOf(slip.from, slip.to));
+    const cp = (existing && existing.mode === 'paid' && existing.paidAmounts) ? existing.paidAmounts : {};
+    
+    if (fh.type === 'monthly') {
+      const applicable = feeHeadApplicableMonths(fh);
+      let rows = '';
+      for (let m = 0; m < 12; m++) {
+        if (!applicable.includes(m)) continue;
+        const inRange = inRangeSet.has(m);
+        const ticked = p['m' + m] === true;
+        const currentVal = (cp[m] !== undefined && cp[m] !== null && cp[m] !== '') ? cp[m] : '';
+        const effRate = effectiveMonthlyRate(fh, sid, slipId, m);
+        
+        rows += `<tr class="${inRange ? '' : 'out-of-range'}">
+          <td class="month-name">${MONTHS_FULL[m]}${inRange ? '' : ' <em style="font-size:10px;color:#94a3b8">(out)</em>'}</td>
+          <td style="font-size:11px;color:#64748b">${ticked ? '✅ Ticked' : '❌ Unticked'}</td>
+          <td><input type="number" min="0" step="1" data-paid-month="${m}" value="${currentVal}" placeholder="${effRate}"></td>
+          <td class="universal-hint">${rupee(effRate)}</td></tr>`;
+      }
+      body = `<div class="custom-note">Enter the actual amount the student paid for each month. <br>Entering an amount will automatically mark that month as <strong>✅ Paid</strong>. If you leave a month blank, the full expected amount will be considered paid when ticked.</div>
+      <table class="custom-table"><thead><tr><th>Month</th><th>Current Status</th><th>Actual Paid (₹)</th><th>Expected</th></tr></thead>
+      <tbody>${rows}</tbody></table>`;
+    } else {
+      const ticked = p.paid === true;
+      const currentVal = (cp['flat'] !== undefined && cp['flat'] !== null && cp['flat'] !== '') ? cp['flat'] : '';
+      const effRate = effectiveFlatRate(fh, sid, slipId);
+      body = `<div class="custom-note">Enter the actual amount the student paid for this one-time fee. This will mark the fee as <strong>✅ Paid</strong>.</div>
+      <div class="row">
+        <div class="field">
+          <label>Actual Paid Amount (₹) — Status is ${ticked ? '✅ Paid' : '❌ Unpaid'}</label>
+          <input type="number" min="0" step="1" id="customFlatPaidAmount" value="${currentVal}" placeholder="${effRate}">
+        </div>
+        <div class="field" style="flex:0 0 auto">
+          <span style="font-size:12px;color:#64748b">Expected: <strong>${rupee(effRate)}</strong></span>
+        </div>
+      </div>`;
+    }
+  }
+  document.getElementById('customBody').innerHTML = body;
+}
+
+function saveCustomization() {
+  const sid = customStudentId, slipId = customSlipId, fid = customFeeHeadId;
+  if (!sid || !slipId || !fid) return;
+  const slip = getSlip(sid, slipId); if (!slip) return;
+  const cls = getStudentClass(sid); if (!cls) return;
+  const fh = cls.feeHeads.find(f => f.id === fid);
+  
+  if (!slip.data[fid]) slip.data[fid] = {};
+  
+  if (customMode === 'default') {
+    delete slip.data[fid].custom; toast('Customization cleared.', 'success');
+  } else if (customMode === 'override') {
+    const val = Number(document.getElementById('customOverrideAmount').value);
+    if (isNaN(val) || val < 0) { toast('Enter a valid amount.', 'error'); return; }
+    slip.data[fid].custom = { mode: 'override', amount: val };
+    toast('Custom amount saved.', 'success');
+  } else if (customMode === 'monthly') {
+    const inputs = document.querySelectorAll('#customBody input[data-month]');
+    const monthly = {};
+    inputs.forEach(inp => {
+      const m = Number(inp.dataset.month);
+      const raw = inp.value.trim(); if (raw === '') return;
+      const v = Number(raw); if (isNaN(v) || v < 0) return;
+      monthly[m] = v;
+    });
+    if (!Object.keys(monthly).length) { delete slip.data[fid].custom; toast('No overrides — universal rate used.', 'success'); }
+    else { slip.data[fid].custom = { mode: 'monthly', monthly }; toast('Per-month custom amounts saved.', 'success'); }
+  } else if (customMode === 'paid') {
+    if (fh.type === 'monthly') {
+      const inputs = document.querySelectorAll('#customBody input[data-paid-month]');
+      const paidAmounts = {};
+      inputs.forEach(inp => {
+        const m = Number(inp.dataset.paidMonth);
+        const raw = inp.value.trim(); if (raw === '') return;
+        const v = Number(raw); if (isNaN(v) || v < 0) return;
+        paidAmounts[m] = v;
+        slip.data[fid]['m' + m] = true;
+      });
+      if (!Object.keys(paidAmounts).length) { delete slip.data[fid].custom; toast('No partial amounts — full rate considered when paid.', 'success'); }
+      else { slip.data[fid].custom = { mode: 'paid', paidAmounts }; toast('Partial payments recorded & months ticked.', 'success'); }
+    } else {
+      const raw = document.getElementById('customFlatPaidAmount').value.trim();
+      if (raw === '') { delete slip.data[fid].custom; toast('Cleared partial amount.', 'success'); }
+      else {
+        const v = Number(raw); if (isNaN(v) || v < 0) { toast('Enter a valid amount.', 'error'); return; }
+        slip.data[fid].custom = { mode: 'paid', paidAmounts: { 'flat': v } };
+        slip.data[fid].paid = true;
+        toast('Partial payment recorded & marked as Paid.', 'success');
+      }
+    }
+  }
+  saveDB(); closeModal('customizeModal'); renderStudentPage('cust-' + fid); renderSummary(); renderDrawer();
+}
+
+/* ============================================================
+   FEE HEAD CRUD (Active Class)
+   ============================================================ */
+let editingFeeHeadId = null;
+function addFeeHeadPrompt() {
+  const cls = getActiveClass(); if (!cls) return;
+  editingFeeHeadId = null;
+  document.getElementById('feeHeadTitle').textContent = 'Add Fee Head to Class ' + cls.name;
+  document.getElementById('fhName').value = '';
+  document.getElementById('fhType').value = 'monthly';
+  document.getElementById('fhAmount').value = '';
+  document.getElementById('fhMonths').value = 12;
+  
+  document.querySelectorAll('#exemptGrid input').forEach(chk => chk.checked = false);
+  document.getElementById('exemptMonthsPanel').style.display = 'none';
+
+  updateFeeHeadMonthsField(); openModal('feeHeadModal');
+  setTimeout(() => document.getElementById('fhName').focus(), 50);
+}
+
+function editFeeHead(id) {
+  const cls = getActiveClass(); if (!cls) return;
+  const fh = cls.feeHeads.find(f => f.id === id); if (!fh) return;
+  editingFeeHeadId = id;
+  document.getElementById('feeHeadTitle').textContent = 'Edit Fee Head';
+  document.getElementById('fhName').value = fh.name;
+  document.getElementById('fhType').value = fh.type;
+  document.getElementById('fhAmount').value = fh.amount;
+  document.getElementById('fhMonths').value = fh.months || 12;
+
+  const exempts = fh.exemptMonths || [];
+  document.querySelectorAll('#exemptGrid input').forEach(chk => { chk.checked = exempts.includes(Number(chk.value)); });
+  renderExemptMonths();
+
+  updateFeeHeadMonthsField(); openModal('feeHeadModal');
+}
+
+document.addEventListener('change', e => { if (e.target && e.target.id === 'fhType') updateFeeHeadMonthsField(); });
+
+function updateFeeHeadMonthsField() {
+  const type = document.getElementById('fhType').value;
+  const wrap = document.getElementById('fhMonthsField');
+  const label = wrap.querySelector('label');
+  if (type === 'monthly') { wrap.style.display = ''; label.textContent = 'Months Applicable'; renderExemptMonths(); }
+  else if (type === 'per-exam') { wrap.style.display = ''; label.textContent = 'Number of Exams'; document.getElementById('exemptMonthsPanel').style.display='none'; }
+  else { wrap.style.display = 'none'; document.getElementById('exemptMonthsPanel').style.display='none'; }
+}
+
+function renderExemptMonths() {
+  const panel = document.getElementById('exemptMonthsPanel');
+  const type = document.getElementById('fhType').value;
+  if (type !== 'monthly') { panel.style.display = 'none'; return; }
+
+  const monthsVal = Number(document.getElementById('fhMonths').value) || 12;
+  if (monthsVal >= 12) { panel.style.display = 'none'; return; }
+
+  panel.style.display = 'block';
+  const grid = document.getElementById('exemptGrid');
+  
+  if (grid.innerHTML.trim() === '') {
+    let html = '';
+    for (let m = 0; m < 12; m++) {
+      html += `<label class="exempt-item" id="exempt-lbl-${m}">
+        <input type="checkbox" value="${m}" onchange="updateExemptLabel(${m})">
+        ${MONTHS[m]}
+      </label>`;
+    }
+    grid.innerHTML = html;
+  }
+  for (let m = 0; m < 12; m++) updateExemptLabel(m);
+}
+
+function updateExemptLabel(m) {
+  const chk = document.querySelector(`#exemptGrid input[value="${m}"]`);
+  const lbl = document.getElementById(`exempt-lbl-${m}`);
+  if (chk && lbl) {
+    if (chk.checked) lbl.classList.add('checked');
+    else lbl.classList.remove('checked');
+  }
+}
+
+function saveFeeHead() {
+  const cls = getActiveClass(); if (!cls) return;
+  const name = document.getElementById('fhName').value.trim();
+  const type = document.getElementById('fhType').value;
+  const amount = Number(document.getElementById('fhAmount').value);
+  const months = Number(document.getElementById('fhMonths').value) || 1;
+  if (!name) { toast('Enter fee head name.', 'error'); return; }
+  if (isNaN(amount) || amount < 0) { toast('Enter a valid amount.', 'error'); return; }
+
+  let exemptMonths = [];
+  if (type === 'monthly' && months < 12) {
+    const checked = document.querySelectorAll('#exemptGrid input:checked');
+    exemptMonths = Array.from(checked).map(chk => Number(chk.value));
+    const need = 12 - months;
+    if (exemptMonths.length !== need) { toast(`You must select exactly ${need} exempted month(s).`, 'error'); return; }
+  }
+
+  const data = { name, type, amount, months: (type === 'one-time') ? 1 : months, exemptMonths };
+  
+  if (editingFeeHeadId) {
+    const fh = cls.feeHeads.find(f => f.id === editingFeeHeadId);
+    if (fh) Object.assign(fh, data);
+    toast('Fee head updated.', 'success');
+  } else {
+    cls.feeHeads.push({ id: uid('fh'), ...data });
+    toast('Fee head added.', 'success');
+  }
+  saveDB(); closeModal('feeHeadModal'); renderFeeHeads(); renderSummary();
+  if (currentStudentId) renderStudentPage();
+}
+
+function deleteFeeHead(id) {
+  const cls = getActiveClass(); if (!cls) return;
+  const fh = cls.feeHeads.find(f => f.id === id); if (!fh) return;
+  if (!confirm(`Delete "${fh.name}"? All data across every slip in this class will be removed.`)) return;
+  cls.feeHeads = cls.feeHeads.filter(f => f.id !== id);
+  cls.students.forEach(st => { (st.slips || []).forEach(sl => { if (sl.data) delete sl.data[id]; }); });
+  saveDB(); renderFeeHeads(); renderSummary();
+  if (currentStudentId) renderStudentPage();
+  toast('Fee head deleted.', 'success');
+}
+
+/* ============================================================
+   WHATSAPP INTEGRATION
+   ============================================================ */
+function sendWhatsApp() {
+  const sid = currentStudentId;
+  const st = getStudent(sid); if (!st) return;
+  const slip = getSlip(sid, currentSlipId); if (!slip) return;
+  const info = slip.info || {};
+  const cls = getStudentClass(sid); if (!cls) return;
+
+  if (!info.contact) { toast('No contact number saved for this student. Please add it in Edit Personal Info.', 'error'); return; }
+
+  let phone = String(info.contact).replace(/[^0-9]/g, '');
+  if (phone.length === 10) phone = '91' + phone;
+
+  const schoolName = (db.school.name || 'School').toUpperCase();
+  const year = slip.academicYear || db.school.year || '';
+  const total = slipTotal(slip, sid);
+  const paid = slipPaid(slip, sid);
+  const bal = total - paid;
+  const inRange = monthsInRangeOf(slip.from, slip.to);
+
+  const classNameText = info.className || `${cls.name}${cls.section ? '-' + cls.section : ''}`;
+
+  let msg = `*${schoolName}*\n`;
+  msg += `*Fee Statement*\n`;
+  msg += `Academic Year: ${year || '—'}\n\n`;
+  
+  msg += `👤 *Student Details*\n`;
+  msg += `Name: *${st.name}*\n`;
+  msg += `Class: ${classNameText}\n`;
+  if (info.father) msg += `Father: ${info.father}\n`;
+  if (info.mother) msg += `Mother: ${info.mother}\n`;
+  const addr = getAddress(info.addressId);
+  if (addr) msg += `Address: ${addr.name}\n`;
+  msg += `\n`;
+
+  msg += `📅 *Billing Range:*\n`;
+  msg += `${MONTHS_FULL[slip.from]} to ${MONTHS_FULL[slip.to]} (${rangeMonthsOf(slip.from, slip.to)} months)\n\n`;
+
+  msg += `📋 *Detailed Fee Breakdown*\n`;
+  msg += `--------------------\n`;
+  
+  cls.feeHeads.forEach(fh => {
+    if (!isFeeEnabled(sid, slip.id, fh.id)) return;
+    const payable = feeHeadPayable(fh, sid, slip.id, slip.from, slip.to);
+    const paidFH = feeHeadPaid(fh, sid, slip.id, slip.from, slip.to);
+    const balFH = payable - paidFH;
+    const c = getCustom(sid, slip.id, fh.id);
+    
+    if (payable === 0 && paidFH === 0) return;
+
+    const status = balFH <= 0 ? '✅ Paid' : (paidFH > 0 ? '⚠️ Partial' : '❌ Unpaid');
+    msg += `*${fh.name}*\nStatus: ${status}\n`;
+    
+    if (fh.type === 'monthly') {
+      const applicable = feeHeadApplicableMonths(fh);
+      const monthsInSlip = inRange.filter(m => applicable.includes(m));
+      const rate = effectiveMonthlyRate(fh, sid, slip.id, monthsInSlip[0] || slip.from);
+      
+      msg += `• Rate: ${rupee(rate)}/month\n• Duration: ${monthsInSlip.length} month(s)\n`;
+      if (monthsInSlip.length !== inRange.length) {
+        const skipped = inRange.filter(m => !applicable.includes(m)).map(m => MONTHS[m]).join(', ');
+        msg += `  _(Excludes: ${skipped})_\n`;
+      }
+      
+      msg += `• Month Breakdown:\n`;
+      const p = getSlipData(sid, slip.id, fh.id);
+      monthsInSlip.forEach(m => {
+        const ticked = p['m' + m] === true;
+        const mRate = effectiveMonthlyRate(fh, sid, slip.id, m);
+        let mNote = '';
+        if (ticked && c && c.mode === 'paid' && c.paidAmounts && c.paidAmounts[m] !== undefined) mNote = ` (Paid: ${rupee(c.paidAmounts[m])})`;
+        else if (ticked) mNote = ` (Paid: ${rupee(mRate)})`;
+        msg += `   ${ticked ? '✅' : '❌'} ${MONTHS_FULL[m]}: ${rupee(mRate)}${mNote}\n`;
+      });
+    } else if (fh.type === 'per-exam') {
+      const rate = effectiveFlatRate(fh, sid, slip.id);
+      msg += `• Rate: ${rupee(rate)} × ${fh.months || 1} exams\n`;
+      if (paidFH > 0) msg += `• Paid: ${rupee(paidFH)}\n`;
+    } else {
+      msg += `• One-time Fee\n`;
+      if (paidFH > 0 && c && c.mode === 'paid') msg += `• Paid: ${rupee(paidFH)} (Custom)\n`;
+    }
+    
+    msg += `• *Payable: ${rupee(payable)}*\n`;
+    if (balFH > 0) msg += `• *Balance: ${rupee(balFH)}*\n`;
+    msg += `--------------------\n`;
+  });
+
+  msg += `\n💰 *Grand Total Summary*\n`;
+  msg += `Total Payable: *${rupee(total)}*\nTotal Paid: *${rupee(paid)}*\nBalance Due: *${rupee(bal)}*\n\n`;
+  msg += `_This is a computer-generated fee statement._\n*Generated by Majid Sir's Fee App*`;
+
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+/* ============================================================
+   PRINT SLIPS
+   ============================================================ */
+function buildSlipHTML(student, slip) {
+  const sid = student.id;
+  const cls = getStudentClass(sid); if (!cls) return '';
+  
+  const total = slipTotal(slip, sid);
+  const paid = slipPaid(slip, sid);
+  const bal = total - paid;
+  let status = 'paid', statusText = 'PAID IN FULL';
+  if (bal > 0 && paid === 0) { status = 'due'; statusText = 'UNPAID'; }
+  else if (bal > 0) { status = 'partial'; statusText = 'PARTIALLY PAID'; }
+
+  const schoolName = (db.school.name || 'School Name').toUpperCase();
+  const schoolAddr = db.school.addr || '';
+  const year = slip.academicYear || db.school.year || '';
+  const today = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const inRange = monthsInRangeOf(slip.from, slip.to);
+  const anyCustom = cls.feeHeads.some(fh => isFeeEnabled(sid, slip.id, fh.id) && hasCustom(sid, slip.id, fh.id));
+
+  const info = slip.info || {};
+  const className = info.className || `${cls.name}${cls.section?'-'+cls.section:''}`;
+  const addr = getAddress(info.addressId);
+
+  let rows = '';
+  cls.feeHeads.forEach(fh => {
+    if (!isFeeEnabled(sid, slip.id, fh.id)) return;
+    const p = getSlipData(sid, slip.id, fh.id);
+    const c = getCustom(sid, slip.id, fh.id);
+    const payable = feeHeadPayable(fh, sid, slip.id, slip.from, slip.to);
+    const paidFH = feeHeadPaid(fh, sid, slip.id, slip.from, slip.to);
+    const balFH = payable - paidFH;
+    const custom = hasCustom(sid, slip.id, fh.id);
+    if (fh.type === 'monthly') {
+      const applicable = feeHeadApplicableMonths(fh);
+      let tickCells = '';
+      inRange.forEach(m => {
+        if (!applicable.includes(m)) { tickCells += `<td style="color:#cbd5e1">—</td>`; return; }
+        const ticked = p['m' + m] === true;
+        const rate = effectiveMonthlyRate(fh, sid, slip.id, m);
+        const baseRate = getFeeHeadBaseAmount(fh, sid, slip.id);
+        const customRate = rate !== baseRate;
+        let partialAmt = '';
+        if (ticked && c && c.mode === 'paid' && c.paidAmounts && c.paidAmounts[m] !== undefined) {
+          partialAmt = `<br><span class="discount-mark" style="color:#b91c1c">${rupee(c.paidAmounts[m])}</span>`;
+        }
+        tickCells += `<td>${ticked ? '<span class="tick-p">✓</span>' : '<span class="tick-x">✕</span>'}
+          ${customRate ? `<br><span class="discount-mark">${rupee(rate)}</span>` : ''}
+          ${partialAmt}</td>`;
+      });
+      rows += `<tr>
+        <td class="fh-name">${esc(fh.name)}${custom ? ' <span class="discount-mark">★</span>' : ''}</td>
+        ${tickCells}
+        <td class="amt">${rupee(payable)}</td>
+        <td class="amt">${rupee(paidFH)}</td>
+        <td class="amt" style="color:${balFH>0?'#b91c1c':'#15803d'};font-weight:600">${rupee(balFH)}</td>
+      </tr>`;
+    } else {
+      const ticked = p.paid === true;
+      let partialAmt = '';
+      if (ticked && c && c.mode === 'paid' && c.paidAmounts && c.paidAmounts['flat'] !== undefined) {
+        partialAmt = `<br><span class="discount-mark" style="color:#b91c1c;font-size:10px">Paid: ${rupee(c.paidAmounts['flat'])}</span>`;
+      }
+      rows += `<tr>
+        <td class="fh-name">${esc(fh.name)}${custom ? ' <span class="discount-mark">★</span>' : ''}</td>
+        <td colspan="${inRange.length}" style="text-align:center">
+          ${ticked ? '<span class="tick-p">✓ PAID</span>' : '<span class="tick-x">✕ UNPAID</span>'}
+          ${partialAmt}
+        </td>
+        <td class="amt">${rupee(payable)}</td>
+        <td class="amt">${rupee(paidFH)}</td>
+        <td class="amt" style="color:${balFH>0?'#b91c1c':'#15803d'};font-weight:600">${rupee(balFH)}</td>
+      </tr>`;
+    }
+  });
+  if (!rows) rows = `<tr><td colspan="${inRange.length + 4}" style="text-align:center;color:#888">No fee heads enabled</td></tr>`;
+  const monthHeaders = inRange.map(m => `<th style="font-size:9.5px">${MONTHS[m]}</th>`).join('');
+
+  const personalLines = [];
+  personalLines.push({ k: 'Name', v: student.name });
+  personalLines.push({ k: 'Class', v: className });
+  if (info.father) personalLines.push({ k: "Father's Name", v: info.father });
+  if (info.mother) personalLines.push({ k: "Mother's Name", v: info.mother });
+  if (info.dob) personalLines.push({ k: 'DOB', v: formatDate(info.dob) });
+  if (info.contact) personalLines.push({ k: 'Contact', v: info.contact });
+  if (addr) personalLines.push({ k: 'Address', v: addr.name });
+
+  const personalBlock = personalLines.map(li =>
+    `<div class="kv"><span class="k">${esc(li.k)}: </span><span class="v">${esc(li.v)}</span></div>`
+  ).join('');
+
+  return `
+  <div class="slip-print-page">
+    <div class="slip">
+      <div class="slip-header">
+        <div>
+          <div class="slip-school-name">${esc(schoolName)}</div>
+          ${schoolAddr ? `<div class="slip-school-sub">${esc(schoolAddr)}</div>` : ''}
+          <div class="slip-school-sub" style="font-weight:600;color:#334155">Class ${esc(className)}${year ? ' &nbsp;•&nbsp; AY ' + esc(year) : ''}</div>
+          <div class="slip-range-badge">${esc(MONTHS_FULL[slip.from])} → ${esc(MONTHS_FULL[slip.to])} — ${rangeMonthsOf(slip.from, slip.to)} month${rangeMonthsOf(slip.from, slip.to)>1?'s':''}</div>
+          ${anyCustom ? '<div class="slip-custom-badge">★ Includes custom amounts</div>' : ''}
+        </div>
+        <div>
+          <div class="slip-title">FEE STATEMENT</div>
+          <div style="text-align:right;font-size:10px;color:#555;margin-top:4px">Date: ${today}</div>
+          <div style="text-align:right;margin-top:6px"><span class="slip-status ${status}">${statusText}</span></div>
+        </div>
+      </div>
+
+      <div class="slip-personal">${personalBlock}</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left;width:24%">Fee Head</th>
+            ${monthHeaders}
+            <th style="text-align:right">Payable</th>
+            <th style="text-align:right">Paid</th>
+            <th style="text-align:right">Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+          <tr class="total-row">
+            <td colspan="${inRange.length + 1}">TOTAL</td>
+            <td class="amt">${rupee(total)}</td>
+            <td class="amt">${rupee(paid)}</td>
+            <td class="amt">${rupee(bal)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="slip-summary">
+        <div><div class="lbl">Total Payable</div><div class="val">${rupee(total)}</div></div>
+        <div><div class="lbl">Total Paid</div><div class="val paid">${rupee(paid)}</div></div>
+        <div><div class="lbl">Balance Due</div><div class="val due">${rupee(bal)}</div></div>
+      </div>
+
+      <div class="slip-credit-note">
+        <div class="credit-title">✨ App developed by</div>
+        <div class="credit-name">Majid Sir — Maths Teacher & App Developer</div>
+        <div class="credit-body">
+          This slip is generated by the Fee Management App created by Majid Sir, Maths teacher and App Developer. He can develop Digital Study Material, if you think you need something magical to make your study, work, business or job easier and automated and faster, feel free to contact him.
+        </div>
+        <div class="credit-footer">
+          📞 +91 95363 79468 (WhatsApp) &nbsp;•&nbsp; ✉️ sendmailtomajid@gmail.com &nbsp;•&nbsp; 🌐 majidmurshadpuri.github.io
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function printCurrentSlip() {
+  if (!currentStudentId || !currentSlipId) return;
+  const st = getStudent(currentStudentId); if (!st) return;
+  const slip = getSlip(currentStudentId, currentSlipId); if (!slip) return;
+  document.getElementById('printArea').innerHTML = buildSlipHTML(st, slip);
+  setTimeout(() => window.print(), 100);
+}
+
+function printAllStudentSlips() {
+  if (!currentStudentId) return;
+  const st = getStudent(currentStudentId); if (!st) return;
+  document.getElementById('printArea').innerHTML = st.slips.map((slip) => buildSlipHTML(st, slip)).join('');
+  setTimeout(() => window.print(), 100);
+}
+
+function printAllSlips() {
+  let html = '';
+  db.classes.forEach(cls => {
+    cls.students.forEach(st => {
+      (st.slips || []).forEach(slip => {
+        html += buildSlipHTML(st, slip);
+      });
+    });
+  });
+  if (!html) { toast('No slips to print.', 'error'); return; }
+  document.getElementById('printArea').innerHTML = html;
+  setTimeout(() => window.print(), 100);
+}
+
+function printDueSlips() {
+  let html = '';
+  db.classes.forEach(cls => {
+    cls.students.forEach(st => {
+      (st.slips || []).forEach(slip => {
+        const slipDue = slipTotal(slip, st.id) - slipPaid(slip, st.id);
+        if (slipDue > 0) html += buildSlipHTML(st, slip);
+      });
+    });
+  });
+  if (!html) { toast('No students with dues 🎉', 'success'); return; }
+  document.getElementById('printArea').innerHTML = html;
+  setTimeout(() => window.print(), 100);
+}
+
+/* ============================================================
+   EXPORT / IMPORT
+   ============================================================ */
+function exportJSON() {
+  const payload = { schema: SCHEMA_VERSION, exportedAt: new Date().toISOString(), appName: 'School Fee Manager (v13)', data: db };
+  downloadFile('school_fees_backup.json', JSON.stringify(payload, null, 2), 'application/json');
+  toast('Backup downloaded.', 'success');
+}
+
+function exportCSV() {
+  const rows = [];
+  rows.push(['Class','Student', 'Slip', 'Range', 'AY Override', 'Father', 'Mother', 'DOB', 'Contact', 'Address Route',
+             'Fee Head', 'Type', 'Universal Rate', 'Custom?', 'Payable', 'Paid', 'Balance']);
+  db.classes.forEach(cls => {
+    cls.students.forEach(st => {
+      (st.slips || []).forEach(slip => {
+        const info = slip.info || {};
+        const addr = getAddress(info.addressId);
+        cls.feeHeads.forEach(fh => {
+          const en = isFeeEnabled(st.id, slip.id, fh.id);
+          const custom = hasCustom(st.id, slip.id, fh.id);
+          rows.push([
+            `${cls.name}${cls.section?'-'+cls.section:''}`,
+            st.name, slip.label || '', rangeLabelOf(slip.from, slip.to), slip.academicYear || '',
+            info.father || '', info.mother || '', info.dob || '', info.contact || '', addr ? addr.name : '',
+            fh.name + (en ? '' : ' [DISABLED]'),
+            typeLabel(fh), fh.amount, custom ? 'YES' : '',
+            en ? feeHeadPayable(fh, st.id, slip.id, slip.from, slip.to) : 0,
+            en ? feeHeadPaid(fh, st.id, slip.id, slip.from, slip.to) : 0,
+            en ? (feeHeadPayable(fh, st.id, slip.id, slip.from, slip.to) - feeHeadPaid(fh, st.id, slip.id, slip.from, slip.to)) : 0
+          ]);
+        });
+      });
+    });
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  downloadFile('school_fees.csv', csv, 'text/csv');
+  toast('CSV downloaded.', 'success');
+}
+
+function downloadFile(name, content, mime) {
+  const blob = new Blob([content], { type: mime + ';charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+}
+
+function openImport() { document.getElementById('importFile').value = ''; document.getElementById('importFile').click(); }
+
+function handleImportFile(evt) {
+  const file = evt.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try { applyImportPayload(JSON.parse(e.target.result)); }
+    catch (err) { console.error(err); toast('Invalid JSON — paste box opened.', 'error'); openModal('importModal'); }
+  };
+  reader.onerror = () => { toast('Could not read file.', 'error'); openModal('importModal'); };
+  reader.readAsText(file);
+}
+
+function applyImportedText() {
+  const txt = document.getElementById('importText').value.trim(); if (!txt) { toast('Paste JSON first.', 'error'); return; }
+  try { applyImportPayload(JSON.parse(txt)); closeModal('importModal'); }
+  catch (err) { toast('Invalid JSON: ' + err.message, 'error'); }
+}
+
+function applyImportPayload(payload) {
+  const incoming = payload && payload.data ? payload.data : payload;
+  if (!incoming || typeof incoming !== 'object') { toast('Invalid data format.', 'error'); return; }
+  if (!confirm('This will REPLACE all current data with the imported file. Continue?')) return;
+  
+  if (incoming.classes) {
+    db = incoming;
+  } else if (incoming.students) {
+    db = {
+      schema: SCHEMA_VERSION,
+      classes: [{
+        id: uid('cls'), name: '6', section: 'B',
+        feeHeads: incoming.feeHeads || JSON.parse(JSON.stringify(DEFAULT_FEE_HEADS)),
+        students: incoming.students
+      }],
+      addresses: incoming.addresses || JSON.parse(JSON.stringify(DEFAULT_ADDRESSES)),
+      activeClassId: null,
+      school: incoming.school || { name: '', addr: '', year: '', range: { from: 0, to: 11 } }
+    };
+    db.activeClassId = db.classes[0].id;
+  }
+  
+  if (!db.addresses) db.addresses = JSON.parse(JSON.stringify(DEFAULT_ADDRESSES));
+  if (!db.school.range) db.school.range = { from: 0, to: 11 };
+  if (!db.activeClassId && db.classes.length > 0) db.activeClassId = db.classes[0].id;
+  db.schema = SCHEMA_VERSION;
+  
+  saveDB(); goHome();
+  toast('Data imported successfully.', 'success');
+}
+
+function resetApp() {
+  if (!confirm('DELETE all data and restore defaults?')) return;
+  if (!confirm('Really reset? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  resetToDefaults(); goHome();
+  toast('App reset to defaults.', 'success');
+}
+
+/* ============================================================
+   GOOGLE DRIVE API INTEGRATION
+   ============================================================ */
+function updateGDriveUI(connected) {
+  const badge = document.getElementById('gdriveStatusBadge');
+  const connectBtn = document.getElementById('gdriveConnectBtn');
+  const restoreBtn = document.getElementById('gdriveRestoreBtn');
+  const disconnectBtn = document.getElementById('gdriveDisconnectBtn');
+  const syncInfo = document.getElementById('gdriveSyncInfo');
+
+  if (connected) {
+    if (badge) { badge.style.background = '#dcfce7'; badge.style.color = '#15803d'; badge.textContent = '🟢 Connected'; }
+    if (connectBtn) connectBtn.classList.add('hidden');
+    if (restoreBtn) restoreBtn.classList.remove('hidden');
+    if (disconnectBtn) disconnectBtn.classList.remove('hidden');
+    if (syncInfo) syncInfo.classList.remove('hidden');
+  } else {
+    if (badge) { badge.style.background = '#f1f5f9'; badge.style.color = '#64748b'; badge.textContent = 'Not Connected'; }
+    if (connectBtn) connectBtn.classList.remove('hidden');
+    if (restoreBtn) restoreBtn.classList.add('hidden');
+    if (disconnectBtn) disconnectBtn.classList.add('hidden');
+    if (syncInfo) syncInfo.classList.add('hidden');
+  }
+}
+
+function initGoogleDriveClient() {
+  if (typeof google === 'undefined' || !google.accounts) return;
+  
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: GDRIVE_SCOPES,
+    callback: async (response) => {
+      if (response.error) {
+        toast('Google Drive login failed.', 'error');
+        return;
+      }
+      gdriveAccessToken = response.access_token;
+      try { localStorage.setItem('gdrive_token', gdriveAccessToken); } catch (_) {}
+      updateGDriveUI(true);
+      toast('Google Drive Connected!', 'success');
+      
+      // Check if backup file exists in Google Drive
+      const existingFile = await findGDriveBackupFile();
+      if (existingFile) {
+        await restoreFromGoogleDriveSilent();
+      } else {
+        // If file was deleted or doesn't exist, create it by uploading current local data
+        await syncToGoogleDrive(true);
+      }
+    },
+  });
+}
+
+function connectGoogleDrive() {
+  if (!tokenClient) initGoogleDriveClient();
+  if (!tokenClient) {
+    toast('Google Drive library is loading. Please try again in a moment.', 'error');
+    return;
+  }
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+function disconnectGoogleDrive() {
+  gdriveAccessToken = null;
+  gdriveFileId = null;
+  try { localStorage.removeItem('gdrive_token'); } catch (_) {}
+  updateGDriveUI(false);
+  toast('Disconnected from Google Drive.', 'success');
+}
+
+/* ============================================================
+   GOOGLE DRIVE API INTEGRATION (SAFE SYNC)
+   ============================================================ */
+function resetApp() {
+  if (gdriveAccessToken) {
+    alert('⚠️ Google Drive is currently connected!\n\nPlease disconnect Google Drive first before resetting the app to protect your cloud backup from being overwritten.');
+    toast('Please disconnect Google Drive first.', 'error');
+    return;
+  }
+  if (!confirm('DELETE all data and restore defaults?')) return;
+  if (!confirm('Really reset? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  resetToDefaults(); goHome();
+  toast('App reset to defaults.', 'success');
+}
+
+async function restoreFromGoogleDriveSilent() {
+  if (!gdriveAccessToken) return;
+  try {
+    const file = await findGDriveBackupFile();
+    if (!file) return;
+
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {
+      headers: { Authorization: `Bearer ${gdriveAccessToken}` }
+    });
+    if (!res.ok) return;
+
+    const importedData = await res.json();
+    const incoming = importedData && importedData.data ? importedData.data : importedData;
+    
+    if (incoming && typeof incoming === 'object' && (incoming.classes || incoming.students)) {
+      db = incoming;
+      if (!db.addresses) db.addresses = JSON.parse(JSON.stringify(DEFAULT_ADDRESSES));
+      if (!db.school.range) db.school.range = { from: 0, to: 11 };
+      if (!db.activeClassId && db.classes.length > 0) db.activeClassId = db.classes[0].id;
+      db.schema = SCHEMA_VERSION;
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+      goHome();
+      const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const infoEl = document.getElementById('gdriveSyncInfo');
+      if (infoEl) infoEl.textContent = `✓ Auto-restored backup from Google Drive at ${timeStr}`;
+      toast('Restored existing backup from Google Drive!', 'success');
+    }
+  } catch (err) {
+    console.error('Silent Google Drive restore error:', err);
+  }
+}
+
+async function findGDriveBackupFile() {
+  if (!gdriveAccessToken) return null;
+  try {
+    const q = encodeURIComponent(`name = '${GDRIVE_FILENAME}' and trashed = false`);
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime)`, {
+      headers: { Authorization: `Bearer ${gdriveAccessToken}` }
+    });
+    if (!res.ok) {
+      if (res.status === 401) {
+        disconnectGoogleDrive();
+      }
+      return null;
+    }
+    const data = await res.json();
+    if (data.files && data.files.length > 0) {
+      gdriveFileId = data.files[0].id;
+      return data.files[0];
+    }
+  } catch (err) {
+    console.error('Error finding Google Drive file:', err);
+  }
+  gdriveFileId = null;
+  return null;
+}
+
+async function syncToGoogleDrive(manual = false) {
+  if (!gdriveAccessToken) return;
+
+  const payload = {
+    schema: SCHEMA_VERSION,
+    exportedAt: new Date().toISOString(),
+    appName: 'School Fee Manager (v13)',
+    data: db
+  };
+
+  const fileContent = JSON.stringify(payload, null, 2);
+
+  try {
+    if (!gdriveFileId) {
+      const existing = await findGDriveBackupFile();
+      if (existing) gdriveFileId = existing.id;
+    }
+
+    if (gdriveFileId) {
+      // Update existing file
+      const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${gdriveFileId}?uploadType=media`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${gdriveAccessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: fileContent
+      });
+      if (!res.ok) {
+        if (res.status === 404) {
+          gdriveFileId = null;
+          return await syncToGoogleDrive(manual);
+        }
+        throw new Error('Failed to update drive file');
+      }
+    } else {
+      // Create new file if file was deleted or doesn't exist
+      const metadata = { name: GDRIVE_FILENAME, mimeType: 'application/json' };
+      const form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+      form.append('file', new Blob([fileContent], { type: 'application/json' }));
+
+      const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${gdriveAccessToken}` },
+        body: form
+      });
+      const data = await res.json();
+      if (data.id) gdriveFileId = data.id;
+    }
+
+    const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const infoEl = document.getElementById('gdriveSyncInfo');
+    if (infoEl) infoEl.textContent = `✓ Last synced to Google Drive at ${timeStr}`;
+    if (manual) toast('Successfully backed up to Google Drive!', 'success');
+  } catch (err) {
+    console.error('Google Drive Sync error:', err);
+    if (manual) toast('Failed to backup to Google Drive.', 'error');
+  }
+}
+
+function triggerAutoDriveSync() {
+  if (!gdriveAccessToken) return;
+  clearTimeout(autoSyncTimeout);
+  autoSyncTimeout = setTimeout(() => {
+    syncToGoogleDrive(false);
+  }, 2000);
+}
+
+async function restoreFromGoogleDrive() {
+  if (!gdriveAccessToken) return;
+  try {
+    const file = await findGDriveBackupFile();
+    if (!file) {
+      toast('No backup file found in Google Drive.', 'error');
+      return;
+    }
+
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {
+      headers: { Authorization: `Bearer ${gdriveAccessToken}` }
+    });
+    const importedData = await res.json();
+    applyImportPayload(importedData);
+    toast('Data restored from Google Drive!', 'success');
+  } catch (err) {
+    console.error('Google Drive restore error:', err);
+    toast('Failed to restore from Google Drive.', 'error');
+  }
+}
+
+/* ============================================================
+   INITIALIZATION
+   ============================================================ */
+loadDB();
+renderAll();
+
+window.onload = () => {
+  initGoogleDriveClient();
+  try {
+    const savedToken = localStorage.getItem('gdrive_token');
+    if (savedToken) {
+      gdriveAccessToken = savedToken;
+      updateGDriveUI(true);
+    }
+  } catch (_) {}
+};
+
+document.getElementById('hamburgerBtn').onclick = openDrawer;
+document.getElementById('topbarBack').onclick = goHome;
+document.querySelectorAll('.modal-bg').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+window.addEventListener('beforeunload', e => {
+  if (!storageOK) { e.preventDefault(); e.returnValue = ''; return ''; }
+});
+</script>
+</body>
+</html>
