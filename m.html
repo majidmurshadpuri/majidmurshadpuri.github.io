@@ -3,99 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Combined Page</title>
+  <title>Combined Page — Drive Sync</title>
+
+  <!-- Google Identity Services (OAuth token) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <style>
     * { box-sizing: border-box; }
-
     html, body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       font-family: system-ui, sans-serif;
-      background: #f5f6f8;
-      color: #1a1a1a;
+      background: #f5f6f8; color: #1a1a1a;
     }
-
     .container {
-      max-width: 960px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+      max-width: 960px; margin: 2rem auto; padding: 0 1rem;
+      display: flex; flex-direction: column; gap: 1rem;
     }
 
-    /* ---------- Card ---------- */
-    .card {
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
-      overflow: hidden;
+    .toolbar {
+      display: flex; gap: .5rem; align-items: center; flex-wrap: wrap;
+      padding: .75rem 1rem; background: #fff;
+      border: 1px solid #e0e0e0; border-radius: 12px;
       box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    }
+    .toolbar h1 { font-size: 1rem; margin: 0 auto 0 0; font-weight: 600; }
+    .btn {
+      font: inherit; font-size: .875rem; font-weight: 500;
+      padding: .5rem .9rem; border-radius: 8px;
+      border: 1px solid #d0d0d0; background: #fff;
+      color: #1a1a1a; cursor: pointer;
+      transition: background .15s, border-color .15s, opacity .15s;
+    }
+    .btn:hover:not(:disabled) { background: #f5f5f5; border-color: #b8b8b8; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn.primary { background: #4a7dff; border-color: #4a7dff; color: #fff; }
+    .btn.primary:hover:not(:disabled) { background: #3a6ae6; }
+    .btn.drive { background: #1a73e8; border-color: #1a73e8; color: #fff; }
+    .btn.drive:hover:not(:disabled) { background: #1666cf; }
+    .btn.success { background: #1e8e3e; border-color: #1e8e3e; color: #fff; }
+    .btn.success:hover:not(:disabled) { background: #1a7d37; }
+    .status { font-size: .8rem; color: #666; margin-left: .5rem; min-width: 60px; }
+
+    .card {
+      background: #fff; border: 1px solid #e0e0e0; border-radius: 12px;
+      overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
       transition: box-shadow .2s ease;
     }
     .card:hover { box-shadow: 0 3px 10px rgba(0,0,0,.08); }
 
-    /* ---------- Card header (click to toggle) ---------- */
     .card-header {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      width: 100%;
-      padding: 1rem 1.25rem;
-      background: none;
-      border: none;
-      font: inherit;
-      font-weight: 600;
-      font-size: 1rem;
-      text-align: left;
-      cursor: pointer;
-      color: inherit;
+      display: flex; align-items: center; gap: .75rem;
+      width: 100%; padding: 1rem 1.25rem;
+      background: none; border: none; font: inherit;
+      font-weight: 600; font-size: 1rem; text-align: left;
+      cursor: pointer; color: inherit;
     }
     .card-header:hover { background: #fafafa; }
-    .card-header:focus-visible {
-      outline: 2px solid #4a7dff;
-      outline-offset: -2px;
-    }
-
-    /* Chevron icon rotates when open */
+    .card-header:focus-visible { outline: 2px solid #4a7dff; outline-offset: -2px; }
     .chevron {
-      margin-left: auto;
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      transition: transform .25s ease;
-      color: #888;
+      margin-left: auto; width: 18px; height: 18px; flex-shrink: 0;
+      transition: transform .25s ease; color: #888;
     }
     .card[open] .chevron { transform: rotate(90deg); }
 
-    /* ---------- Collapsible body ---------- */
     .card-body {
-      display: grid;
-      grid-template-rows: 0fr;      /* collapsed by default */
+      display: grid; grid-template-rows: 0fr;
       transition: grid-template-rows .3s ease;
     }
-    .card[open] .card-body {
-      grid-template-rows: 1fr;       /* expanded */
-    }
-    .card-body-inner {
-      overflow: hidden;              /* required for the grid trick */
+    .card[open] .card-body { grid-template-rows: 1fr; }
+    .card-body-inner { overflow: hidden; }
+
+    .card iframe {
+      display: block; width: 100%; border: none;
+      border-top: 1px solid #eee; height: 0;
     }
 
-    /* ---------- The iframe ---------- */
-    .card iframe {
-      display: block;
-      width: 100%;
-      border: none;
-      border-top: 1px solid #eee;
-      height: 0;                     /* JS will set real height when opened */
+    .sync-badge {
+      font-size: .75rem; font-weight: 500;
+      padding: .2rem .5rem; border-radius: 999px;
+      background: #eee; color: #666;
     }
+    .sync-badge.ok    { background: #e6f4ea; color: #1e8e3e; }
+    .sync-badge.busy  { background: #e8f0fe; color: #1a73e8; }
+    .sync-badge.error { background: #fce8e6; color: #c5221f; }
   </style>
 </head>
 <body>
 
   <div class="container">
 
-    <!-- ===================== CARD 1 ===================== -->
+    <div class="toolbar">
+      <h1>Workspace</h1>
+      <span class="sync-badge" id="syncBadge">Signed out</span>
+      <span class="status" id="status"></span>
+
+      <button class="btn drive"   id="signInBtn">Sign in</button>
+      <button class="btn success" id="pushBtn" disabled>Sync to Drive ↑</button>
+      <button class="btn"         id="pullBtn" disabled>Load from Drive ↓</button>
+      <button class="btn"         id="exportBtn">Export JSON</button>
+      <button class="btn"         id="importBtn">Import JSON</button>
+      <input type="file" id="importFile" accept="application/json" hidden>
+    </div>
+
     <section class="card" id="card1">
       <button class="card-header" aria-expanded="false" aria-controls="body1">
         <span>File 1</span>
@@ -107,13 +116,11 @@
       </button>
       <div class="card-body" id="body1" role="region">
         <div class="card-body-inner">
-          <!-- lazy-loaded: data-src set, src assigned on first open -->
-          <iframe data-src="file1.html" title="File 1"></iframe>
+          <iframe data-file="file1" data-src="file1.html" title="File 1"></iframe>
         </div>
       </div>
     </section>
 
-    <!-- ===================== CARD 2 ===================== -->
     <section class="card" id="card2">
       <button class="card-header" aria-expanded="false" aria-controls="body2">
         <span>File 2</span>
@@ -125,7 +132,7 @@
       </button>
       <div class="card-body" id="body2" role="region">
         <div class="card-body-inner">
-          <iframe data-src="file2.html" title="File 2"></iframe>
+          <iframe data-file="file2" data-src="file2.html" title="File 2"></iframe>
         </div>
       </div>
     </section>
@@ -133,47 +140,375 @@
   </div>
 
   <script>
-    document.querySelectorAll('.card').forEach(card => {
-      const header = card.querySelector('.card-header');
-      const iframe = card.querySelector('iframe');
+  /* ============================================================
+     CONFIG — ONLY THE CLIENT ID IS REQUIRED
+     ============================================================ */
+  const CLIENT_ID    = "649212085073-hc5ihl2poi8h4l6q6r854352jk4l2oip.apps.googleusercontent.com";
+  const SCOPES       = "https://www.googleapis.com/auth/drive.appdata";
+  const DRIVE_FILE   = "workspace.json";
+  const STATE_VERSION = 1;
 
-      header.addEventListener('click', () => {
-        const isOpen = card.hasAttribute('open');
+  /* ============================================================
+     PART 1 — Cards (expand/collapse + lazy load)
+     ============================================================ */
+  document.querySelectorAll('.card').forEach(card => {
+    const header = card.querySelector('.card-header');
+    const iframe = card.querySelector('iframe');
 
-        // Lazy-load the iframe the first time the card opens
-        if (!isOpen && !iframe.getAttribute('src')) {
-          iframe.src = iframe.dataset.src;
-        }
+    header.addEventListener('click', () => {
+      const isOpen = card.hasAttribute('open');
+      if (!isOpen && !iframe.getAttribute('src')) iframe.src = iframe.dataset.src;
 
-        // Toggle state
-        card.toggleAttribute('open', !isOpen);
-        header.setAttribute('aria-expanded', String(!isOpen));
+      card.toggleAttribute('open', !isOpen);
+      header.setAttribute('aria-expanded', String(!isOpen));
 
-        // Once expanded, size the iframe to its content
-        if (!isOpen) {
-          const fit = () => {
-            try {
-              const doc = iframe.contentDocument || iframe.contentWindow.document;
-              iframe.style.height = doc.documentElement.scrollHeight + 'px';
-            } catch (e) {
-              iframe.style.height = '600px';
-            }
-          };
-          // Wait for load (first time) or run immediately if already loaded
-          if (iframe.dataset.loaded) {
-            fit();
-          } else {
-            iframe.addEventListener('load', () => {
-              iframe.dataset.loaded = '1';
-              fit();
-            }, { once: true });
-          }
-        } else {
-          // Collapsing: reset height so it doesn't affect layout
-          iframe.style.height = '0';
-        }
-      });
+      if (!isOpen) {
+        const fit = () => {
+          try {
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            iframe.style.height = doc.documentElement.scrollHeight + 'px';
+          } catch { iframe.style.height = '600px'; }
+        };
+        if (iframe.dataset.loaded) fit();
+        else iframe.addEventListener('load', () => { iframe.dataset.loaded = '1'; fit(); }, { once: true });
+      } else {
+        iframe.style.height = '0';
+      }
     });
+  });
+
+  /* ============================================================
+     PART 2 — postMessage plumbing
+     ============================================================ */
+  const statusEl  = document.getElementById('status');
+  const syncBadge = document.getElementById('syncBadge');
+  const frames    = () => [...document.querySelectorAll('iframe[data-file]')];
+
+  const showStatus = (msg, ms = 2500) => {
+    statusEl.textContent = msg;
+    clearTimeout(showStatus._t);
+    showStatus._t = setTimeout(() => statusEl.textContent = '', ms);
+  };
+
+  function ensureLoaded(iframe) {
+    if (iframe.getAttribute('src')) return Promise.resolve();
+    iframe.src = iframe.dataset.src;
+    return new Promise(res => iframe.addEventListener('load', res, { once: true }));
+  }
+
+  function requestState(iframe, timeout = 1200) {
+    return new Promise(resolve => {
+      const id = 'req-' + Math.random().toString(36).slice(2);
+      const target = iframe.contentWindow;
+      const origin = new URL(iframe.src, location.href).origin;
+
+      const onMsg = (e) => {
+        if (e.source !== target) return;
+        if (!e.data || e.data.type !== 'STATE_REPLY' || e.data.reqId !== id) return;
+        cleanup();
+        resolve({ ok: true, data: e.data.state });
+      };
+      const timer = setTimeout(() => { cleanup(); resolve(tryDirectRead(iframe)); }, timeout);
+      function cleanup() { window.removeEventListener('message', onMsg); clearTimeout(timer); }
+
+      window.addEventListener('message', onMsg);
+      try { target.postMessage({ type: 'GET_STATE', reqId: id }, origin); }
+      catch { cleanup(); resolve(tryDirectRead(iframe)); }
+    });
+  }
+
+  function tryDirectRead(iframe) {
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc) return { ok: false, error: 'cross-origin' };
+      const state = {};
+      doc.querySelectorAll('input[name],select[name],textarea[name]').forEach(el => {
+        if (el.type === 'checkbox') state[el.name] = el.checked;
+        else if (el.type === 'radio') { if (el.checked) state[el.name] = el.value; }
+        else state[el.name] = el.value;
+      });
+      return { ok: true, data: state, source: 'direct' };
+    } catch { return { ok: false, error: 'cross-origin' }; }
+  }
+
+  function applyState(iframe, state, timeout = 1200) {
+    return new Promise(resolve => {
+      const id = 'set-' + Math.random().toString(36).slice(2);
+      const target = iframe.contentWindow;
+      const origin = new URL(iframe.src, location.href).origin;
+
+      const onMsg = (e) => {
+        if (e.source !== target) return;
+        if (!e.data || e.data.type !== 'STATE_APPLIED' || e.data.reqId !== id) return;
+        cleanup(); resolve(true);
+      };
+      const timer = setTimeout(() => { cleanup(); resolve(applyDirect(iframe, state)); }, timeout);
+      function cleanup() { window.removeEventListener('message', onMsg); clearTimeout(timer); }
+
+      window.addEventListener('message', onMsg);
+      try { target.postMessage({ type: 'SET_STATE', reqId: id, state }, origin); }
+      catch { cleanup(); resolve(applyDirect(iframe, state)); }
+    });
+  }
+
+  function applyDirect(iframe, state) {
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc) return false;
+      Object.entries(state).forEach(([name, value]) => {
+        const el = doc.querySelector(`[name="${CSS.escape(name)}"]`);
+        if (!el) return;
+        if (el.type === 'checkbox') el.checked = !!value;
+        else if (el.type === 'radio') { el.checked = el.value === value; }
+        else el.value = value;
+        el.dispatchEvent(new Event('input',  { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      return true;
+    } catch { return false; }
+  }
+
+  async function collectBundle() {
+    const bundle = {
+      format: 'combined-workspace',
+      version: STATE_VERSION,
+      updatedAt: new Date().toISOString(),
+      files: {}
+    };
+    for (const iframe of frames()) {
+      await ensureLoaded(iframe);
+      const r = await requestState(iframe);
+      bundle.files[iframe.dataset.file] = r.ok
+        ? { state: r.data }
+        : { state: null, error: r.error || 'unavailable' };
+    }
+    return bundle;
+  }
+
+  async function distributeBundle(bundle) {
+    let ok = 0, fail = 0;
+    for (const iframe of frames()) {
+      await ensureLoaded(iframe);
+      const entry = bundle.files?.[iframe.dataset.file];
+      if (!entry || entry.state == null) { fail++; continue; }
+      (await applyState(iframe, entry.state)) ? ok++ : fail++;
+    }
+    return { ok, fail };
+  }
+
+  /* ============================================================
+     PART 3 — Local export / import
+     ============================================================ */
+  document.getElementById('exportBtn').addEventListener('click', async () => {
+    showStatus('Exporting…', 10000);
+    const bundle = await collectBundle();
+    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `workspace-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    showStatus('Exported ✓');
+  });
+
+  const importFile = document.getElementById('importFile');
+  document.getElementById('importBtn').addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', async () => {
+    const file = importFile.files[0];
+    importFile.value = '';
+    if (!file) return;
+    let bundle;
+    try { bundle = JSON.parse(await file.text()); }
+    catch { return showStatus('Invalid JSON'); }
+    if (bundle.format !== 'combined-workspace') return showStatus('Unrecognised format');
+
+    showStatus('Importing…', 10000);
+    const { ok, fail } = await distributeBundle(bundle);
+    showStatus(fail === 0 ? `Imported ${ok} file(s) ✓` : `Imported ${ok}, failed ${fail}`);
+  });
+
+  /* ============================================================
+     PART 4 — Google Drive sync (Client ID only, no API key)
+     ============================================================ */
+  let tokenClient   = null;
+  let accessToken   = null;
+  let tokenExpiry   = 0;             // epoch ms
+  let driveFileId   = null;          // cached id of workspace.json
+
+  const signInBtn = document.getElementById('signInBtn');
+  const pushBtn   = document.getElementById('pushBtn');
+  const pullBtn   = document.getElementById('pullBtn');
+
+  const setBadge  = (t, c = '') => { syncBadge.textContent = t; syncBadge.className = 'sync-badge ' + c; };
+  const setSignedIn = (on) => {
+    signInBtn.disabled = on;
+    signInBtn.textContent = on ? 'Signed in' : 'Sign in';
+    pushBtn.disabled = !on;
+    pullBtn.disabled = !on;
+  };
+
+  /* ---- Create the GIS token client ---- */
+  function initTokenClient() {
+    if (!window.google?.accounts?.oauth2) return false;
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: () => {},          // replaced on each requestAccessToken call
+    });
+    return true;
+  }
+
+  /* ---- Get a valid access token (silent refresh if possible) ---- */
+  function ensureToken() {
+    if (accessToken && Date.now() < tokenExpiry) return Promise.resolve(accessToken);
+    if (!tokenClient && !initTokenClient()) {
+      return Promise.reject(new Error('Google Identity Services not loaded yet — retry in a moment'));
+    }
+    return new Promise((resolve, reject) => {
+      tokenClient.callback = (resp) => {
+        if (resp.error) return reject(new Error(resp.error));
+        accessToken = resp.access_token;
+        tokenExpiry = Date.now() + ((resp.expires_in || 3600) * 1000) - 60_000;
+        resolve(accessToken);
+      };
+      // prompt='' enables silent re-use of prior consent; 'consent' forces screen
+      tokenClient.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
+    });
+  }
+
+  signInBtn.addEventListener('click', async () => {
+    try {
+      setBadge('Signing in…', 'busy');
+      await ensureToken();
+      setSignedIn(true);
+      setBadge('Signed in', 'ok');
+    } catch (e) {
+      console.error(e);
+      setBadge('Sign-in failed', 'error');
+    }
+  });
+
+  /* ---- Drive helpers ---- */
+  async function driveFetch(url, options = {}) {
+    const token = await ensureToken();
+    const headers = Object.assign({}, options.headers || {}, {
+      Authorization: `Bearer ${token}`
+    });
+    const res = await fetch(url, { ...options, headers });
+    if (res.status === 401) { accessToken = null; throw new Error('Drive auth expired, retry'); }
+    return res;
+  }
+
+  async function findWorkspaceFile() {
+    const q = encodeURIComponent(`name='${DRIVE_FILE}' and trashed=false`);
+    const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,name,modifiedTime)`;
+    const res = await driveFetch(url);
+    if (!res.ok) throw new Error('List failed: ' + res.status);
+    const data = await res.json();
+    driveFileId = data.files?.[0]?.id || null;
+    return data.files?.[0] || null;
+  }
+
+  async function createWorkspaceFile(content) {
+    const boundary = '-------' + Math.random().toString(36).slice(2);
+    const metadata = JSON.stringify({ name: DRIVE_FILE, parents: ['appDataFolder'] });
+    const body =
+      `--${boundary}\r\n` +
+      `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+      `${metadata}\r\n` +
+      `--${boundary}\r\n` +
+      `Content-Type: application/json\r\n\r\n` +
+      `${content}\r\n` +
+      `--${boundary}--`;
+
+    const res = await driveFetch(
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,modifiedTime',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
+        body
+      }
+    );
+    if (!res.ok) throw new Error('Create failed: ' + res.status + ' ' + (await res.text()));
+    const data = await res.json();
+    driveFileId = data.id;
+    return data;
+  }
+
+  async function updateWorkspaceFile(content) {
+    if (!driveFileId) {
+      const existing = await findWorkspaceFile();
+      if (!existing) return createWorkspaceFile(content);
+    }
+    const res = await driveFetch(
+      `https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media&fields=id,modifiedTime`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: content
+      }
+    );
+    if (!res.ok) throw new Error('Update failed: ' + res.status + ' ' + (await res.text()));
+    return res.json();
+  }
+
+  async function downloadWorkspaceFile() {
+    if (!driveFileId) {
+      const existing = await findWorkspaceFile();
+      if (!existing) return null;
+    }
+    const res = await driveFetch(
+      `https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`
+    );
+    if (res.status === 404) { driveFileId = null; return null; }
+    if (!res.ok) throw new Error('Download failed: ' + res.status);
+    return res.text();
+  }
+
+  /* ---- Push (save to Drive) ---- */
+  pushBtn.addEventListener('click', async () => {
+    try {
+      setBadge('Saving…', 'busy');
+      const bundle  = await collectBundle();
+      const content = JSON.stringify(bundle, null, 2);
+      await updateWorkspaceFile(content);
+      setBadge('Synced ✓', 'ok');
+      showStatus('Saved to Drive ✓');
+    } catch (e) {
+      console.error(e);
+      setBadge('Save failed', 'error');
+      showStatus('Save failed: ' + e.message, 5000);
+    }
+  });
+
+  /* ---- Pull (load from Drive) ---- */
+  pullBtn.addEventListener('click', async () => {
+    try {
+      setBadge('Loading…', 'busy');
+      const text = await downloadWorkspaceFile();
+      if (!text) {
+        setBadge('No remote file', 'error');
+        showStatus('No workspace.json on Drive yet', 4000);
+        return;
+      }
+      const bundle = JSON.parse(text);
+      if (bundle.format !== 'combined-workspace') throw new Error('Wrong format');
+      const { ok, fail } = await distributeBundle(bundle);
+      setBadge('Loaded ✓', 'ok');
+      showStatus(fail === 0 ? `Loaded ${ok} file(s) ✓` : `Loaded ${ok}, failed ${fail}`);
+    } catch (e) {
+      console.error(e);
+      setBadge('Load failed', 'error');
+      showStatus('Load failed: ' + e.message, 5000);
+    }
+  });
+
+  /* ---- Init token client once GIS is ready ---- */
+  (function waitForGis() {
+    if (window.google?.accounts?.oauth2) { initTokenClient(); return; }
+    setTimeout(waitForGis, 200);
+  })();
   </script>
 
 </body>
