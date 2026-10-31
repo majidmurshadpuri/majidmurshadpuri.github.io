@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Divisibility Quiz · 6th B</title>
+  <!-- Google Identity Services Library for OAuth 2.0 -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(145deg, #eef5fc 0%, #cbdae8 100%);
+      min-height: 100vh;
+      display: flex;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 1.2rem;
+      transition: padding 0.3s;
+    }
+
+    /* ---------- SIDEBAR (HAMBURGER MENU) ---------- */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 280px;
+      background: #ffffff;
+      box-shadow: 4px 0 25px rgba(0, 30, 60, 0.15);
+      z-index: 1000;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #d3e2ef;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      padding: 1.4rem 1.5rem 1rem;
+      border-bottom: 2px solid #e7f0f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.15rem;
+      color: #10334e;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-header .class-tag {
+      background: #1e4765;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      font-weight: 600;
+    }
+
+    .close-sidebar {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #3b5f7b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      line-height: 1;
+    }
+
+    .close-sidebar:hover {
+      background: #e7f0f9;
+    }
+
+    .sidebar-note {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.78rem;
+      color: #6a839a;
+      background: #f4f9fd;
+      border-bottom: 1px solid #e7f0f9;
+      letter-spacing: 0.2px;
+    }
+
+    .student-list {
+      list-style: none;
+      overflow-y: auto;
+      flex: 1;
+      padding: 0.6rem 0.7rem;
+    }
+
+    .student-list li {
+      margin-bottom: 0.15rem;
+    }
+
+    .student-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #1e3a52;
+      font-weight: 500;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .student-item:hover {
+      background: #e7f0f9;
+    }
+
+    .student-item.active {
+      background: #1e4765;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 5px 12px -5px #0e344b;
+    }
+
+    .student-item .roll-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.7rem;
+      height: 1.7rem;
+      border-radius: 50%;
+      background: #d9e7f2;
+      color: #1e4765;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .student-item.active .roll-num {
+      background: #4d8ab5;
+      color: white;
+    }
+
+    .student-item .saved-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #2a9d63;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* ---------- PERFECT STUDENT STYLING ---------- */
+    .student-item.perfect {
+      background: linear-gradient(135deg, #fff9e6 0%, #fdf0c8 100%);
+      border: 1px solid #e8c96a;
+    }
+
+    .student-item.perfect:hover {
+      background: linear-gradient(135deg, #fff5d6 0%, #fbe9b5 100%);
+    }
+
+    .student-item.perfect.active {
+      background: linear-gradient(135deg, #b8863a 0%, #9a6f28 100%);
+      color: white;
+      border-color: #7d5a1e;
+      box-shadow: 0 5px 12px -5px #6a4a12;
+    }
+
+    .student-item.perfect.active .roll-num {
+      background: #e8c96a;
+      color: #5a3d0e;
+    }
+
+    .student-item.perfect .roll-num {
+      background: #f0d98a;
+      color: #6a4a12;
+    }
+
+    .student-item .perfect-star {
+      font-size: 1rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .perfect-section-label {
+      padding: 0.8rem 0.9rem 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: #a07b2c;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .perfect-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, #e8c96a, transparent);
+    }
+
+    .sidebar-divider {
+      height: 2px;
+      margin: 0.5rem 0.9rem;
+      background: linear-gradient(to right, transparent, #d3e2ef 20%, #d3e2ef 80%, transparent);
+      border-radius: 2px;
+    }
+
+    /* ---------- OVERLAY ---------- */
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 30, 50, 0.35);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ---------- TOP BAR ---------- */
+    .topbar {
+      position: fixed;
+      top: 1.2rem;
+      left: 1.2rem;
+      right: 1.2rem;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .hamburger {
+      background: #ffffff;
+      border: 1px solid #c8dbe9;
+      width: 2.8rem;
+      height: 2.8rem;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow: 0 8px 20px -8px rgba(0, 30, 60, 0.3);
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .hamburger:hover {
+      background: #e7f0f9;
+      transform: scale(1.03);
+    }
+
+    .hamburger span {
+      display: block;
+      width: 18px;
+      height: 2.5px;
+      background: #1e4765;
+      border-radius: 2px;
+    }
+
+    .current-student-pill {
+      background: #1e4765;
+      color: white;
+      padding: 0.55rem 1.1rem;
+      border-radius: 40px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 8px 20px -8px #0e344b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+
+    .current-student-pill.perfect-pill {
+      background: linear-gradient(135deg, #b8863a 0%, #9a6f28 100%);
+    }
+
+    .topbar-back-btn {
+      margin-left: auto;
+      background: #3b5f7b;
+      border: 1px solid #6d98b9;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.7rem 1.2rem;
+      border-radius: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: 0 8px 20px -8px #0e344b;
+      transition: all 0.15s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .topbar-back-btn:hover {
+      background: #2a4a63;
+      transform: scale(1.03);
+    }
+
+    .topbar-back-btn:active {
+      transform: scale(0.98);
+    }
+
+    .topbar-back-btn.hidden {
+      display: none;
+    }
+
+    /* ---------- MAIN LAYOUT ---------- */
+    .main-wrap {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 4.4rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(6px);
+      width: 100%;
+      max-width: 1000px;
+      border-radius: 2.5rem 1.2rem 2.5rem 1.2rem;
+      box-shadow: 0 30px 45px -15px rgba(0, 20, 40, 0.4), 0 8px 18px rgba(0, 0, 0, 0.08);
+      padding: 2rem 1.8rem 2.4rem;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      margin-bottom: 1.5rem;
+    }
+
+    .question-box {
+      background: #e7f0f9;
+      border-left: 6px solid #3e7ea5;
+      padding: 1.2rem 1.5rem;
+      border-radius: 0 40px 40px 0;
+      margin-bottom: 2rem;
+      color: #10334e;
+    }
+
+    .question-box .q-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .question-box .student-tag {
+      display: inline-block;
+      margin-top: 0.5rem;
+      background: #1e4765;
+      color: white;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .question-box .perfect-tag {
+      display: inline-block;
+      margin-top: 0.5rem;
+      margin-left: 0.4rem;
+      background: #b8863a;
+      color: white;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .option-row {
+      background: #ffffff;
+      border-radius: 1.5rem 0.6rem 1.5rem 0.6rem;
+      padding: 1rem 1.4rem;
+      box-shadow: 0 6px 15px -8px rgba(0, 40, 70, 0.25);
+      border: 1px solid #d3e2ef;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.15s;
+    }
+
+    .option-letter {
+      background: #1e4765;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .option-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #0b2a41;
+      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
+      min-width: 110px;
+      text-shadow: 1px 1px 0 #cfdfef;
+    }
+
+    .option-answer {
+      flex: 1 1 260px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 44px;
+    }
+
+    .answer-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .badge {
+      background: #e3eef9;
+      border-radius: 30px;
+      padding: 0.3rem 0.8rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: #244b68;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      border: 1px solid #c2d6e8;
+    }
+
+    .badge .indicator {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .indicator.yes { color: #1e7a4b; }
+    .indicator.no { color: #b13e3e; }
+
+    .condition-chip {
+      background: #cbe0f0;
+      padding: 0.3rem 0.9rem;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: #0d334b;
+      border: 1px solid #99bbd6;
+      white-space: nowrap;
+    }
+
+    .condition-chip .highlight {
+      background: #1e4765;
+      color: white;
+      padding: 0.08rem 0.6rem;
+      border-radius: 30px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-left: 0.3rem;
+    }
+
+    .option-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .btn-small {
+      border: none;
+      border-radius: 40px;
+      padding: 0.55rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+
+    .btn-reveal {
+      background: #6d4fa5;
+      color: white;
+      box-shadow: 0 5px 12px -5px #3a2760;
+      border: 1px solid #8f6fd8;
+    }
+
+    .btn-reveal:hover {
+      background: #573d8a;
+      transform: translateY(-1px);
+    }
+
+    .btn-reveal:active {
+      transform: translateY(0);
+    }
+
+    .btn-reveal.revealed {
+      background: #1e7a4b;
+      border-color: #2f9c62;
+      box-shadow: 0 5px 12px -5px #0e4a2c;
+    }
+
+    .btn-reveal.revealed:hover {
+      background: #196a40;
+    }
+
+    .main-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .btn-main {
+      background: #1e4e6f;
+      border: 1px solid #6d98b9;
+      color: white;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 0.95rem 1.3rem;
+      border-radius: 60px;
+      flex: 1 1 200px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      box-shadow: 0 15px 20px -10px #0e344b;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .btn-main:hover {
+      background: #13415f;
+      transform: scale(1.01);
+    }
+
+    .btn-main:active {
+      transform: scale(0.99);
+    }
+
+    .btn-main.secondary {
+      background: #6d4fa5;
+      border-color: #8f6fd8;
+      box-shadow: 0 15px 20px -10px #3a2760;
+    }
+
+    .btn-main.secondary:hover {
+      background: #573d8a;
+    }
+
+    .btn-main.export {
+      background: #2a7a5a;
+      border-color: #4dae82;
+      box-shadow: 0 15px 20px -10px #0e4a2c;
+    }
+
+    .btn-main.export:hover {
+      background: #1e6a4a;
+    }
+
+    .btn-main.perfect-btn {
+      background: #b8863a;
+      border-color: #d9a54a;
+      box-shadow: 0 15px 20px -10px #6a4a12;
+    }
+
+    .btn-main.perfect-btn:hover {
+      background: #9a6f28;
+    }
+
+    .btn-main.perfect-btn.is-perfect {
+      background: #2a7a5a;
+      border-color: #4dae82;
+      box-shadow: 0 15px 20px -10px #0e4a2c;
+    }
+
+    .btn-main.perfect-btn.is-perfect:hover {
+      background: #1e6a4a;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.82rem;
+      border-radius: 30px;
+    }
+
+    .import-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      background: #d1a04a;
+      border: 1px solid #e0b968;
+      color: white;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 0.95rem 1.3rem;
+      border-radius: 60px;
+      flex: 1 1 200px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 15px 20px -10px #6a4a12;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .import-label:hover {
+      background: #b8863a;
+      transform: scale(1.01);
+    }
+
+    .import-label:active {
+      transform: scale(0.99);
+    }
+
+    .import-label input {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: #1e4765;
+      color: white;
+      padding: 0.8rem 1.8rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 10px 30px -8px rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 2000;
+      pointer-events: none;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.error {
+      background: #a13b3b;
+    }
+
+    .toast.success {
+      background: #2a7a5a;
+    }
+
+    /* ---------- HOME PAGE SPECIFIC ---------- */
+    .home-card {
+      text-align: center;
+    }
+
+    .home-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #10334e;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+
+    .home-subtitle {
+      font-size: 0.95rem;
+      color: #5a7a94;
+      margin-bottom: 1.8rem;
+      font-weight: 500;
+    }
+
+    .home-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .home-actions .btn-main,
+    .home-actions .import-label {
+      flex: 0 1 260px;
+    }
+
+    .open-students-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 1.6rem;
+      padding: 1.2rem 1.4rem;
+      background: #e7f0f9;
+      border: 2px dashed #8fb4d1;
+      border-radius: 1.4rem 0.6rem 1.4rem 0.6rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1e4765;
+      width: 100%;
+    }
+
+    .open-students-card:hover {
+      background: #d8e8f6;
+      border-color: #5a8db3;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px -12px rgba(0, 40, 70, 0.3);
+    }
+
+    .open-students-card:active {
+      transform: translateY(0);
+    }
+
+    .open-students-card .icon-big {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .open-students-card .sub {
+      display: block;
+      font-size: 0.8rem;
+      color: #5a7a94;
+      font-weight: 500;
+      margin-top: 0.2rem;
+    }
+
+    .home-actions-note {
+      font-size: 0.85rem;
+      color: #3b5f7b;
+      margin-top: 1.6rem;
+      text-align: center;
+      background: #f4f9fd;
+      padding: 0.6rem 1rem;
+      border-radius: 40px;
+      border: 1px dashed #9bb7d0;
+    }
+
+    /* GOOGLE DRIVE SYNC PANEL STYLING */
+    .gdrive-panel {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 1.2rem;
+      padding: 1.2rem;
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    .gdrive-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .gdrive-head h4 {
+      font-size: 1rem;
+      color: #0369a1;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .gdrive-badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .gdrive-desc {
+      font-size: 0.85rem;
+      color: #334155;
+      margin-top: 0.4rem;
+      margin-bottom: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .gdrive-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .gdrive-info {
+      font-size: 0.78rem;
+      color: #0284c7;
+      margin-top: 0.6rem;
+      font-weight: 600;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 0.8rem; }
+      .main-wrap { padding-top: 4.6rem; }
+      .card { padding: 1.5rem 1rem 2rem; }
+      .option-number { font-size: 1.8rem; min-width: 80px; }
+      .option-actions { width: 100%; margin-left: 0; }
+      .option-actions .btn-small { flex: 1; justify-content: center; }
+      .question-box { padding: 1rem 1.1rem; }
+      .topbar { left: 0.8rem; top: 0.8rem; right: 0.8rem; }
+      .hamburger { width: 2.5rem; height: 2.5rem; }
+      .home-actions .btn-main,
+      .home-actions .import-label { flex: 1 1 100%; }
+      .current-student-pill { max-width: 130px; }
+      .topbar-back-btn { font-size: 0.8rem; padding: 0.6rem 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== SIDEBAR / HAMBURGER MENU ========== -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div style="display:flex; flex-direction:column; gap:0.3rem;">
+        <h2>Scholars</h2>
+        <span class="class-tag">Class 6th B</span>
+      </div>
+      <button class="close-sidebar" id="closeSidebar" title="Close menu">✕</button>
+    </div>
+    <div class="sidebar-note">List of scholars from attendance register</div>
+    <ul class="student-list" id="studentList">
+      <!-- student buttons injected by JS -->
+    </ul>
+  </aside>
+
+  <!-- ========== TOP BAR ========== -->
+  <div class="topbar">
+    <button class="hamburger" id="hamburgerBtn" title="Open student list">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="current-student-pill" id="currentStudentPill">Home</div>
+    <button class="topbar-back-btn hidden" id="topbarBackBtn" title="Back to home">
+      ← Back
+    </button>
+  </div>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <div class="main-wrap">
+    <div style="width: 100%; max-width: 1000px;">
+
+      <!-- ========== HOME PAGE ========== -->
+      <div class="card home-card" id="homePage">
+        <div class="home-title">Divisibility Quiz</div>
+        <div class="home-subtitle">Class 6th B · Export, import, or open a student's page</div>
+
+        <div class="home-actions">
+          <button class="btn-main export" id="exportAllBtn">
+            💾 Export all students
+          </button>
+          <label class="import-label" for="importAllInput">
+            📂 Import all students
+            <input type="file" id="importAllInput" accept=".json,application/json">
+          </label>
+        </div>
+
+        <button class="open-students-card" id="openStudentsCard">
+          <span class="icon-big">🧑‍🎓</span>
+          <span>
+            Open student list
+            <span class="sub">Browse all 20 scholars · pick one to start</span>
+          </span>
+        </button>
+
+        <!-- GOOGLE DRIVE AUTO-SYNC PANEL -->
+        <div class="gdrive-panel">
+          <div class="gdrive-head">
+            <h4>☁️ Google Drive Auto-Sync</h4>
+            <span id="gdriveStatusBadge" class="gdrive-badge">Not Connected</span>
+          </div>
+          <p class="gdrive-desc">
+            Connect your Google Drive to automatically sync and store a single cloud backup (<code>divisibility_quiz_backup.json</code>) whenever any change or action occurs.
+          </p>
+          <div class="gdrive-actions">
+            <button id="gdriveConnectBtn" class="btn-main btn-sm" onclick="connectGoogleDrive()">🔑 Connect Google Drive</button>
+            <button id="gdriveRestoreBtn" class="btn-main secondary btn-sm hidden" onclick="restoreFromGoogleDrive()">📥 Restore from Drive</button>
+            <button id="gdriveDisconnectBtn" class="btn-small hidden" style="background:#e2e8f0; color:#334155;" onclick="disconnectGoogleDrive()">Disconnect</button>
+          </div>
+          <div id="gdriveSyncInfo" class="gdrive-info hidden"></div>
+        </div>
+
+        <div class="home-actions-note">
+          Export/import includes <strong>all 20 students</strong> with their question sets, reveal status, and perfect marks.
+        </div>
+      </div>
+
+      <!-- ========== STUDENT PAGE ========== -->
+      <div class="card student-page hidden" id="studentPage">
+        <div class="question-box">
+          <div class="q-text">
+            Check divisibility of the following numbers by 2, 3 and 5.
+          </div>
+          <div class="student-tag" id="questionStudentTag">Aakifa</div>
+          <span class="perfect-tag hidden" id="questionPerfectTag">⭐ Perfect</span>
+        </div>
+
+        <div class="options-list" id="optionsList">
+          <!-- rows injected by JS -->
+        </div>
+
+        <div class="main-actions">
+          <button class="btn-main" id="regenerateBtn">
+            🎲 Regenerate all numbers
+          </button>
+          <button class="btn-main secondary" id="showAllBtn">
+            👁️ Show all answers
+          </button>
+          <button class="btn-main perfect-btn" id="markPerfectBtn">
+            ⭐ Mark as perfect
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* ============================================================
+       GOOGLE DRIVE & INTERNET INTEGRATION CONSTANTS & GUARDS
+       ============================================================ */
+    const GOOGLE_CLIENT_ID = '649212085073-hc5ihl2poi8h4l6q6r854352jk4l2oip.apps.googleusercontent.com';
+    const GDRIVE_FILENAME = 'divisibility_quiz_backup.json';
+    const GDRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+    let offlineWarningShown = false;
+    let driveWarningShown = false;
+    let gdriveAccessToken = null;
+    let gdriveFileId = null;
+    let tokenClient = null;
+    let autoSyncTimeout = null;
+
+    function checkInternetStatus() {
+      if (!navigator.onLine) {
+        if (!offlineWarningShown) {
+          alert("⚠️ Internet Connection Warning:\n\nYour device is currently offline. Any changes made in the quiz will save locally in your browser but will NOT sync to Google Drive until your internet connection is restored.");
+          showToast("⚠️ Offline: Changes won't sync to Drive", true);
+          offlineWarningShown = true;
+        }
+        return false;
+      } else {
+        if (offlineWarningShown) {
+          showToast("⚡ Internet restored!", false, true);
+        }
+        offlineWarningShown = false;
+        return true;
+      }
+    }
+
+    window.addEventListener('online', () => checkInternetStatus());
+    window.addEventListener('offline', () => checkInternetStatus());
+
+    function warnIfDriveNotConnected() {
+      if (!gdriveAccessToken && !driveWarningShown) {
+        alert("⚠️ Google Drive Warning:\n\nGoogle Drive is not connected. Your quiz progress is saved locally, but connecting Google Drive is recommended to keep every change backed up to the cloud automatically.");
+        showToast("⚠️ Google Drive Not Connected", true);
+        driveWarningShown = true;
+      }
+    }
+
+    (function() {
+      // ---------- STUDENT LIST (alphabetical) ----------
+      const STUDENTS = [
+        'Aakifa',
+        'Aaliya',
+        'Afsheen',
+        'Aksha',
+        'Alsiya',
+        'Asra',
+        'Daniya',
+        'Humaira I',
+        'Humaira II',
+        'Iqra',
+        'Kahkasha',
+        'Koshar',
+        'Layba',
+        'Muskan',
+        'Namra',
+        'Roshin',
+        'Sana',
+        'Shifa',
+        'Zikra',
+        'Zoya'
+      ];
+
+      // ---------- DIVISIBILITY HELPERS ----------
+      function isDivisibleBy2(n) { return n % 2 === 0; }
+      function isDivisibleBy3(n) { return n % 3 === 0; }
+      function isDivisibleBy5(n) { return n % 5 === 0; }
+
+      function meetsRequirement(n) {
+        return isDivisibleBy2(n) || isDivisibleBy3(n) || isDivisibleBy5(n);
+      }
+
+      // ---------- GENERATE A VALID NUMBER IN RANGE ----------
+      function generateValidInRange(min, max) {
+        const MAX_ATTEMPTS = 5000;
+        for (let i = 0; i < MAX_ATTEMPTS; i++) {
+          const candidate = Math.floor(Math.random() * (max - min + 1)) + min;
+          if (meetsRequirement(candidate)) {
+            return candidate;
+          }
+        }
+        if (min <= 1000 && max >= 1000) return 1000;
+        if (min <= 100 && max >= 100) return 100;
+        if (min <= 10 && max >= 10) return 10;
+        return min;
+      }
+
+      // ---------- GENERATE SPECIAL NUMBER (divisible by 2, 3, 5 => multiple of 30) ----------
+      function generateSpecialNumber() {
+        const digitLength = Math.floor(Math.random() * 3) + 2;
+        let min, max;
+        if (digitLength === 2) { min = 10; max = 99; }
+        else if (digitLength === 3) { min = 100; max = 999; }
+        else { min = 1000; max = 9999; }
+
+        const start = Math.ceil(min / 30) * 30;
+        const end = Math.floor(max / 30) * 30;
+        if (start > end) {
+          return digitLength === 2 ? 30 : (digitLength === 3 ? 120 : 1020);
+        }
+        const count = Math.floor((end - start) / 30) + 1;
+        const randomIndex = Math.floor(Math.random() * count);
+        return start + randomIndex * 30;
+      }
+
+      // ---------- GET CONDITION DESCRIPTION ----------
+      function getConditionDescription(n) {
+        const d2 = isDivisibleBy2(n);
+        const d3 = isDivisibleBy3(n);
+        const d5 = isDivisibleBy5(n);
+        if (d2 && d3 && d5) return "2, 3 and 5";
+        if (d2 && d3) return "2 and 3";
+        if (d3 && d5) return "3 and 5";
+        if (d2 && d5) return "2 and 5";
+        if (d2) return "2";
+        if (d3) return "3";
+        if (d5) return "5";
+        return "none";
+      }
+
+      // ---------- SHUFFLE ----------
+      function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // ---------- STORAGE KEYS ----------
+      const STORAGE_KEY = 'divisibility_quiz_6thB_v1';
+      const PERFECT_KEY = 'divisibility_perfect_6thB_v1';
+      const SESSION_KEY = 'divisibility_session_6thB_v1';
+
+      // ---------- STATE ----------
+      window.dataStore = {};
+      window.perfectStore = {};
+      let currentStudent = STUDENTS[0];
+      const LETTERS = ['a', 'b', 'c', 'd'];
+      let currentView = 'home';
+      let sidebarOpen = false;
+
+      // ---------- TOAST ----------
+      let toastTimeout = null;
+      window.showToast = function(message, isError, isSuccess) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.toggle('error', !!isError);
+        toast.classList.toggle('success', !!isSuccess);
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3000);
+      };
+
+      // ---------- GENERATE FRESH SET ----------
+      function generateFreshNumbers() {
+        const num2 = generateValidInRange(10, 99);
+        const num3 = generateValidInRange(100, 999);
+        const num4 = generateValidInRange(1000, 9999);
+        const special = generateSpecialNumber();
+
+        const raw = [
+          { number: num2, revealed: false },
+          { number: num3, revealed: false },
+          { number: num4, revealed: false },
+          { number: special, revealed: false }
+        ];
+        return shuffleArray(raw);
+      }
+
+      // ---------- LOAD FROM LOCALSTORAGE ----------
+      window.loadStore = function() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            const validated = {};
+            STUDENTS.forEach(name => {
+              const arr = parsed[name];
+              if (Array.isArray(arr) && arr.length === 4 &&
+                  arr.every(e => e && typeof e.number === 'number')) {
+                validated[name] = arr.map(e => ({
+                  number: e.number,
+                  revealed: !!e.revealed
+                }));
+              }
+            });
+            window.dataStore = validated;
+          }
+        } catch (e) { /* ignore */ }
+
+        try {
+          const rawPerfect = localStorage.getItem(PERFECT_KEY);
+          if (rawPerfect) {
+            const parsedPerfect = JSON.parse(rawPerfect);
+            if (parsedPerfect && typeof parsedPerfect === 'object') {
+              STUDENTS.forEach(name => {
+                if (parsedPerfect[name]) window.perfectStore[name] = true;
+              });
+            }
+          }
+        } catch (e) { /* ignore */ }
+      };
+
+      // ---------- SAVE TO LOCALSTORAGE & GOOGLE DRIVE ----------
+      window.saveStore = function() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(window.dataStore));
+        } catch (e) {
+          showToast('⚠️ Could not save to browser storage', true);
+        }
+        triggerAutoDriveSync();
+      };
+
+      window.savePerfectStore = function() {
+        try {
+          localStorage.setItem(PERFECT_KEY, JSON.stringify(window.perfectStore));
+        } catch (e) {
+          showToast('⚠️ Could not save perfect marks', true);
+        }
+        triggerAutoDriveSync();
+      };
+
+      // ---------- SESSION (view + active student + sidebar state) ----------
+      function saveSession() {
+        try {
+          const session = {
+            view: currentView,             // 'home' | 'student'
+            student: currentStudent,
+            sidebarOpen: sidebarOpen
+          };
+          localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        } catch (e) { /* ignore */ }
+      }
+
+      function loadSession() {
+        try {
+          const raw = localStorage.getItem(SESSION_KEY);
+          if (raw) {
+            const session = JSON.parse(raw);
+            if (session) {
+              if (session.student && STUDENTS.includes(session.student)) {
+                currentStudent = session.student;
+              }
+              if (session.view === 'student' || session.view === 'home') {
+                currentView = session.view;
+              }
+              sidebarOpen = !!session.sidebarOpen;
+            }
+          }
+        } catch (e) { /* ignore */ }
+      }
+
+      // ---------- ENSURE A STUDENT HAS A QUESTION SET ----------
+      function ensureStudentData(name) {
+        if (!window.dataStore[name] || !Array.isArray(window.dataStore[name]) || window.dataStore[name].length !== 4) {
+          window.dataStore[name] = generateFreshNumbers();
+          saveStore();
+        }
+        return window.dataStore[name];
+      }
+
+      // ---------- GET CURRENT NUMBERS ----------
+      function getCurrentNumbers() {
+        return ensureStudentData(currentStudent);
+      }
+
+      // ---------- SORTED STUDENT LIST ----------
+      function getSortedStudents() {
+        const nonPerfect = [];
+        const perfect = [];
+        STUDENTS.forEach(name => {
+          if (window.perfectStore[name]) perfect.push(name);
+          else nonPerfect.push(name);
+        });
+        return { nonPerfect, perfect };
+      }
+
+      // ---------- TOGGLE REVEAL ----------
+      function toggleReveal(index) {
+        warnIfDriveNotConnected();
+        const arr = getCurrentNumbers();
+        arr[index].revealed = !arr[index].revealed;
+        saveStore();
+        renderOptions();
+        renderStudentList();
+      }
+
+      // ---------- BUILD OPTION ROW ----------
+      function buildOptionRow(letter, index) {
+        const arr = getCurrentNumbers();
+        const entry = arr[index];
+        const n = entry.number;
+
+        const row = document.createElement('div');
+        row.className = 'option-row';
+
+        const letterEl = document.createElement('div');
+        letterEl.className = 'option-letter';
+        letterEl.textContent = letter;
+        row.appendChild(letterEl);
+
+        const numEl = document.createElement('div');
+        numEl.className = 'option-number';
+        numEl.textContent = n;
+        row.appendChild(numEl);
+
+        const answerArea = document.createElement('div');
+        answerArea.className = 'option-answer';
+
+        if (entry.revealed) {
+          const badges = document.createElement('div');
+          badges.className = 'answer-badges';
+          const d2 = isDivisibleBy2(n);
+          const d3 = isDivisibleBy3(n);
+          const d5 = isDivisibleBy5(n);
+          badges.innerHTML = `
+            <div class="badge"><span>÷ 2</span><span class="indicator ${d2 ? 'yes' : 'no'}">${d2 ? '✓' : '✗'}</span></div>
+            <div class="badge"><span>÷ 3</span><span class="indicator ${d3 ? 'yes' : 'no'}">${d3 ? '✓' : '✗'}</span></div>
+            <div class="badge"><span>÷ 5</span><span class="indicator ${d5 ? 'yes' : 'no'}">${d5 ? '✓' : '✗'}</span></div>
+            <div class="condition-chip">meets <span class="highlight">${getConditionDescription(n)}</span></div>
+          `;
+          answerArea.appendChild(badges);
+        }
+        row.appendChild(answerArea);
+
+        const actions = document.createElement('div');
+        actions.className = 'option-actions';
+
+        const revealBtn = document.createElement('button');
+        revealBtn.className = 'btn-small btn-reveal' + (entry.revealed ? ' revealed' : '');
+        revealBtn.innerHTML = entry.revealed ? '🙈 Hide answer' : '👁️ Show answer';
+        revealBtn.addEventListener('click', () => toggleReveal(index));
+        actions.appendChild(revealBtn);
+
+        row.appendChild(actions);
+        return row;
+      }
+
+      // ---------- RENDER OPTIONS ----------
+      window.renderOptions = function() {
+        const list = document.getElementById('optionsList');
+        list.innerHTML = '';
+        LETTERS.forEach((letter, idx) => {
+          list.appendChild(buildOptionRow(letter, idx));
+        });
+        document.getElementById('questionStudentTag').textContent = currentStudent;
+        document.getElementById('currentStudentPill').textContent = currentStudent;
+
+        // Perfect pill styling
+        const pill = document.getElementById('currentStudentPill');
+        if (window.perfectStore[currentStudent]) {
+          pill.classList.add('perfect-pill');
+        } else {
+          pill.classList.remove('perfect-pill');
+        }
+
+        // Perfect tag in question box
+        const perfectTag = document.getElementById('questionPerfectTag');
+        if (window.perfectStore[currentStudent]) {
+          perfectTag.classList.remove('hidden');
+        } else {
+          perfectTag.classList.add('hidden');
+        }
+
+        // Mark as perfect button state
+        const markBtn = document.getElementById('markPerfectBtn');
+        if (window.perfectStore[currentStudent]) {
+          markBtn.innerHTML = '⭐ Unmark perfect';
+          markBtn.classList.add('is-perfect');
+        } else {
+          markBtn.innerHTML = '⭐ Mark as perfect';
+          markBtn.classList.remove('is-perfect');
+        }
+      };
+
+      // ---------- RENDER STUDENT LIST (SIDEBAR) ----------
+      window.renderStudentList = function() {
+        const ul = document.getElementById('studentList');
+        ul.innerHTML = '';
+
+        const { nonPerfect, perfect } = getSortedStudents();
+        const rollMap = {};
+        STUDENTS.forEach((name, idx) => { rollMap[name] = idx + 1; });
+
+        function makeLi(name) {
+          const li = document.createElement('li');
+          const btn = document.createElement('button');
+          const isPerfect = !!window.perfectStore[name];
+          btn.className = 'student-item' +
+            (name === currentStudent && currentView === 'student' ? ' active' : '') +
+            (isPerfect ? ' perfect' : '');
+          btn.dataset.name = name;
+
+          const roll = document.createElement('span');
+          roll.className = 'roll-num';
+          roll.textContent = rollMap[name];
+
+          const label = document.createElement('span');
+          label.textContent = name;
+          label.style.flex = '1';
+
+          btn.appendChild(roll);
+          btn.appendChild(label);
+
+          if (isPerfect) {
+            const star = document.createElement('span');
+            star.className = 'perfect-star';
+            star.textContent = '⭐';
+            star.title = 'Perfect';
+            btn.appendChild(star);
+          } else {
+            const hasData = window.dataStore[name] && window.dataStore[name].some(e => e.revealed);
+            if (hasData) {
+              const dot = document.createElement('span');
+              dot.className = 'saved-dot';
+              dot.title = 'Some answers revealed';
+              btn.appendChild(dot);
+            }
+          }
+
+          btn.addEventListener('click', () => switchStudent(name));
+          li.appendChild(btn);
+          return li;
+        }
+
+        nonPerfect.forEach(name => ul.appendChild(makeLi(name)));
+
+        if (perfect.length > 0) {
+          const divider = document.createElement('div');
+          divider.className = 'sidebar-divider';
+          ul.appendChild(divider);
+
+          const label = document.createElement('div');
+          label.className = 'perfect-section-label';
+          label.textContent = '⭐ Perfect';
+          ul.appendChild(label);
+
+          perfect.forEach(name => ul.appendChild(makeLi(name)));
+        }
+      };
+
+      // ---------- SWITCH STUDENT ----------
+      function switchStudent(name) {
+        if (!STUDENTS.includes(name)) return;
+        currentStudent = name;
+        ensureStudentData(name);
+        currentView = 'student';
+        showView('student');
+        renderOptions();
+        renderStudentList();
+        closeSidebar();
+        saveSession();
+      }
+
+      // ---------- SHOW VIEW (persists) ----------
+      window.showView = function(view, skipSave) {
+        currentView = view;
+        const homePage = document.getElementById('homePage');
+        const studentPage = document.getElementById('studentPage');
+        const pill = document.getElementById('currentStudentPill');
+        const backBtn = document.getElementById('topbarBackBtn');
+
+        if (view === 'home') {
+          homePage.classList.remove('hidden');
+          studentPage.classList.add('hidden');
+          pill.textContent = 'Home';
+          pill.classList.remove('perfect-pill');
+          backBtn.classList.add('hidden');
+        } else {
+          homePage.classList.add('hidden');
+          studentPage.classList.remove('hidden');
+          pill.textContent = currentStudent;
+          if (window.perfectStore[currentStudent]) {
+            pill.classList.add('perfect-pill');
+          } else {
+            pill.classList.remove('perfect-pill');
+          }
+          backBtn.classList.remove('hidden');
+        }
+        renderStudentList();
+        if (!skipSave) saveSession();
+      };
+
+      // ---------- SIDEBAR (state persisted) ----------
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+        sidebarOpen = true;
+        saveSession();
+      }
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+        sidebarOpen = false;
+        saveSession();
+      }
+
+      document.getElementById('hamburgerBtn').addEventListener('click', openSidebar);
+      document.getElementById('closeSidebar').addEventListener('click', closeSidebar);
+      overlay.addEventListener('click', closeSidebar);
+      document.getElementById('openStudentsCard').addEventListener('click', openSidebar);
+
+      document.getElementById('topbarBackBtn').addEventListener('click', () => {
+        showView('home');
+      });
+
+      // ---------- EXPORT ALL STUDENTS ----------
+      function exportAllStudents() {
+        const exportData = getExportDataPayload();
+        const jsonStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `divisibility-all-students-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(`✅ Exported all ${STUDENTS.length} students' question sets + perfect marks`, false, true);
+      }
+
+      window.getExportDataPayload = function() {
+        const exportData = {
+          version: 4,
+          exportedAt: new Date().toISOString(),
+          question: "Check divisibility of the following numbers by 2, 3 and 5.",
+          students: {},
+          perfect: {}
+        };
+
+        STUDENTS.forEach(name => {
+          ensureStudentData(name);
+          const arr = window.dataStore[name];
+          exportData.students[name] = arr.map((entry, idx) => {
+            const n = entry.number;
+            return {
+              letter: LETTERS[idx],
+              number: n,
+              revealed: entry.revealed,
+              answers: {
+                divisibleBy2: isDivisibleBy2(n),
+                divisibleBy3: isDivisibleBy3(n),
+                divisibleBy5: isDivisibleBy5(n),
+                meets: getConditionDescription(n)
+              }
+            };
+          });
+          if (window.perfectStore[name]) {
+            exportData.perfect[name] = true;
+          }
+        });
+        return exportData;
+      };
+
+      // ---------- IMPORT ALL STUDENTS ----------
+      window.importAllStudentsData = function(data) {
+        if (!data.students || typeof data.students !== 'object') {
+          throw new Error('Invalid format: missing "students" object.');
+        }
+
+        const newStore = {};
+        const newPerfectStore = {};
+        let importedCount = 0;
+        let skippedCount = 0;
+
+        STUDENTS.forEach(name => {
+          const studentData = data.students[name];
+          if (Array.isArray(studentData) && studentData.length === 4) {
+            const valid = studentData.every(entry => entry && typeof entry.number === 'number');
+            if (valid) {
+              newStore[name] = studentData.map(entry => ({
+                number: entry.number,
+                revealed: !!entry.revealed
+              }));
+              importedCount++;
+            } else {
+              newStore[name] = generateFreshNumbers();
+              skippedCount++;
+            }
+          } else {
+            newStore[name] = generateFreshNumbers();
+            skippedCount++;
+          }
+          if (data.perfect && data.perfect[name]) {
+            newPerfectStore[name] = true;
+          }
+        });
+
+        window.dataStore = newStore;
+        window.perfectStore = newPerfectStore;
+        saveStore();
+        savePerfectStore();
+
+        if (!window.dataStore[currentStudent]) {
+          currentStudent = STUDENTS[0];
+        }
+
+        renderStudentList();
+        if (currentView === 'student') {
+          renderOptions();
+        } else {
+          showView('home', true);
+        }
+        saveSession();
+
+        return { importedCount, skippedCount, perfectCount: Object.keys(newPerfectStore).length };
+      };
+
+      function importAllStudents(file) {
+        warnIfDriveNotConnected();
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            const res = importAllStudentsData(data);
+            const msg = `✅ Imported ${res.importedCount} student set${res.importedCount !== 1 ? 's' : ''}` +
+              (res.skippedCount ? `, ${res.skippedCount} regenerated` : '') +
+              (res.perfectCount ? ` · ${res.perfectCount} perfect` : '');
+            showToast(msg, false, true);
+          } catch (err) {
+            showToast('❌ Import failed: ' + err.message, true);
+          }
+        };
+        reader.onerror = function() {
+          showToast('❌ Could not read file', true);
+        };
+        reader.readAsText(file);
+      }
+
+      // ---------- SHOW ALL ANSWERS ----------
+      function showAllAnswers() {
+        warnIfDriveNotConnected();
+        const arr = getCurrentNumbers();
+        const allRevealed = arr.every(e => e.revealed);
+        arr.forEach(e => { e.revealed = !allRevealed; });
+        saveStore();
+        renderOptions();
+        renderStudentList();
+        showToast(allRevealed
+          ? `🙈 All answers hidden for ${currentStudent}`
+          : `👁️ All answers shown for ${currentStudent}`);
+      }
+
+      // ---------- MARK PERFECT (with confirmation) ----------
+      function togglePerfect() {
+        warnIfDriveNotConnected();
+        const name = currentStudent;
+        if (window.perfectStore[name]) {
+          delete window.perfectStore[name];
+          savePerfectStore();
+          renderOptions();
+          renderStudentList();
+          saveSession();
+          showToast(`↩️ ${name} is no longer marked perfect`);
+        } else {
+          const confirmed = window.confirm(
+            `Are you sure ${name} is really PERFECT?\n\n` +
+            `This will move ${name} to the "Perfect" section at the end of the student list.`
+          );
+          if (!confirmed) return;
+
+          window.perfectStore[name] = true;
+          savePerfectStore();
+          renderOptions();
+          renderStudentList();
+          saveSession();
+          showToast(`⭐ ${name} marked as perfect!`, false, true);
+        }
+      }
+
+      // ---------- INIT ----------
+      loadStore();
+      loadSession();
+
+      let anyMissing = false;
+      STUDENTS.forEach(name => {
+        if (!window.dataStore[name]) {
+          window.dataStore[name] = generateFreshNumbers();
+          anyMissing = true;
+        }
+      });
+      if (anyMissing) saveStore();
+
+      // Restore the exact view the user left on
+      ensureStudentData(currentStudent);
+      if (currentView === 'student') {
+        showView('student', true);
+        renderOptions();
+      } else {
+        showView('home', true);
+      }
+
+      // Restore sidebar open/closed state
+      if (sidebarOpen) {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+      }
+
+      renderStudentList();
+
+      // ---------- BUTTON EVENTS ----------
+      document.getElementById('exportAllBtn').addEventListener('click', exportAllStudents);
+      document.getElementById('importAllInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) importAllStudents(file);
+        e.target.value = '';
+      });
+
+      document.getElementById('regenerateBtn').addEventListener('click', () => {
+        warnIfDriveNotConnected();
+        window.dataStore[currentStudent] = generateFreshNumbers();
+        saveStore();
+        renderOptions();
+        renderStudentList();
+        showToast(`🎲 New numbers for ${currentStudent}`);
+      });
+
+      document.getElementById('showAllBtn').addEventListener('click', showAllAnswers);
+      document.getElementById('markPerfectBtn').addEventListener('click', togglePerfect);
+
+      // Save session on page unload as a safety net
+      window.addEventListener('beforeunload', saveSession);
+    })();
+
+    /* ============================================================
+       GOOGLE DRIVE API AUTO-SYNC LOGIC
+       ============================================================ */
+    function updateGDriveUI(connected) {
+      const badge = document.getElementById('gdriveStatusBadge');
+      const connectBtn = document.getElementById('gdriveConnectBtn');
+      const restoreBtn = document.getElementById('gdriveRestoreBtn');
+      const disconnectBtn = document.getElementById('gdriveDisconnectBtn');
+      const syncInfo = document.getElementById('gdriveSyncInfo');
+
+      if (connected) {
+        if (badge) { badge.style.background = '#dcfce7'; badge.style.color = '#15803d'; badge.textContent = '🟢 Connected'; }
+        if (connectBtn) connectBtn.classList.add('hidden');
+        if (restoreBtn) restoreBtn.classList.remove('hidden');
+        if (disconnectBtn) disconnectBtn.classList.remove('hidden');
+        if (syncInfo) syncInfo.classList.remove('hidden');
+      } else {
+        if (badge) { badge.style.background = '#f1f5f9'; badge.style.color = '#64748b'; badge.textContent = 'Not Connected'; }
+        if (connectBtn) connectBtn.classList.remove('hidden');
+        if (restoreBtn) restoreBtn.classList.add('hidden');
+        if (disconnectBtn) disconnectBtn.classList.add('hidden');
+        if (syncInfo) syncInfo.classList.add('hidden');
+      }
+    }
+
+    function initGoogleDriveClient() {
+      if (typeof google === 'undefined' || !google.accounts) return;
+
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: GDRIVE_SCOPES,
+        prompt: '',
+        callback: async (response) => {
+          if (response.error) {
+            if (response.error === 'interaction_required') {
+              updateGDriveUI(false);
+              return;
+            }
+            showToast('Google Drive login failed.', true);
+            return;
+          }
+          gdriveAccessToken = response.access_token;
+          const expiresInMs = (response.expires_in || 3600) * 1000;
+          const expiryTimestamp = Date.now() + expiresInMs;
+
+          try {
+            localStorage.setItem('gdrive_quiz_token', gdriveAccessToken);
+            localStorage.setItem('gdrive_quiz_expiry', expiryTimestamp.toString());
+          } catch (_) {}
+
+          updateGDriveUI(true);
+          showToast('Google Drive Connected!', false, true);
+
+          scheduleTokenRefresh(expiresInMs - (5 * 60 * 1000));
+
+          const existingFile = await findGDriveBackupFile();
+          if (existingFile) {
+            await restoreFromGoogleDriveSilent();
+          } else {
+            await syncToGoogleDrive(true);
+          }
+        },
+      });
+    }
+
+    let tokenRefreshTimer = null;
+    function scheduleTokenRefresh(delayMs) {
+      clearTimeout(tokenRefreshTimer);
+      if (delayMs <= 0) delayMs = 1000;
+      tokenRefreshTimer = setTimeout(() => {
+        if (gdriveAccessToken && tokenClient) {
+          tokenClient.requestAccessToken({ prompt: '' });
+        }
+      }, delayMs);
+    }
+
+    function connectGoogleDrive() {
+      if (!tokenClient) initGoogleDriveClient();
+      if (!tokenClient) {
+        showToast('Google Drive library is loading. Please try again in a moment.', true);
+        return;
+      }
+      tokenClient.requestAccessToken({ prompt: '' });
+    }
+
+    function disconnectGoogleDrive() {
+      gdriveAccessToken = null;
+      gdriveFileId = null;
+      clearTimeout(tokenRefreshTimer);
+      try {
+        localStorage.removeItem('gdrive_quiz_token');
+        localStorage.removeItem('gdrive_quiz_expiry');
+      } catch (_) {}
+      updateGDriveUI(false);
+      showToast('Disconnected from Google Drive.');
+    }
+
+    async function findGDriveBackupFile() {
+      if (!gdriveAccessToken) return null;
+      try {
+        const q = encodeURIComponent(`name = '${GDRIVE_FILENAME}' and trashed = false`);
+        const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime)`, {
+          headers: { Authorization: `Bearer ${gdriveAccessToken}` }
+        });
+        if (!res.ok) {
+          if (res.status === 401) disconnectGoogleDrive();
+          return null;
+        }
+        const data = await res.json();
+        if (data.files && data.files.length > 0) {
+          gdriveFileId = data.files[0].id;
+          return data.files[0];
+        }
+      } catch (err) {
+        console.error('Error finding Google Drive file:', err);
+      }
+      gdriveFileId = null;
+      return null;
+    }
+
+    async function syncToGoogleDrive(manual = false) {
+      if (!gdriveAccessToken) return;
+
+      const payload = getExportDataPayload();
+      const fileContent = JSON.stringify(payload, null, 2);
+
+      try {
+        if (!gdriveFileId) {
+          const existing = await findGDriveBackupFile();
+          if (existing) gdriveFileId = existing.id;
+        }
+
+        if (gdriveFileId) {
+          const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${gdriveFileId}?uploadType=media`, {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${gdriveAccessToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: fileContent
+          });
+          if (!res.ok) {
+            if (res.status === 404) {
+              gdriveFileId = null;
+              return await syncToGoogleDrive(manual);
+            }
+            throw new Error('Failed to update Drive file');
+          }
+        } else {
+          const metadata = { name: GDRIVE_FILENAME, mimeType: 'application/json' };
+          const form = new FormData();
+          form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+          form.append('file', new Blob([fileContent], { type: 'application/json' }));
+
+          const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${gdriveAccessToken}` },
+            body: form
+          });
+          const data = await res.json();
+          if (data.id) gdriveFileId = data.id;
+        }
+
+        const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const infoEl = document.getElementById('gdriveSyncInfo');
+        if (infoEl) infoEl.textContent = `✓ Last synced to Google Drive at ${timeStr}`;
+        if (manual) showToast('Successfully backed up to Google Drive!', false, true);
+      } catch (err) {
+        console.error('Google Drive Sync error:', err);
+        if (manual) showToast('Failed to backup to Google Drive.', true);
+      }
+    }
+
+    function triggerAutoDriveSync() {
+      if (!gdriveAccessToken) return;
+      clearTimeout(autoSyncTimeout);
+      autoSyncTimeout = setTimeout(() => {
+        syncToGoogleDrive(false);
+      }, 1500);
+    }
+
+    async function restoreFromGoogleDriveSilent() {
+      if (!gdriveAccessToken) return;
+      try {
+        const file = await findGDriveBackupFile();
+        if (!file) return;
+
+        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {
+          headers: { Authorization: `Bearer ${gdriveAccessToken}` }
+        });
+        if (!res.ok) return;
+
+        const data = await res.json();
+        importAllStudentsData(data);
+        const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const infoEl = document.getElementById('gdriveSyncInfo');
+        if (infoEl) infoEl.textContent = `✓ Auto-restored backup from Google Drive at ${timeStr}`;
+        showToast('Restored backup from Google Drive!', false, true);
+      } catch (err) {
+        console.error('Silent Google Drive restore error:', err);
+      }
+    }
+
+    async function restoreFromGoogleDrive() {
+      if (!gdriveAccessToken) return;
+      try {
+        const file = await findGDriveBackupFile();
+        if (!file) {
+          showToast('No backup file found in Google Drive.', true);
+          return;
+        }
+
+        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {
+          headers: { Authorization: `Bearer ${gdriveAccessToken}` }
+        });
+        const data = await res.json();
+        importAllStudentsData(data);
+        showToast('Data restored from Google Drive!', false, true);
+      } catch (err) {
+        console.error('Google Drive restore error:', err);
+        showToast('Failed to restore from Google Drive.', true);
+      }
+    }
+
+    window.onload = () => {
+      checkInternetStatus();
+      initGoogleDriveClient();
+      try {
+        const savedToken = localStorage.getItem('gdrive_quiz_token');
+        const expiryStr = localStorage.getItem('gdrive_quiz_expiry');
+        const expiryTimestamp = expiryStr ? parseInt(expiryStr, 10) : 0;
+
+        if (savedToken && expiryTimestamp > Date.now() + 120000) {
+          gdriveAccessToken = savedToken;
+          updateGDriveUI(true);
+          scheduleTokenRefresh(expiryTimestamp - Date.now() - 300000);
+        } else {
+          warnIfDriveNotConnected();
+          if (savedToken) {
+            setTimeout(() => {
+              if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+            }, 1000);
+          }
+        }
+      } catch (_) {
+        warnIfDriveNotConnected();
+      }
+    };
+
+    window.addEventListener('beforeunload', e => {
+      if (!gdriveAccessToken) {
+        const warnMsg = "⚠️ Google Drive is not connected! Any recent changes will only remain in this browser.";
+        e.preventDefault();
+        e.returnValue = warnMsg;
+        return warnMsg;
+      }
+    });
+  </script>
+</body>
+</html>
