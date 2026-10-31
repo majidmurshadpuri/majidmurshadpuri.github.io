@@ -1,0 +1,2477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Divisibility Quiz · Multi-Class Practice</title>
+  <!-- Google Identity Services Library for OAuth 2.0 -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(145deg, #eef5fc 0%, #cbdae8 100%);
+      min-height: 100vh;
+      display: flex;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 1.2rem;
+      transition: padding 0.3s;
+    }
+
+    /* ---------- SIDEBAR (HAMBURGER MENU) ---------- */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 290px;
+      background: #ffffff;
+      box-shadow: 4px 0 25px rgba(0, 30, 60, 0.15);
+      z-index: 1000;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #d3e2ef;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      padding: 1.4rem 1.5rem 1rem;
+      border-bottom: 2px solid #e7f0f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.15rem;
+      color: #10334e;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-header .class-tag {
+      background: #1e4765;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      font-weight: 600;
+    }
+
+    .close-sidebar {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #3b5f7b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      line-height: 1;
+    }
+
+    .close-sidebar:hover {
+      background: #e7f0f9;
+    }
+
+    .sidebar-note {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.78rem;
+      color: #6a839a;
+      background: #f4f9fd;
+      border-bottom: 1px solid #e7f0f9;
+      letter-spacing: 0.2px;
+    }
+
+    .student-list {
+      list-style: none;
+      overflow-y: auto;
+      flex: 1;
+      padding: 0.6rem 0.7rem;
+    }
+
+    .student-list li {
+      margin-bottom: 0.35rem;
+    }
+
+    .student-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #1e3a52;
+      font-weight: 500;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .student-item:hover {
+      background: #e7f0f9;
+    }
+
+    .student-item.active {
+      background: #1e4765;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 5px 12px -5px #0e344b;
+    }
+
+    .student-item .roll-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.7rem;
+      height: 1.7rem;
+      border-radius: 50%;
+      background: #d9e7f2;
+      color: #1e4765;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .student-item.active .roll-num {
+      background: #4d8ab5;
+      color: white;
+    }
+
+    /* ---------- STUDENT PROGRESS BAR IN SIDEBAR ---------- */
+    .student-info-col {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 0.2rem;
+      min-width: 0;
+    }
+
+    .student-name-text {
+      font-weight: 600;
+      font-size: 0.92rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .student-progress-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .student-progress-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: #cbd5e1;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .student-progress-bar-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.25s ease, background-color 0.25s ease;
+    }
+
+    .student-progress-text {
+      font-size: 0.72rem;
+      font-weight: 700;
+      min-width: 2.4rem;
+      text-align: right;
+    }
+
+    .student-item.active .student-progress-bar-bg {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .student-item.active .student-progress-text {
+      color: #e2e8f0;
+    }
+
+    /* ---------- PERFECT STUDENT STYLING ---------- */
+    .student-item.perfect {
+      background: linear-gradient(135deg, #fff9e6 0%, #fdf0c8 100%);
+      border: 1px solid #e8c96a;
+    }
+
+    .student-item.perfect:hover {
+      background: linear-gradient(135deg, #fff5d6 0%, #fbe9b5 100%);
+    }
+
+    .student-item.perfect.active {
+      background: linear-gradient(135deg, #b8863a 0%, #9a6f28 100%);
+      color: white;
+      border-color: #7d5a1e;
+      box-shadow: 0 5px 12px -5px #6a4a12;
+    }
+
+    .student-item.perfect.active .roll-num {
+      background: #e8c96a;
+      color: #5a3d0e;
+    }
+
+    .student-item.perfect .roll-num {
+      background: #f0d98a;
+      color: #6a4a12;
+    }
+
+    .student-item .perfect-star {
+      font-size: 1rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .perfect-section-label {
+      padding: 0.8rem 0.9rem 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: #a07b2c;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .perfect-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, #e8c96a, transparent);
+    }
+
+    .sidebar-divider {
+      height: 2px;
+      margin: 0.5rem 0.9rem;
+      background: linear-gradient(to right, transparent, #d3e2ef 20%, #d3e2ef 80%, transparent);
+      border-radius: 2px;
+    }
+
+    /* ---------- OVERLAY ---------- */
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 30, 50, 0.35);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ---------- TOP BAR ---------- */
+    .topbar {
+      position: fixed;
+      top: 1.2rem;
+      left: 1.2rem;
+      right: 1.2rem;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .hamburger {
+      background: #ffffff;
+      border: 1px solid #c8dbe9;
+      width: 2.8rem;
+      height: 2.8rem;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow: 0 8px 20px -8px rgba(0, 30, 60, 0.3);
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .hamburger:hover {
+      background: #e7f0f9;
+      transform: scale(1.03);
+    }
+
+    .hamburger span {
+      display: block;
+      width: 18px;
+      height: 2.5px;
+      background: #1e4765;
+      border-radius: 2px;
+    }
+
+    .current-student-pill {
+      background: #1e4765;
+      color: white;
+      padding: 0.55rem 1.1rem;
+      border-radius: 40px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 8px 20px -8px #0e344b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+
+    .current-student-pill.perfect-pill {
+      background: linear-gradient(135deg, #b8863a 0%, #9a6f28 100%);
+    }
+
+    .topbar-back-btn {
+      margin-left: auto;
+      background: #3b5f7b;
+      border: 1px solid #6d98b9;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.7rem 1.2rem;
+      border-radius: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: 0 8px 20px -8px #0e344b;
+      transition: all 0.15s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .topbar-back-btn:hover {
+      background: #2a4a63;
+      transform: scale(1.03);
+    }
+
+    .topbar-back-btn:active {
+      transform: scale(0.98);
+    }
+
+    .topbar-back-btn.hidden {
+      display: none;
+    }
+
+    /* ---------- MAIN LAYOUT ---------- */
+    .main-wrap {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 4.4rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(6px);
+      width: 100%;
+      max-width: 1000px;
+      border-radius: 2.5rem 1.2rem 2.5rem 1.2rem;
+      box-shadow: 0 30px 45px -15px rgba(0, 20, 40, 0.4), 0 8px 18px rgba(0, 0, 0, 0.08);
+      padding: 2rem 1.8rem 2.4rem;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      margin-bottom: 1.5rem;
+    }
+
+    .question-box {
+      background: #e7f0f9;
+      border-left: 6px solid #3e7ea5;
+      padding: 1.2rem 1.5rem;
+      border-radius: 0 40px 40px 0;
+      margin-bottom: 2rem;
+      color: #10334e;
+    }
+
+    .question-box .q-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .question-box .student-tag {
+      display: inline-block;
+      margin-top: 0.5rem;
+      background: #1e4765;
+      color: white;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .question-box .perfect-tag {
+      display: inline-block;
+      margin-top: 0.5rem;
+      margin-left: 0.4rem;
+      background: #b8863a;
+      color: white;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    /* ---------- QUESTION CARDS ---------- */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .q-card {
+      background: #ffffff;
+      border-radius: 1.5rem 0.6rem 1.5rem 0.6rem;
+      padding: 1.2rem 1.5rem;
+      box-shadow: 0 6px 15px -8px rgba(0, 40, 70, 0.25);
+      border: 1.5px solid #d3e2ef;
+      transition: all 0.2s ease;
+    }
+
+    .q-card.completed {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+
+    .q-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.6rem;
+    }
+
+    .q-number-badge {
+      background: #1e4765;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      text-transform: uppercase;
+    }
+
+    .q-title {
+      font-weight: 700;
+      color: #10334e;
+      font-size: 1rem;
+      flex: 1;
+    }
+
+    .q-big-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #0b2a41;
+      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
+      margin: 0.4rem 0 0.8rem;
+    }
+
+    .solution-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 0.9rem 1.1rem;
+      margin-top: 0.8rem;
+    }
+
+    .step-line {
+      font-family: monospace;
+      font-size: 0.95rem;
+      color: #334155;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+    .step-final {
+      color: #16a34a;
+      font-weight: 700;
+      margin-top: 0.4rem;
+      border-top: 1px dashed #cbd5e1;
+      padding-top: 0.4rem;
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .btn-small {
+      border: none;
+      border-radius: 40px;
+      padding: 0.55rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .btn-reveal {
+      background: #6d4fa5;
+      color: white;
+      box-shadow: 0 4px 10px -4px #3a2760;
+    }
+
+    .btn-reveal:hover { background: #573d8a; }
+
+    .btn-reveal.revealed {
+      background: #1e7a4b;
+      box-shadow: 0 4px 10px -4px #0e4a2c;
+    }
+
+    .btn-reveal.revealed:hover { background: #196a40; }
+
+    /* Individual Row Action Buttons */
+    .btn-done {
+      background: #0d9488;
+      color: white;
+      box-shadow: 0 4px 10px -4px #0f766e;
+    }
+
+    .btn-done:hover { background: #0f766e; }
+
+    .btn-done.is-done {
+      background: #15803d;
+      box-shadow: 0 4px 10px -4px #166534;
+    }
+
+    .btn-regen-item {
+      background: #3b82f6;
+      color: white;
+      box-shadow: 0 4px 10px -4px #1d4ed8;
+    }
+
+    .btn-regen-item:hover { background: #1d4ed8; }
+
+    .q-card-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.6rem;
+    }
+
+    .main-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .btn-main {
+      background: #1e4e6f;
+      border: 1px solid #6d98b9;
+      color: white;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 0.95rem 1.3rem;
+      border-radius: 60px;
+      flex: 1 1 200px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      box-shadow: 0 15px 20px -10px #0e344b;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .btn-main:hover {
+      background: #13415f;
+      transform: scale(1.01);
+    }
+
+    .btn-main:active {
+      transform: scale(0.99);
+    }
+
+    .btn-main.secondary {
+      background: #6d4fa5;
+      border-color: #8f6fd8;
+      box-shadow: 0 15px 20px -10px #3a2760;
+    }
+
+    .btn-main.secondary:hover {
+      background: #573d8a;
+    }
+
+    .btn-main.export {
+      background: #2a7a5a;
+      border-color: #4dae82;
+      box-shadow: 0 15px 20px -10px #0e4a2c;
+    }
+
+    .btn-main.export:hover {
+      background: #1e6a4a;
+    }
+
+    .btn-main.perfect-btn {
+      background: #b8863a;
+      border-color: #d9a54a;
+      box-shadow: 0 15px 20px -10px #6a4a12;
+    }
+
+    .btn-main.perfect-btn:hover {
+      background: #9a6f28;
+    }
+
+    .btn-main.perfect-btn.is-perfect {
+      background: #2a7a5a;
+      border-color: #4dae82;
+      box-shadow: 0 15px 20px -10px #0e4a2c;
+    }
+
+    .btn-main.perfect-btn.is-perfect:hover {
+      background: #1e6a4a;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.82rem;
+      border-radius: 30px;
+    }
+
+    .import-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      background: #d1a04a;
+      border: 1px solid #e0b968;
+      color: white;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 0.95rem 1.3rem;
+      border-radius: 60px;
+      flex: 1 1 200px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 15px 20px -10px #6a4a12;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .import-label:hover {
+      background: #b8863a;
+      transform: scale(1.01);
+    }
+
+    .import-label:active {
+      transform: scale(0.99);
+    }
+
+    .import-label input {
+      display: none;
+    }
+
+    .txt-import-input {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: #1e4765;
+      color: white;
+      padding: 0.8rem 1.8rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 10px 30px -8px rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 2000;
+      pointer-events: none;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.error {
+      background: #a13b3b;
+    }
+
+    .toast.success {
+      background: #2a7a5a;
+    }
+
+    /* ---------- HOME PAGE SPECIFIC ---------- */
+    .home-card {
+      text-align: center;
+    }
+
+    .home-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #10334e;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+
+    .home-subtitle {
+      font-size: 0.95rem;
+      color: #5a7a94;
+      margin-bottom: 1.8rem;
+      font-weight: 500;
+    }
+
+    .home-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .home-actions .btn-main,
+    .home-actions .import-label {
+      flex: 0 1 260px;
+    }
+
+    .open-students-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 1.6rem;
+      padding: 1.2rem 1.4rem;
+      background: #e7f0f9;
+      border: 2px dashed #8fb4d1;
+      border-radius: 1.4rem 0.6rem 1.4rem 0.6rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1e4765;
+      width: 100%;
+    }
+
+    .open-students-card:hover {
+      background: #d8e8f6;
+      border-color: #5a8db3;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px -12px rgba(0, 40, 70, 0.3);
+    }
+
+    .open-students-card:active {
+      transform: translateY(0);
+    }
+
+    /* GOOGLE DRIVE SYNC PANEL STYLING */
+    .gdrive-panel {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 1.2rem;
+      padding: 1.2rem;
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    .gdrive-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .gdrive-head h4 {
+      font-size: 1rem;
+      color: #0369a1;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .gdrive-badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .gdrive-desc {
+      font-size: 0.85rem;
+      color: #334155;
+      margin-top: 0.4rem;
+      margin-bottom: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .gdrive-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .gdrive-info {
+      font-size: 0.78rem;
+      color: #0284c7;
+      margin-top: 0.6rem;
+      font-weight: 600;
+    }
+
+    /* ---------- MODAL DIALOGS ---------- */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 30, 50, 0.45);
+      z-index: 2500;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-bg.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0, 30, 60, 0.25);
+    }
+
+    .modal h3 {
+      font-size: 1.2rem;
+      color: #10334e;
+      margin-bottom: 0.3rem;
+    }
+
+    .modal p {
+      font-size: 0.85rem;
+      color: #5a7a94;
+      margin-bottom: 1rem;
+    }
+
+    .modal-row {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .modal-field {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .modal-field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #3b5f7b;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.4px;
+    }
+
+    .modal-field input, .modal-field select {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #c8dbe9;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+    }
+
+    .btn-ghost {
+      background: #eef5fc;
+      color: #1e4765;
+      border: none;
+      border-radius: 30px;
+      padding: 0.6rem 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-ghost:hover {
+      background: #dbe8f5;
+    }
+
+    .class-bar {
+      background: #e7f0f9;
+      border: 1px solid #b8d3e8;
+      border-radius: 1.2rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-end;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      text-align: left;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 0.8rem; }
+      .main-wrap { padding-top: 4.6rem; }
+      .card { padding: 1.5rem 1rem 2rem; }
+      .q-big-number { font-size: 1.8rem; }
+      .q-card-actions { width: 100%; }
+      .q-card-actions .btn-small { flex: 1; justify-content: center; }
+      .question-box { padding: 1rem 1.1rem; }
+      .topbar { left: 0.8rem; top: 0.8rem; right: 0.8rem; }
+      .hamburger { width: 2.5rem; height: 2.5rem; }
+      .home-actions .btn-main,
+      .home-actions .import-label { flex: 1 1 100%; }
+      .current-student-pill { max-width: 130px; }
+      .topbar-back-btn { font-size: 0.8rem; padding: 0.6rem 0.9rem; }
+      .class-bar { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== SIDEBAR / HAMBURGER MENU ========== -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div style="display:flex; flex-direction:column; gap:0.3rem;">
+        <h2>Scholars</h2>
+        <span class="class-tag" id="sidebarClassTag">Class 6th B</span>
+      </div>
+      <div style="display:flex; gap:0.4rem; align-items:center;">
+        <button class="btn-small" style="background:#1e4765; color:white; padding:0.3rem 0.7rem;" onclick="addStudentPrompt()">+ Add</button>
+        <button class="close-sidebar" id="closeSidebar" title="Close menu">✕</button>
+      </div>
+    </div>
+    <div class="sidebar-note" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>List of scholars & progress</span>
+      <button class="btn-small" style="background:#1e4765; color:white; padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="openImportScholarsModal()">📂 Import</button>
+    </div>
+    <ul class="student-list" id="studentList">
+      <!-- student buttons with progress bars injected by JS -->
+    </ul>
+  </aside>
+
+  <!-- ========== TOP BAR ========== -->
+  <div class="topbar">
+    <button class="hamburger" id="hamburgerBtn" title="Open student list">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="current-student-pill" id="currentStudentPill">Home</div>
+    <button class="topbar-back-btn hidden" id="topbarBackBtn" title="Back to home">
+      ← Back
+    </button>
+  </div>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <div class="main-wrap">
+    <div style="width: 100%; max-width: 1000px;">
+
+      <!-- ========== HOME PAGE ========== -->
+      <div class="card home-card" id="homePage">
+        <div class="home-title">Divisibility Quiz</div>
+        <div class="home-subtitle">Successive Division Practice (21 Rules) & Multi-Class Manager</div>
+
+        <!-- CLASS MANAGEMENT BAR -->
+        <div class="class-bar">
+          <div style="flex:2; min-width:200px;" class="modal-field">
+            <label>Active Class</label>
+            <select id="activeClassSelector" onchange="changeActiveClass(this.value)" style="font-weight:700; color:#10334e;"></select>
+          </div>
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+            <button class="btn-small" style="background:#1e4765; color:white;" onclick="addClassPrompt()">+ Add Class</button>
+            <button class="btn-small" style="background:#6d4fa5; color:white;" onclick="editClassPrompt()">✏️ Edit Class</button>
+            <button class="btn-small" style="background:#a13b3b; color:white;" onclick="deleteClassPrompt()">🗑️ Delete Class</button>
+          </div>
+        </div>
+
+        <div class="home-actions">
+          <button class="btn-main export" id="exportAllBtn">
+            💾 Export all data
+          </button>
+          <label class="import-label" for="importAllInput">
+            📂 Import all data
+            <input type="file" id="importAllInput" accept=".json,application/json">
+          </label>
+          <button class="import-label" style="background:#3b5f7b; border-color:#5c83a5;" onclick="openImportScholarsModal()">
+            📄 Import Scholars (Paste / .txt)
+          </button>
+        </div>
+
+        <button class="open-students-card" id="openStudentsCard">
+          <span style="font-size:1.6rem;">🧑‍🎓</span>
+          <span>
+            Open student list
+            <span style="display:block; font-size:0.8rem; color:#5a7a94; font-weight:500;" id="openStudentsCardSub">Browse scholars in active class</span>
+          </span>
+        </button>
+
+        <!-- ALL 21 RULES GENERATION REPOSITORY ON HOME PAGE -->
+        <div class="gdrive-panel" style="margin-top: 1.5rem; background: #faf5ff; border-color: #e9d5ff;">
+          <div class="gdrive-head">
+            <h4 style="color: #6b21a8;">📐 All Possible Numbers Under Every Rule (1 - 21)</h4>
+            <span class="gdrive-badge" style="background:#f3e8ff; color:#7e22ce;">21 Rules Explorer</span>
+          </div>
+          <p class="gdrive-desc">
+            Explore all generated numbers for all 21 successive division rules that reduce strictly to a <strong>final quotient of 1</strong>.
+          </p>
+          <div id="rulesRepoContainer" style="display:flex; flex-direction:column; gap: 0.8rem; max-height: 500px; overflow-y: auto; padding-right: 0.3rem;"></div>
+        </div>
+
+        <!-- GOOGLE DRIVE AUTO-SYNC PANEL -->
+        <div class="gdrive-panel">
+          <div class="gdrive-head">
+            <h4>☁️ Google Drive Auto-Sync</h4>
+            <span id="gdriveStatusBadge" class="gdrive-badge">Not Connected</span>
+          </div>
+          <p class="gdrive-desc">
+            Connect your Google Drive to automatically sync and store a single cloud backup (<code>divisibility_quiz_backup.json</code>) whenever any change or action occurs.
+          </p>
+          <div class="gdrive-actions">
+            <button id="gdriveConnectBtn" class="btn-main btn-sm" onclick="connectGoogleDrive()">🔑 Connect Google Drive</button>
+            <button id="gdriveRestoreBtn" class="btn-main secondary btn-sm hidden" onclick="restoreFromGoogleDrive()">📥 Restore from Drive</button>
+            <button id="gdriveDisconnectBtn" class="btn-small hidden" style="background:#e2e8f0; color:#334155;" onclick="disconnectGoogleDrive()">Disconnect</button>
+          </div>
+          <div id="gdriveSyncInfo" class="gdrive-info hidden"></div>
+        </div>
+
+        <div style="font-size:0.85rem; color:#3b5f7b; margin-top:1.6rem; text-align:center; background:#f4f9fd; padding:0.6rem 1rem; border-radius:40px; border:1px dashed #9bb7d0;">
+          Export/import includes <strong>all classes & scholars</strong> with their question sets, reveal status, progress, and perfect marks.
+        </div>
+      </div>
+
+      <!-- ========== STUDENT PAGE ========== -->
+      <div class="card student-page hidden" id="studentPage">
+        <div class="question-box">
+          <div class="q-text">
+            Perform successive division on the following numbers (ending with final quotient 1):
+          </div>
+          <div class="student-tag" id="questionStudentTag">Scholar</div>
+          <span class="perfect-tag hidden" id="questionPerfectTag">⭐ Perfect</span>
+        </div>
+
+        <!-- ALL 21 QUESTIONS GENERATED FOR THIS STUDENT -->
+        <div class="questions-list" id="questionsList">
+          <!-- 21 question cards injected by JS -->
+        </div>
+
+        <!-- COMPLETED QUESTIONS CONTAINER -->
+        <div id="completedQuestionsWrapper" class="hidden" style="margin-top: 2rem; border-top: 2px dashed #cbd5e1; padding-top: 1.5rem;">
+          <h3 style="font-size: 1.1rem; color: #16a34a; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>✓ Completed Questions</span>
+          </h3>
+          <div class="questions-list" id="completedQuestionsList"></div>
+        </div>
+
+        <div class="main-actions">
+          <button class="btn-main" id="regenerateBtn">
+            🎲 Regenerate All 21 Numbers
+          </button>
+          <button class="btn-main secondary" id="showAllBtn">
+            👁️ Show / Hide All Answers
+          </button>
+          <button class="btn-main perfect-btn" id="markPerfectBtn">
+            ⭐ Mark as perfect
+          </button>
+        </div>
+
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:1.2rem; justify-content:center;">
+          <button class="btn-small" style="background:#1e4765; color:white;" onclick="editStudentPrompt()">✏️ Edit Scholar Name</button>
+          <button class="btn-small" style="background:#b8863a; color:white;" onclick="moveStudentPrompt()">⇄ Move Class</button>
+          <button class="btn-small" style="background:#a13b3b; color:white;" onclick="deleteStudentPrompt()">🗑️ Delete Scholar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========== CLASS MODAL ========== -->
+  <div class="modal-bg" id="classModal">
+    <div class="modal">
+      <h3 id="classModalTitle">Add New Class</h3>
+      <p>Configure class name and optional section.</p>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label>Class Name *</label>
+          <input type="text" id="classNameInput" placeholder="e.g. 6th or Grade 6">
+        </div>
+        <div class="modal-field">
+          <label>Section (Optional)</label>
+          <input type="text" id="classSectionInput" placeholder="e.g. B">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeModal('classModal')">Cancel</button>
+        <button class="btn-main btn-sm" onclick="saveClass()">Save Class</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== STUDENT MODAL ========== -->
+  <div class="modal-bg" id="studentModal">
+    <div class="modal">
+      <h3 id="studentModalTitle">Add Scholar</h3>
+      <p>Enter scholar's name to add them to the active class.</p>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label>Scholar Name *</label>
+          <input type="text" id="studentNameInput" placeholder="e.g. Aakifa">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeModal('studentModal')">Cancel</button>
+        <button class="btn-main btn-sm" onclick="saveStudent()">Save Scholar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MOVE STUDENT MODAL ========== -->
+  <div class="modal-bg" id="moveStudentModal">
+    <div class="modal">
+      <h3>⇄ Move Scholar to Class</h3>
+      <p id="moveStudentSub">Transfer scholar to another class while preserving question sets and progress.</p>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label>Target Class *</label>
+          <select id="targetClassSelect"></select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeModal('moveStudentModal')">Cancel</button>
+        <button class="btn-main btn-sm" onclick="confirmMoveStudent()">Move Scholar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== IMPORT SCHOLARS MODAL (PASTE OR TXT FILE) ========== -->
+  <div class="modal-bg" id="importScholarsModal">
+    <div class="modal" style="max-width: 550px;">
+      <h3>📄 Import Scholars</h3>
+      <p>Paste scholar names (one per line) or upload a <code>.txt</code> file to add them to the active class.</p>
+      
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#3b5f7b; display:block; margin-bottom:0.3rem;">Option 1: Paste Names List</label>
+        <textarea id="pasteScholarsTextarea" rows="6" placeholder="Paste names here, one per line&#10;e.g.&#10;1. Aakifa&#10;2. Aaliya&#10;Afsheen" style="width:100%; padding:0.7rem; border:1px solid #c8dbe9; border-radius:10px; font-family:inherit; font-size:0.95rem; resize:vertical;"></textarea>
+      </div>
+
+      <div style="margin-bottom: 1rem; border-top: 1px dashed #cbd5e1; padding-top: 0.8rem;">
+        <label style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#3b5f7b; display:block; margin-bottom:0.3rem;">Option 2: Upload .txt File</label>
+        <input type="file" id="scholarsFileInput" accept=".txt" style="font-size:0.9rem; color:#1e4765;">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeModal('importScholarsModal')">Cancel</button>
+        <button class="btn-main btn-sm" onclick="processScholarImport()">Process & Import Scholars</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* ============================================================
+       GOOGLE DRIVE & INTERNET INTEGRATION CONSTANTS & GUARDS
+       ============================================================ */
+    const GOOGLE_CLIENT_ID = '649212085073-hc5ihl2poi8h4l6q6r854352jk4l2oip.apps.googleusercontent.com';
+    const GDRIVE_FILENAME = 'divisibility_quiz_backup.json';
+    const GDRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+    let offlineWarningShown = false;
+    let driveWarningShown = false;
+    let gdriveAccessToken = null;
+    let gdriveFileId = null;
+    let tokenClient = null;
+    let autoSyncTimeout = null;
+
+    function checkInternetStatus() {
+      if (!navigator.onLine) {
+        if (!offlineWarningShown) {
+          alert("⚠️ Internet Connection Warning:\n\nYour device is currently offline. Any changes made in the quiz will save locally in your browser but will NOT sync to Google Drive until your internet connection is restored.");
+          showToast("⚠️ Offline: Changes won't sync to Drive", true);
+          offlineWarningShown = true;
+        }
+        return false;
+      } else {
+        if (offlineWarningShown) {
+          showToast("⚡ Internet restored!", false, true);
+        }
+        offlineWarningShown = false;
+        return true;
+      }
+    }
+
+    window.addEventListener('online', () => checkInternetStatus());
+    window.addEventListener('offline', () => checkInternetStatus());
+
+    function warnIfDriveNotConnected() {
+      if (!gdriveAccessToken && !driveWarningShown) {
+        alert("⚠️ Google Drive Warning:\n\nGoogle Drive is not connected. Your quiz progress is saved locally, but connecting Google Drive is recommended to keep every change backed up to the cloud automatically.");
+        showToast("⚠️ Google Drive Not Connected", true);
+        driveWarningShown = true;
+      }
+    }
+
+    const DEFAULT_STUDENTS = [
+      'Aakifa', 'Aaliya', 'Afsheen', 'Aksha', 'Alsiya', 'Asra', 'Daniya',
+      'Humaira I', 'Humaira II', 'Iqra', 'Kahkasha', 'Koshar', 'Layba',
+      'Muskan', 'Namra', 'Roshin', 'Sana', 'Shifa', 'Zikra', 'Zoya'
+    ];
+
+    const RULE_DEFINITIONS = [
+      { id: 1, digits: 2, factors: [2] },
+      { id: 2, digits: 3, factors: [2] },
+      { id: 3, digits: 4, factors: [2] },
+      { id: 4, digits: 2, factors: [3] },
+      { id: 5, digits: 3, factors: [3] },
+      { id: 6, digits: 4, factors: [3] },
+      { id: 7, digits: 2, factors: [5] },
+      { id: 8, digits: 3, factors: [5] },
+      { id: 9, digits: 4, factors: [5] },
+      { id: 10, digits: 2, factors: [2, 3] },
+      { id: 11, digits: 3, factors: [2, 3] },
+      { id: 12, digits: 4, factors: [2, 3] },
+      { id: 13, digits: 2, factors: [2, 5] },
+      { id: 14, digits: 3, factors: [2, 5] },
+      { id: 15, digits: 4, factors: [2, 5] },
+      { id: 16, digits: 2, factors: [3, 5] },
+      { id: 17, digits: 3, factors: [3, 5] },
+      { id: 18, digits: 4, factors: [3, 5] },
+      { id: 19, digits: 2, factors: [2, 3, 5] },
+      { id: 20, digits: 3, factors: [2, 3, 5] },
+      { id: 21, digits: 4, factors: [2, 3, 5] }
+    ];
+
+    function getMinMaxForDigits(digits) {
+      if (digits === 2) return { min: 10, max: 99 };
+      if (digits === 3) return { min: 100, max: 999 };
+      return { min: 1000, max: 9999 };
+    }
+
+    function generateNumberForRule(rule) {
+      const { min, max } = getMinMaxForDigits(rule.digits);
+      const candidates = [];
+      for (let n = min; n <= max; n++) {
+        let temp = n;
+        let valid = true;
+        let factorIdx = 0;
+        let stepsLog = [];
+
+        while (temp > 1) {
+          const f = rule.factors[factorIdx % rule.factors.length];
+          if (temp % f !== 0) {
+            valid = false;
+            break;
+          }
+          const nextTemp = temp / f;
+          stepsLog.push({ current: temp, divisor: f, next: nextTemp });
+          temp = nextTemp;
+          factorIdx++;
+        }
+
+        if (valid && temp === 1) {
+          candidates.push({ number: n, steps: stepsLog });
+        }
+      }
+
+      if (candidates.length === 0) {
+        return { number: min * rule.factors[0], steps: [] };
+      }
+      const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+      return { number: chosen.number, steps: chosen.steps, revealed: false, done: false };
+    }
+
+    function generateFreshQuestionSet() {
+      return RULE_DEFINITIONS.map((rule, idx) => {
+        const gen = generateNumberForRule(rule);
+        return {
+          ruleId: rule.id,
+          title: `Rule ${rule.id} (${rule.digits} Digits)`,
+          desc: `A ${rule.digits} digit number successively divisible by ${rule.factors.join(', ')} only.`,
+          factors: rule.factors,
+          number: gen.number,
+          steps: gen.steps,
+          revealed: false,
+          done: false
+        };
+      });
+    }
+
+    function uid(prefix) { return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+    const APP_STORAGE_KEY = 'divisibility_quiz_multi_v5';
+    const SESSION_KEY = 'divisibility_session_v5';
+
+    window.db = {
+      classes: [],
+      activeClassId: null
+    };
+
+    let currentStudentId = null;
+    let currentView = 'home';
+    let sidebarOpen = false;
+
+    function getActiveClass() {
+      return window.db.classes.find(c => c.id === window.db.activeClassId) || null;
+    }
+
+    function getStudentClass(studentId) {
+      for (const cls of window.db.classes) {
+        if (cls.students.some(s => s.id === studentId)) return cls;
+      }
+      return null;
+    }
+
+    function getStudent(studentId) {
+      for (const cls of window.db.classes) {
+        const st = cls.students.find(s => s.id === studentId);
+        if (st) return st;
+      }
+      return null;
+    }
+
+    window.openModal = function(id) { document.getElementById(id).classList.add('open'); };
+    window.closeModal = function(id) { document.getElementById(id).classList.remove('open'); };
+
+    let toastTimeout = null;
+    window.showToast = function(message, isError, isSuccess) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.toggle('error', !!isError);
+      toast.classList.toggle('success', !!isSuccess);
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    };
+
+    window.saveDB = function() {
+      try {
+        localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(window.db));
+      } catch (e) {
+        showToast('⚠️ Could not save to browser storage', true);
+      }
+      triggerAutoDriveSync();
+    };
+
+    window.loadDB = function() {
+      try {
+        const raw = localStorage.getItem(APP_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.classes)) {
+            window.db = parsed;
+            if (!window.db.activeClassId && window.db.classes.length > 0) {
+              window.db.activeClassId = window.db.classes[0].id;
+            }
+            return;
+          }
+        }
+      } catch (e) { /* ignore */ }
+      resetToDefaults();
+    };
+
+    function resetToDefaults() {
+      const defaultClass = {
+        id: uid('cls'),
+        name: '6th',
+        section: 'B',
+        students: DEFAULT_STUDENTS.map(name => ({
+          id: uid('st'),
+          name: name,
+          perfect: false,
+          questions: generateFreshQuestionSet()
+        }))
+      };
+      window.db = {
+        classes: [defaultClass],
+        activeClassId: defaultClass.id
+      };
+      saveDB();
+    }
+
+    function saveSession() {
+      try {
+        const session = {
+          view: currentView,
+          studentId: currentStudentId,
+          sidebarOpen: sidebarOpen
+        };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      } catch (e) { /* ignore */ }
+    }
+
+    function loadSession() {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (raw) {
+          const session = JSON.parse(raw);
+          if (session) {
+            if (session.studentId && getStudent(session.studentId)) {
+              currentStudentId = session.studentId;
+            }
+            if (session.view === 'student' || session.view === 'home') {
+              currentView = session.view;
+            }
+            sidebarOpen = !!session.sidebarOpen;
+          }
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    window.changeActiveClass = function(clsId) {
+      window.db.activeClassId = clsId;
+      saveDB();
+      renderAll();
+      showToast('Switched active class', false, true);
+    };
+
+    let editingClassId = null;
+    window.addClassPrompt = function() {
+      editingClassId = null;
+      document.getElementById('classModalTitle').textContent = 'Add New Class';
+      document.getElementById('classNameInput').value = '';
+      document.getElementById('classSectionInput').value = '';
+      openModal('classModal');
+    };
+
+    window.editClassPrompt = function() {
+      const cls = getActiveClass();
+      if (!cls) return;
+      editingClassId = cls.id;
+      document.getElementById('classModalTitle').textContent = 'Edit Class';
+      document.getElementById('classNameInput').value = cls.name;
+      document.getElementById('classSectionInput').value = cls.section || '';
+      openModal('classModal');
+    };
+
+    window.saveClass = function() {
+      warnIfDriveNotConnected();
+      const name = document.getElementById('classNameInput').value.trim();
+      const section = document.getElementById('classSectionInput').value.trim();
+      if (!name) { showToast('Please enter class name.', true); return; }
+
+      if (editingClassId) {
+        const cls = window.db.classes.find(c => c.id === editingClassId);
+        if (cls) {
+          cls.name = name;
+          cls.section = section;
+        }
+        showToast('Class updated.', false, true);
+      } else {
+        const newClass = {
+          id: uid('cls'),
+          name: name,
+          section: section,
+          students: []
+        };
+        window.db.classes.push(newClass);
+        window.db.activeClassId = newClass.id;
+        showToast('Class created.', false, true);
+      }
+
+      saveDB();
+      closeModal('classModal');
+      renderAll();
+    };
+
+    window.deleteClassPrompt = function() {
+      warnIfDriveNotConnected();
+      const cls = getActiveClass();
+      if (!cls) return;
+      if (window.db.classes.length <= 1) {
+        showToast('Cannot delete the only class.', true);
+        return;
+      }
+      if (!confirm(`Are you sure you want to delete Class ${cls.name}?`)) return;
+      window.db.classes = window.db.classes.filter(c => c.id !== cls.id);
+      window.db.activeClassId = window.db.classes[0].id;
+      saveDB();
+      renderAll();
+      showToast('Class deleted.');
+    };
+
+    let editingStudentId = null;
+    window.addStudentPrompt = function() {
+      const cls = getActiveClass();
+      if (!cls) { showToast('Select or create a class first.', true); return; }
+      editingStudentId = null;
+      document.getElementById('studentModalTitle').textContent = `Add Scholar to Class ${cls.name}`;
+      document.getElementById('studentNameInput').value = '';
+      openModal('studentModal');
+    };
+
+    window.editStudentPrompt = function() {
+      if (!currentStudentId) return;
+      const st = getStudent(currentStudentId);
+      if (!st) return;
+      editingStudentId = st.id;
+      document.getElementById('studentModalTitle').textContent = 'Edit Scholar Name';
+      document.getElementById('studentNameInput').value = st.name;
+      openModal('studentModal');
+    };
+
+    window.saveStudent = function() {
+      warnIfDriveNotConnected();
+      const name = document.getElementById('studentNameInput').value.trim();
+      if (!name) { showToast('Please enter scholar name.', true); return; }
+      const cls = getActiveClass();
+
+      if (editingStudentId) {
+        const st = getStudent(editingStudentId);
+        if (st) st.name = name;
+        showToast('Scholar updated.', false, true);
+      } else {
+        const newSt = {
+          id: uid('st'),
+          name: name,
+          perfect: false,
+          questions: generateFreshQuestionSet()
+        };
+        cls.students.push(newSt);
+        currentStudentId = newSt.id;
+        showToast('Scholar added.', false, true);
+      }
+
+      saveDB();
+      closeModal('studentModal');
+      renderAll();
+      if (currentStudentId) renderStudentPage();
+    };
+
+    window.deleteStudentPrompt = function() {
+      warnIfDriveNotConnected();
+      if (!currentStudentId) return;
+      const st = getStudent(currentStudentId);
+      const cls = getStudentClass(currentStudentId);
+      if (!st || !cls) return;
+      if (!confirm(`Are you sure you want to delete ${st.name}?`)) return;
+
+      cls.students = cls.students.filter(s => s.id !== st.id);
+      currentStudentId = null;
+      saveDB();
+      showView('home');
+      renderAll();
+      showToast('Scholar deleted.');
+    };
+
+    window.moveStudentPrompt = function() {
+      warnIfDriveNotConnected();
+      if (!currentStudentId) return;
+      const st = getStudent(currentStudentId);
+      const currentCls = getStudentClass(currentStudentId);
+      if (!st || !currentCls) return;
+
+      const targetClasses = window.db.classes.filter(c => c.id !== currentCls.id);
+      if (targetClasses.length === 0) {
+        showToast('Create another class first to move scholars.', true);
+        return;
+      }
+
+      document.getElementById('moveStudentSub').textContent = `Transfer ${st.name} to another class.`;
+      const sel = document.getElementById('targetClassSelect');
+      sel.innerHTML = targetClasses.map(c => `<option value="${c.id}">Class ${c.name}${c.section ? ' - ' + c.section : ''}</option>`).join('');
+      openModal('moveStudentModal');
+    };
+
+    window.confirmMoveStudent = function() {
+      warnIfDriveNotConnected();
+      if (!currentStudentId) return;
+      const targetClassId = document.getElementById('targetClassSelect').value;
+      const targetCls = window.db.classes.find(c => c.id === targetClassId);
+      const currentCls = getStudentClass(currentStudentId);
+      const st = getStudent(currentStudentId);
+
+      if (!targetCls || !currentCls || !st) return;
+
+      currentCls.students = currentCls.students.filter(s => s.id !== st.id);
+      targetCls.students.push(st);
+      window.db.activeClassId = targetCls.id;
+
+      saveDB();
+      closeModal('moveStudentModal');
+      renderAll();
+      renderStudentPage();
+      showToast(`${st.name} moved successfully.`, false, true);
+    };
+
+    function toggleRevealQuestion(qIdx) {
+      warnIfDriveNotConnected();
+      const st = getStudent(currentStudentId);
+      if (!st) return;
+      st.questions[qIdx].revealed = !st.questions[qIdx].revealed;
+      saveDB();
+      renderStudentPage();
+      renderStudentList();
+    }
+
+    function toggleDoneQuestion(qIdx) {
+      warnIfDriveNotConnected();
+      const st = getStudent(currentStudentId);
+      if (!st) return;
+      st.questions[qIdx].done = !st.questions[qIdx].done;
+      saveDB();
+      renderStudentPage();
+      renderStudentList();
+    }
+
+    function regenerateSingleQuestion(qIdx) {
+      warnIfDriveNotConnected();
+      const st = getStudent(currentStudentId);
+      if (!st) return;
+      const rule = RULE_DEFINITIONS[qIdx];
+      const gen = generateNumberForRule(rule);
+      st.questions[qIdx] = {
+        ruleId: rule.id,
+        title: `Rule ${rule.id} (${rule.digits} Digits)`,
+        desc: `A ${rule.digits} digit number successively divisible by ${rule.factors.join(', ')} only.`,
+        factors: rule.factors,
+        number: gen.number,
+        steps: gen.steps,
+        revealed: false,
+        done: false
+      };
+      saveDB();
+      renderStudentPage();
+      renderStudentList();
+      showToast(`🎲 Regenerated Rule ${rule.id} question`);
+    }
+
+    function buildQuestionCard(q, qIdx) {
+      const card = document.createElement('div');
+      card.className = 'q-card' + (q.done ? ' completed' : '');
+
+      const header = document.createElement('div');
+      header.className = 'q-card-header';
+
+      const badge = document.createElement('span');
+      badge.className = 'q-number-badge';
+      badge.textContent = `Rule ${q.ruleId}`;
+      header.appendChild(badge);
+
+      const title = document.createElement('div');
+      title.className = 'q-title';
+      title.textContent = q.desc;
+      header.appendChild(title);
+      card.appendChild(header);
+
+      const numEl = document.createElement('div');
+      numEl.className = 'q-big-number';
+      numEl.textContent = q.number;
+      card.appendChild(numEl);
+
+      if (q.revealed && q.steps && q.steps.length > 0) {
+        const solBox = document.createElement('div');
+        solBox.className = 'solution-box';
+        let stepsHtml = '';
+        q.steps.forEach(s => {
+          stepsHtml += `<div class="step-line">${s.current} ÷ ${s.divisor} = ${s.next}</div>`;
+        });
+        stepsHtml += `<div class="step-final">✓ Final Remaining Quotient = 1</div>`;
+        solBox.innerHTML = stepsHtml;
+        card.appendChild(solBox);
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'q-card-actions';
+
+      const revealBtn = document.createElement('button');
+      revealBtn.className = 'btn-small btn-reveal' + (q.revealed ? ' revealed' : '');
+      revealBtn.innerHTML = q.revealed ? '🙈 Hide Answer' : '👁️ Show Answer';
+      revealBtn.addEventListener('click', () => toggleRevealQuestion(qIdx));
+      actions.appendChild(revealBtn);
+
+      const doneBtn = document.createElement('button');
+      doneBtn.className = 'btn-small btn-done' + (q.done ? ' is-done' : '');
+      doneBtn.innerHTML = q.done ? '✓ Completed' : '☑️ Mark Done';
+      doneBtn.addEventListener('click', () => toggleDoneQuestion(qIdx));
+      actions.appendChild(doneBtn);
+
+      const regenBtn = document.createElement('button');
+      regenBtn.className = 'btn-small btn-regen-item';
+      regenBtn.innerHTML = '🎲 Regenerate';
+      regenBtn.addEventListener('click', () => regenerateSingleQuestion(qIdx));
+      actions.appendChild(regenBtn);
+
+      card.appendChild(actions);
+      return card;
+    }
+
+    window.renderStudentPage = function() {
+      const st = getStudent(currentStudentId);
+      if (!st) return;
+
+      const activeList = document.getElementById('questionsList');
+      const completedList = document.getElementById('completedQuestionsList');
+      const completedWrapper = document.getElementById('completedQuestionsWrapper');
+
+      activeList.innerHTML = '';
+      completedList.innerHTML = '';
+
+      let completedCount = 0;
+      st.questions.forEach((q, idx) => {
+        const card = buildQuestionCard(q, idx);
+        if (q.done) {
+          completedList.appendChild(card);
+          completedCount++;
+        } else {
+          activeList.appendChild(card);
+        }
+      });
+
+      if (completedCount > 0) {
+        completedWrapper.classList.remove('hidden');
+      } else {
+        completedWrapper.classList.add('hidden');
+      }
+
+      document.getElementById('questionStudentTag').textContent = st.name;
+      document.getElementById('currentStudentPill').textContent = st.name;
+
+      const pill = document.getElementById('currentStudentPill');
+      if (st.perfect) pill.classList.add('perfect-pill');
+      else pill.classList.remove('perfect-pill');
+
+      const perfectTag = document.getElementById('questionPerfectTag');
+      if (st.perfect) perfectTag.classList.remove('hidden');
+      else perfectTag.classList.add('hidden');
+
+      const markBtn = document.getElementById('markPerfectBtn');
+      if (st.perfect) {
+        markBtn.innerHTML = '⭐ Unmark perfect';
+        markBtn.classList.add('is-perfect');
+      } else {
+        markBtn.innerHTML = '⭐ Mark as perfect';
+        markBtn.classList.remove('is-perfect');
+      }
+    };
+
+    window.renderStudentList = function() {
+      const ul = document.getElementById('studentList');
+      ul.innerHTML = '';
+      const cls = getActiveClass();
+
+      if (!cls || !cls.students.length) {
+        ul.innerHTML = '<li style="padding:1rem; color:#6a839a; font-size:0.88rem;">No scholars added yet. Click "+ Add".</li>';
+        return;
+      }
+
+      const nonPerfect = cls.students.filter(s => !s.perfect);
+      const perfect = cls.students.filter(s => s.perfect);
+
+      function makeLi(st, idx) {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.className = 'student-item' +
+          (st.id === currentStudentId && currentView === 'student' ? ' active' : '') +
+          (st.perfect ? ' perfect' : '');
+
+        const roll = document.createElement('span');
+        roll.className = 'roll-num';
+        roll.textContent = idx + 1;
+
+        const infoCol = document.createElement('div');
+        infoCol.className = 'student-info-col';
+
+        const nameSpan = document.createElement('div');
+        nameSpan.className = 'student-name-text';
+        nameSpan.textContent = st.name;
+        infoCol.appendChild(nameSpan);
+
+        const totalQ = st.questions ? st.questions.length : 21;
+        const doneQ = st.questions ? st.questions.filter(q => q.done).length : 0;
+        const pct = Math.round((doneQ / totalQ) * 100);
+
+        const progressWrap = document.createElement('div');
+        progressWrap.className = 'student-progress-wrapper';
+
+        const barBg = document.createElement('div');
+        barBg.className = 'student-progress-bar-bg';
+
+        const barFill = document.createElement('div');
+        barFill.className = 'student-progress-bar-fill';
+        barFill.style.width = pct + '%';
+        if (pct === 100) barFill.style.backgroundColor = '#16a34a';
+        else if (pct >= 50) barFill.style.backgroundColor = '#0284c7';
+        else if (pct > 0) barFill.style.backgroundColor = '#d97706';
+        else barFill.style.backgroundColor = '#cbd5e1';
+
+        barBg.appendChild(barFill);
+        progressWrap.appendChild(barBg);
+
+        const pctText = document.createElement('div');
+        pctText.className = 'student-progress-text';
+        pctText.textContent = pct + '%';
+        progressWrap.appendChild(pctText);
+
+        infoCol.appendChild(progressWrap);
+
+        btn.appendChild(roll);
+        btn.appendChild(infoCol);
+
+        if (st.perfect) {
+          const star = document.createElement('span');
+          star.className = 'perfect-star';
+          star.textContent = '⭐';
+          btn.appendChild(star);
+        }
+
+        btn.addEventListener('click', () => switchStudent(st.id));
+        li.appendChild(btn);
+        return li;
+      }
+
+      nonPerfect.forEach((st, idx) => ul.appendChild(makeLi(st, idx)));
+
+      if (perfect.length > 0) {
+        const divider = document.createElement('div');
+        divider.className = 'sidebar-divider';
+        ul.appendChild(divider);
+
+        const label = document.createElement('div');
+        label.className = 'perfect-section-label';
+        label.textContent = '⭐ Perfect';
+        ul.appendChild(label);
+
+        perfect.forEach((st, idx) => ul.appendChild(makeLi(st, nonPerfect.length + idx)));
+      }
+    };
+
+    function renderRulesRepo() {
+      const container = document.getElementById('rulesRepoContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      RULE_DEFINITIONS.forEach(rule => {
+        const { min, max } = getMinMaxForDigits(rule.digits);
+        const matches = [];
+        for (let n = min; n <= max; n++) {
+          let temp = n;
+          let valid = true;
+          let factorIdx = 0;
+          while (temp > 1) {
+            const f = rule.factors[factorIdx % rule.factors.length];
+            if (temp % f !== 0) {
+              valid = false;
+              break;
+            }
+            temp = temp / f;
+            factorIdx++;
+          }
+          if (valid && temp === 1) {
+            matches.push(n);
+          }
+        }
+
+        const item = document.createElement('div');
+        item.style.cssText = 'background: #ffffff; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid #e9d5ff; font-size: 0.88rem;';
+        
+        const titleLine = document.createElement('div');
+        titleLine.style.cssText = 'font-weight: 700; color: #6b21a8; margin-bottom: 0.2rem;';
+        titleLine.textContent = `RULE ${rule.id} (${rule.digits} Digits) - Successive Division by ${rule.factors.join(', ')} only:`;
+        item.appendChild(titleLine);
+
+        const numsLine = document.createElement('div');
+        numsLine.style.cssText = 'color: #334155; font-family: monospace; font-size: 0.9rem; word-break: break-all;';
+        numsLine.textContent = matches.length > 0 ? matches.join(', ') : 'None in range';
+        item.appendChild(numsLine);
+
+        container.appendChild(item);
+      });
+    }
+
+    function renderAll() {
+      const clsSel = document.getElementById('activeClassSelector');
+      clsSel.innerHTML = window.db.classes.map(c => `<option value="${c.id}">Class ${c.name}${c.section ? ' - ' + c.section : ''}</option>`).join('');
+
+      const cls = getActiveClass();
+      if (cls) {
+        clsSel.value = cls.id;
+        const labelText = `Class ${cls.name}${cls.section ? ' ' + cls.section : ''}`;
+        document.getElementById('sidebarClassTag').textContent = labelText;
+        document.getElementById('openStudentsCardSub').textContent = `Browse ${cls.students.length} scholars in ${labelText}`;
+      }
+
+      renderStudentList();
+      renderRulesRepo();
+    }
+
+    function switchStudent(studentId) {
+      currentStudentId = studentId;
+      currentView = 'student';
+      showView('student');
+      renderStudentPage();
+      renderStudentList();
+      closeSidebar();
+      saveSession();
+    }
+
+    window.showView = function(view, skipSave) {
+      currentView = view;
+      const homePage = document.getElementById('homePage');
+      const studentPage = document.getElementById('studentPage');
+      const pill = document.getElementById('currentStudentPill');
+      const backBtn = document.getElementById('topbarBackBtn');
+
+      if (view === 'home') {
+        homePage.classList.remove('hidden');
+        studentPage.classList.add('hidden');
+        pill.textContent = 'Home';
+        pill.classList.remove('perfect-pill');
+        backBtn.classList.add('hidden');
+        renderRulesRepo();
+      } else {
+        const st = getStudent(currentStudentId);
+        homePage.classList.add('hidden');
+        studentPage.classList.remove('hidden');
+        pill.textContent = st ? st.name : 'Scholar';
+        if (st && st.perfect) pill.classList.add('perfect-pill');
+        else pill.classList.remove('perfect-pill');
+        backBtn.classList.remove('hidden');
+      }
+      renderStudentList();
+      if (!skipSave) saveSession();
+    };
+
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+      sidebarOpen = true;
+      saveSession();
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+      sidebarOpen = false;
+      saveSession();
+    }
+
+    document.getElementById('hamburgerBtn').addEventListener('click', openSidebar);
+    document.getElementById('closeSidebar').addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+    document.getElementById('openStudentsCard').addEventListener('click', openSidebar);
+
+    document.getElementById('topbarBackBtn').addEventListener('click', () => {
+      showView('home');
+    });
+
+    function exportAllStudents() {
+      const payload = {
+        version: 5,
+        exportedAt: new Date().toISOString(),
+        data: window.db
+      };
+      const jsonStr = JSON.stringify(payload, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `divisibility-quiz-backup-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`✅ Exported full backup data`, false, true);
+    }
+
+    window.getExportDataPayload = function() {
+      return {
+        version: 5,
+        exportedAt: new Date().toISOString(),
+        data: window.db
+      };
+    };
+
+    window.importAllStudentsData = function(data) {
+      const incoming = data.data || data;
+      if (!incoming || !Array.isArray(incoming.classes)) {
+        throw new Error('Invalid format: missing "classes" structure.');
+      }
+
+      window.db = incoming;
+      if (!window.db.activeClassId && window.db.classes.length > 0) {
+        window.db.activeClassId = window.db.classes[0].id;
+      }
+
+      saveDB();
+      renderAll();
+      if (currentView === 'student' && currentStudentId && getStudent(currentStudentId)) {
+        renderStudentPage();
+      } else {
+        showView('home', true);
+      }
+      saveSession();
+    };
+
+    function importAllStudents(file) {
+      warnIfDriveNotConnected();
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          importAllStudentsData(data);
+          showToast('✅ Imported full app data successfully', false, true);
+        } catch (err) {
+          showToast('❌ Import failed: ' + err.message, true);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    window.openImportScholarsModal = function() {
+      const cls = getActiveClass();
+      if (!cls) {
+        showToast('Please select or create an active class first.', true);
+        return;
+      }
+      document.getElementById('pasteScholarsTextarea').value = '';
+      document.getElementById('scholarsFileInput').value = '';
+      openModal('importScholarsModal');
+    };
+
+    function parseAndAddScholarNames(rawText) {
+      const cls = getActiveClass();
+      if (!cls) {
+        showToast('Active class not found.', true);
+        return;
+      }
+
+      const lines = rawText.split(/\r?\n/)
+        .map(line => line.replace(/^[\d\s.\-\*\•]+/, '').trim())
+        .filter(line => line.length > 0);
+
+      if (lines.length === 0) {
+        showToast('No valid scholar names found to import.', true);
+        return;
+      }
+
+      let addedCount = 0;
+      lines.forEach(name => {
+        const newSt = {
+          id: uid('st'),
+          name: name,
+          perfect: false,
+          questions: generateFreshQuestionSet()
+        };
+        cls.students.push(newSt);
+        addedCount++;
+      });
+
+      saveDB();
+      renderAll();
+      closeModal('importScholarsModal');
+      showToast(`✅ Successfully imported ${addedCount} scholars!`, false, true);
+    }
+
+    window.processScholarImport = function() {
+      warnIfDriveNotConnected();
+      const textVal = document.getElementById('pasteScholarsTextarea').value.trim();
+      const fileInput = document.getElementById('scholarsFileInput');
+
+      if (textVal) {
+        parseAndAddScholarNames(textVal);
+        return;
+      }
+
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            parseAndAddScholarNames(e.target.result);
+          } catch (err) {
+            showToast('❌ Failed to parse .txt file: ' + err.message, true);
+          }
+        };
+        reader.readAsText(fileInput.files[0]);
+        return;
+      }
+
+      showToast('Please either paste names into the text box or select a .txt file.', true);
+    };
+
+    function toggleShowAllAnswers() {
+      warnIfDriveNotConnected();
+      const st = getStudent(currentStudentId);
+      if (!st) return;
+      const allRevealed = st.questions.every(q => q.revealed);
+      st.questions.forEach(q => { q.revealed = !allRevealed; });
+      saveDB();
+      renderStudentPage();
+      renderStudentList();
+      showToast(allRevealed ? `🙈 All answers hidden for ${st.name}` : `👁️ All answers shown for ${st.name}`);
+    }
+
+    function togglePerfect() {
+      warnIfDriveNotConnected();
+      const st = getStudent(currentStudentId);
+      if (!st) return;
+      if (st.perfect) {
+        st.perfect = false;
+        saveDB();
+        renderStudentPage();
+        renderStudentList();
+        showToast(`↩️ ${st.name} is no longer marked perfect`);
+      } else {
+        if (!confirm(`Are you sure ${st.name} is really PERFECT?\n\nThis will move them to the "Perfect" section.`)) return;
+        st.perfect = true;
+        saveDB();
+        renderStudentPage();
+        renderStudentList();
+        showToast(`⭐ ${st.name} marked as perfect!`, false, true);
+      }
+    }
+
+    /* ---------- INIT ---------- */
+    loadDB();
+    loadSession();
+
+    const cls = getActiveClass();
+    if (cls && cls.students.length > 0) {
+      if (!currentStudentId || !getStudent(currentStudentId)) {
+        currentStudentId = cls.students[0].id;
+      }
+    }
+
+    if (currentView === 'student' && currentStudentId && getStudent(currentStudentId)) {
+      showView('student', true);
+      renderStudentPage();
+    } else {
+      showView('home', true);
+    }
+
+    if (sidebarOpen) {
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+    }
+
+    renderAll();
+
+    document.getElementById('exportAllBtn').addEventListener('click', exportAllStudents);
+    document.getElementById('importAllInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) importAllStudents(file);
+      e.target.value = '';
+    });
+
+    document.getElementById('regenerateBtn').addEventListener('click', () => {
+      warnIfDriveNotConnected();
+      const st = getStudent(currentStudentId);
+      if (!st) return;
+      st.questions = generateFreshQuestionSet();
+      saveDB();
+      renderStudentPage();
+      renderStudentList();
+      showToast(`🎲 New 21 questions generated for ${st.name}`);
+    });
+
+    document.getElementById('showAllBtn').addEventListener('click', toggleShowAllAnswers);
+    document.getElementById('markPerfectBtn').addEventListener('click', togglePerfect);
+
+    window.addEventListener('beforeunload', saveSession);
+
+    /* ============================================================
+       GOOGLE DRIVE API AUTO-SYNC LOGIC
+       ============================================================ */
+    function updateGDriveUI(connected) {
+      const badge = document.getElementById('gdriveStatusBadge');
+      const connectBtn = document.getElementById('gdriveConnectBtn');
+      const restoreBtn = document.getElementById('gdriveRestoreBtn');
+      const disconnectBtn = document.getElementById('gdriveDisconnectBtn');
+      const syncInfo = document.getElementById('gdriveSyncInfo');
+
+      if (connected) {
+        if (badge) { badge.style.background = '#dcfce7'; badge.style.color = '#15803d'; badge.textContent = '🟢 Connected'; }
+        if (connectBtn) connectBtn.classList.add('hidden');
+        if (restoreBtn) restoreBtn.classList.remove('hidden');
+        if (disconnectBtn) disconnectBtn.classList.remove('hidden');
+        if (syncInfo) syncInfo.classList.remove('hidden');
+      } else {
+        if (badge) { badge.style.background = '#f1f5f9'; badge.style.color = '#64748b'; badge.textContent = 'Not Connected'; }
+        if (connectBtn) connectBtn.classList.remove('hidden');
+        if (restoreBtn) restoreBtn.classList.add('hidden');
+        if (disconnectBtn) disconnectBtn.classList.add('hidden');
+        if (syncInfo) syncInfo.classList.add('hidden');
+      }
+    }
+
+    function initGoogleDriveClient() {
+      if (typeof google === 'undefined' || !google.accounts) return;
+
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: GDRIVE_SCOPES,
+        prompt: '',
+        callback: async (response) => {
+          if (response.error) {
+            if (response.error === 'interaction_required') {
+              updateGDriveUI(false);
+              return;
+            }
+            showToast('Google Drive login failed.', true);
+            return;
+          }
+          gdriveAccessToken = response.access_token;
+          const expiresInMs = (response.expires_in || 3600) * 1000;
+          const expiryTimestamp = Date.now() + expiresInMs;
+
+          try {
+            localStorage.setItem('gdrive_quiz_token', gdriveAccessToken);
+            localStorage.setItem('gdrive_quiz_expiry', expiryTimestamp.toString());
+          } catch (_) {}
+
+          updateGDriveUI(true);
+          showToast('Google Drive Connected!', false, true);
+
+          scheduleTokenRefresh(expiresInMs - (5 * 60 * 1000));
+
+          const existingFile = await findGDriveBackupFile();
+          if (existingFile) {
+            await restoreFromGoogleDriveSilent();
+          } else {
+            await syncToGoogleDrive(true);
+          }
+        },
+      });
+    }
+
+    let tokenRefreshTimer = null;
+    function scheduleTokenRefresh(delayMs) {
+      clearTimeout(tokenRefreshTimer);
+      if (delayMs <= 0) delayMs = 1000;
+      tokenRefreshTimer = setTimeout(() => {
+        if (gdriveAccessToken && tokenClient) {
+          tokenClient.requestAccessToken({ prompt: '' });
+        }
+      }, delayMs);
+    }
+
+    function connectGoogleDrive() {
+      if (!tokenClient) initGoogleDriveClient();
+      if (!tokenClient) {
+        showToast('Google Drive library is loading. Please try again in a moment.', true);
+        return;
+      }
+      tokenClient.requestAccessToken({ prompt: '' });
+    }
+
+    function disconnectGoogleDrive() {
+      gdriveAccessToken = null;
+      gdriveFileId = null;
+      clearTimeout(tokenRefreshTimer);
+      try {
+        localStorage.removeItem('gdrive_quiz_token');
+        localStorage.removeItem('gdrive_quiz_expiry');
+      } catch (_) {}
+      updateGDriveUI(false);
+      showToast('Disconnected from Google Drive.');
+    }
+
+    async function findGDriveBackupFile() {
+      if (!gdriveAccessToken) return null;
+      try {
+        const q = encodeURIComponent(`name = '${GDRIVE_FILENAME}' and trashed = false`);
+        const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime)`, {
+          headers: { Authorization: `Bearer ${gdriveAccessToken}` }
+        });
+        if (!res.ok) {
+          if (res.status === 401) disconnectGoogleDrive();
+          return null;
+        }
+        const data = await res.json();
+        if (data.files && data.files.length > 0) {
+          gdriveFileId = data.files[0].id;
+          return data.files[0];
+        }
+      } catch (err) {
+        console.error('Error finding Google Drive file:', err);
+      }
+      gdriveFileId = null;
+      return null;
+    }
+
+    async function syncToGoogleDrive(manual = false) {
+      if (!gdriveAccessToken) return;
+
+      const payload = getExportDataPayload();
+      const fileContent = JSON.stringify(payload, null, 2);
+
+      try {
+        if (!gdriveFileId) {
+          const existing = await findGDriveBackupFile();
+          if (existing) gdriveFileId = existing.id;
+        }
+
+        if (gdriveFileId) {
+          const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${gdriveFileId}?uploadType=media`, {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${gdriveAccessToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: fileContent
+          });
+          if (!res.ok) {
+            if (res.status === 404) {
+              gdriveFileId = null;
+              return await syncToGoogleDrive(manual);
+            }
+            throw new Error('Failed to update Drive file');
+          }
+        } else {
+          const metadata = { name: GDRIVE_FILENAME, mimeType: 'application/json' };
+          const form = new FormData();
+          form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+          form.append('file', new Blob([fileContent], { type: 'application/json' }));
+
+          const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${gdriveAccessToken}` },
+            body: form
+          });
+          const data = await res.json();
+          if (data.id) gdriveFileId = data.id;
+        }
+
+        const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const infoEl = document.getElementById('gdriveSyncInfo');
+        if (infoEl) infoEl.textContent = `✓ Last synced to Google Drive at ${timeStr}`;
+        if (manual) showToast('Successfully backed up to Google Drive!', false, true);
+      } catch (err) {
+        console.error('Google Drive Sync error:', err);
+        if (manual) showToast('Failed to backup to Google Drive.', true);
+      }
+    }
+
+    function triggerAutoDriveSync() {
+      if (!gdriveAccessToken) return;
+      clearTimeout(autoSyncTimeout);
+      autoSyncTimeout = setTimeout(() => {
+        syncToGoogleDrive(false);
+      }, 1500);
+    }
+
+    async function restoreFromGoogleDriveSilent() {
+      if (!gdriveAccessToken) return;
+      try {
+        const file = await findGDriveBackupFile();
+        if (!file) return;
+
+        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {
+          headers: { Authorization: `Bearer ${gdriveAccessToken}` }
+        });
+        if (!res.ok) return;
+
+        const data = await res.json();
+        importAllStudentsData(data);
+        const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const infoEl = document.getElementById('gdriveSyncInfo');
+        if (infoEl) infoEl.textContent = `✓ Auto-restored backup from Google Drive at ${timeStr}`;
+        showToast('Restored backup from Google Drive!', false, true);
+      } catch (err) {
+        console.error('Silent Google Drive restore error:', err);
+      }
+    }
+
+    async function restoreFromGoogleDrive() {
+      if (!gdriveAccessToken) return;
+      try {
+        const file = await findGDriveBackupFile();
+        if (!file) {
+          showToast('No backup file found in Google Drive.', true);
+          return;
+        }
+
+        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {
+          headers: { Authorization: `Bearer ${gdriveAccessToken}` }
+        });
+        const data = await res.json();
+        importAllStudentsData(data);
+        showToast('Data restored from Google Drive!', false, true);
+      } catch (err) {
+        console.error('Google Drive restore error:', err);
+        showToast('Failed to restore from Google Drive.', true);
+      }
+    }
+
+    window.onload = () => {
+      checkInternetStatus();
+      initGoogleDriveClient();
+      try {
+        const savedToken = localStorage.getItem('gdrive_quiz_token');
+        const expiryStr = localStorage.getItem('gdrive_quiz_expiry');
+        const expiryTimestamp = expiryStr ? parseInt(expiryStr, 10) : 0;
+
+        if (savedToken && expiryTimestamp > Date.now() + 120000) {
+          gdriveAccessToken = savedToken;
+          updateGDriveUI(true);
+          scheduleTokenRefresh(expiryTimestamp - Date.now() - 300000);
+        } else {
+          warnIfDriveNotConnected();
+          if (savedToken) {
+            setTimeout(() => {
+              if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+            }, 1000);
+          }
+        }
+      } catch (_) {
+        warnIfDriveNotConnected();
+      }
+    };
+
+    window.addEventListener('beforeunload', e => {
+      if (!gdriveAccessToken) {
+        const warnMsg = "⚠️ Google Drive is not connected! Any recent changes will only remain in this browser.";
+        e.preventDefault();
+        e.returnValue = warnMsg;
+        return warnMsg;
+      }
+    });
+  </script>
+</body>
+</html>
