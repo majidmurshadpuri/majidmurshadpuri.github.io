@@ -674,7 +674,7 @@
             // ----- State -----
             let bookmarks = [];
             let searchQuery = '';
-            let editingId = null;      // id of the bookmark currently being edited (null = add mode)
+            let editingId = null;
 
             const STORAGE_KEY = 'bookmark_manager_data';
 
@@ -694,7 +694,6 @@
                 return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             }
 
-            // Highlight the matching part of a heading
             function highlightHeading(heading, query) {
                 const safe = escapeHtml(heading);
                 if (!query) return safe;
@@ -706,7 +705,6 @@
                 }
             }
 
-            // Normalise + validate a URL string. Returns the cleaned URL or null.
             function normalizeUrl(value) {
                 let url = String(value || '').trim();
                 if (!url) return null;
@@ -776,7 +774,6 @@
                 countBadge.textContent = String(bookmarks.length);
                 searchClear.hidden = searchQuery.length === 0;
 
-                // Result info line (only while searching)
                 if (query && bookmarks.length > 0) {
                     resultInfo.hidden = false;
                     resultInfo.textContent = filtered.length === 0
@@ -845,7 +842,6 @@
                     startEdit(bookmark);
 
                 } else if (action === 'delete') {
-                    // Confirmation before deleting
                     const label = bookmark.heading || 'Untitled';
                     const ok = confirm(
                         'Delete this bookmark?\n\n' +
@@ -854,7 +850,6 @@
                     );
                     if (!ok) return;
 
-                    // If we were editing this very bookmark, leave edit mode
                     if (editingId === id) {
                         resetForm();
                     }
@@ -885,7 +880,6 @@
 
                 openDrawer();
 
-                // Focus after the drawer slide-in transition
                 setTimeout(function() {
                     headingInput.focus();
                     headingInput.select();
@@ -910,7 +904,6 @@
 
                 saveToStorage();
 
-                // Reset search so the new bookmark is visible
                 if (searchQuery) {
                     searchQuery = '';
                     searchInput.value = '';
@@ -945,7 +938,6 @@
                 bookmarks[index].url = url;
                 saveToStorage();
 
-                // If the active search no longer matches, clear it so the item stays visible
                 if (searchQuery) {
                     const q = searchQuery.trim().toLowerCase();
                     const matches = heading.toLowerCase().indexOf(q) !== -1 ||
@@ -1093,7 +1085,6 @@
 
                             if (!heading || !url) { skipped++; return; }
 
-                            // Skip exact duplicates
                             const dup = bookmarks.some(function(b) {
                                 return b.url === url && b.heading === heading;
                             });
@@ -1119,7 +1110,7 @@
                     }
                 };
 
-                reader.onerror = function() {
+                                reader.onerror = function() {
                     showToast('Could not read that file');
                     importInput.value = '';
                 };
@@ -1143,7 +1134,6 @@
                 menuBtn.setAttribute('aria-expanded', 'false');
                 document.body.style.overflow = '';
 
-                // Closing while editing = cancel the edit
                 if (editingId) {
                     resetForm();
                 }
@@ -1214,6 +1204,107 @@
             }
 
             init();
+
+            /* ============================================================
+               DRIVE SYNC BRIDGE — state exposure to parent page
+               ============================================================
+               The bookmarks array IS the state. We wrap saveToStorage()
+               (already called by every mutation) to broadcast changes,
+               and expose getState/setState for the parent's GET/SET
+               handshake.
+               ============================================================ */
+            const MY_FILE = "bookmarks";
+
+            // --- getState ---
+            function getState() {
+                // Return a deep-cloned snapshot so the parent can't mutate ours
+                return {
+                    bookmarks: bookmarks.map(function (b) {
+                        return { id: b.id, heading: b.heading, url: b.url };
+                    })
+                };
+            }
+
+            // --- setState ---
+            function setState(state) {
+                if (!state) return;
+
+                if (Array.isArray(state.bookmarks)) {
+                    // Validate + normalise each entry, keeping ids when valid
+                    bookmarks = state.bookmarks
+                        .filter(function (b) { return b && typeof b === 'object' && b.url; })
+                        .map(function (b) {
+                            return {
+                                id: (typeof b.id === 'string' && b.id) ? b.id : makeId(),
+                                heading: String(b.heading || 'Untitled'),
+                                url: String(b.url)
+                            };
+                        });
+
+                    // Persist to localStorage so a page reload survives
+                    try {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+                    } catch (_) {}
+
+                    // If we were editing something that no longer exists, clear the form
+                    if (editingId && !bookmarks.some(function (b) { return b.id === editingId; })) {
+                        resetForm();
+                    }
+
+                    // Clear active search so the restored list is fully visible
+                    if (searchQuery) {
+                        searchQuery = '';
+                        searchInput.value = '';
+                    }
+
+                    render();
+                }
+            }
+
+            // --- Wrap saveToStorage to broadcast change ---
+            const _origSaveToStorage = saveToStorage;
+            saveToStorage = function () {
+                _origSaveToStorage();
+                _notifyChange();
+            };
+
+            // --- postMessage handshake ---
+            window.addEventListener('message', function (e) {
+                const msg = e.data;
+                if (!msg || !msg.type) return;
+
+                if (msg.type === 'GET_STATE') {
+                    e.source.postMessage(
+                        { type: 'STATE_REPLY', reqId: msg.reqId, file: MY_FILE, state: getState() },
+                        e.origin
+                    );
+                }
+                if (msg.type === 'SET_STATE') {
+                    try {
+                        setState(msg.state || {});
+                    } catch (err) {
+                        console.error('[bookmarks] setState failed:', err);
+                    }
+                    e.source.postMessage(
+                        { type: 'STATE_APPLIED', reqId: msg.reqId, file: MY_FILE },
+                        e.origin
+                    );
+                }
+            });
+
+            // --- Debounced STATE_CHANGED broadcast ---
+            let _changeTimer = null;
+            function _notifyChange() {
+                clearTimeout(_changeTimer);
+                _changeTimer = setTimeout(function () {
+                    if (window.parent === window) return;
+                    window.parent.postMessage(
+                        { type: 'STATE_CHANGED', file: MY_FILE, at: Date.now() },
+                        '*'
+                    );
+                }, 400);
+            }
+            window.__notifyStateChanged = _notifyChange;
 
         })();
     </script>
