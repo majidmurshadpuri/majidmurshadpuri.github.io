@@ -47,7 +47,6 @@
     padding:1px 6px;border-radius:5px;font-size:.85em;color:#c7d0ff;
   }
 
-  /* ---------- Mode toggle ---------- */
   .mode-toggle{
     position:relative;
     display:grid;
@@ -87,7 +86,6 @@
   }
   .mode-btn.active{color:#fff;}
 
-  /* ---------- Card ---------- */
   .card{
     background:linear-gradient(180deg,var(--panel),var(--panel-2));
     border:1px solid var(--border);
@@ -96,7 +94,6 @@
     box-shadow:0 18px 45px rgba(0,0,0,.45);
   }
 
-  /* Drop zone */
   #dropZone{
     border:2px dashed var(--border);
     border-radius:14px;
@@ -116,7 +113,6 @@
   #dropZone span{color:var(--muted);font-size:.85rem;}
   input[type=file]{display:none;}
 
-  /* File info */
   .file-info{
     display:none;
     align-items:center;
@@ -144,7 +140,6 @@
   }
   .file-info .size{color:var(--muted);margin-left:auto;flex:0 0 auto;font-size:.82rem;}
 
-  /* Controls */
   .controls{
     display:none;
     gap:14px;
@@ -201,7 +196,6 @@
   }
   .btn-ghost:hover{border-color:var(--accent);color:var(--text);}
 
-  /* Preview */
   .preview{
     display:none;
     margin-top:24px;
@@ -248,7 +242,6 @@
     <p id="subtitle"></p>
   </header>
 
-  <!-- Mode toggle -->
   <div class="mode-toggle" id="modeToggle" data-mode="txt2html">
     <span class="slider"></span>
     <button class="mode-btn active" data-mode="txt2html">TXT → HTML</button>
@@ -256,7 +249,6 @@
   </div>
 
   <div class="card">
-    <!-- Upload area -->
     <div id="dropZone">
       <span class="icon">📄</span>
       <strong id="dropTitle">Click to choose a .txt file</strong>
@@ -264,7 +256,6 @@
       <input type="file" id="fileInput" accept=".txt,text/plain">
     </div>
 
-    <!-- File info -->
     <div class="file-info" id="fileInfo">
       <span class="dot"></span>
       <span class="name" id="fileName"></span>
@@ -273,7 +264,6 @@
       <span class="size" id="fileSize"></span>
     </div>
 
-    <!-- Controls -->
     <div class="controls" id="controls">
       <div class="field">
         <label for="outName">Output file name</label>
@@ -286,7 +276,6 @@
       <button class="btn-ghost" id="resetBtn">Reset</button>
     </div>
 
-    <!-- Preview -->
     <div class="preview" id="preview">
       <div class="tabs">
         <button class="tab active" data-pane="codePane">Source code</button>
@@ -466,7 +455,7 @@
 
   fileInput.addEventListener('change', e => {
     readFile(e.target.files[0]);
-    fileInput.value = ''; // allow re-selecting the same file
+    fileInput.value = '';
   });
 
   ['dragenter', 'dragover'].forEach(evt =>
@@ -487,7 +476,6 @@
     readFile(e.dataTransfer.files[0]);
   });
 
-  // Prevent the browser from opening dropped files elsewhere on the page
   window.addEventListener('dragover', e => e.preventDefault());
   window.addEventListener('drop', e => e.preventDefault());
 
@@ -522,6 +510,156 @@
 
   /* ---------- Init ---------- */
   setMode('txt2html');
+
+  /* ============================================================
+     DRIVE SYNC BRIDGE — state exposure to parent page
+     ============================================================
+     The exposed "state" is what's persistent and meaningful:
+       • mode          — "txt2html" or "html2txt"
+       • outName       — the output filename the user typed
+       • lastFile      — { name, size, content } of the loaded file
+                         (or null if nothing was loaded)
+
+     Transient things (preview tab, drag-hover class) are NOT
+     persisted — they reset on restore, which is what you want.
+     ============================================================ */
+  const MY_FILE = "txthtml";
+
+  let _lastFile = null;   // shadow copy, since the tool doesn't keep this itself
+
+  // Wrap readFile so we capture the file for state
+  const _origReadFile = readFile;
+  readFile = function (file) {
+    if (!file || !isAccepted(file)) return _origReadFile(file);
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      _lastFile = { name: file.name, size: file.size, content: e.target.result };
+      _origReadFile(file);
+      _notifyChange();
+    };
+    reader.onerror = function () { _origReadFile(file); };
+    reader.readAsText(file, 'UTF-8');
+  };
+
+  // Replace the fileInput / drop handlers to use our wrapped readFile
+  fileInput.onchange = null;
+  fileInput.addEventListener('change', e => {
+    readFile(e.target.files[0]);
+    fileInput.value = '';
+  });
+  // (dropZone handlers already call readFile(...), and since we reassigned
+  //  the function variable they now use the wrapped version — no change needed.)
+
+  // Reset also clears the shadow
+  const _origReset = reset;
+  reset = function () {
+    _lastFile = null;
+    _origReset();
+  };
+  resetBtn.onclick = null;
+  resetBtn.addEventListener('click', reset);
+
+  // Mode switch should notify too
+  const _origSetMode = setMode;
+  setMode = function (m) {
+    _origSetMode(m);
+    _notifyChange();
+  };
+  modeBtns.forEach(btn => {
+    btn.onclick = null;
+    btn.addEventListener('click', () => setMode(btn.dataset.mode));
+  });
+
+  // outName typing
+  outName.addEventListener('input', _notifyChange);
+
+  /* --- The state accessor / applier --- */
+  function getState() {
+    return {
+      mode,
+      outName: outName.value,
+      lastFile: _lastFile
+    };
+  }
+
+  function setState(state) {
+    if (!state) return;
+
+    // Restore mode (without wiping the loaded file we're about to set)
+    if (state.mode && MODES[state.mode] && state.mode !== mode) {
+      _origSetMode(state.mode);
+    }
+
+    // Restore outName
+    if (typeof state.outName === 'string') {
+      outName.value = state.outName;
+    }
+
+    // Restore the last loaded file, if any
+    if (state.lastFile && state.lastFile.content != null) {
+      _lastFile = {
+        name: state.lastFile.name || 'restored',
+        size: state.lastFile.size || state.lastFile.content.length,
+        content: state.lastFile.content
+      };
+      // Simulate a file-load without actually reading from disk
+      const cfg = MODES[mode];
+      currentContent = _lastFile.content;
+
+      let base = sanitizeName(_lastFile.name) || cfg.defaultName;
+      fileNameEl.textContent = _lastFile.name;
+      fileOutEl.textContent  = base + cfg.outputExt;
+      fileSizeEl.textContent = humanSize(_lastFile.size);
+      fileInfo.classList.add('show');
+
+      if (!outName.value) outName.value = base;
+      controls.classList.add('show');
+      preview.classList.add('show');
+
+      codeOut.textContent = currentContent;
+      renderFrame.srcdoc   = currentContent;
+      switchTab('codePane');
+    }
+  }
+
+  /* --- postMessage bridge --- */
+  window.addEventListener('message', (e) => {
+    const msg = e.data;
+    if (!msg || !msg.type) return;
+
+    if (msg.type === 'GET_STATE') {
+      e.source.postMessage(
+        { type: 'STATE_REPLY', reqId: msg.reqId, file: MY_FILE, state: getState() },
+        e.origin
+      );
+    }
+    if (msg.type === 'SET_STATE') {
+      try { setState(msg.state || {}); } catch (err) { console.error('[txthtml] setState failed:', err); }
+      e.source.postMessage(
+        { type: 'STATE_APPLIED', reqId: msg.reqId, file: MY_FILE },
+        e.origin
+      );
+    }
+  });
+
+  /* --- Debounced STATE_CHANGED broadcast --- */
+  let _changeTimer = null;
+  function _notifyChange() {
+    clearTimeout(_changeTimer);
+    _changeTimer = setTimeout(() => {
+      if (window.parent === window) return;
+      window.parent.postMessage(
+        { type: 'STATE_CHANGED', file: MY_FILE, at: Date.now() },
+        '*'
+      );
+    }, 400);
+  }
+  window.__notifyStateChanged = _notifyChange;
+
+  // Also fire on generic user edits anywhere (covers extra input focus)
+  document.addEventListener('input',  _notifyChange, true);
+  document.addEventListener('change', _notifyChange, true);
+
 })();
 </script>
 </body>
