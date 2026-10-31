@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Bookmark Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f4f6fa;
+            color: #1e293b;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        /* ---------- Header ---------- */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            gap: 10px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .menu-btn {
+            border: none;
+            background: #ffffff;
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #334155;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: background 0.2s, transform 0.1s;
+            touch-action: manipulation;
+        }
+
+        .menu-btn:active {
+            transform: scale(0.94);
+            background: #f1f5f9;
+        }
+
+        /* ---------- Search ---------- */
+        .search-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 13px 44px 13px 42px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #ffffff;
+            color: #1e293b;
+            outline: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .search-wrap input::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-wrap input::-webkit-search-cancel-button {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            color: #94a3b8;
+            pointer-events: none;
+            display: flex;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 8px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .search-clear:active {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .result-info {
+            font-size: 13px;
+            color: #64748b;
+            margin: -6px 0 12px 4px;
+            font-weight: 500;
+        }
+
+        /* ---------- Bookmark List ---------- */
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #94a3b8;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .empty-state svg {
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        .bookmark-item {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.25s ease;
+            border: 1px solid #f1f5f9;
+            transition: border-color 0.2s;
+        }
+
+        .bookmark-item:active {
+            border-color: #e2e8f0;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bookmark-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .bookmark-heading {
+            font-weight: 600;
+            font-size: 16px;
+            color: #0f172a;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        .bookmark-heading mark {
+            background: #fef08a;
+            color: inherit;
+            border-radius: 3px;
+            padding: 0 1px;
+        }
+
+        .bookmark-url {
+            font-size: 13px;
+            color: #64748b;
+            word-break: break-all;
+            margin-top: 2px;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .bookmark-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .bookmark-actions button {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+
+        .bookmark-actions button:active {
+            transform: scale(0.94);
+        }
+
+        .go-btn {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .go-btn:active {
+            background: #bfdbfe;
+        }
+
+        .edit-btn {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .edit-btn:active {
+            background: #fde68a;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 8px 10px;
+        }
+
+        .delete-btn:active {
+            background: #fecaca;
+        }
+
+        /* ---------- Drawer (hamburger menu) ---------- */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 100;
+            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px);
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: min(370px, 88vw);
+            background: #ffffff;
+            z-index: 101;
+            transform: translateX(105%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: -10px 0 40px rgba(15, 23, 42, 0.18);
+            border-radius: 18px 0 0 18px;
+        }
+
+        .drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+
+        .drawer-head h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.3px;
+        }
+
+        .icon-btn {
+            border: none;
+            background: #f1f5f9;
+            color: #475569;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, transform 0.1s;
+            touch-action: manipulation;
+        }
+
+        .icon-btn:active {
+            background: #e2e8f0;
+            transform: scale(0.94);
+        }
+
+        .panel {
+            background: #f8fafc;
+            border: 1px solid #eef2f7;
+            border-radius: 14px;
+            padding: 14px;
+        }
+
+        .panel-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .panel-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        /* ---------- Form ---------- */
+        .add-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-row label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 0.3px;
+        }
+
+        .form-row input {
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #ffffff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            width: 100%;
+            color: #1e293b;
+        }
+
+        .form-row input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .form-row input::placeholder {
+            color: #94a3b8;
+        }
+
+        .add-btn {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 4px;
+            touch-action: manipulation;
+        }
+
+        .add-btn:active {
+            transform: scale(0.97);
+            background: #2563eb;
+        }
+
+        .add-btn.editing {
+            background: #16a34a;
+        }
+
+        .add-btn.editing:active {
+            background: #15803d;
+        }
+
+        /* ---------- Menu items ---------- */
+        .menu-item {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 14px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+            transition: filter 0.15s, transform 0.1s;
+            touch-action: manipulation;
+        }
+
+        .menu-item:active {
+            transform: scale(0.98);
+            filter: brightness(0.95);
+        }
+
+        .copy-btn {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+
+        .clear-btn {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .export-btn {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .import-btn {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        /* ---------- Toast ---------- */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+            z-index: 999;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .bookmark-item {
+                padding: 12px 14px;
+                flex-wrap: wrap;
+            }
+
+            .bookmark-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 6px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .bookmark-actions button {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            .bookmark-heading {
+                font-size: 14px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" role="main">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>🔖 Bookmarks</h1>
+                <span class="badge" id="countBadge">0</span>
+            </div>
+            <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="search-wrap">
+            <span class="search-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7" />
+                    <line x1="20" y1="20" x2="16.65" y2="16.65" />
+                </svg>
+            </span>
+            <input type="search" id="searchInput" placeholder="Search bookmarks…" aria-label="Search bookmarks" autocomplete="off" />
+            <button class="search-clear" id="searchClear" hidden aria-label="Clear search">✕</button>
+        </div>
+
+        <div class="result-info" id="resultInfo" hidden></div>
+
+        <!-- Bookmark List -->
+        <div class="list" id="bookmarkList" role="list">
+            <!-- items rendered here -->
+        </div>
+    </div>
+
+    <!-- Drawer overlay -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <!-- Drawer / Hamburger menu -->
+    <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Menu">
+        <div class="drawer-head">
+            <h2>Menu</h2>
+            <button class="icon-btn" id="closeDrawerBtn" aria-label="Close menu">✕</button>
+        </div>
+
+        <!-- Add / Edit bookmark -->
+        <form class="panel add-form" id="addForm" autocomplete="off">
+            <h3 class="panel-title" id="formTitle">Add Bookmark</h3>
+            <div class="form-row">
+                <label for="headingInput">Heading</label>
+                <input type="text" id="headingInput" placeholder="e.g. My favorite site" required />
+            </div>
+            <div class="form-row">
+                <label for="urlInput">URL</label>
+                <input type="url" id="urlInput" placeholder="https://example.com" required />
+            </div>
+            <button class="add-btn" type="submit" id="addBtn">➕ Add Bookmark</button>
+        </form>
+
+        <!-- Copy / Clear -->
+        <div class="panel panel-actions">
+            <h3 class="panel-title">Manage</h3>
+            <button class="menu-item copy-btn" id="copyBtn" type="button">📋 Copy All</button>
+            <button class="menu-item clear-btn" id="clearBtn" type="button">🗑️ Clear All</button>
+        </div>
+
+        <!-- Import / Export -->
+        <div class="panel panel-actions">
+            <h3 class="panel-title">Backup</h3>
+            <button class="menu-item export-btn" id="exportBtn" type="button">📤 Export JSON</button>
+            <button class="menu-item import-btn" id="importBtn" type="button">📥 Import JSON</button>
+            <input type="file" id="importInput" accept="application/json,.json" hidden />
+        </div>
+    </aside>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ----- DOM refs -----
+            const form = document.getElementById('addForm');
+            const formTitle = document.getElementById('formTitle');
+            const headingInput = document.getElementById('headingInput');
+            const urlInput = document.getElementById('urlInput');
+            const addBtn = document.getElementById('addBtn');
+            const listEl = document.getElementById('bookmarkList');
+            const countBadge = document.getElementById('countBadge');
+            const copyBtn = document.getElementById('copyBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const importBtn = document.getElementById('importBtn');
+            const importInput = document.getElementById('importInput');
+            const toast = document.getElementById('toast');
+
+            const menuBtn = document.getElementById('menuBtn');
+            const drawer = document.getElementById('drawer');
+            const drawerOverlay = document.getElementById('drawerOverlay');
+            const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+
+            const searchInput = document.getElementById('searchInput');
+            const searchClear = document.getElementById('searchClear');
+            const resultInfo = document.getElementById('resultInfo');
+
+            // ----- State -----
+            let bookmarks = [];
+            let searchQuery = '';
+            let editingId = null;      // id of the bookmark currently being edited (null = add mode)
+
+            const STORAGE_KEY = 'bookmark_manager_data';
+
+            // ----- Helpers -----
+            function makeId() {
+                return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function escapeRegExp(text) {
+                return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            // Highlight the matching part of a heading
+            function highlightHeading(heading, query) {
+                const safe = escapeHtml(heading);
+                if (!query) return safe;
+                try {
+                    const re = new RegExp('(' + escapeRegExp(escapeHtml(query)) + ')', 'gi');
+                    return safe.replace(re, '<mark>$1</mark>');
+                } catch (_) {
+                    return safe;
+                }
+            }
+
+            // Normalise + validate a URL string. Returns the cleaned URL or null.
+            function normalizeUrl(value) {
+                let url = String(value || '').trim();
+                if (!url) return null;
+                if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+                try {
+                    new URL(url);
+                    return url;
+                } catch (_) {
+                    return null;
+                }
+            }
+
+            // ----- Storage -----
+            function loadFromStorage() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) {
+                            bookmarks = parsed
+                                .filter(function(b) { return b && typeof b === 'object' && b.url; })
+                                .map(function(b) {
+                                    return {
+                                        id: (typeof b.id === 'string' && b.id) ? b.id : makeId(),
+                                        heading: String(b.heading || 'Untitled'),
+                                        url: String(b.url)
+                                    };
+                                });
+                            return;
+                        }
+                    }
+                } catch (_) { /* ignore */ }
+                bookmarks = [];
+            }
+
+            function saveToStorage() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+                } catch (_) { /* ignore */ }
+            }
+
+            // ----- Render -----
+            function getFiltered() {
+                const q = searchQuery.trim().toLowerCase();
+                if (!q) return bookmarks;
+                return bookmarks.filter(function(b) {
+                    return (b.heading || '').toLowerCase().indexOf(q) !== -1 ||
+                           (b.url || '').toLowerCase().indexOf(q) !== -1;
+                });
+            }
+
+            function emptyStateHtml(message) {
+                return '' +
+                    '<div class="empty-state" role="status">' +
+                        '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                            '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />' +
+                            '<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />' +
+                        '</svg>' +
+                        '<p>' + message + '</p>' +
+                    '</div>';
+            }
+
+            function render() {
+                const query = searchQuery.trim();
+                const filtered = getFiltered();
+
+                countBadge.textContent = String(bookmarks.length);
+                searchClear.hidden = searchQuery.length === 0;
+
+                // Result info line (only while searching)
+                if (query && bookmarks.length > 0) {
+                    resultInfo.hidden = false;
+                    resultInfo.textContent = filtered.length === 0
+                        ? 'No matches'
+                        : 'Showing ' + filtered.length + ' of ' + bookmarks.length + ' bookmark' + (bookmarks.length === 1 ? '' : 's');
+                } else {
+                    resultInfo.hidden = true;
+                    resultInfo.textContent = '';
+                }
+
+                if (bookmarks.length === 0) {
+                    listEl.innerHTML = emptyStateHtml('No bookmarks yet. Open the menu to add one!');
+                    return;
+                }
+
+                if (filtered.length === 0) {
+                    listEl.innerHTML = emptyStateHtml('No bookmarks match &ldquo;' + escapeHtml(query) + '&rdquo;');
+                    return;
+                }
+
+                let html = '';
+                for (let i = 0; i < filtered.length; i++) {
+                    const b = filtered[i];
+                    const heading = escapeHtml(b.heading) || 'Untitled';
+                    const headingHtml = highlightHeading(b.heading || 'Untitled', query);
+                    const url = escapeHtml(b.url);
+                    const id = escapeHtml(b.id);
+                    html += '' +
+                        '<div class="bookmark-item" role="listitem" data-id="' + id + '">' +
+                            '<div class="bookmark-info">' +
+                                '<div class="bookmark-heading">' + (heading ? headingHtml : 'Untitled') + '</div>' +
+                                '<span class="bookmark-url">' + url + '</span>' +
+                            '</div>' +
+                            '<div class="bookmark-actions">' +
+                                '<button class="go-btn" data-action="go" data-id="' + id + '">Go</button>' +
+                                '<button class="edit-btn" data-action="edit" data-id="' + id + '">✏️ Edit</button>' +
+                                '<button class="delete-btn" data-action="delete" data-id="' + id + '" aria-label="Delete bookmark">✕</button>' +
+                            '</div>' +
+                        '</div>';
+                }
+                listEl.innerHTML = html;
+            }
+
+            // ----- List click delegation -----
+            function handleListClick(e) {
+                const target = e.target.closest('button[data-action]');
+                if (!target) return;
+
+                const action = target.getAttribute('data-action');
+                const id = target.getAttribute('data-id');
+                const index = bookmarks.findIndex(function(b) { return b.id === id; });
+                if (index === -1) return;
+
+                const bookmark = bookmarks[index];
+
+                if (action === 'go') {
+                    if (bookmark && bookmark.url) {
+                        let url = bookmark.url.trim();
+                        if (!/^https?:\/\//i.test(url)) {
+                            url = 'https://' + url;
+                        }
+                        window.open(url, '_blank', 'noopener');
+                    }
+
+                } else if (action === 'edit') {
+                    startEdit(bookmark);
+
+                } else if (action === 'delete') {
+                    // Confirmation before deleting
+                    const label = bookmark.heading || 'Untitled';
+                    const ok = confirm(
+                        'Delete this bookmark?\n\n' +
+                        label + '\n' + bookmark.url + '\n\n' +
+                        'This action cannot be undone.'
+                    );
+                    if (!ok) return;
+
+                    // If we were editing this very bookmark, leave edit mode
+                    if (editingId === id) {
+                        resetForm();
+                    }
+
+                    bookmarks.splice(index, 1);
+                    saveToStorage();
+                    render();
+                    showToast('Bookmark removed');
+                }
+            }
+
+            // ----- Form mode helpers -----
+            function resetForm() {
+                editingId = null;
+                form.reset();
+                formTitle.textContent = 'Add Bookmark';
+                addBtn.textContent = '➕ Add Bookmark';
+                addBtn.classList.remove('editing');
+            }
+
+            function startEdit(bookmark) {
+                editingId = bookmark.id;
+                headingInput.value = bookmark.heading || '';
+                urlInput.value = bookmark.url || '';
+                formTitle.textContent = 'Edit Bookmark';
+                addBtn.textContent = '💾 Save Changes';
+                addBtn.classList.add('editing');
+
+                openDrawer();
+
+                // Focus after the drawer slide-in transition
+                setTimeout(function() {
+                    headingInput.focus();
+                    headingInput.select();
+                }, 320);
+            }
+
+            // ----- Add bookmark -----
+            function addBookmark(heading, url) {
+                const trimmedHeading = String(heading || '').trim();
+                const trimmedUrl = normalizeUrl(url);
+
+                if (!trimmedHeading || !trimmedUrl) {
+                    showToast('Please fill in both fields with a valid URL');
+                    return false;
+                }
+
+                bookmarks.push({
+                    id: makeId(),
+                    heading: trimmedHeading,
+                    url: trimmedUrl
+                });
+
+                saveToStorage();
+
+                // Reset search so the new bookmark is visible
+                if (searchQuery) {
+                    searchQuery = '';
+                    searchInput.value = '';
+                }
+
+                render();
+                resetForm();
+                closeDrawer();
+                showToast('Bookmark added!');
+                return true;
+            }
+
+            // ----- Save edited bookmark -----
+            function saveEdit() {
+                const heading = String(headingInput.value || '').trim();
+                const url = normalizeUrl(urlInput.value);
+
+                if (!heading || !url) {
+                    showToast('Please fill in both fields with a valid URL');
+                    return;
+                }
+
+                const index = bookmarks.findIndex(function(b) { return b.id === editingId; });
+                if (index === -1) {
+                    resetForm();
+                    closeDrawer();
+                    showToast('That bookmark no longer exists');
+                    return;
+                }
+
+                bookmarks[index].heading = heading;
+                bookmarks[index].url = url;
+                saveToStorage();
+
+                // If the active search no longer matches, clear it so the item stays visible
+                if (searchQuery) {
+                    const q = searchQuery.trim().toLowerCase();
+                    const matches = heading.toLowerCase().indexOf(q) !== -1 ||
+                                    url.toLowerCase().indexOf(q) !== -1;
+                    if (!matches) {
+                        searchQuery = '';
+                        searchInput.value = '';
+                    }
+                }
+
+                render();
+                resetForm();
+                closeDrawer();
+                showToast('Bookmark updated!');
+            }
+
+            // ----- Copy all -----
+            function copyAllAsText() {
+                if (bookmarks.length === 0) {
+                    showToast('No bookmarks to copy');
+                    return;
+                }
+
+                let text = '';
+                for (let i = 0; i < bookmarks.length; i++) {
+                    const b = bookmarks[i];
+                    text += (b.heading || 'Untitled') + ': ' + b.url;
+                    if (i < bookmarks.length - 1) text += '\n';
+                }
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text)
+                        .then(function() {
+                            closeDrawer();
+                            showToast('Copied all bookmarks!');
+                        })
+                        .catch(function() { fallbackCopy(text); });
+                } else {
+                    fallbackCopy(text);
+                }
+            }
+
+            function fallbackCopy(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                textarea.style.top = '-9999px';
+                document.body.appendChild(textarea);
+                try {
+                    textarea.select();
+                    document.execCommand('copy');
+                    closeDrawer();
+                    showToast('Copied all bookmarks!');
+                } catch (_) {
+                    showToast('Could not copy. Please copy manually.');
+                } finally {
+                    document.body.removeChild(textarea);
+                }
+            }
+
+            // ----- Clear all -----
+            function clearAll() {
+                if (bookmarks.length === 0) {
+                    showToast('No bookmarks to clear');
+                    return;
+                }
+                if (confirm('Remove all bookmarks?')) {
+                    bookmarks = [];
+                    saveToStorage();
+                    resetForm();
+                    render();
+                    closeDrawer();
+                    showToast('All bookmarks cleared');
+                }
+            }
+
+            // ----- Export JSON -----
+            function exportJson() {
+                if (bookmarks.length === 0) {
+                    showToast('No bookmarks to export');
+                    return;
+                }
+
+                const data = bookmarks.map(function(b) {
+                    return { heading: b.heading, url: b.url };
+                });
+
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const objectUrl = URL.createObjectURL(blob);
+                const stamp = new Date().toISOString().slice(0, 10);
+
+                const a = document.createElement('a');
+                a.href = objectUrl;
+                a.download = 'bookmarks-' + stamp + '.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                setTimeout(function() { URL.revokeObjectURL(objectUrl); }, 1500);
+
+                closeDrawer();
+                showToast('Exported ' + bookmarks.length + ' bookmark' + (bookmarks.length === 1 ? '' : 's'));
+            }
+
+            // ----- Import JSON -----
+            function handleImportFile(e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+
+                reader.onload = function() {
+                    let added = 0;
+                    let skipped = 0;
+
+                    try {
+                        const parsed = JSON.parse(reader.result);
+                        let items = null;
+
+                        if (Array.isArray(parsed)) {
+                            items = parsed;
+                        } else if (parsed && Array.isArray(parsed.bookmarks)) {
+                            items = parsed.bookmarks;
+                        }
+
+                        if (!items) {
+                            showToast('Invalid JSON: expected an array of bookmarks');
+                            return;
+                        }
+
+                        items.forEach(function(item) {
+                            if (!item || typeof item !== 'object') { skipped++; return; }
+
+                            const heading = String(
+                                item.heading != null ? item.heading :
+                                (item.title != null ? item.title : '')
+                            ).trim();
+
+                            const url = normalizeUrl(
+                                item.url != null ? item.url :
+                                (item.link != null ? item.link : '')
+                            );
+
+                            if (!heading || !url) { skipped++; return; }
+
+                            // Skip exact duplicates
+                            const dup = bookmarks.some(function(b) {
+                                return b.url === url && b.heading === heading;
+                            });
+                            if (dup) { skipped++; return; }
+
+                            bookmarks.push({ id: makeId(), heading: heading, url: url });
+                            added++;
+                        });
+
+                        if (added > 0) {
+                            saveToStorage();
+                            render();
+                            closeDrawer();
+                            showToast('Imported ' + added + ' bookmark' + (added === 1 ? '' : 's') +
+                                      (skipped ? ' (' + skipped + ' skipped)' : ''));
+                        } else {
+                            showToast(skipped ? 'No new bookmarks to import' : 'Nothing to import');
+                        }
+                    } catch (_) {
+                        showToast('Could not parse that JSON file');
+                    } finally {
+                        importInput.value = '';
+                    }
+                };
+
+                reader.onerror = function() {
+                    showToast('Could not read that file');
+                    importInput.value = '';
+                };
+
+                reader.readAsText(file);
+            }
+
+            // ----- Drawer -----
+            function openDrawer() {
+                drawer.classList.add('open');
+                drawerOverlay.classList.add('open');
+                drawer.setAttribute('aria-hidden', 'false');
+                menuBtn.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeDrawer() {
+                drawer.classList.remove('open');
+                drawerOverlay.classList.remove('open');
+                drawer.setAttribute('aria-hidden', 'true');
+                menuBtn.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+
+                // Closing while editing = cancel the edit
+                if (editingId) {
+                    resetForm();
+                }
+            }
+
+            // ----- Toast -----
+            let toastTimer = null;
+
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 2200);
+            }
+
+            // ----- Handlers -----
+            function handleSubmit(e) {
+                e.preventDefault();
+                if (editingId) {
+                    saveEdit();
+                } else {
+                    addBookmark(headingInput.value, urlInput.value);
+                }
+            }
+
+            function handleSearchInput() {
+                searchQuery = searchInput.value;
+                render();
+            }
+
+            function handleSearchClear() {
+                searchInput.value = '';
+                searchQuery = '';
+                searchInput.focus();
+                render();
+            }
+
+            function handleKeydown(e) {
+                if (e.key === 'Escape' && drawer.classList.contains('open')) {
+                    closeDrawer();
+                }
+            }
+
+            // ----- Init -----
+            function init() {
+                loadFromStorage();
+                render();
+
+                form.addEventListener('submit', handleSubmit);
+                listEl.addEventListener('click', handleListClick);
+
+                copyBtn.addEventListener('click', copyAllAsText);
+                clearBtn.addEventListener('click', clearAll);
+                exportBtn.addEventListener('click', exportJson);
+                importBtn.addEventListener('click', function() { importInput.click(); });
+                importInput.addEventListener('change', handleImportFile);
+
+                menuBtn.addEventListener('click', openDrawer);
+                closeDrawerBtn.addEventListener('click', closeDrawer);
+                drawerOverlay.addEventListener('click', closeDrawer);
+                document.addEventListener('keydown', handleKeydown);
+
+                searchInput.addEventListener('input', handleSearchInput);
+                searchInput.addEventListener('search', handleSearchInput);
+                searchClear.addEventListener('click', handleSearchClear);
+            }
+
+            init();
+
+        })();
+    </script>
+
+</body>
+</html>

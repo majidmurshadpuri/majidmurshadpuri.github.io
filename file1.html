@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML ⇄ TXT Converter</title>
+<style>
+  :root{
+    --bg:#0f1220;
+    --panel:#171a2e;
+    --panel-2:#1e2238;
+    --accent:#6c8cff;
+    --accent-2:#8b5cf6;
+    --ok:#22c55e;
+    --text:#e8eaf6;
+    --muted:#9aa0bf;
+    --border:#2a2f4a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;
+    background:
+      radial-gradient(900px 500px at 10% -10%, #1d2350 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 110%, #2a1a4a 0%, transparent 60%),
+      var(--bg);
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    padding:40px 16px 60px;
+  }
+  .app{width:100%;max-width:880px;}
+  header{text-align:center;margin-bottom:22px;}
+  h1{
+    font-size:clamp(1.5rem,4vw,2.1rem);
+    margin:0 0 8px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    font-weight:700;
+  }
+  header p{margin:0;color:var(--muted);font-size:.95rem;line-height:1.5;}
+  header code{
+    background:#0d1020;border:1px solid var(--border);
+    padding:1px 6px;border-radius:5px;font-size:.85em;color:#c7d0ff;
+  }
+
+  /* ---------- Mode toggle ---------- */
+  .mode-toggle{
+    position:relative;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    background:#0d1020;
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:5px;
+    max-width:440px;
+    margin:0 auto 26px;
+  }
+  .mode-toggle .slider{
+    position:absolute;
+    top:5px;left:5px;
+    width:calc(50% - 5px);
+    height:calc(100% - 10px);
+    border-radius:9px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    transition:transform .3s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 6px 18px rgba(108,140,255,.4);
+  }
+  .mode-toggle[data-mode="html2txt"] .slider{transform:translateX(100%);}
+  .mode-btn{
+    position:relative;
+    z-index:1;
+    background:transparent;
+    border:none;
+    padding:12px 10px;
+    border-radius:9px;
+    color:var(--muted);
+    font-weight:600;
+    font-size:.88rem;
+    cursor:pointer;
+    font-family:inherit;
+    transition:color .2s;
+    white-space:nowrap;
+  }
+  .mode-btn.active{color:#fff;}
+
+  /* ---------- Card ---------- */
+  .card{
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 18px 45px rgba(0,0,0,.45);
+  }
+
+  /* Drop zone */
+  #dropZone{
+    border:2px dashed var(--border);
+    border-radius:14px;
+    padding:34px 20px;
+    text-align:center;
+    cursor:pointer;
+    transition:.22s;
+    background:rgba(108,140,255,.04);
+  }
+  #dropZone:hover,#dropZone.drag{
+    border-color:var(--accent);
+    background:rgba(108,140,255,.12);
+    transform:translateY(-2px);
+  }
+  #dropZone .icon{font-size:2.4rem;display:block;margin-bottom:10px;}
+  #dropZone strong{display:block;font-size:1.05rem;margin-bottom:6px;}
+  #dropZone span{color:var(--muted);font-size:.85rem;}
+  input[type=file]{display:none;}
+
+  /* File info */
+  .file-info{
+    display:none;
+    align-items:center;
+    gap:12px;
+    margin-top:18px;
+    padding:12px 16px;
+    background:rgba(34,197,94,.08);
+    border:1px solid rgba(34,197,94,.35);
+    border-radius:12px;
+    font-size:.9rem;
+  }
+  .file-info.show{display:flex;}
+  .file-info .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--ok);flex:0 0 auto;
+    box-shadow:0 0 10px var(--ok);
+  }
+  .file-info .name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .file-info .arrow{color:var(--muted);flex:0 0 auto;}
+  .file-info .out{
+    font-weight:600;color:#a9b8ff;flex:0 0 auto;
+    background:rgba(108,140,255,.12);
+    border:1px solid rgba(108,140,255,.3);
+    padding:3px 9px;border-radius:7px;font-size:.8rem;
+  }
+  .file-info .size{color:var(--muted);margin-left:auto;flex:0 0 auto;font-size:.82rem;}
+
+  /* Controls */
+  .controls{
+    display:none;
+    gap:14px;
+    margin-top:20px;
+    flex-wrap:wrap;
+    align-items:flex-end;
+  }
+  .controls.show{display:flex;}
+  .field{flex:1 1 240px;display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .input-wrap{position:relative;display:flex;align-items:center;}
+  .field input[type=text]{
+    width:100%;
+    padding:11px 68px 11px 14px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#0d1020;
+    color:var(--text);
+    font-size:.95rem;
+    outline:none;
+    transition:.2s;
+  }
+  .field input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,140,255,.18);}
+  .ext-badge{
+    position:absolute;right:12px;
+    font-size:.82rem;color:var(--muted);
+    pointer-events:none;font-weight:600;
+    background:#171a2e;padding:2px 8px;border-radius:6px;
+    border:1px solid var(--border);
+  }
+
+  button{
+    font-family:inherit;
+    font-size:.95rem;
+    font-weight:600;
+    border:none;
+    border-radius:10px;
+    padding:12px 22px;
+    cursor:pointer;
+    transition:.2s;
+    color:#fff;
+  }
+  .btn-download{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 8px 22px rgba(108,140,255,.35);
+    white-space:nowrap;
+  }
+  .btn-download:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(108,140,255,.5);}
+  .btn-download:active{transform:translateY(0);}
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--muted);
+  }
+  .btn-ghost:hover{border-color:var(--accent);color:var(--text);}
+
+  /* Preview */
+  .preview{
+    display:none;
+    margin-top:24px;
+  }
+  .preview.show{display:block;}
+  .tabs{display:flex;gap:8px;margin-bottom:10px;}
+  .tab{
+    padding:8px 16px;
+    border-radius:9px 9px 0 0;
+    background:transparent;
+    border:1px solid transparent;
+    border-bottom:none;
+    color:var(--muted);
+    font-size:.85rem;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .tab.active{background:#0d1020;border-color:var(--border);color:var(--text);}
+  .pane{
+    display:none;
+    background:#0d1020;
+    border:1px solid var(--border);
+    border-radius:0 12px 12px 12px;
+    overflow:hidden;
+    height:340px;
+  }
+  .pane.active{display:block;}
+  .pane pre{
+    margin:0;padding:16px;height:100%;overflow:auto;
+    font-family:'Consolas','Monaco',monospace;
+    font-size:.82rem;line-height:1.55;color:#c7d0ff;
+    white-space:pre-wrap;word-break:break-word;
+  }
+  .pane iframe{width:100%;height:100%;border:none;background:#fff;}
+
+  .footer-note{text-align:center;color:var(--muted);font-size:.78rem;margin-top:22px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>HTML ⇄ TXT Converter</h1>
+    <p id="subtitle"></p>
+  </header>
+
+  <!-- Mode toggle -->
+  <div class="mode-toggle" id="modeToggle" data-mode="txt2html">
+    <span class="slider"></span>
+    <button class="mode-btn active" data-mode="txt2html">TXT → HTML</button>
+    <button class="mode-btn" data-mode="html2txt">HTML → TXT</button>
+  </div>
+
+  <div class="card">
+    <!-- Upload area -->
+    <div id="dropZone">
+      <span class="icon">📄</span>
+      <strong id="dropTitle">Click to choose a .txt file</strong>
+      <span id="dropHint">or drag &amp; drop it here</span>
+      <input type="file" id="fileInput" accept=".txt,text/plain">
+    </div>
+
+    <!-- File info -->
+    <div class="file-info" id="fileInfo">
+      <span class="dot"></span>
+      <span class="name" id="fileName"></span>
+      <span class="arrow">➜</span>
+      <span class="out" id="fileOut"></span>
+      <span class="size" id="fileSize"></span>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls" id="controls">
+      <div class="field">
+        <label for="outName">Output file name</label>
+        <div class="input-wrap">
+          <input type="text" id="outName" value="index" spellcheck="false">
+          <span class="ext-badge" id="extBadge">.html</span>
+        </div>
+      </div>
+      <button class="btn-download" id="downloadBtn">⬇ Download .html</button>
+      <button class="btn-ghost" id="resetBtn">Reset</button>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview" id="preview">
+      <div class="tabs">
+        <button class="tab active" data-pane="codePane">Source code</button>
+        <button class="tab" data-pane="renderPane">Rendered preview</button>
+      </div>
+      <div class="pane active" id="codePane"><pre id="codeOut"></pre></div>
+      <div class="pane" id="renderPane"><iframe id="renderFrame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+    </div>
+  </div>
+
+  <p class="footer-note">Everything runs locally in your browser — no file is ever uploaded to a server.</p>
+</div>
+
+<script>
+(function () {
+  /* ---------- Element refs ---------- */
+  const modeToggle = document.getElementById('modeToggle');
+  const modeBtns   = document.querySelectorAll('.mode-btn');
+  const subtitle   = document.getElementById('subtitle');
+
+  const dropZone   = document.getElementById('dropZone');
+  const dropTitle  = document.getElementById('dropTitle');
+  const dropHint   = document.getElementById('dropHint');
+  const fileInput  = document.getElementById('fileInput');
+
+  const fileInfo   = document.getElementById('fileInfo');
+  const fileNameEl = document.getElementById('fileName');
+  const fileOutEl  = document.getElementById('fileOut');
+  const fileSizeEl = document.getElementById('fileSize');
+
+  const controls   = document.getElementById('controls');
+  const outName    = document.getElementById('outName');
+  const extBadge   = document.getElementById('extBadge');
+  const downloadBtn= document.getElementById('downloadBtn');
+  const resetBtn   = document.getElementById('resetBtn');
+
+  const preview    = document.getElementById('preview');
+  const codeOut    = document.getElementById('codeOut');
+  const renderFrame= document.getElementById('renderFrame');
+  const tabs       = document.querySelectorAll('.tab');
+  const panes      = document.querySelectorAll('.pane');
+
+  /* ---------- Mode configuration ---------- */
+  const MODES = {
+    txt2html: {
+      accept:      '.txt,text/plain',
+      inputLabel:  'Click to choose a .txt file',
+      inputHint:   'or drag & drop it here',
+      outputExt:   '.html',
+      outputMime:  'text/html;charset=utf-8',
+      defaultName: 'index',
+      subtitle:    'Upload a <code>.txt</code> file that contains HTML code and download it as a real <code>.html</code> file.',
+      invalidMsg:  'Please choose a .txt file.'
+    },
+    html2txt: {
+      accept:      '.html,.htm,text/html,text/plain',
+      inputLabel:  'Click to choose a .html file',
+      inputHint:   'or drag & drop it here',
+      outputExt:   '.txt',
+      outputMime:  'text/plain;charset=utf-8',
+      defaultName: 'output',
+      subtitle:    'Upload a <code>.html</code> (or <code>.htm</code>) file and download its source code as a plain <code>.txt</code> file.',
+      invalidMsg:  'Please choose a .html or .htm file.'
+    }
+  };
+
+  let mode = 'txt2html';
+  let currentContent = '';
+
+  /* ---------- Helpers ---------- */
+  function humanSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(2) + ' MB';
+  }
+
+  function sanitizeName(name) {
+    return (name || '')
+      .replace(/\.(html?|txt)$/i, '')
+      .replace(/[\\/:*?"<>|]+/g, '_')
+      .trim();
+  }
+
+  function isAccepted(file) {
+    const n = file.name.toLowerCase();
+    if (mode === 'txt2html') return n.endsWith('.txt');
+    return n.endsWith('.html') || n.endsWith('.htm');
+  }
+
+  function switchTab(paneId) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.pane === paneId));
+    panes.forEach(p => p.classList.toggle('active', p.id === paneId));
+  }
+
+  /* ---------- Reset (keeps current mode) ---------- */
+  function reset() {
+    const cfg = MODES[mode];
+    currentContent = '';
+
+    fileInfo.classList.remove('show');
+    controls.classList.remove('show');
+    preview.classList.remove('show');
+
+    codeOut.textContent = '';
+    renderFrame.srcdoc   = '';
+    outName.value        = cfg.defaultName;
+    fileInput.value      = '';
+
+    switchTab('codePane');
+  }
+
+  /* ---------- Mode switching ---------- */
+  function setMode(newMode) {
+    if (!MODES[newMode]) return;
+    mode = newMode;
+
+    modeToggle.dataset.mode = mode;
+    modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+
+    const cfg = MODES[mode];
+    dropTitle.textContent  = cfg.inputLabel;
+    dropHint.textContent   = cfg.inputHint;
+    fileInput.accept       = cfg.accept;
+    subtitle.innerHTML     = cfg.subtitle;
+    extBadge.textContent   = cfg.outputExt;
+    downloadBtn.textContent = '⬇ Download ' + cfg.outputExt;
+
+    reset();
+  }
+
+  /* ---------- File reading ---------- */
+  function readFile(file) {
+    if (!file) return;
+
+    if (!isAccepted(file)) {
+      alert(MODES[mode].invalidMsg);
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      const cfg = MODES[mode];
+      currentContent = e.target.result;
+
+      // Derive a clean base name from the uploaded file
+      let base = sanitizeName(file.name) || cfg.defaultName;
+
+      fileNameEl.textContent = file.name;
+      fileOutEl.textContent  = base + cfg.outputExt;
+      fileSizeEl.textContent = humanSize(file.size);
+      fileInfo.classList.add('show');
+
+      outName.value = base;
+      controls.classList.add('show');
+      preview.classList.add('show');
+
+      codeOut.textContent = currentContent;
+      renderFrame.srcdoc   = currentContent;
+
+      switchTab('codePane');
+    };
+
+    reader.onerror = function () {
+      alert('Sorry, the file could not be read.');
+    };
+
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  /* ---------- Events ---------- */
+  modeBtns.forEach(btn =>
+    btn.addEventListener('click', () => setMode(btn.dataset.mode))
+  );
+
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', e => {
+    readFile(e.target.files[0]);
+    fileInput.value = ''; // allow re-selecting the same file
+  });
+
+  ['dragenter', 'dragover'].forEach(evt =>
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault();
+      dropZone.classList.add('drag');
+    })
+  );
+
+  ['dragleave', 'drop'].forEach(evt =>
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag');
+    })
+  );
+
+  dropZone.addEventListener('drop', e => {
+    readFile(e.dataTransfer.files[0]);
+  });
+
+  // Prevent the browser from opening dropped files elsewhere on the page
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => e.preventDefault());
+
+  tabs.forEach(tab =>
+    tab.addEventListener('click', () => switchTab(tab.dataset.pane))
+  );
+
+  downloadBtn.addEventListener('click', () => {
+    if (!currentContent) {
+      alert('Please upload a file first.');
+      return;
+    }
+
+    const cfg = MODES[mode];
+    const base = sanitizeName(outName.value) || cfg.defaultName;
+    const finalName = base + cfg.outputExt;
+
+    const blob = new Blob([currentContent], { type: cfg.outputMime });
+    const url  = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = finalName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  });
+
+  resetBtn.addEventListener('click', reset);
+
+  /* ---------- Init ---------- */
+  setMode('txt2html');
+})();
+</script>
+</body>
+</html>

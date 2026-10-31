@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Combined Page</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: system-ui, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+    }
+
+    /* Each embedded page gets its own section */
+    .page-section {
+      position: relative;
+      width: 100%;
+      border: none;
+    }
+
+    /* First page: auto-grows to fit its content */
+    #file1-wrap {
+      flex: 0 0 auto;
+    }
+
+    /* Second page: fills the rest of the viewport */
+    #file2-wrap {
+      flex: 1 1 auto;
+      min-height: 50vh;
+    }
+
+    .page-section iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+    }
+
+    /* Optional visual divider — remove if you want it truly seamless */
+    #file2-wrap {
+      border-top: 1px solid #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="page-section" id="file1-wrap">
+    <iframe src="file1.html" title="File 1"
+            onload="resizeIframe(this)"></iframe>
+  </section>
+
+  <section class="page-section" id="file2-wrap">
+    <iframe src="file2.html" title="File 2"></iframe>
+  </section>
+
+  <script>
+    // Make the first iframe grow to fit its content so there's no inner scrollbar
+    function resizeIframe(iframe) {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        const setHeight = () => {
+          iframe.style.height = doc.documentElement.scrollHeight + 'px';
+        };
+        setHeight();
+        // Re-check after images/fonts load
+        new ResizeObserver(setHeight).observe(doc.documentElement);
+      } catch (e) {
+        // Cross-origin fallback: fixed height
+        iframe.style.height = '600px';
+      }
+    }
+  </script>
+
+</body>
+</html>
