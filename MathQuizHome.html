@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Quiz · Home</title>
+    <style>
+        /* --- same design tokens as Level1 --- */
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --cream: #fbf8ef;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 22px 16px 44px;
+        }
+        .quiz-home-card {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(18px, 4vw, 30px);
+        }
+        h1 {
+            font-size: clamp(22px, 5vw, 32px);
+            margin: 0 0 4px 0;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: 16px;
+        }
+        h1 span {
+            background: var(--green);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .subhead {
+            color: var(--muted);
+            margin: 10px 0 20px 0;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .student-badge {
+            background: #edf0e9;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .student-badge i { font-style: normal; }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--green);
+        }
+        /* --- form card (center) --- */
+        .form-overlay {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+        }
+        .student-form {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            padding: 40px 32px;
+            max-width: 460px;
+            width: 100%;
+            box-shadow: 0 15px 35px #172b2715;
+            text-align: center;
+        }
+        .student-form h2 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            color: var(--green);
+        }
+        .student-form p {
+            color: var(--muted);
+            margin: 0 0 28px 0;
+            font-size: 15px;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: var(--ink);
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e6e9e1;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #ffffff;
+            color: var(--ink);
+            transition: border 0.15s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--green2);
+            box-shadow: 0 0 0 3px #1d5b4e20;
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green2);
+            border-color: var(--green2);
+            transform: scale(1.02);
+        }
+        .btn:hover:not(:disabled):not(.btn-primary) {
+            background: #f0f4ed;
+            border-color: #8ca99a;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .btn-full { width: 100%; }
+        .hide { display: none !important; }
+        /* --- level area --- */
+        .level-container {
+            margin-top: 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            background: #ffffff;
+        }
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #f8faf7;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .level-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .level-header .level-tag {
+            background: var(--green);
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .level-iframe-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 550px;
+            background: #ffffff;
+        }
+        .level-iframe-wrapper iframe {
+            width: 100%;
+            height: 700px;
+            border: none;
+            display: block;
+        }
+        /* level navigation */
+        .level-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            padding: 16px 20px;
+            background: #f8faf7;
+            border-top: 1px solid var(--border-light);
+        }
+        .footer-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--muted);
+            border-top: 1px solid #e5e5d9;
+            padding-top: 18px;
+            line-height: 1.6;
+        }
+        @media (max-width: 650px) {
+            .quiz-home-card { padding: 16px; }
+            h1 { font-size: 20px; }
+            .student-form { padding: 28px 20px; }
+            .level-iframe-wrapper iframe { height: 600px; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-home-card" id="appCard">
+    <!-- HEADER -->
+    <h1>
+        ✖️ Math quiz · home
+        <span id="levelBadge">level 1</span>
+    </h1>
+    <div class="subhead">
+        <div id="statusText">Welcome! Please enter your details.</div>
+        <div class="student-badge hide" id="studentBadge">
+            <i>👤</i> <span id="studentNameDisplay">—</span>
+            <i>🏫</i> <span id="studentClassDisplay">—</span>
+        </div>
+        <div class="progress-badge hide" id="progressBadge">0 / 5</div>
+    </div>
+
+    <!-- STUDENT FORM (centered, first time) -->
+    <div id="studentFormOverlay" class="form-overlay">
+        <div class="student-form">
+            <h2>📋 Student details</h2>
+            <p>Enter your name and class to begin the quiz.</p>
+            <div class="form-group">
+                <label for="studentNameInput">Full name</label>
+                <input type="text" id="studentNameInput" placeholder="e.g. Aarav Sharma" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="studentClassSelect">Class</label>
+                <select id="studentClassSelect">
+                    <option value="" disabled selected>Select your class</option>
+                    <option value="5-A">5-A</option>
+                    <option value="5-B">5-B</option>
+                    <option value="6-A">6-A</option>
+                    <option value="6-B">6-B</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-full" id="saveStudentBtn">🚀 Proceed to quiz</button>
+        </div>
+    </div>
+
+    <!-- MAIN QUIZ AREA (hidden until student saved) -->
+    <div id="quizArea" class="hide">
+        <!-- level container with iframe -->
+        <div class="level-container" id="levelContainer">
+            <div class="level-header">
+                <h3>📘 <span id="levelTitle">Level 1</span></h3>
+                <span class="level-tag" id="levelTag">Level 1</span>
+            </div>
+            <div class="level-iframe-wrapper">
+                <iframe id="levelIframe" src="about:blank" title="Quiz level"></iframe>
+            </div>
+            <div class="level-nav" id="levelNav">
+                <!-- buttons injected by JS -->
+            </div>
+        </div>
+        <div class="footer-note">
+            Each numerator/denominator is a 2‑digit 5‑smooth non‑prime (prime factors only 2,3,5). Product is a 1‑digit rational, never equal. No fraction equals 1.
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- STORAGE KEYS ----------
+        const STUDENT_KEY = 'math_quiz_student_v1';
+        const PROGRESS_KEY = 'math_quiz_progress_v1';
+        const LEVELS = [
+            { id: 1, url: 'MathQuizLevel1.html', title: 'Level 1 · Fraction multiplication' },
+            { id: 2, url: 'MathQuizLevel1.html', title: 'Level 2 · Fraction multiplication' },  // placeholder
+            { id: 3, url: 'MathQuizLevel1.html', title: 'Level 3 · Fraction multiplication' },  // placeholder
+            { id: 4, url: 'MathQuizLevel1.html', title: 'Level 4 · Fraction multiplication' },  // placeholder
+            { id: 5, url: 'MathQuizLevel1.html', title: 'Level 5 · Fraction multiplication' }   // placeholder
+        ];
+
+        // ---------- DOM refs ----------
+        const studentFormOverlay = document.getElementById('studentFormOverlay');
+        const quizArea = document.getElementById('quizArea');
+        const studentBadge = document.getElementById('studentBadge');
+        const studentNameDisplay = document.getElementById('studentNameDisplay');
+        const studentClassDisplay = document.getElementById('studentClassDisplay');
+        const progressBadge = document.getElementById('progressBadge');
+        const statusText = document.getElementById('statusText');
+        const levelBadge = document.getElementById('levelBadge');
+        const levelTitle = document.getElementById('levelTitle');
+        const levelTag = document.getElementById('levelTag');
+        const levelIframe = document.getElementById('levelIframe');
+        const levelNav = document.getElementById('levelNav');
+        const studentNameInput = document.getElementById('studentNameInput');
+        const studentClassSelect = document.getElementById('studentClassSelect');
+        const saveStudentBtn = document.getElementById('saveStudentBtn');
+
+        // ---------- state ----------
+        let student = null;       // { name, class }
+        let progress = null;      // { currentLevel, completedLevels: {1: score, ...}, levelQuestions: {1: {...}}, lastScore: {level: score} }
+
+        // ---------- helpers ----------
+        function loadJSON(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : null;
+            } catch(e) { return null; }
+        }
+        function saveJSON(key, obj) {
+            try { localStorage.setItem(key, JSON.stringify(obj)); } catch(e) {}
+        }
+
+        // ---------- init student ----------
+        function loadStudent() {
+            const s = loadJSON(STUDENT_KEY);
+            if (s && s.name && s.class) {
+                student = s;
+                return true;
+            }
+            return false;
+        }
+
+        function showStudentForm() {
+            studentFormOverlay.classList.remove('hide');
+            quizArea.classList.add('hide');
+            studentBadge.classList.add('hide');
+            progressBadge.classList.add('hide');
+            statusText.textContent = 'Welcome! Please enter your details.';
+        }
+
+        function showQuizArea() {
+            studentFormOverlay.classList.add('hide');
+            quizArea.classList.remove('hide');
+            studentBadge.classList.remove('hide');
+            progressBadge.classList.remove('hide');
+            studentNameDisplay.textContent = student.name;
+            studentClassDisplay.textContent = student.class;
+            statusText.textContent = `Welcome back, ${student.name}!`;
+        }
+
+        // ---------- progress handling ----------
+        function defaultProgress() {
+            return {
+                currentLevel: 1,
+                completedLevels: {},       // levelId: score (5 = completed)
+                levelQuestions: {},        // levelId: saved state object from iframe
+                lastScore: {}              // levelId: last score displayed
+            };
+        }
+
+        function loadProgress() {
+            const p = loadJSON(PROGRESS_KEY);
+            if (p && typeof p === 'object') {
+                progress = { ...defaultProgress(), ...p };
+            } else {
+                progress = defaultProgress();
+            }
+            // ensure completedLevels is object
+            if (!progress.completedLevels || typeof progress.completedLevels !== 'object') progress.completedLevels = {};
+            if (!progress.levelQuestions || typeof progress.levelQuestions !== 'object') progress.levelQuestions = {};
+            if (!progress.lastScore || typeof progress.lastScore !== 'object') progress.lastScore = {};
+        }
+
+        function saveProgress() {
+            saveJSON(PROGRESS_KEY, progress);
+        }
+
+        // ---------- get level by id ----------
+        function getLevel(id) {
+            return LEVELS.find(l => l.id === id) || LEVELS[0];
+        }
+
+        // ---------- current level display ----------
+        function updateLevelDisplay() {
+            const lvl = getLevel(progress.currentLevel);
+            levelTitle.textContent = lvl.title;
+            levelTag.textContent = `Level ${lvl.id}`;
+            levelBadge.textContent = `level ${lvl.id}`;
+            progressBadge.textContent = progress.completedLevels[progress.currentLevel] === 5
+                ? `✅ ${progress.currentLevel} / 5`
+                : `Level ${progress.currentLevel} · 0 / 5`;
+        }
+
+        // ---------- navigate to level (load iframe) ----------
+        function loadLevel(levelId, forceReload = false) {
+            const lvl = getLevel(levelId);
+            progress.currentLevel = levelId;
+            saveProgress();
+
+            // if level already completed, we still show the iframe with last state
+            const savedState = progress.levelQuestions[levelId];
+            let url = lvl.url;
+
+            // If savedState exists and is not empty, we pass it via query? 
+            // But the iframe file itself manages its own localStorage under its own key.
+            // To ensure the iframe resumes its own saved state, we just load it normally.
+            // The iframe (MathQuizLevel1.html) uses localStorage key 'fraction_quiz_state_v2'.
+            // That state is independent. Our parent progress only stores the last score.
+            // So we simply load the iframe URL; the iframe will restore its own state.
+            // However, we must ensure that if the level was completed, the iframe shows result.
+            // The iframe has its own logic: if completed, it shows result.
+            // That's fine.
+
+            // To avoid reloading if already the same src and not forced, but simpler: always set src.
+            if (levelIframe.src !== url || forceReload) {
+                levelIframe.src = url;
+            }
+
+            updateLevelDisplay();
+            renderLevelNav();
+
+            // listen for messages from iframe? The iframe doesn't post messages.
+            // We will instead poll? No, we rely on the user clicking "Move to next level" inside iframe?
+            // Actually the iframe has its own "Move to next level" button (if score perfect).
+            // But we want to control navigation from the parent.
+            // We'll inject a script into the iframe? Cross-origin? Same origin so we can access contentWindow.
+            // We'll set up a small interval to check the iframe's state and update parent.
+            // This is a bit hacky but works because same-origin.
+            // We'll check window.__quizState() inside iframe.
+            setupIframeWatcher();
+        }
+
+        // ---------- watch iframe state ----------
+        let iframeWatcher = null;
+        function setupIframeWatcher() {
+            if (iframeWatcher) clearInterval(iframeWatcher);
+            iframeWatcher = setInterval(() => {
+                try {
+                    const win = levelIframe.contentWindow;
+                    if (!win || !win.__quizState) return;
+                    const state = win.__quizState();
+                    if (!state || !state.questions) return;
+
+                    const levelId = progress.currentLevel;
+                    const total = state.questions.length; // should be 5
+                    const answered = state.answers.filter(a => a !== null && a !== undefined).length;
+                    const isCompleted = state.completed === true;
+                    const score = state.score || 0;
+
+                    // update badge
+                    if (!isCompleted) {
+                        progressBadge.textContent = `Level ${levelId} · ${answered} / ${total}`;
+                    } else {
+                        progressBadge.textContent = `✅ ${score} / ${total}`;
+                    }
+
+                    // update parent progress
+                    progress.lastScore[levelId] = score;
+                    if (isCompleted && score === 5) {
+                        progress.completedLevels[levelId] = 5;
+                        saveProgress();
+                        renderLevelNav();
+                        // if this is the current level, update badge to completed
+                        progressBadge.textContent = `✅ ${score} / ${total}`;
+                    } else if (isCompleted) {
+                        progress.completedLevels[levelId] = score; // not full
+                        saveProgress();
+                        renderLevelNav();
+                    }
+
+                    // save the iframe's internal state? Already saved by iframe itself.
+                    // But we also keep a copy in parent's levelQuestions to know it exists
+                    progress.levelQuestions[levelId] = true;
+                    saveProgress();
+
+                    // If user just completed with perfect score, we might want to auto-show next level button
+                    // That's handled by renderLevelNav based on completedLevels
+
+                } catch(e) {
+                    // cross-origin or other issues
+                }
+            }, 700);
+        }
+
+        // ---------- render navigation buttons below iframe ----------
+        function renderLevelNav() {
+            const levelId = progress.currentLevel;
+            const completed = progress.completedLevels[levelId] === 5;
+            const lastScore = progress.lastScore[levelId] || 0;
+            const isLastLevel = levelId >= LEVELS.length;
+
+            // check if user already has next level available
+            const nextLevelId = levelId + 1;
+            const nextLevelExists = nextLevelId <= LEVELS.length;
+            const nextLevelCompleted = progress.completedLevels[nextLevelId] === 5;
+
+            let html = '';
+
+            // If level completed with full score, show "Move to next level" button (if next exists)
+            if (completed && nextLevelExists) {
+                html += `<button class="btn btn-primary" id="moveToNextLevelBtn">🚀 Move to next level</button>`;
+            } else if (completed && !nextLevelExists) {
+                html += `<span style="color: var(--green); font-weight:700;">🏆 All levels completed!</span>`;
+            }
+
+            // If not completed (score < 5), show "Try again" button — but only if level was attempted (has lastScore)
+            // Actually we show try again if the level is not completed and not currently fresh (or even fresh)
+            // But we should only show try again if the user has attempted (or always? The spec says try again only for those who don't pass)
+            // We'll show try again if level not completed and (lastScore > 0 or iframe has state)
+            if (!completed) {
+                // also if level is not completed, we show try again button
+                // But careful: if the iframe is currently showing a fresh quiz, try again would regenerate.
+                // That's fine.
+                html += `<button class="btn" id="tryAgainLevelBtn">🔄 Try again</button>`;
+            }
+
+            // Also allow going back to previous levels? Not requested, but could be useful.
+            // We'll keep only the required buttons.
+
+            levelNav.innerHTML = html;
+
+            // attach listeners
+            const moveBtn = document.getElementById('moveToNextLevelBtn');
+            if (moveBtn) {
+                moveBtn.addEventListener('click', () => {
+                    const nextId = levelId + 1;
+                    if (nextId <= LEVELS.length) {
+                        progress.currentLevel = nextId;
+                        saveProgress();
+                        loadLevel(nextId, true);
+                    }
+                });
+            }
+
+            const tryAgainBtn = document.getElementById('tryAgainLevelBtn');
+            if (tryAgainBtn) {
+                tryAgainBtn.addEventListener('click', () => {
+                    // reset the iframe's internal state by calling its reset function
+                    try {
+                        const win = levelIframe.contentWindow;
+                        if (win && win.__resetQuiz) {
+                            win.__resetQuiz();
+                        } else {
+                            // fallback: reload iframe
+                            levelIframe.src = levelIframe.src;
+                        }
+                    } catch(e) {
+                        // if cross-origin, reload
+                        levelIframe.src = getLevel(levelId).url + '?t=' + Date.now();
+                    }
+                    // Also clear our record of completion for this level
+                    delete progress.completedLevels[levelId];
+                    delete progress.lastScore[levelId];
+                    saveProgress();
+                    renderLevelNav();
+                    updateLevelDisplay();
+                });
+            }
+        }
+
+        // ---------- initialize app ----------
+        function init() {
+            loadProgress();
+            const hasStudent = loadStudent();
+
+            if (!hasStudent) {
+                showStudentForm();
+                // hide quiz area
+            } else {
+                showQuizArea();
+                // load current level
+                loadLevel(progress.currentLevel);
+                updateLevelDisplay();
+                renderLevelNav();
+            }
+
+            // Save student handler
+            saveStudentBtn.addEventListener('click', () => {
+                const name = studentNameInput.value.trim();
+                const cls = studentClassSelect.value;
+                if (!name) { alert('Please enter your name.'); return; }
+                if (!cls) { alert('Please select your class.'); return; }
+                student = { name, class: cls };
+                saveJSON(STUDENT_KEY, student);
+                showQuizArea();
+                // load level 1 or previous progress
+                loadProgress();
+                loadLevel(progress.currentLevel);
+                updateLevelDisplay();
+                renderLevelNav();
+            });
+
+            // If student already exists, but no level loaded, ensure loadLevel is called.
+            // Also if progress.currentLevel not set, default to 1.
+            if (student) {
+                if (!progress.currentLevel) progress.currentLevel = 1;
+                loadLevel(progress.currentLevel);
+                updateLevelDisplay();
+                renderLevelNav();
+            }
+        }
+
+        // ---------- start ----------
+        window.addEventListener('DOMContentLoaded', init);
+
+        // expose for debugging
+        window.__mathHome = { student, progress };
+    })();
+</script>
+</body>
+</html>

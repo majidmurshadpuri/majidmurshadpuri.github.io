@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraction Multiplication Quiz · 5 Questions</title>
+    <style>
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --cream: #fbf8ef;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 22px 16px 44px;
+        }
+        .quiz-card {
+            max-width: 820px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(18px, 4vw, 30px);
+            transition: all 0.2s;
+        }
+        h1 {
+            font-size: clamp(22px, 5vw, 32px);
+            margin: 0 0 4px 0;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: 16px;
+        }
+        h1 span {
+            background: var(--green);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .subhead {
+            color: var(--muted);
+            margin: 10px 0 20px 0;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--green);
+        }
+        .question-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px 20px 20px;
+            margin: 10px 0 16px;
+            border: 1px solid var(--border-light);
+        }
+        .question-text {
+            font-size: clamp(24px, 5vw, 32px);
+            font-weight: 600;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 6px;
+            font-weight: 700;
+            color: var(--green2);
+            font-size: clamp(24px, 5vw, 32px);
+        }
+        .frac .top {
+            border-bottom: 3px solid var(--green);
+            padding: 0 10px 6px 10px;
+            line-height: 1.2;
+        }
+        .frac .bottom {
+            padding: 6px 10px 0 10px;
+            line-height: 1.2;
+        }
+        .times, .equals {
+            font-size: clamp(24px, 5vw, 32px);
+            margin: 0 8px;
+            color: var(--green2);
+            font-weight: 400;
+        }
+        .question-mark {
+            font-size: clamp(24px, 5vw, 32px);
+            margin-left: 8px;
+            color: var(--green);
+            font-weight: 700;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 10px;
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            border-radius: 13px;
+            padding: 16px 18px;
+            font-size: clamp(20px, 4vw, 26px);
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            user-select: none;
+        }
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--green2);
+            background: #f8fbf7;
+        }
+        .option-btn.selected {
+            border-color: var(--green2);
+            background: #edf5ef;
+            box-shadow: 0 0 0 3px #1d5b4e25;
+        }
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.75;
+        }
+        .option-frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            font-weight: 700;
+            font-size: clamp(20px, 4vw, 26px);
+        }
+        .option-frac .top {
+            border-bottom: 2px solid var(--green);
+            padding: 0 6px 2px 6px;
+        }
+        .option-frac .bottom {
+            padding: 2px 6px 0 6px;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green2);
+            border-color: var(--green2);
+            transform: scale(1.02);
+        }
+        .btn:hover:not(:disabled):not(.btn-primary) {
+            background: #f0f4ed;
+            border-color: #8ca99a;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .result-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px 24px;
+            margin: 16px 0;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .score-big {
+            font-size: clamp(48px, 10vw, 64px);
+            font-weight: 900;
+            color: var(--green);
+            line-height: 1.1;
+        }
+        .score-big small {
+            font-size: clamp(24px, 5vw, 32px);
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .score-message {
+            font-size: clamp(16px, 3vw, 20px);
+            font-weight: 500;
+            margin: 18px 0;
+            line-height: 1.5;
+        }
+        .hide {
+            display: none !important;
+        }
+        .footer-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--muted);
+            border-top: 1px solid #e5e5d9;
+            padding-top: 18px;
+            line-height: 1.6;
+        }
+        @media (max-width: 650px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .quiz-card {
+                padding: 16px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            .question-text {
+                font-size: 22px;
+            }
+            .frac {
+                font-size: 22px;
+            }
+            .option-btn {
+                font-size: 18px;
+                padding: 14px 16px;
+            }
+            .option-frac {
+                font-size: 18px;
+            }
+            .score-big {
+                font-size: 42px;
+            }
+            .result-area {
+                padding: 24px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <h1>
+        ✖️ Fraction multiplication quiz
+        <span id="levelBadge">level 1</span>
+    </h1>
+    <div class="subhead">
+        <div id="statusText">Answer all 5 questions. Score shown at the end.</div>
+        <div class="progress-badge" id="progressBadge">0 / 5</div>
+    </div>
+
+    <!-- QUESTION VIEW -->
+    <div id="questionView">
+        <div class="question-area">
+            <div class="question-text" id="questionText">
+                <!-- filled by JS -->
+            </div>
+            <div class="options-grid" id="optionsGrid">
+                <!-- options filled by JS -->
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="submitBtn" disabled>Submit answer</button>
+        </div>
+    </div>
+
+    <!-- RESULT VIEW (score only) -->
+    <div id="resultView" class="hide">
+        <div class="result-area">
+            <div class="score-big" id="scoreDisplay">0<small>/5</small></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="btn-group" style="margin-top: 24px;">
+                <button class="btn btn-primary" id="nextLevelBtn" style="display: none;">🚀 Move to next level</button>
+                <button class="btn" id="tryAgainBtn">🔄 Try again</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        Each numerator/denominator is a 2‑digit 5‑smooth non‑prime (prime factors only 2,3,5). Product is a 1‑digit rational, never equal. No fraction equals 1.
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- CONSTANTS ----------
+        const STORAGE_KEY = 'fraction_quiz_state_v2';
+        const TOTAL_QUESTIONS = 5;
+        // PLACEHOLDER: replace this URL with the actual next-level quiz URL
+        const NEXT_LEVEL_URL = '#';
+
+        // ---------- HELPER: 5-SMOOTH NON-PRIME POOL ----------
+        function isPrime(n) {
+            if (n < 2) return false;
+            for (let i = 2; i * i <= n; i++) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+
+        function is5Smooth(n) {
+            if (n < 1) return false;
+            let x = n;
+            for (let p of [2, 3, 5]) {
+                while (x % p === 0) x /= p;
+            }
+            return x === 1;
+        }
+
+        const pool = [];
+        for (let n = 10; n <= 99; n++) {
+            if (!isPrime(n) && is5Smooth(n)) pool.push(n);
+        }
+        console.log('Pool of 2-digit 5-smooth non-primes:', pool);
+
+        // ---------- HELPER: simplify fraction ----------
+        function gcd(a, b) {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { [a, b] = [b, a % b]; }
+            return a;
+        }
+
+        function simplify(num, den) {
+            const g = gcd(num, den);
+            return [num / g, den / g];
+        }
+
+        // ---------- CHECK PRODUCT VALIDITY ----------
+        function isValidProduct(num, den) {
+            if (den === 0) return false;
+            const [n, d] = simplify(num, den);
+            if (!Number.isInteger(n) || !Number.isInteger(d)) return false;
+            if (n < 1 || n > 9 || d < 1 || d > 9) return false;
+            if (n === d) return false;
+            return { n, d };
+        }
+
+        // ---------- GENERATE SINGLE QUESTION ----------
+        function generateOneQuestion(usedNum, usedDen) {
+            const MAX_ATTEMPTS = 20000;
+            for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                const availNums = pool.filter(n => !usedNum.has(n));
+                if (availNums.length < 2) return null;
+                const idx1 = Math.floor(Math.random() * availNums.length);
+                const num1 = availNums[idx1];
+                let idx2 = Math.floor(Math.random() * availNums.length);
+                while (idx2 === idx1) idx2 = Math.floor(Math.random() * availNums.length);
+                const num2 = availNums[idx2];
+
+                const availDens = pool.filter(d => !usedDen.has(d));
+                if (availDens.length < 2) return null;
+                const jdx1 = Math.floor(Math.random() * availDens.length);
+                const den1 = availDens[jdx1];
+                let jdx2 = Math.floor(Math.random() * availDens.length);
+                while (jdx2 === jdx1) jdx2 = Math.floor(Math.random() * availDens.length);
+                const den2 = availDens[jdx2];
+
+                if (num1 === den1 || num2 === den2) continue; // no fraction = 1
+
+                const prodNum = num1 * num2;
+                const prodDen = den1 * den2;
+                const simplified = isValidProduct(prodNum, prodDen);
+                if (!simplified) continue;
+
+                return {
+                    frac1: { num: num1, den: den1 },
+                    frac2: { num: num2, den: den2 },
+                    product: { num: simplified.n, den: simplified.d }
+                };
+            }
+            return null;
+        }
+
+        // ---------- GENERATE FULL SET OF QUESTIONS ----------
+        function generateQuestionSet(N) {
+            const usedNum = new Set();
+            const usedDen = new Set();
+            const questions = [];
+            for (let q = 0; q < N; q++) {
+                const question = generateOneQuestion(usedNum, usedDen);
+                if (!question) return null; // failed
+                usedNum.add(question.frac1.num);
+                usedNum.add(question.frac2.num);
+                usedDen.add(question.frac1.den);
+                usedDen.add(question.frac2.den);
+                questions.push(question);
+            }
+            return questions;
+        }
+
+        // ---------- BUILD OPTIONS (one correct, three distractors) ----------
+        function buildOptions(correctProduct) {
+            const correct = { n: correctProduct.num, d: correctProduct.den };
+            const distractorKeys = new Set();
+            const distractors = [];
+
+            const allFractions = [];
+            for (let n = 1; n <= 9; n++) {
+                for (let d = 1; d <= 9; d++) {
+                    if (n !== d) {
+                        if (n === correct.n && d === correct.d) continue;
+                        allFractions.push({ n, d });
+                    }
+                }
+            }
+
+            while (distractors.length < 3 && allFractions.length > 0) {
+                const idx = Math.floor(Math.random() * allFractions.length);
+                const frac = allFractions[idx];
+                const key = frac.n + '/' + frac.d;
+                if (!distractorKeys.has(key)) {
+                    distractorKeys.add(key);
+                    distractors.push({ n: frac.n, d: frac.d });
+                }
+                allFractions.splice(idx, 1);
+            }
+
+            // Fallback fill if somehow needed
+            while (distractors.length < 3) {
+                const fallbacks = [{n:1,d:2},{n:1,d:3},{n:2,d:3},{n:1,d:4},{n:3,d:4},{n:1,d:5}];
+                for (const fb of fallbacks) {
+                    const key = fb.n + '/' + fb.d;
+                    const isCorrect = (fb.n === correct.n && fb.d === correct.d);
+                    const alreadyUsed = distractors.some(d => d.n === fb.n && d.d === fb.d);
+                    if (!isCorrect && !alreadyUsed) {
+                        distractors.push({ n: fb.n, d: fb.d });
+                        if (distractors.length >= 3) break;
+                    }
+                }
+            }
+
+            const options = [correct, ...distractors.slice(0, 3)];
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            // Ensure all numeric
+            return options.map(opt => ({ n: Number(opt.n), d: Number(opt.d) }));
+        }
+
+        // ---------- STATE MANAGEMENT ----------
+        let state = {
+            questions: [],
+            currentIndex: 0,
+            answers: [],
+            optionsList: [],
+            completed: false,
+            score: 0
+        };
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) { console.warn('Could not save state', e); }
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch (e) { return null; }
+        }
+
+        function clearState() {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+
+        // ---------- RENDER CURRENT QUESTION ----------
+        function renderCurrentQuestion() {
+            if (state.completed) {
+                renderResult();
+                return;
+            }
+            const qIndex = state.currentIndex;
+            if (qIndex >= state.questions.length) {
+                state.completed = true;
+                saveState();
+                renderResult();
+                return;
+            }
+
+            const q = state.questions[qIndex];
+            const options = state.optionsList[qIndex];
+            const selectedIdx = state.answers[qIndex];
+
+            document.getElementById('progressBadge').textContent = `${qIndex + 1} / ${TOTAL_QUESTIONS}`;
+
+            const qt = document.getElementById('questionText');
+            qt.innerHTML = `
+                <span class="frac"><span class="top">${q.frac1.num}</span><span class="bottom">${q.frac1.den}</span></span>
+                <span class="times">×</span>
+                <span class="frac"><span class="top">${q.frac2.num}</span><span class="bottom">${q.frac2.den}</span></span>
+                <span class="equals">=</span>
+                <span class="question-mark">?</span>
+            `;
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (selectedIdx === idx) btn.classList.add('selected');
+                if (selectedIdx !== null && selectedIdx !== undefined) {
+                    btn.classList.add('disabled');
+                }
+                const nVal = (opt && opt.n !== undefined) ? opt.n : 1;
+                const dVal = (opt && opt.d !== undefined) ? opt.d : 2;
+                btn.innerHTML = `<span class="option-frac"><span class="top">${nVal}</span><span class="bottom">${dVal}</span></span>`;
+                btn.dataset.optIndex = idx;
+                btn.addEventListener('click', () => {
+                    if (state.answers[qIndex] !== null && state.answers[qIndex] !== undefined) return;
+                    state.answers[qIndex] = idx;
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                    document.getElementById('submitBtn').disabled = false;
+                    saveState();
+                });
+                grid.appendChild(btn);
+            });
+
+            const submitBtn = document.getElementById('submitBtn');
+            const alreadyAnswered = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !alreadyAnswered;
+            submitBtn.textContent = alreadyAnswered ? 'Next question →' : 'Submit answer';
+
+            const newSubmit = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            newSubmit.id = 'submitBtn';
+            newSubmit.addEventListener('click', () => {
+                if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+                    state.currentIndex++;
+                    saveState();
+                    renderCurrentQuestion();
+                } else {
+                    finalizeQuiz();
+                }
+            });
+
+            document.getElementById('questionView').classList.remove('hide');
+            document.getElementById('resultView').classList.add('hide');
+            document.getElementById('statusText').textContent = `Question ${qIndex + 1} of ${TOTAL_QUESTIONS}`;
+        }
+
+        // ---------- FINALIZE QUIZ ----------
+        function finalizeQuiz() {
+            let score = 0;
+            state.questions.forEach((q, idx) => {
+                const ansIdx = state.answers[idx];
+                const options = state.optionsList[idx];
+                const chosen = options[ansIdx];
+                const correct = q.product;
+                if (chosen && chosen.n === correct.num && chosen.d === correct.den) {
+                    score++;
+                }
+            });
+            state.score = score;
+            state.completed = true;
+            saveState();
+            renderResult();
+        }
+
+        // ---------- RENDER RESULT (score only) ----------
+        function renderResult() {
+            document.getElementById('questionView').classList.add('hide');
+            document.getElementById('resultView').classList.remove('hide');
+
+            const score = state.score;
+            const total = TOTAL_QUESTIONS;
+
+            document.getElementById('scoreDisplay').innerHTML = `${score}<small>/${total}</small>`;
+            const msgEl = document.getElementById('scoreMessage');
+
+            if (score === total) {
+                msgEl.textContent = '🎉 Perfect score! You can move to the next level.';
+                msgEl.style.color = '#216342';
+                document.getElementById('nextLevelBtn').style.display = 'inline-flex';
+                document.getElementById('tryAgainBtn').style.display = 'none';
+                const nextBtn = document.getElementById('nextLevelBtn');
+                const newNextBtn = nextBtn.cloneNode(true);
+                nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+                newNextBtn.id = 'nextLevelBtn';
+                newNextBtn.addEventListener('click', () => {
+                    if (NEXT_LEVEL_URL && NEXT_LEVEL_URL !== '#') {
+                        window.location.href = NEXT_LEVEL_URL;
+                    } else {
+                        alert('Next level URL not configured yet. Please update NEXT_LEVEL_URL in the code.');
+                    }
+                });
+            } else {
+                msgEl.textContent = `You scored ${score}/${total}. Try again to improve your score.`;
+                msgEl.style.color = '#a83e37';
+                document.getElementById('nextLevelBtn').style.display = 'none';
+                document.getElementById('tryAgainBtn').style.display = 'inline-flex';
+            }
+
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+            const newTryBtn = tryAgainBtn.cloneNode(true);
+            tryAgainBtn.parentNode.replaceChild(newTryBtn, tryAgainBtn);
+            newTryBtn.id = 'tryAgainBtn';
+            newTryBtn.addEventListener('click', () => {
+                resetAndStartNewQuiz();
+            });
+
+            document.getElementById('statusText').textContent = 'Quiz completed';
+            document.getElementById('progressBadge').textContent = `${total} / ${total}`;
+        }
+
+        // ---------- START / RESET ----------
+        function startNewQuiz() {
+            let questions = null;
+            let attempts = 0;
+            const maxGenAttempts = 300;
+            while (attempts < maxGenAttempts && !questions) {
+                questions = generateQuestionSet(TOTAL_QUESTIONS);
+                attempts++;
+            }
+            if (!questions) {
+                alert('Could not generate a valid quiz. Please refresh the page or try again.');
+                return;
+            }
+
+            const optionsList = questions.map(q => buildOptions(q.product));
+
+            state = {
+                questions: questions,
+                currentIndex: 0,
+                answers: new Array(TOTAL_QUESTIONS).fill(null),
+                optionsList: optionsList,
+                completed: false,
+                score: 0
+            };
+            saveState();
+            renderCurrentQuestion();
+        }
+
+        function resetAndStartNewQuiz() {
+            clearState();
+            startNewQuiz();
+        }
+
+        // ---------- INIT ----------
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+            if (saved && saved.questions && saved.questions.length === TOTAL_QUESTIONS) {
+                state = saved;
+                if (!state.optionsList || state.optionsList.length !== TOTAL_QUESTIONS) {
+                    state.optionsList = state.questions.map(q => buildOptions(q.product));
+                }
+                if (!state.answers || state.answers.length !== TOTAL_QUESTIONS) {
+                    state.answers = new Array(TOTAL_QUESTIONS).fill(null);
+                }
+                if (state.completed === undefined) state.completed = false;
+                if (state.score === undefined) state.score = 0;
+
+                // Sanitize options
+                state.optionsList = state.optionsList.map(optArr =>
+                    optArr.map(opt => ({
+                        n: (opt && opt.n !== undefined && !isNaN(opt.n)) ? Number(opt.n) : 1,
+                        d: (opt && opt.d !== undefined && !isNaN(opt.d)) ? Number(opt.d) : 2
+                    }))
+                );
+
+                if (state.completed) {
+                    renderResult();
+                } else {
+                    renderCurrentQuestion();
+                }
+            } else {
+                startNewQuiz();
+            }
+
+            window.addEventListener('beforeunload', () => {
+                if (state && state.questions) saveState();
+            });
+        });
+
+        window.__quizState = () => state;
+        window.__resetQuiz = resetAndStartNewQuiz;
+    })();
+</script>
+</body>
+</html>
