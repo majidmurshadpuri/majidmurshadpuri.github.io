@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>3‑Digit Multiplication Quiz · Digits 6–9</title>
     <style>
         :root {
@@ -19,8 +19,13 @@
         * {
             box-sizing: border-box;
         }
-        body {
+        html, body {
             margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        body {
             background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
             color: var(--ink);
@@ -28,20 +33,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 22px 16px 44px;
+            padding: 1.2vh 1.2vw;
+            overflow-x: hidden;
         }
         .quiz-card {
-            max-width: 820px;
             width: 100%;
+            max-width: 820px;
             background: var(--card-bg);
             border: 1px solid var(--border-light);
             border-radius: 20px;
             box-shadow: 0 8px 25px #172b270d;
-            padding: clamp(18px, 4vw, 30px);
+            padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
             transition: all 0.2s;
+            max-height: 98vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        /* Hide scrollbar but keep scroll functionality */
+        .quiz-card::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        .quiz-card {
+            scrollbar-width: none;
         }
         h1 {
-            font-size: clamp(22px, 5vw, 32px);
+            font-size: clamp(20px, 3.5vh, 32px);
             margin: 0 0 4px 0;
             color: var(--ink);
             display: flex;
@@ -49,13 +68,13 @@
             gap: 10px;
             flex-wrap: wrap;
             border-bottom: 2px solid #e5e5d9;
-            padding-bottom: 16px;
+            padding-bottom: clamp(10px, 1.8vh, 16px);
             text-transform: capitalize;
         }
         .subhead {
             color: var(--muted);
-            margin: 10px 0 20px 0;
-            font-size: 15px;
+            margin: clamp(8px, 1.5vh, 12px) 0 clamp(14px, 2.5vh, 20px) 0;
+            font-size: clamp(13px, 1.6vh, 15px);
             font-weight: 500;
             display: flex;
             justify-content: space-between;
@@ -67,36 +86,36 @@
             background: #edf0e9;
             padding: 6px 18px;
             border-radius: 30px;
-            font-size: 13px;
+            font-size: clamp(12px, 1.4vh, 13px);
             font-weight: 800;
             color: var(--green);
         }
         .question-area {
             background: #ffffff;
             border-radius: 16px;
-            padding: 24px 20px 20px;
-            margin: 10px 0 16px;
+            padding: clamp(14px, 2.5vh, 24px) clamp(14px, 2.5vw, 20px);
+            margin: clamp(8px, 1.5vh, 10px) 0 clamp(10px, 2vh, 16px);
             border: 1px solid var(--border-light);
         }
         .question-text {
-            font-size: clamp(24px, 5vw, 32px);
+            font-size: clamp(20px, 4vh, 32px);
             font-weight: 600;
             color: var(--green);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: clamp(6px, 1vw, 12px);
             flex-wrap: wrap;
-            margin-bottom: 24px;
+            margin-bottom: clamp(14px, 2.5vh, 24px);
         }
         .times, .equals {
-            font-size: clamp(24px, 5vw, 32px);
+            font-size: clamp(20px, 4vh, 32px);
             margin: 0 8px;
             color: var(--green2);
             font-weight: 400;
         }
         .question-mark {
-            font-size: clamp(24px, 5vw, 32px);
+            font-size: clamp(20px, 4vh, 32px);
             margin-left: 8px;
             color: var(--green);
             font-weight: 700;
@@ -104,15 +123,15 @@
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-top: 10px;
+            gap: clamp(8px, 1.5vh, 14px);
+            margin-top: clamp(6px, 1vh, 10px);
         }
         .option-btn {
             background: #ffffff;
             border: 2px solid #e6e9e1;
             border-radius: 13px;
-            padding: 16px 18px;
-            font-size: clamp(20px, 4vw, 26px);
+            padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px);
+            font-size: clamp(18px, 3vh, 26px);
             font-weight: 500;
             color: var(--ink);
             cursor: pointer;
@@ -123,6 +142,8 @@
             gap: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
             user-select: none;
+            text-align: center;
+            word-break: break-word;
         }
         .option-btn:hover:not(.disabled) {
             border-color: var(--green2);
@@ -140,18 +161,18 @@
         .btn-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 14px;
+            gap: clamp(10px, 1.5vh, 14px);
             justify-content: center;
-            margin-top: 20px;
+            margin-top: clamp(12px, 2vh, 20px);
         }
         .btn {
             background: #ffffff;
             border: 2px solid #e6e9e1;
             color: var(--green);
             font-weight: 800;
-            padding: 12px 24px;
+            padding: clamp(9px, 1.5vh, 12px) clamp(18px, 2.5vw, 24px);
             border-radius: 12px;
-            font-size: 15px;
+            font-size: clamp(14px, 1.8vh, 15px);
             cursor: pointer;
             transition: all 0.15s;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
@@ -183,44 +204,46 @@
         .result-area {
             background: #ffffff;
             border-radius: 16px;
-            padding: 32px 24px;
-            margin: 16px 0;
+            padding: clamp(20px, 4vh, 32px) clamp(16px, 3vw, 24px);
+            margin: clamp(12px, 2vh, 16px) 0;
             border: 1px solid var(--border-light);
             text-align: center;
         }
         .score-big {
-            font-size: clamp(48px, 10vw, 64px);
+            font-size: clamp(40px, 8vh, 64px);
             font-weight: 900;
             color: var(--green);
             line-height: 1.1;
         }
         .score-big small {
-            font-size: clamp(24px, 5vw, 32px);
+            font-size: clamp(20px, 4vh, 32px);
             font-weight: 400;
             color: var(--muted);
         }
         .score-message {
-            font-size: clamp(16px, 3vw, 20px);
+            font-size: clamp(15px, 2.2vh, 20px);
             font-weight: 500;
-            margin: 18px 0;
+            margin: clamp(12px, 2vh, 18px) 0;
             line-height: 1.5;
         }
         .congrats-message {
-            font-size: clamp(18px, 3.5vw, 24px);
+            font-size: clamp(16px, 2.6vh, 24px);
             font-weight: 700;
-            margin: 18px 0;
+            margin: clamp(12px, 2vh, 18px) 0;
             line-height: 1.5;
             color: #216342;
         }
         .hide {
             display: none !important;
         }
+        /* Mobile adjustments */
         @media (max-width: 650px) {
             .options-grid {
                 grid-template-columns: 1fr;
             }
             .quiz-card {
-                padding: 16px;
+                padding: 14px;
+                max-height: 98vh;
             }
             h1 {
                 font-size: 20px;
@@ -230,13 +253,13 @@
             }
             .option-btn {
                 font-size: 18px;
-                padding: 14px 16px;
+                padding: 12px 14px;
             }
             .score-big {
                 font-size: 42px;
             }
             .result-area {
-                padding: 24px 16px;
+                padding: 20px 14px;
             }
         }
     </style>
@@ -309,11 +332,9 @@
             const s = n.toString();
             if (s.length !== 3) return false;
             const digits = s.split('').map(Number);
-            // all digits must be in {6,7,8,9}
             for (let d of digits) {
                 if (!ALLOWED_DIGITS.includes(d)) return false;
             }
-            // distinct digits
             if (new Set(digits).size !== 3) return false;
             return true;
         }
@@ -330,11 +351,9 @@
                 while (idx2 === idx1) idx2 = Math.floor(Math.random() * available.length);
                 const num2 = available[idx2];
 
-                // Safety check
                 if (!isValidNumber(num1) || !isValidNumber(num2)) continue;
 
                 const product = num1 * num2;
-                // Product will be a 5 or 6 digit number, we'll just display it
 
                 return {
                     num1: num1,
@@ -365,14 +384,11 @@
             const distractorKeys = new Set();
             const distractors = [];
 
-            // Generate plausible distractor products
-            // Strategy: multiply two other 3-digit numbers from the pool, or perturb digits
             const MAX_ATTEMPTS = 2000;
             let attempts = 0;
 
             while (distractors.length < 3 && attempts < MAX_ATTEMPTS) {
                 attempts++;
-                // Pick two random numbers from allNumbers
                 const idx1 = Math.floor(Math.random() * allNumbers.length);
                 const idx2 = Math.floor(Math.random() * allNumbers.length);
                 if (idx1 === idx2) continue;
@@ -383,11 +399,9 @@
                 if (candidate === correct) continue;
                 if (distractorKeys.has(candidate)) continue;
 
-                // Optionally perturb: sometimes use candidate ± small number
                 let finalCandidate = candidate;
                 const perturbRoll = Math.random();
                 if (perturbRoll < 0.3) {
-                    // small perturbation
                     const delta = Math.floor(Math.random() * 200) - 100;
                     finalCandidate = Math.max(100000, candidate + delta);
                 }
@@ -399,7 +413,6 @@
                 distractors.push(finalCandidate);
             }
 
-            // Fallback: generate random numbers near the correct product
             while (distractors.length < 3) {
                 const delta = Math.floor(Math.random() * 2000) - 1000;
                 const candidate = Math.max(100000, correct + delta);
@@ -410,7 +423,6 @@
             }
 
             const options = [correct, ...distractors.slice(0, 3)];
-            // Shuffle
             for (let i = options.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [options[i], options[j]] = [options[j], options[i]];
@@ -481,17 +493,13 @@
                 const btn = document.createElement('div');
                 btn.className = 'option-btn';
                 if (selectedIdx === idx) btn.classList.add('selected');
-                if (selectedIdx !== null && selectedIdx !== undefined) {
-                    btn.classList.add('disabled');
-                }
                 btn.textContent = opt;
                 btn.dataset.optIndex = idx;
                 btn.addEventListener('click', () => {
-                    if (state.answers[qIndex] !== null && state.answers[qIndex] !== undefined) return;
+                    if (state.completed) return;
                     state.answers[qIndex] = idx;
                     document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
-                    document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
                     document.getElementById('submitBtn').disabled = false;
                     saveState();
                 });
@@ -499,15 +507,16 @@
             });
 
             const submitBtn = document.getElementById('submitBtn');
-            const alreadyAnswered = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
-            submitBtn.disabled = !alreadyAnswered;
-            submitBtn.textContent = alreadyAnswered ? 'Next question →' : 'Submit answer';
+            const hasSelection = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !hasSelection;
+            submitBtn.textContent = hasSelection ? 'Next question →' : 'Submit answer';
 
             const newSubmit = submitBtn.cloneNode(true);
             submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
             newSubmit.id = 'submitBtn';
             newSubmit.addEventListener('click', () => {
                 if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
                 if (state.currentIndex < TOTAL_QUESTIONS - 1) {
                     state.currentIndex++;
                     saveState();
@@ -554,14 +563,12 @@
             const tryAgainBtn = document.getElementById('tryAgainBtn');
 
             if (score === total) {
-                // Perfect score: congratulate, hide Try Again
                 msgEl.textContent = '';
                 msgEl.style.display = 'none';
                 congratsEl.style.display = 'block';
                 congratsEl.textContent = '🎉 Congratulations! You scored a perfect 5/5! Excellent work!';
                 tryAgainBtn.style.display = 'none';
             } else {
-                // Not perfect: show score, show Try Again
                 msgEl.style.display = 'block';
                 msgEl.textContent = `You scored ${score}/${total}. Try again to improve your score.`;
                 msgEl.style.color = '#a83e37';
@@ -627,7 +634,6 @@
                 if (state.completed === undefined) state.completed = false;
                 if (state.score === undefined) state.score = 0;
 
-                // Sanitize options
                 state.optionsList = state.optionsList.map(optArr =>
                     optArr.map(opt => Number(opt))
                 );
