@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Simplifying Fractions</title>
+    
+    <!-- MathJax Library for proper textbook-style mathematical rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --cream: #fbf8ef;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            width: 100%;
+        }
+        body {
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            padding: 1.2vh 1.2vw;
+            overflow-x: hidden;
+        }
+        .quiz-card {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
+            transition: all 0.2s;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: clamp(20px, 3.5vh, 32px);
+            margin: 0 0 4px 0;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: clamp(10px, 1.8vh, 16px);
+            text-transform: capitalize;
+        }
+        .subhead {
+            color: var(--muted);
+            margin: clamp(8px, 1.5vh, 12px) 0 clamp(14px, 2.5vh, 20px) 0;
+            font-size: clamp(13px, 1.6vh, 15px);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: clamp(12px, 1.4vh, 13px);
+            font-weight: 800;
+            color: var(--green);
+        }
+        .question-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(14px, 2.5vh, 24px) clamp(14px, 2.5vw, 20px);
+            margin: clamp(8px, 1.5vh, 10px) 0 clamp(10px, 2vh, 16px);
+            border: 1px solid var(--border-light);
+        }
+        .question-text {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 600;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(6px, 1vw, 12px);
+            flex-wrap: wrap;
+            margin-bottom: clamp(14px, 2.5vh, 24px);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(8px, 1.5vh, 14px);
+            margin-top: clamp(6px, 1vh, 10px);
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            border-radius: 13px;
+            padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px);
+            font-size: clamp(18px, 3vh, 26px);
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            user-select: none;
+            text-align: center;
+            word-break: break-word;
+            min-height: 60px; 
+        }
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--green2);
+            background: #f8fbf7;
+        }
+        .option-btn.selected {
+            border-color: var(--green2);
+            background: #edf5ef;
+            box-shadow: 0 0 0 3px #1d5b4e25;
+        }
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.75;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(10px, 1.5vh, 14px);
+            justify-content: center;
+            margin-top: clamp(12px, 2vh, 20px);
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: clamp(9px, 1.5vh, 12px) clamp(18px, 2.5vw, 24px);
+            border-radius: 12px;
+            font-size: clamp(14px, 1.8vh, 15px);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green2);
+            border-color: var(--green2);
+            transform: scale(1.02);
+        }
+        .btn:hover:not(:disabled):not(.btn-primary) {
+            background: #f0f4ed;
+            border-color: #8ca99a;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .result-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(20px, 4vh, 32px) clamp(16px, 3vw, 24px);
+            margin: clamp(12px, 2vh, 16px) 0;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .score-big {
+            font-size: clamp(40px, 8vh, 64px);
+            font-weight: 900;
+            color: var(--green);
+            line-height: 1.1;
+        }
+        .score-big small {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .score-message {
+            font-size: clamp(15px, 2.2vh, 20px);
+            font-weight: 500;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+        }
+        .congrats-message {
+            font-size: clamp(16px, 2.6vh, 24px);
+            font-weight: 700;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+            color: #216342;
+        }
+        .hide {
+            display: none !important;
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 650px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .quiz-card {
+                padding: 14px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            .question-text {
+                font-size: 20px;
+            }
+            .option-btn {
+                font-size: 18px;
+                padding: 12px 14px;
+            }
+            .score-big {
+                font-size: 42px;
+            }
+            .result-area {
+                padding: 20px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <h1>Simplifying Fractions</h1>
+    <div class="subhead">
+        <div id="statusText">Answer all 5 questions. Score shown at the end.</div>
+        <div class="progress-badge" id="progressBadge">0 / 5</div>
+    </div>
+
+    <!-- QUESTION VIEW -->
+    <div id="questionView">
+        <div class="question-area">
+            <div class="question-text" id="questionText">
+                <!-- filled by JS -->
+            </div>
+            <div class="options-grid" id="optionsGrid">
+                <!-- options filled by JS -->
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="submitBtn" disabled>Submit answer</button>
+        </div>
+    </div>
+
+    <!-- RESULT VIEW (score only) -->
+    <div id="resultView" class="hide">
+        <div class="result-area">
+            <div class="score-big" id="scoreDisplay">0<small>/5</small></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="congrats-message" id="congratsMessage" style="display: none;"></div>
+            <div class="btn-group" id="resultButtons" style="margin-top: 24px;">
+                <button class="btn" id="tryAgainBtn">🔄 Try again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- CONSTANTS ----------
+        const STORAGE_KEY = 'simplifying_fractions_expr_both_quiz_v1'; 
+        const TOTAL_QUESTIONS = 5;
+        const PRIMES = [2, 3, 5];
+
+        // ---------- HELPER: check if a number's prime factors are only 2, 3, 5 ----------
+        function is5Smooth(n) {
+            if (n < 1) return false;
+            let x = n;
+            for (let p of PRIMES) {
+                while (x % p === 0) x /= p;
+            }
+            return x === 1;
+        }
+
+        // ---------- HELPER: Greatest Common Divisor (Euclidean) ----------
+        function gcd(a, b) {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) {
+                let t = b;
+                b = a % b;
+                a = t;
+            }
+            return a;
+        }
+
+        // ---------- HELPER: generate all valid 2-digit 5-smooth numbers ----------
+        function generateAllValidNumbers() {
+            const nums = [];
+            for (let n = 10; n <= 99; n++) {
+                if (is5Smooth(n)) nums.push(n);
+            }
+            return nums;
+        }
+
+        // ---------- HELPER: get all factors of a number ----------
+        function getFactors(n) {
+            const factors = [];
+            for (let i = 1; i <= n; i++) {
+                if (n % i === 0) factors.push(i);
+            }
+            return factors;
+        }
+
+        const allNumbers = generateAllValidNumbers();
+        console.log('All 2-digit 5-smooth numbers:', allNumbers);
+
+        // ---------- GENERATE SINGLE QUESTION ----------
+        function generateOneQuestion(usedPairs) {
+            const MAX_ATTEMPTS = 5000;
+            for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                // Pick a random 2-digit 5-smooth number for the product of the numerator
+                const idx1 = Math.floor(Math.random() * allNumbers.length);
+                const productNum = allNumbers[idx1];
+
+                // Pick a random 2-digit 5-smooth number for the product of the denominator
+                const idx2 = Math.floor(Math.random() * allNumbers.length);
+                const productDen = allNumbers[idx2];
+
+                if (productNum === productDen) continue;
+
+                // Ensure fraction is not already in simplest form
+                const g = gcd(productNum, productDen);
+                if (g === 1) continue;
+
+                // Ensure this exact pair hasn't been used
+                const pairKey = productNum + '/' + productDen;
+                if (usedPairs.has(pairKey)) continue;
+
+                // Get factors for numerator
+                const numFactors = getFactors(productNum);
+                let numFactor1 = 1, numFactor2 = productNum;
+                const nonTrivialNum = numFactors.filter(f => f !== 1 && f !== productNum);
+                if (nonTrivialNum.length > 0) {
+                    numFactor1 = nonTrivialNum[Math.floor(Math.random() * nonTrivialNum.length)];
+                    numFactor2 = productNum / numFactor1;
+                }
+
+                // Get factors for denominator
+                const denFactors = getFactors(productDen);
+                let denFactor1 = 1, denFactor2 = productDen;
+                const nonTrivialDen = denFactors.filter(f => f !== 1 && f !== productDen);
+                if (nonTrivialDen.length > 0) {
+                    denFactor1 = nonTrivialDen[Math.floor(Math.random() * nonTrivialDen.length)];
+                    denFactor2 = productDen / denFactor1;
+                }
+
+                return {
+                    numFactor1: numFactor1,
+                    numFactor2: numFactor2,
+                    productNum: productNum,
+                    denFactor1: denFactor1,
+                    denFactor2: denFactor2,
+                    productDen: productDen,
+                    correctNum: productNum / g,
+                    correctDen: productDen / g,
+                    pairKey: pairKey
+                };
+            }
+            return null;
+        }
+
+        // ---------- GENERATE FULL SET OF QUESTIONS ----------
+        function generateQuestionSet(N) {
+            const usedPairs = new Set();
+            const questions = [];
+            for (let q = 0; q < N; q++) {
+                const question = generateOneQuestion(usedPairs);
+                if (!question) return null;
+                usedPairs.add(question.pairKey);
+                questions.push(question);
+            }
+            return questions;
+        }
+
+        // ---------- BUILD OPTIONS (one correct fraction, three distractors) ----------
+        function buildOptions(correctQuestion) {
+            const correctNum = correctQuestion.correctNum;
+            const correctDen = correctQuestion.correctDen;
+            
+            const distractorKeys = new Set();
+            distractorKeys.add(correctNum + '/' + correctDen);
+            const distractors = [];
+
+            const MAX_ATTEMPTS = 2000;
+            let attempts = 0;
+
+            while (distractors.length < 3 && attempts < MAX_ATTEMPTS) {
+                attempts++;
+
+                // Strategy 1: Pick a random fraction from the pool
+                if (Math.random() < 0.6) {
+                    const i1 = Math.floor(Math.random() * allNumbers.length);
+                    let i2 = Math.floor(Math.random() * allNumbers.length);
+                    if (i1 === i2) continue;
+                    
+                    const n = allNumbers[i1];
+                    const d = allNumbers[i2];
+                    const g = gcd(n, d);
+                    const candNum = n / g;
+                    const candDen = d / g;
+                    
+                    const key = candNum + '/' + candDen;
+                    if (distractorKeys.has(key)) continue;
+                    distractorKeys.add(key);
+                    distractors.push({ num: candNum, den: candDen });
+                    continue;
+                }
+
+                // Strategy 2: perturb the correct fraction
+                let candNum = correctNum;
+                let candDen = correctDen;
+                
+                const roll = Math.random();
+                if (roll < 0.5) {
+                    candNum = Math.max(1, correctNum + (Math.floor(Math.random() * 5) - 2));
+                } else {
+                    candDen = Math.max(1, correctDen + (Math.floor(Math.random() * 5) - 2));
+                }
+
+                // Ensure the fraction is in simplest form
+                const g = gcd(candNum, candDen);
+                candNum = candNum / g;
+                candDen = candDen / g;
+
+                const key = candNum + '/' + candDen;
+                if (distractorKeys.has(key)) continue;
+                distractorKeys.add(key);
+                distractors.push({ num: candNum, den: candDen });
+            }
+
+            // Combine and shuffle
+            const options = [
+                { num: correctNum, den: correctDen },
+                ...distractors
+            ];
+            
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            return options;
+        }
+
+        // ---------- STATE MANAGEMENT ----------
+        let state = {
+            questions: [],
+            currentIndex: 0,
+            answers: [],      
+            optionsList: [],  
+            completed: false,
+            score: 0
+        };
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) { console.warn('Could not save state', e); }
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch (e) { return null; }
+        }
+
+        function clearState() {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+
+        // ---------- RENDER CURRENT QUESTION ----------
+        function renderCurrentQuestion() {
+            if (state.completed) {
+                renderResult();
+                return;
+            }
+            const qIndex = state.currentIndex;
+            if (qIndex >= state.questions.length) {
+                state.completed = true;
+                saveState();
+                renderResult();
+                return;
+            }
+
+            const q = state.questions[qIndex];
+            const options = state.optionsList[qIndex];
+            const selectedIdx = state.answers[qIndex];
+
+            document.getElementById('progressBadge').textContent = `${qIndex + 1} / ${TOTAL_QUESTIONS}`;
+
+            const qt = document.getElementById('questionText');
+            qt.innerHTML = `
+                Reduce the fraction to its lowest form: <br><br>
+                <span style="display:inline-flex; flex-direction:column; align-items:center; font-size:clamp(28px, 6vh, 48px); font-weight:800; color:var(--green2); line-height:1.1; margin-top:10px;">
+                    <span style="border-bottom: 3px solid var(--green); padding: 0 15px 5px 15px;">${q.numFactor1} &times; ${q.numFactor2}</span>
+                    <span style="padding: 5px 15px 0 15px;">${q.denFactor1} &times; ${q.denFactor2}</span>
+                </span>
+            `;
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (selectedIdx === idx) btn.classList.add('selected');
+                
+                // Render the fraction nicely using flexbox
+                btn.innerHTML = `
+                    <span style="display:inline-flex; flex-direction:column; align-items:center; line-height:1.1;">
+                        <span style="border-bottom: 2px solid currentColor; padding: 0 8px 2px 8px;">${opt.num}</span>
+                        <span style="padding: 2px 8px 0 8px;">${opt.den}</span>
+                    </span>
+                `;
+                
+                btn.dataset.optIndex = idx;
+                btn.addEventListener('click', () => {
+                    if (state.completed) return;
+                    state.answers[qIndex] = idx;
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.getElementById('submitBtn').disabled = false;
+                    saveState();
+                });
+                grid.appendChild(btn);
+            });
+
+            const submitBtn = document.getElementById('submitBtn');
+            const hasSelection = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !hasSelection;
+            submitBtn.textContent = hasSelection ? 'Next question →' : 'Submit answer';
+
+            const newSubmit = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            newSubmit.id = 'submitBtn';
+            newSubmit.addEventListener('click', () => {
+                if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+                    state.currentIndex++;
+                    saveState();
+                    renderCurrentQuestion();
+                } else {
+                    finalizeQuiz();
+                }
+            });
+
+            document.getElementById('questionView').classList.remove('hide');
+            document.getElementById('resultView').classList.add('hide');
+            document.getElementById('statusText').textContent = `Question ${qIndex + 1} of ${TOTAL_QUESTIONS}`;
+        }
+
+        // ---------- FINALIZE QUIZ ----------
+        function finalizeQuiz() {
+            let score = 0;
+            state.questions.forEach((q, idx) => {
+                const ansIdx = state.answers[idx];
+                const options = state.optionsList[idx];
+                const chosen = options[ansIdx];
+                if (chosen && chosen.num === q.correctNum && chosen.den === q.correctDen) {
+                    score++;
+                }
+            });
+            state.score = score;
+            state.completed = true;
+            saveState();
+            renderResult();
+        }
+
+        // ---------- RENDER RESULT ----------
+        function renderResult() {
+            document.getElementById('questionView').classList.add('hide');
+            document.getElementById('resultView').classList.remove('hide');
+
+            const score = state.score;
+            const total = TOTAL_QUESTIONS;
+
+            document.getElementById('scoreDisplay').innerHTML = `${score}<small>/${total}</small>`;
+            const msgEl = document.getElementById('scoreMessage');
+            const congratsEl = document.getElementById('congratsMessage');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+
+            if (score === total) {
+                msgEl.textContent = '';
+                msgEl.style.display = 'none';
+                congratsEl.style.display = 'block';
+                congratsEl.textContent = '🎉 Congratulations! You scored a perfect 5/5! Excellent work!';
+                tryAgainBtn.style.display = 'none';
+            } else {
+                msgEl.style.display = 'block';
+                msgEl.textContent = `You scored ${score}/${total}. Try again to improve your score.`;
+                msgEl.style.color = '#a83e37';
+                congratsEl.style.display = 'none';
+                tryAgainBtn.style.display = 'inline-flex';
+            }
+
+            const newTryBtn = tryAgainBtn.cloneNode(true);
+            tryAgainBtn.parentNode.replaceChild(newTryBtn, tryAgainBtn);
+            newTryBtn.id = 'tryAgainBtn';
+            newTryBtn.addEventListener('click', () => {
+                resetAndStartNewQuiz();
+            });
+
+            document.getElementById('statusText').textContent = 'Quiz completed';
+            document.getElementById('progressBadge').textContent = `${total} / ${total}`;
+        }
+
+        // ---------- START / RESET ----------
+        function startNewQuiz() {
+            let questions = null;
+            let attempts = 0;
+            const maxGenAttempts = 300;
+            while (attempts < maxGenAttempts && !questions) {
+                questions = generateQuestionSet(TOTAL_QUESTIONS);
+                attempts++;
+            }
+            if (!questions) {
+                alert('Could not generate a valid quiz. Please refresh the page or try again.');
+                return;
+            }
+
+            const optionsList = questions.map(q => buildOptions(q));
+
+            state = {
+                questions: questions,
+                currentIndex: 0,
+                answers: new Array(TOTAL_QUESTIONS).fill(null),
+                optionsList: optionsList,
+                completed: false,
+                score: 0
+            };
+            saveState();
+            renderCurrentQuestion();
+        }
+
+        function resetAndStartNewQuiz() {
+            clearState();
+            startNewQuiz();
+        }
+
+        // ---------- INIT ----------
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+            if (saved && saved.questions && saved.questions.length === TOTAL_QUESTIONS) {
+                state = saved;
+                if (!state.optionsList || state.optionsList.length !== TOTAL_QUESTIONS) {
+                    state.optionsList = state.questions.map(q => buildOptions(q));
+                }
+                if (!state.answers || state.answers.length !== TOTAL_QUESTIONS) {
+                    state.answers = new Array(TOTAL_QUESTIONS).fill(null);
+                }
+                if (state.completed === undefined) state.completed = false;
+                if (state.score === undefined) state.score = 0;
+
+                if (state.completed) {
+                    renderResult();
+                } else {
+                    renderCurrentQuestion();
+                }
+            } else {
+                startNewQuiz();
+            }
+
+            window.addEventListener('beforeunload', () => {
+                if (state && state.questions) saveState();
+            });
+        });
+
+        window.__quizState = () => state;
+        window.__resetQuiz = resetAndStartNewQuiz;
+    })();
+</script>
+</body>
+</html>
