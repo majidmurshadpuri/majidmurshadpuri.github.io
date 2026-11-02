@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Quiz</title>
+    <style>
+        /* --- Design tokens --- */
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --ink: #172b27;
+            --muted: #66736e;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * { box-sizing: border-box; }
+        
+        body {
+            margin: 0;
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 22px 16px 44px;
+            /* Forces desktop layout on mobile devices */
+            min-width: 820px; 
+            overflow-x: auto;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 860px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* --- Header --- */
+        .page-header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 16px;
+        }
+        .page-header h1 {
+            font-size: clamp(24px, 5vw, 32px);
+            margin: 0 0 10px 0;
+            color: var(--ink);
+        }
+        .student-info {
+            font-size: 16px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .student-info strong {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* --- Student Form --- */
+        .form-overlay {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+        }
+        .student-form {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            padding: 40px 32px;
+            max-width: 460px;
+            width: 100%;
+            box-shadow: 0 15px 35px #172b2715;
+            text-align: center;
+        }
+        .student-form h2 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            color: var(--green);
+        }
+        .student-form p {
+            color: var(--muted);
+            margin: 0 0 28px 0;
+            font-size: 15px;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: var(--ink);
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e6e9e1;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #ffffff;
+            color: var(--ink);
+            transition: border 0.15s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--green2);
+            box-shadow: 0 0 0 3px #1d5b4e20;
+        }
+        
+        /* --- Buttons --- */
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green2);
+            border-color: var(--green2);
+            transform: scale(1.02);
+        }
+        .btn-full { width: 100%; }
+        
+        .hide { display: none !important; }
+
+        /* --- Integrated Iframe Area --- */
+        .level-iframe-wrapper {
+            width: 100%;
+            background: transparent;
+        }
+        .level-iframe-wrapper iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+            display: block;
+            background: transparent;
+        }
+        
+        /* --- Next Level Button Area --- */
+        .next-level-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <!-- HEADER (Shown when logged in) -->
+        <div class="page-header hide" id="pageHeader">
+            <h1>Math Quiz</h1>
+            <div class="student-info" id="studentInfoText"></div>
+        </div>
+
+        <!-- STUDENT FORM (Centered, first time) -->
+        <div id="studentFormOverlay" class="form-overlay">
+            <div class="student-form">
+                <h2>📋 Student details</h2>
+                <p>Enter your name and class to begin the quiz.</p>
+                <div class="form-group">
+                    <label for="studentNameInput">Full name</label>
+                    <input type="text" id="studentNameInput" placeholder="e.g. Aarav Sharma" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="studentClassSelect">Class</label>
+                    <select id="studentClassSelect">
+                        <option value="" disabled selected>Select your class</option>
+                        <option value="5-A">5-A</option>
+                        <option value="5-B">5-B</option>
+                        <option value="6-A">6-A</option>
+                        <option value="6-B">6-B</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary btn-full" id="saveStudentBtn">🚀 Proceed to quiz</button>
+            </div>
+        </div>
+
+        <!-- MAIN QUIZ AREA -->
+        <div id="quizArea" class="hide">
+            <div class="level-iframe-wrapper">
+                <iframe id="levelIframe" src="about:blank" title="Quiz level"></iframe>
+            </div>
+            <!-- Next Level Button (Controlled by Parent) -->
+            <div class="next-level-wrapper hide" id="nextLevelWrapper">
+                <button class="btn btn-primary" id="nextLevelBtn">🚀 Move to next level</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            // ---------- STORAGE KEYS ----------
+            const STUDENT_KEY = 'math_quiz_student_v1';
+            const PROGRESS_KEY = 'math_quiz_progress_v1';
+
+            // ---------- DOM refs ----------
+            const studentFormOverlay = document.getElementById('studentFormOverlay');
+            const quizArea = document.getElementById('quizArea');
+            const pageHeader = document.getElementById('pageHeader');
+            const studentInfoText = document.getElementById('studentInfoText');
+            const levelIframe = document.getElementById('levelIframe');
+            const nextLevelWrapper = document.getElementById('nextLevelWrapper');
+            const nextLevelBtn = document.getElementById('nextLevelBtn');
+            
+            const studentNameInput = document.getElementById('studentNameInput');
+            const studentClassSelect = document.getElementById('studentClassSelect');
+            const saveStudentBtn = document.getElementById('saveStudentBtn');
+
+            // ---------- State ----------
+            let student = null;
+            let progress = null;
+            let isNextLevelButtonShowing = false;
+
+            // ---------- Helpers ----------
+            function loadJSON(key) {
+                try {
+                    const raw = localStorage.getItem(key);
+                    return raw ? JSON.parse(raw) : null;
+                } catch(e) { return null; }
+            }
+            
+            function saveJSON(key, obj) {
+                try { localStorage.setItem(key, JSON.stringify(obj)); } catch(e) {}
+            }
+
+            function loadStudent() {
+                const s = loadJSON(STUDENT_KEY);
+                if (s && s.name && s.class) {
+                    student = s;
+                    return true;
+                }
+                return false;
+            }
+
+            // Automatically generate level URL based on ID
+            function getLevelUrl(levelId) {
+                return `MathQuizLevel${levelId}.html`;
+            }
+
+            function showStudentForm() {
+                studentFormOverlay.classList.remove('hide');
+                quizArea.classList.add('hide');
+                pageHeader.classList.add('hide');
+                nextLevelWrapper.classList.add('hide');
+            }
+
+            function showQuizArea() {
+                studentFormOverlay.classList.add('hide');
+                quizArea.classList.remove('hide');
+                pageHeader.classList.remove('hide');
+                updateHeaderText();
+            }
+
+            function updateHeaderText() {
+                const currentLevelId = progress.currentLevel || 1;
+                studentInfoText.innerHTML = `<strong>${student.name}</strong> (Class ${student.class}) - Level ${currentLevelId}`;
+            }
+
+            // ---------- Progress Handling ----------
+            function defaultProgress() {
+                return {
+                    currentLevel: 1,
+                    completedLevels: {}
+                };
+            }
+
+            function loadProgress() {
+                const p = loadJSON(PROGRESS_KEY);
+                if (p && typeof p === 'object') {
+                    progress = { ...defaultProgress(), ...p };
+                } else {
+                    progress = defaultProgress();
+                }
+                if (!progress.completedLevels) progress.completedLevels = {};
+            }
+
+            function saveProgress() {
+                saveJSON(PROGRESS_KEY, progress);
+            }
+
+            // ---------- Navigate to level ----------
+            function loadLevel(levelId, forceReload = false) {
+                progress.currentLevel = levelId;
+                saveProgress();
+                updateHeaderText();
+
+                const url = getLevelUrl(levelId);
+                const absoluteUrl = new URL(url, window.location.href).href;
+
+                // Load iframe
+                if (levelIframe.src !== absoluteUrl || forceReload) {
+                    levelIframe.src = url;
+                }
+
+                hideNextLevelButton();
+                setupIframeWatcher();
+            }
+
+            function hideNextLevelButton() {
+                nextLevelWrapper.classList.add('hide');
+                isNextLevelButtonShowing = false;
+            }
+
+            function showNextLevelButton() {
+                if (!isNextLevelButtonShowing) {
+                    nextLevelWrapper.classList.remove('hide');
+                    isNextLevelButtonShowing = true;
+                }
+            }
+
+            // ---------- Watch Iframe State ----------
+            let iframeWatcher = null;
+            function setupIframeWatcher() {
+                if (iframeWatcher) clearInterval(iframeWatcher);
+                
+                iframeWatcher = setInterval(() => {
+                    try {
+                        const win = levelIframe.contentWindow;
+                        // Check if the iframe has the __quizState function
+                        if (!win || !win.__quizState) return;
+                        
+                        const state = win.__quizState();
+                        if (!state || !state.questions) return;
+
+                        const levelId = progress.currentLevel;
+                        const isCompleted = state.completed === true;
+                        const score = state.score || 0;
+
+                        if (isCompleted && score === 5) {
+                            progress.completedLevels[levelId] = 5;
+                            saveProgress();
+                            showNextLevelButton();
+                        } else {
+                            if (progress.completedLevels[levelId] === 5) {
+                                delete progress.completedLevels[levelId];
+                                saveProgress();
+                            }
+                            hideNextLevelButton();
+                        }
+                    } catch(e) {
+                        // Ignore errors if iframe is loading or cross-origin
+                    }
+                }, 500);
+            }
+
+            // ---------- Events ----------
+            nextLevelBtn.addEventListener('click', () => {
+                const nextLevelId = progress.currentLevel + 1;
+                loadLevel(nextLevelId, true);
+            });
+
+            saveStudentBtn.addEventListener('click', () => {
+                const name = studentNameInput.value.trim();
+                const cls = studentClassSelect.value;
+                if (!name) { alert('Please enter your name.'); return; }
+                if (!cls) { alert('Please select your class.'); return; }
+                
+                student = { name, class: cls };
+                saveJSON(STUDENT_KEY, student);
+                
+                showQuizArea();
+                loadProgress();
+                loadLevel(progress.currentLevel || 1);
+            });
+
+            // ---------- Initialize ----------
+            function init() {
+                loadProgress();
+                const hasStudent = loadStudent();
+
+                if (!hasStudent) {
+                    showStudentForm();
+                } else {
+                    showQuizArea();
+                    loadLevel(progress.currentLevel);
+                }
+            }
+
+            window.addEventListener('DOMContentLoaded', init);
+        })();
+    </script>
+</body>
+</html>
