@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prime Factorization (2‑digit number)</title>
+    
+    <!-- MathJax Library for proper textbook-style mathematical rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --cream: #fbf8ef;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        body {
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.2vh 1.2vw;
+            overflow-x: hidden;
+        }
+        .quiz-card {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
+            transition: all 0.2s;
+            max-height: 98vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .quiz-card::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        .quiz-card {
+            scrollbar-width: none;
+        }
+        h1 {
+            font-size: clamp(20px, 3.5vh, 32px);
+            margin: 0 0 4px 0;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: clamp(10px, 1.8vh, 16px);
+            text-transform: capitalize;
+        }
+        .subhead {
+            color: var(--muted);
+            margin: clamp(8px, 1.5vh, 12px) 0 clamp(14px, 2.5vh, 20px) 0;
+            font-size: clamp(13px, 1.6vh, 15px);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: clamp(12px, 1.4vh, 13px);
+            font-weight: 800;
+            color: var(--green);
+        }
+        .question-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(14px, 2.5vh, 24px) clamp(14px, 2.5vw, 20px);
+            margin: clamp(8px, 1.5vh, 10px) 0 clamp(10px, 2vh, 16px);
+            border: 1px solid var(--border-light);
+        }
+        .question-text {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 600;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(6px, 1vw, 12px);
+            flex-wrap: wrap;
+            margin-bottom: clamp(14px, 2.5vh, 24px);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .number-highlight {
+            font-weight: 800;
+            color: var(--green2);
+            font-size: clamp(24px, 5vh, 38px);
+            background: #edf5ef;
+            padding: 2px 14px;
+            border-radius: 12px;
+            border: 1px solid #c8ddd0;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(8px, 1.5vh, 14px);
+            margin-top: clamp(6px, 1vh, 10px);
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            border-radius: 13px;
+            padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px);
+            font-size: clamp(18px, 3vh, 26px);
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            user-select: none;
+            text-align: center;
+            word-break: break-word;
+            min-height: 60px; /* Ensures consistent height while MathJax loads */
+        }
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--green2);
+            background: #f8fbf7;
+        }
+        .option-btn.selected {
+            border-color: var(--green2);
+            background: #edf5ef;
+            box-shadow: 0 0 0 3px #1d5b4e25;
+        }
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.75;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(10px, 1.5vh, 14px);
+            justify-content: center;
+            margin-top: clamp(12px, 2vh, 20px);
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: clamp(9px, 1.5vh, 12px) clamp(18px, 2.5vw, 24px);
+            border-radius: 12px;
+            font-size: clamp(14px, 1.8vh, 15px);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green2);
+            border-color: var(--green2);
+            transform: scale(1.02);
+        }
+        .btn:hover:not(:disabled):not(.btn-primary) {
+            background: #f0f4ed;
+            border-color: #8ca99a;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .result-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(20px, 4vh, 32px) clamp(16px, 3vw, 24px);
+            margin: clamp(12px, 2vh, 16px) 0;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .score-big {
+            font-size: clamp(40px, 8vh, 64px);
+            font-weight: 900;
+            color: var(--green);
+            line-height: 1.1;
+        }
+        .score-big small {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .score-message {
+            font-size: clamp(15px, 2.2vh, 20px);
+            font-weight: 500;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+        }
+        .congrats-message {
+            font-size: clamp(16px, 2.6vh, 24px);
+            font-weight: 700;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+            color: #216342;
+        }
+        .hide {
+            display: none !important;
+        }
+        @media (max-width: 650px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .quiz-card {
+                padding: 14px;
+                max-height: 98vh;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            .question-text {
+                font-size: 20px;
+            }
+            .option-btn {
+                font-size: 18px;
+                padding: 12px 14px;
+            }
+            .score-big {
+                font-size: 42px;
+            }
+            .result-area {
+                padding: 20px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <h1>Prime Factorization (2‑digit number)</h1>
+    <div class="subhead">
+        <div id="statusText">Answer all 5 questions. Score shown at the end.</div>
+        <div class="progress-badge" id="progressBadge">0 / 5</div>
+    </div>
+
+    <!-- QUESTION VIEW -->
+    <div id="questionView">
+        <div class="question-area">
+            <div class="question-text" id="questionText">
+                <!-- filled by JS -->
+            </div>
+            <div class="options-grid" id="optionsGrid">
+                <!-- options filled by JS -->
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="submitBtn" disabled>Submit answer</button>
+        </div>
+    </div>
+
+    <!-- RESULT VIEW (score only) -->
+    <div id="resultView" class="hide">
+        <div class="result-area">
+            <div class="score-big" id="scoreDisplay">0<small>/5</small></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="congrats-message" id="congratsMessage" style="display: none;"></div>
+            <div class="btn-group" id="resultButtons" style="margin-top: 24px;">
+                <button class="btn" id="tryAgainBtn">🔄 Try again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- CONSTANTS ----------
+        const STORAGE_KEY = 'prime_factorization_quiz_v3_mathjax'; // bumped version for MathJax
+        const TOTAL_QUESTIONS = 5;
+        const PRIMES = [2, 3, 5];
+
+        // ---------- HELPER: check if a number's prime factors are only 2, 3, 5 ----------
+        function is5Smooth(n) {
+            if (n < 1) return false;
+            let x = n;
+            for (let p of PRIMES) {
+                while (x % p === 0) x /= p;
+            }
+            return x === 1;
+        }
+
+        // ---------- HELPER: prime factorization as MathJax (LaTeX) string ----------
+        // Format example: 2^{3} \times 3^{2} \times 5
+        function primeFactorizationMathJax(n) {
+            if (n < 2) return String(n);
+            const factors = [];
+            let x = n;
+            for (let p of PRIMES) {
+                if (x % p === 0) {
+                    let count = 0;
+                    while (x % p === 0) {
+                        x /= p;
+                        count++;
+                    }
+                    if (count === 1) {
+                        factors.push(String(p));
+                    } else {
+                        factors.push(`${p}^{${count}}`);
+                    }
+                }
+            }
+            // Wrap in math delimiters
+            return `\\(${factors.join(' \\times ')}\\)`;
+        }
+
+        // ---------- HELPER: plain text representation for validation tracking ----------
+        // Format example: "2^3 × 3^2 × 5"
+        function primeFactorizationPlain(n) {
+            if (n < 2) return String(n);
+            const factors = [];
+            let x = n;
+            for (let p of PRIMES) {
+                if (x % p === 0) {
+                    let count = 0;
+                    while (x % p === 0) {
+                        x /= p;
+                        count++;
+                    }
+                    if (count === 1) {
+                        factors.push(String(p));
+                    } else {
+                        factors.push(`${p}^${count}`);
+                    }
+                }
+            }
+            return factors.join(' × ');
+        }
+
+        // ---------- HELPER: build the list of valid 2-digit 5-smooth numbers ----------
+        function generateAllValidNumbers() {
+            const nums = [];
+            for (let n = 10; n <= 99; n++) {
+                if (is5Smooth(n)) nums.push(n);
+            }
+            return nums;
+        }
+
+        const allNumbers = generateAllValidNumbers();
+        console.log('All 2-digit 5-smooth numbers:', allNumbers);
+
+        // ---------- GENERATE SINGLE QUESTION ----------
+        function generateOneQuestion(usedNumbers) {
+            const MAX_ATTEMPTS = 5000;
+            for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                const available = allNumbers.filter(n => !usedNumbers.has(n));
+                if (available.length === 0) return null;
+                const idx = Math.floor(Math.random() * available.length);
+                const number = available[idx];
+                if (!is5Smooth(number)) continue;
+                
+                return {
+                    number: number,
+                    factorizationMathJax: primeFactorizationMathJax(number),
+                    factorizationPlain: primeFactorizationPlain(number)
+                };
+            }
+            return null;
+        }
+
+        // ---------- GENERATE FULL SET OF QUESTIONS ----------
+        function generateQuestionSet(N) {
+            const usedNumbers = new Set();
+            const questions = [];
+            for (let q = 0; q < N; q++) {
+                const question = generateOneQuestion(usedNumbers);
+                if (!question) return null;
+                usedNumbers.add(question.number);
+                questions.push(question);
+            }
+            return questions;
+        }
+
+        // ---------- BUILD OPTIONS (one correct factorization, three distractors) ----------
+        function buildOptions(correctQuestion) {
+            const correctPlain = correctQuestion.factorizationPlain;
+            const correctMathJax = correctQuestion.factorizationMathJax;
+            const correctNumber = correctQuestion.number;
+            
+            const distractorKeys = new Set();
+            const distractorsMathJax = [];
+            const distractorsPlain = [];
+
+            const MAX_ATTEMPTS = 2000;
+            let attempts = 0;
+
+            while (distractorsMathJax.length < 3 && attempts < MAX_ATTEMPTS) {
+                attempts++;
+
+                // Strategy 1: pick another 5-smooth 2-digit number
+                if (Math.random() < 0.7) {
+                    const idx = Math.floor(Math.random() * allNumbers.length);
+                    const candidateNumber = allNumbers[idx];
+                    if (candidateNumber === correctNumber) continue;
+                    
+                    const candidatePlain = primeFactorizationPlain(candidateNumber);
+                    if (candidatePlain === correctPlain) continue;
+                    if (distractorKeys.has(candidatePlain)) continue;
+                    
+                    distractorKeys.add(candidatePlain);
+                    distractorsPlain.push(candidatePlain);
+                    distractorsMathJax.push(primeFactorizationMathJax(candidateNumber));
+                    continue;
+                }
+
+                // Strategy 2: perturb exponent
+                const parts = correctPlain.split(' × ');
+                const parsed = parts.map(p => {
+                    const match = p.match(/^(\d)(?:\^(\d+))?$/);
+                    if (!match) return null;
+                    return { prime: Number(match[1]), exp: match[2] ? Number(match[2]) : 1 };
+                }).filter(x => x !== null);
+
+                if (parsed.length === 0) continue;
+
+                const pos = Math.floor(Math.random() * parsed.length);
+                const newParsed = parsed.map((p, i) => {
+                    if (i !== pos) return { ...p };
+                    const delta = Math.random() < 0.5 ? 1 : -1;
+                    let newExp = p.exp + delta;
+                    if (newExp < 1) newExp = 1;
+                    return { ...p, exp: newExp };
+                });
+
+                // Validate mathematically
+                let val = 1;
+                for (let p of newParsed) {
+                    for (let i = 0; i < p.exp; i++) {
+                        val *= p.prime;
+                        if (val > 999) break;
+                    }
+                }
+                
+                if (val < 10 || val > 99) continue;
+                if (!is5Smooth(val)) continue;
+
+                // Build both formats
+                const newPlainParts = newParsed.map(p => p.exp === 1 ? String(p.prime) : `${p.prime}^${p.exp}`);
+                const newMathJaxParts = newParsed.map(p => p.exp === 1 ? String(p.prime) : `${p.prime}^{${p.exp}}`);
+                
+                const newPlain = newPlainParts.join(' × ');
+                const newMathJax = `\\(${newMathJaxParts.join(' \\times ')}\\)`;
+                
+                if (newPlain === correctPlain) continue;
+                if (distractorKeys.has(newPlain)) continue;
+
+                distractorKeys.add(newPlain);
+                distractorsPlain.push(newPlain);
+                distractorsMathJax.push(newMathJax);
+            }
+
+            // Fallback
+            while (distractorsMathJax.length < 3) {
+                const idx = Math.floor(Math.random() * allNumbers.length);
+                const candidateNumber = allNumbers[idx];
+                if (candidateNumber === correctNumber) continue;
+                
+                const candidatePlain = primeFactorizationPlain(candidateNumber);
+                if (candidatePlain === correctPlain) continue;
+                if (distractorKeys.has(candidatePlain)) continue;
+                
+                distractorKeys.add(candidatePlain);
+                distractorsPlain.push(candidatePlain);
+                distractorsMathJax.push(primeFactorizationMathJax(candidateNumber));
+            }
+
+            // Combine and shuffle
+            const options = [
+                { mathjax: correctMathJax, plain: correctPlain },
+                ...distractorsMathJax.map((mathjax, i) => ({ mathjax, plain: distractorsPlain[i] }))
+            ];
+            
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            return options;
+        }
+
+        // ---------- STATE MANAGEMENT ----------
+        let state = {
+            questions: [],
+            currentIndex: 0,
+            answers: [],      
+            optionsList: [],  
+            completed: false,
+            score: 0
+        };
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) { console.warn('Could not save state', e); }
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch (e) { return null; }
+        }
+
+        function clearState() {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+
+        // ---------- RENDER CURRENT QUESTION ----------
+        function renderCurrentQuestion() {
+            if (state.completed) {
+                renderResult();
+                return;
+            }
+            const qIndex = state.currentIndex;
+            if (qIndex >= state.questions.length) {
+                state.completed = true;
+                saveState();
+                renderResult();
+                return;
+            }
+
+            const q = state.questions[qIndex];
+            const options = state.optionsList[qIndex];
+            const selectedIdx = state.answers[qIndex];
+
+            document.getElementById('progressBadge').textContent = `${qIndex + 1} / ${TOTAL_QUESTIONS}`;
+
+            const qt = document.getElementById('questionText');
+            qt.innerHTML = `
+                Write the prime factorization of <span class="number-highlight">${q.number}</span>
+                <span class="question-mark">= ?</span>
+            `;
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (selectedIdx === idx) btn.classList.add('selected');
+                
+                btn.innerHTML = opt.mathjax;
+                
+                btn.dataset.optIndex = idx;
+                btn.addEventListener('click', () => {
+                    if (state.completed) return;
+                    state.answers[qIndex] = idx;
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.getElementById('submitBtn').disabled = false;
+                    saveState();
+                });
+                grid.appendChild(btn);
+            });
+
+            // Trigger MathJax to re-render the new math elements
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([grid]).catch(err => console.log('MathJax error:', err));
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const hasSelection = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !hasSelection;
+            submitBtn.textContent = hasSelection ? 'Next question →' : 'Submit answer';
+
+            const newSubmit = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            newSubmit.id = 'submitBtn';
+            newSubmit.addEventListener('click', () => {
+                if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+                    state.currentIndex++;
+                    saveState();
+                    renderCurrentQuestion();
+                } else {
+                    finalizeQuiz();
+                }
+            });
+
+            document.getElementById('questionView').classList.remove('hide');
+            document.getElementById('resultView').classList.add('hide');
+            document.getElementById('statusText').textContent = `Question ${qIndex + 1} of ${TOTAL_QUESTIONS}`;
+        }
+
+        // ---------- FINALIZE QUIZ ----------
+        function finalizeQuiz() {
+            let score = 0;
+            state.questions.forEach((q, idx) => {
+                const ansIdx = state.answers[idx];
+                const options = state.optionsList[idx];
+                const chosen = options[ansIdx];
+                const correct = q.factorizationPlain;
+                if (chosen && chosen.plain === correct) {
+                    score++;
+                }
+            });
+            state.score = score;
+            state.completed = true;
+            saveState();
+            renderResult();
+        }
+
+        // ---------- RENDER RESULT ----------
+        function renderResult() {
+            document.getElementById('questionView').classList.add('hide');
+            document.getElementById('resultView').classList.remove('hide');
+
+            const score = state.score;
+            const total = TOTAL_QUESTIONS;
+
+            document.getElementById('scoreDisplay').innerHTML = `${score}<small>/${total}</small>`;
+            const msgEl = document.getElementById('scoreMessage');
+            const congratsEl = document.getElementById('congratsMessage');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+
+            if (score === total) {
+                msgEl.textContent = '';
+                msgEl.style.display = 'none';
+                congratsEl.style.display = 'block';
+                congratsEl.textContent = '🎉 Congratulations! You scored a perfect 5/5! Excellent work!';
+                tryAgainBtn.style.display = 'none';
+            } else {
+                msgEl.style.display = 'block';
+                msgEl.textContent = `You scored ${score}/${total}. Try again to improve your score.`;
+                msgEl.style.color = '#a83e37';
+                congratsEl.style.display = 'none';
+                tryAgainBtn.style.display = 'inline-flex';
+            }
+
+            const newTryBtn = tryAgainBtn.cloneNode(true);
+            tryAgainBtn.parentNode.replaceChild(newTryBtn, tryAgainBtn);
+            newTryBtn.id = 'tryAgainBtn';
+            newTryBtn.addEventListener('click', () => {
+                resetAndStartNewQuiz();
+            });
+
+            document.getElementById('statusText').textContent = 'Quiz completed';
+            document.getElementById('progressBadge').textContent = `${total} / ${total}`;
+        }
+
+        // ---------- START / RESET ----------
+        function startNewQuiz() {
+            let questions = null;
+            let attempts = 0;
+            const maxGenAttempts = 300;
+            while (attempts < maxGenAttempts && !questions) {
+                questions = generateQuestionSet(TOTAL_QUESTIONS);
+                attempts++;
+            }
+            if (!questions) {
+                alert('Could not generate a valid quiz. Please refresh the page or try again.');
+                return;
+            }
+
+            const optionsList = questions.map(q => buildOptions(q));
+
+            state = {
+                questions: questions,
+                currentIndex: 0,
+                answers: new Array(TOTAL_QUESTIONS).fill(null),
+                optionsList: optionsList,
+                completed: false,
+                score: 0
+            };
+            saveState();
+            renderCurrentQuestion();
+        }
+
+        function resetAndStartNewQuiz() {
+            clearState();
+            startNewQuiz();
+        }
+
+        // ---------- INIT ----------
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+            if (saved && saved.questions && saved.questions.length === TOTAL_QUESTIONS) {
+                state = saved;
+                if (!state.optionsList || state.optionsList.length !== TOTAL_QUESTIONS) {
+                    state.optionsList = state.questions.map(q => buildOptions(q));
+                }
+                if (!state.answers || state.answers.length !== TOTAL_QUESTIONS) {
+                    state.answers = new Array(TOTAL_QUESTIONS).fill(null);
+                }
+                if (state.completed === undefined) state.completed = false;
+                if (state.score === undefined) state.score = 0;
+
+                if (state.completed) {
+                    renderResult();
+                } else {
+                    renderCurrentQuestion();
+                }
+            } else {
+                startNewQuiz();
+            }
+
+            window.addEventListener('beforeunload', () => {
+                if (state && state.questions) saveState();
+            });
+        });
+
+        window.__quizState = () => state;
+        window.__resetQuiz = resetAndStartNewQuiz;
+    })();
+</script>
+</body>
+</html>
