@@ -11,6 +11,33 @@
 
 <!-- ========== SHARED STYLESHEET ========== -->
 <link rel="stylesheet" href="style.css" />
+
+<!-- ========== CARD ORDER + UPDATED LABEL (auto-sorts by data-updated) ========== -->
+<style>
+  /* subtle "updated" badge */
+  .tool-card .updated-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(201, 162, 39, 0.18);
+    color: #b8860b;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(201, 162, 39, 0.35);
+    backdrop-filter: blur(4px);
+    font-family: 'Cormorant Garamond', serif;
+    text-transform: uppercase;
+    line-height: 1.2;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .tool-card {
+    position: relative; /* for badge positioning */
+  }
+</style>
 </head>
 <body>
 
@@ -33,15 +60,31 @@
 
     <div class="tools-grid single" id="toolsGrid">
 
-      <div class="tool-card">
+      <!--
+        ============================================================
+        CARD UPDATE MECHANISM
+        ============================================================
+        Add or update the `data-updated` attribute on any .tool-card
+        with a timestamp (ISO date string or simple YYYY-MM-DD).
+        The JavaScript at the bottom will:
+          1. Sort cards so the most recently updated appears first.
+          2. Add a "Updated" badge to any card whose data-updated
+             is set (and matches today's manual override or is recent).
+        ============================================================
+      -->
+
+      <!-- Maths card – UPDATED: now includes quizzes -->
+      <div class="tool-card" data-updated="2025-03-20">
         <a class="tool-link" href="Maths_SAI_Practice.html">
           <div class="icon">🧮</div>
           <div class="tool-title">Maths Practice Library</div>
-          <div class="tool-desc">Dear Students! Interactive SA I practice papers for Class 6, 7 &amp; 8 — learn Mathematics at your own pace.</div>
+          <div class="tool-desc">
+            Dear Students! Interactive SA I practice papers <strong>and quizzes</strong> for Class 6, 7 &amp; 8 — learn Mathematics at your own pace.
+          </div>
         </a>
       </div>
 
-      <div class="tool-card">
+      <div class="tool-card" data-updated="2025-03-15">
         <a class="tool-link" href="English Study Material.html">
           <div class="icon">📝</div>
           <div class="tool-title">English (Literature, Criticism, Theory)</div>
@@ -49,7 +92,7 @@
         </a>
       </div>
 
-      <div class="tool-card">
+      <div class="tool-card" data-updated="2025-03-10">
         <a class="tool-link" href="Aakhiri Tasveer Hindi.html">
           <div class="icon">📜</div>
           <div class="tool-title">Umair Najmi Shayari Collection (Hindi)</div>
@@ -57,7 +100,7 @@
         </a>
       </div>
 
-      <div class="tool-card">
+      <div class="tool-card" data-updated="2025-03-05">
         <a class="tool-link" href="apps.html">
           <div class="icon">🧰</div>
           <div class="tool-title">Tools &amp; Apps Studio</div>
@@ -90,6 +133,43 @@
       }, idx * 80);
     });
   });
+
+  /* ============================================================
+     AUTO-SORT CARDS BY data-updated (most recent first)
+     AND ADD "UPDATED" BADGE
+     ============================================================ */
+  (function () {
+    const grid = document.getElementById('toolsGrid');
+    if (!grid) return;
+
+    const cards = Array.from(grid.querySelectorAll('.tool-card'));
+
+    // Sort by data-updated descending (newest first). Cards without
+    // a date go to the bottom.
+    cards.sort((a, b) => {
+      const dateA = a.getAttribute('data-updated') || '';
+      const dateB = b.getAttribute('data-updated') || '';
+      if (!dateA && !dateB) return 0;
+      if (!dateA) return 1;
+      if (!dateB) return -1;
+      return dateB.localeCompare(dateA); // ISO string comparison works for YYYY-MM-DD
+    });
+
+    // Re-append sorted cards (they move in the DOM)
+    cards.forEach(card => grid.appendChild(card));
+
+    // Add "Updated" badge to any card that has a data-updated attribute
+    // (you can refine this to only show for recent dates if you prefer)
+    cards.forEach(card => {
+      const updated = card.getAttribute('data-updated');
+      if (updated) {
+        const badge = document.createElement('span');
+        badge.className = 'updated-badge';
+        badge.textContent = 'Updated';
+        card.appendChild(badge);
+      }
+    });
+  })();
 
   /* ============================================================
      POETRY COLLECTION · POPUP PASSCODE GATE
