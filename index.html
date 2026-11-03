@@ -12,9 +12,9 @@
 <!-- ========== SHARED STYLESHEET ========== -->
 <link rel="stylesheet" href="style.css" />
 
-<!-- ========== CARD ORDER + UPDATED LABEL (auto-sorts by data-updated) ========== -->
+<!-- ========== CARD ORDER + UPDATED LABEL (only on the most recent) ========== -->
 <style>
-  /* subtle "updated" badge */
+  /* subtle "updated" badge – only shown on the newest card */
   .tool-card .updated-badge {
     position: absolute;
     top: 10px;
@@ -68,12 +68,12 @@
         with a timestamp (ISO date string or simple YYYY-MM-DD).
         The JavaScript at the bottom will:
           1. Sort cards so the most recently updated appears first.
-          2. Add a "Updated" badge to any card whose data-updated
-             is set (and matches today's manual override or is recent).
+          2. Add a "Updated" badge ONLY to the single most recently
+             updated card (the one that moved to the top).
         ============================================================
       -->
 
-      <!-- Maths card – UPDATED: now includes quizzes -->
+      <!-- Maths card – UPDATED: now includes quizzes (most recent) -->
       <div class="tool-card" data-updated="2025-03-20">
         <a class="tool-link" href="Maths_SAI_Practice.html">
           <div class="icon">🧮</div>
@@ -136,7 +136,7 @@
 
   /* ============================================================
      AUTO-SORT CARDS BY data-updated (most recent first)
-     AND ADD "UPDATED" BADGE
+     AND ADD "UPDATED" BADGE ONLY TO THE NEWEST CARD
      ============================================================ */
   (function () {
     const grid = document.getElementById('toolsGrid');
@@ -158,17 +158,16 @@
     // Re-append sorted cards (they move in the DOM)
     cards.forEach(card => grid.appendChild(card));
 
-    // Add "Updated" badge to any card that has a data-updated attribute
-    // (you can refine this to only show for recent dates if you prefer)
-    cards.forEach(card => {
-      const updated = card.getAttribute('data-updated');
-      if (updated) {
-        const badge = document.createElement('span');
-        badge.className = 'updated-badge';
-        badge.textContent = 'Updated';
-        card.appendChild(badge);
-      }
-    });
+    // Add "Updated" badge ONLY to the most recently updated card.
+    // That is: the first card in the sorted list that actually has
+    // a data-updated attribute.
+    const newestCard = cards.find(card => card.getAttribute('data-updated'));
+    if (newestCard) {
+      const badge = document.createElement('span');
+      badge.className = 'updated-badge';
+      badge.textContent = 'Updated';
+      newestCard.appendChild(badge);
+    }
   })();
 
   /* ============================================================
@@ -251,13 +250,6 @@
       const raw = inputEl.value;
       const cleaned = raw.replace(/\s+/g, '');
       const lower   = cleaned.toLowerCase();
-
-      // Show a mask of dots while keeping the real value for comparison
-      // (kept simple: we let the browser render the typed chars but we
-      //  swap to dots to keep it discreet)
-      // --> We do NOT swap; user asked for a popup asking for password,
-      //     so a normal password-style feel is fine. Using type="text"
-      //     plus a dot-mask gives us auto-check + discretion.
 
       // Clear previous error as soon as they start typing again
       if (errorEl.textContent) errorEl.textContent = '';
