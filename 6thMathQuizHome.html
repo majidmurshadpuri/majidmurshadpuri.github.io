@@ -305,6 +305,10 @@
             const STUDENTS_LIST_KEY = 'math_quiz_students_list_v1';
             const ACTIVE_STUDENT_KEY = 'math_quiz_active_student_id_v1';
             const PROGRESS_KEY_PREFIX = 'math_quiz_progress_v1_';
+            
+            // Legacy keys for migration
+            const LEGACY_STUDENT_KEY = 'math_quiz_student_v1';
+            const LEGACY_PROGRESS_KEY = 'math_quiz_progress_v1';
 
             // ---------- DOM refs ----------
             const studentSelectionScreen = document.getElementById('studentSelectionScreen');
@@ -557,23 +561,58 @@
 
             // ---------- Initialize ----------
             function init() {
-                // Load student list
-                const savedList = loadJSON(STUDENTS_LIST_KEY);
-                if (savedList && Array.isArray(savedList)) {
-                    studentsList = savedList;
-                } else {
-                    studentsList = [];
+                // 1. MIGRATION CHECK (For existing single-user data)
+                const legacyStudent = loadJSON(LEGACY_STUDENT_KEY);
+                if (legacyStudent && legacyStudent.name && legacyStudent.class) {
+                    // Create new profile from legacy data
+                    const newId = generateId();
+                    const migratedStudent = {
+                        id: newId,
+                        name: legacyStudent.name,
+                        class: legacyStudent.class
+                    };
+                    
+                    // Set up new student list
+                    studentsList = [migratedStudent];
+                    saveJSON(STUDENTS_LIST_KEY, studentsList);
+                    
+                    // Set as active
+                    activeStudentId = newId;
+                    saveJSON(ACTIVE_STUDENT_KEY, activeStudentId);
+                    
+                    // Migrate progress
+                    const legacyProgress = loadJSON(LEGACY_PROGRESS_KEY);
+                    if (legacyProgress) {
+                        saveJSON(PROGRESS_KEY_PREFIX + newId, legacyProgress);
+                    }
+                    
+                    // Clean up old legacy keys so this doesn't run again
+                    localStorage.removeItem(LEGACY_STUDENT_KEY);
+                    localStorage.removeItem(LEGACY_PROGRESS_KEY);
+                } 
+                
+                // 2. NORMAL LOAD PROCESS
+                if (studentsList.length === 0) {
+                    // Load student list from storage
+                    const savedList = loadJSON(STUDENTS_LIST_KEY);
+                    if (savedList && Array.isArray(savedList)) {
+                        studentsList = savedList;
+                    } else {
+                        studentsList = [];
+                    }
                 }
 
-                // Load active student ID
-                const savedActiveId = loadJSON(ACTIVE_STUDENT_KEY);
-                if (savedActiveId) {
-                    activeStudentId = savedActiveId;
+                // Load active student ID from storage
+                if (!activeStudentId) {
+                    const savedActiveId = loadJSON(ACTIVE_STUDENT_KEY);
+                    if (savedActiveId) {
+                        activeStudentId = savedActiveId;
+                    }
                 }
 
                 // Determine which screen to show
                 if (studentsList.length === 0) {
-                    // First time user on this device
+                    // First time user on this device (and no legacy data)
                     showAddStudentForm();
                 } else if (activeStudentId) {
                     // Find the active student
@@ -581,7 +620,7 @@
                     if (student) {
                         loginStudent(student);
                     } else {
-                        // Active ID not found in list (maybe corrupted), show selection
+                        // Active ID not found in list (maybe corrupted or removed), show selection
                         showStudentSelection();
                     }
                 } else {
