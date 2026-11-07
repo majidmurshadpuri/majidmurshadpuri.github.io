@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Order 4 Proper Fractions (1-digit)</title>
+    <style>
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --cream: #fbf8ef;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0; padding: 0; min-height: 100%; width: 100%;
+        }
+        body {
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            padding: 1.2vh 1.2vw;
+            overflow-x: hidden;
+        }
+        .quiz-card {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: clamp(20px, 3.5vh, 32px);
+            margin: 0 0 4px 0;
+            color: var(--ink);
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: clamp(10px, 1.8vh, 16px);
+        }
+        .subhead {
+            color: var(--muted);
+            margin: clamp(8px, 1.5vh, 12px) 0 clamp(14px, 2.5vh, 20px) 0;
+            font-size: clamp(13px, 1.6vh, 15px);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: clamp(12px, 1.4vh, 13px);
+            font-weight: 800;
+            color: var(--green);
+        }
+        .question-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(14px, 2.5vh, 24px) clamp(14px, 2.5vw, 20px);
+            margin: clamp(8px, 1.5vh, 10px) 0 clamp(10px, 2vh, 16px);
+            border: 1px solid var(--border-light);
+        }
+        .question-text {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 600;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: clamp(14px, 2.5vh, 24px);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(8px, 1.5vh, 14px);
+            margin-top: clamp(6px, 1vh, 10px);
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            border-radius: 13px;
+            padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px);
+            font-size: clamp(18px, 3vh, 26px);
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            user-select: none;
+            text-align: center;
+            min-height: 60px;
+        }
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--green2);
+            background: #f8fbf7;
+        }
+        .option-btn.selected {
+            border-color: var(--green2);
+            background: #edf5ef;
+            box-shadow: 0 0 0 3px #1d5b4e25;
+        }
+        .option-btn.disabled { cursor: default; opacity: 0.75; }
+        .btn-group {
+            display: flex; flex-wrap: wrap;
+            gap: clamp(10px, 1.5vh, 14px);
+            justify-content: center;
+            margin-top: clamp(12px, 2vh, 20px);
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: clamp(9px, 1.5vh, 12px) clamp(18px, 2.5vw, 24px);
+            border-radius: 12px;
+            font-size: clamp(14px, 1.8vh, 15px);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green2);
+            border-color: var(--green2);
+            transform: scale(1.02);
+        }
+        .btn:hover:not(:disabled):not(.btn-primary) {
+            background: #f0f4ed;
+            border-color: #8ca99a;
+        }
+        .btn:disabled {
+            opacity: 0.5; cursor: not-allowed;
+            transform: none !important;
+        }
+        .result-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(20px, 4vh, 32px) clamp(16px, 3vw, 24px);
+            margin: clamp(12px, 2vh, 16px) 0;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .score-big {
+            font-size: clamp(40px, 8vh, 64px);
+            font-weight: 900;
+            color: var(--green);
+            line-height: 1.1;
+        }
+        .score-big small {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .score-message {
+            font-size: clamp(15px, 2.2vh, 20px);
+            font-weight: 500;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+        }
+        .congrats-message {
+            font-size: clamp(16px, 2.6vh, 24px);
+            font-weight: 700;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+            color: #216342;
+        }
+        .hide { display: none !important; }
+
+        /* Fraction sequence styling for options */
+        .frac-seq {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            font-size: clamp(15px, 2.4vh, 20px);
+        }
+        .frac-seq .frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.05;
+            font-weight: 800;
+            color: var(--green2);
+            margin: 0 1px;
+        }
+        .frac-seq .frac .fn {
+            border-bottom: 2px solid currentColor;
+            padding: 0 5px 1px 5px;
+        }
+        .frac-seq .frac .fd {
+            padding: 1px 5px 0 5px;
+        }
+        .frac-seq .arrow {
+            font-weight: 900;
+            color: var(--muted);
+            font-size: 0.9em;
+        }
+        .direction-tag {
+            display: inline-block;
+            background: var(--gold);
+            color: #3d2f10;
+            font-weight: 900;
+            font-size: clamp(11px, 1.6vh, 13px);
+            padding: 4px 14px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+        .frac-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 18px);
+            margin: 6px 0 4px 0;
+        }
+        .frac-list .frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            font-weight: 800;
+            color: var(--green2);
+            font-size: clamp(22px, 4vh, 34px);
+            line-height: 1.05;
+        }
+        .frac-list .frac .fn {
+            border-bottom: 3px solid var(--green);
+            padding: 0 12px 3px 12px;
+        }
+        .frac-list .frac .fd {
+            padding: 3px 12px 0 12px;
+        }
+        .frac-list .comma {
+            font-weight: 900;
+            color: var(--muted);
+            align-self: center;
+            font-size: clamp(20px, 3.5vh, 30px);
+        }
+
+        @media (max-width: 650px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .quiz-card { padding: 14px; }
+            h1 { font-size: 20px; }
+            .question-text { font-size: 20px; }
+            .option-btn { font-size: 16px; padding: 12px 14px; }
+            .score-big { font-size: 42px; }
+            .result-area { padding: 20px 14px; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <h1>Order 4 Proper Fractions</h1>
+    <div class="subhead">
+        <div id="statusText">Answer all 5 questions. Score shown at the end.</div>
+        <div class="progress-badge" id="progressBadge">0 / 5</div>
+    </div>
+
+    <div id="questionView">
+        <div class="question-area">
+            <div style="text-align:center;">
+                <span class="direction-tag" id="directionTag">Ascending order</span>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options-grid" id="optionsGrid"></div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="submitBtn" disabled>Submit answer</button>
+        </div>
+    </div>
+
+    <div id="resultView" class="hide">
+        <div class="result-area">
+            <div class="score-big" id="scoreDisplay">0<small>/5</small></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="congrats-message" id="congratsMessage" style="display: none;"></div>
+            <div class="btn-group" id="resultButtons" style="margin-top: 24px;">
+                <button class="btn" id="tryAgainBtn">🔄 Try again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- CONSTANTS ----------
+        const STORAGE_KEY = 'order_4_proper_fractions_1digit_quiz_v3';
+        const TOTAL_QUESTIONS = 5;
+
+        // ---------- HELPER: GCD ----------
+        function gcd(a, b) {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) {
+                const t = b;
+                b = a % b;
+                a = t;
+            }
+            return a;
+        }
+
+        // ---------- EXACT COMPARE: a/b vs c/d ----------
+        function cmpFrac(a, b, c, d) {
+            return (a * d) - (c * b); // >0 if a/b > c/d
+        }
+
+        // ---------- DIFFICULTY CHECK ----------
+        function isDifficultySuitable(fracs) {
+            const vals = fracs.map(f => f.n / f.d);
+            for (let i = 0; i < 4; i++) {
+                for (let j = i + 1; j < 4; j++) {
+                    if (Math.abs(vals[i] - vals[j]) < 1e-12) return false;
+                }
+            }
+            const numSet = new Set(fracs.map(f => f.n));
+            if (numSet.size < 4) return false;
+
+            const sortedVals = [...vals].sort((x, y) => x - y);
+            const range = sortedVals[3] - sortedVals[0];
+            if (range < 0.18) return false;
+            if (range > 0.85) return false;
+
+            const gaps = [];
+            for (let i = 1; i < 4; i++) gaps.push(sortedVals[i] - sortedVals[i-1]);
+            const maxGap = Math.max(...gaps);
+            if (maxGap > 0.32) return false;
+
+            const byNum = [...fracs].sort((a,b) => a.n - b.n);
+            const byVal = [...fracs].sort((a,b) => (a.n/a.d) - (b.n/b.d));
+            let alignedNum = 0;
+            for (let i = 0; i < 4; i++) {
+                if (byNum[i].n === byVal[i].n) alignedNum++;
+            }
+            if (alignedNum >= 3) return false;
+
+            const byDen = [...fracs].sort((a,b) => a.d - b.d);
+            const byValDesc = [...fracs].sort((a,b) => (b.n/b.d) - (a.n/a.d));
+            let alignedDen = 0;
+            for (let i = 0; i < 4; i++) {
+                if (byDen[i].d === byValDesc[i].d) alignedDen++;
+            }
+            if (alignedDen >= 3) return false;
+
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (i === j) continue;
+                    const ratio = vals[i] / vals[j];
+                    if (Math.abs(ratio - 2) < 0.05 || Math.abs(ratio - 0.5) < 0.05) return false;
+                    if (Math.abs(ratio - 3) < 0.05 || Math.abs(ratio - 1/3) < 0.05) return false;
+                }
+            }
+            return true;
+        }
+
+        // ---------- GENERATE SINGLE QUESTION ----------
+        function generateOneQuestion(usedPairs) {
+            const MAX_ATTEMPTS = 20000;
+            for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                const allDen = [2,3,4,5,6,7,8,9];
+                for (let i = allDen.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [allDen[i], allDen[j]] = [allDen[j], allDen[i]];
+                }
+                const denoms = allDen.slice(0, 4);
+
+                const fracs = [];
+                let ok = true;
+                const usedNums = new Set();
+                for (const d of denoms) {
+                    const possible = [];
+                    for (let n = 1; n < d; n++) {
+                        if (!usedNums.has(n) && !denoms.includes(n)) possible.push(n);
+                    }
+                    if (possible.length === 0) { ok = false; break; }
+                    const n = possible[Math.floor(Math.random() * possible.length)];
+                    usedNums.add(n);
+                    fracs.push({ n, d });
+                }
+                if (!ok) continue;
+                if (!isDifficultySuitable(fracs)) continue;
+
+                const fracStr = fracs.map(f => `${f.n}/${f.d}`).sort().join('|');
+                if (usedPairs.has(fracStr)) continue;
+
+                const direction = Math.random() < 0.5 ? 'asc' : 'desc';
+                const sorted = [...fracs].sort((a, b) => cmpFrac(a.n, a.d, b.n, b.d));
+                if (direction === 'desc') sorted.reverse();
+
+                return {
+                    fractions: fracs,
+                    direction,
+                    correctOrder: sorted,
+                    pairKey: fracStr
+                };
+            }
+            return null;
+        }
+
+        // ---------- GENERATE FULL SET ----------
+        function generateQuestionSet(N) {
+            const usedPairs = new Set();
+            const questions = [];
+            for (let q = 0; q < N; q++) {
+                const question = generateOneQuestion(usedPairs);
+                if (!question) return null;
+                usedPairs.add(question.pairKey);
+                questions.push(question);
+            }
+            return questions;
+        }
+
+        // ---------- BUILD OPTIONS ----------
+        function buildOptions(question) {
+            const correct = question.correctOrder;
+            const correctKey = correct.map(f => `${f.n}/${f.d}`).join('|');
+
+            const seenKeys = new Set();
+            seenKeys.add(correctKey);
+
+            const options = [{ order: correct.slice(), isCorrect: true }];
+
+            const MAX_ATTEMPTS = 5000;
+            let attempts = 0;
+
+            function shuffle(arr) {
+                const a = arr.slice();
+                for (let i = a.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [a[i], a[j]] = [a[j], a[i]];
+                }
+                return a;
+            }
+
+            while (options.length < 4 && attempts < MAX_ATTEMPTS) {
+                attempts++;
+                let candidate;
+                if (Math.random() < 0.55) {
+                    const base = correct.slice();
+                    const i = Math.floor(Math.random() * 3);
+                    [base[i], base[i+1]] = [base[i+1], base[i]];
+                    candidate = base;
+                } else if (Math.random() < 0.8) {
+                    const base = correct.slice();
+                    let i = Math.floor(Math.random() * 4);
+                    let j = Math.floor(Math.random() * 4);
+                    let g = 0;
+                    while (i === j && g < 20) {
+                        j = Math.floor(Math.random() * 4);
+                        g++;
+                    }
+                    if (i === j) continue;
+                    [base[i], base[j]] = [base[j], base[i]];
+                    candidate = base;
+                } else {
+                    candidate = shuffle(correct);
+                }
+
+                const key = candidate.map(f => `${f.n}/${f.d}`).join('|');
+                if (seenKeys.has(key)) continue;
+                seenKeys.add(key);
+                options.push({ order: candidate, isCorrect: false });
+            }
+
+            while (options.length < 4) {
+                const candidate = shuffle(correct);
+                const key = candidate.map(f => `${f.n}/${f.d}`).join('|');
+                if (seenKeys.has(key)) continue;
+                seenKeys.add(key);
+                options.push({ order: candidate, isCorrect: false });
+            }
+
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            return options;
+        }
+
+        // ---------- STATE ----------
+        let state = {
+            questions: [],
+            currentIndex: 0,
+            answers: [],
+            optionsList: [],
+            completed: false,
+            score: 0
+        };
+
+        function saveState() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+            catch (e) { /* ignore */ }
+        }
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+        function clearState() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        }
+
+        // ---------- RENDER HELPERS ----------
+        function fracHTML(f) {
+            return `<span class="frac"><span class="fn">${f.n}</span><span class="fd">${f.d}</span></span>`;
+        }
+
+        function seqHTML(order) {
+            let html = '<span class="frac-seq">';
+            order.forEach((f, i) => {
+                if (i > 0) html += '<span class="arrow">,</span>';
+                html += fracHTML(f);
+            });
+            html += '</span>';
+            return html;
+        }
+
+        // ---------- RENDER QUESTION ----------
+        function renderCurrentQuestion() {
+            if (state.completed) { renderResult(); return; }
+            const qIndex = state.currentIndex;
+            if (qIndex >= state.questions.length) {
+                state.completed = true;
+                saveState();
+                renderResult();
+                return;
+            }
+
+            const q = state.questions[qIndex];
+            const options = state.optionsList[qIndex];
+            const selectedIdx = state.answers[qIndex];
+
+            document.getElementById('progressBadge').textContent = `${qIndex + 1} / ${TOTAL_QUESTIONS}`;
+            document.getElementById('statusText').textContent = `Question ${qIndex + 1} of ${TOTAL_QUESTIONS}`;
+
+            const dirTag = document.getElementById('directionTag');
+            dirTag.textContent = q.direction === 'asc' ? 'Ascending order' : 'Descending order';
+
+            const qt = document.getElementById('questionText');
+            let listHTML = '<div class="frac-list">';
+            q.fractions.forEach((f, i) => {
+                if (i > 0) listHTML += '<span class="comma">,</span>';
+                listHTML += `<span class="frac"><span class="fn">${f.n}</span><span class="fd">${f.d}</span></span>`;
+            });
+            listHTML += '</div>';
+            qt.innerHTML = listHTML +
+                `<div style="font-size:clamp(14px,2vh,18px); margin-top:10px; color:var(--muted); font-weight:600;">
+                    Which option shows them in ${q.direction === 'asc' ? 'ascending' : 'descending'} order?
+                </div>`;
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (selectedIdx === idx) btn.classList.add('selected');
+
+                btn.innerHTML = seqHTML(opt.order);
+
+                btn.dataset.optIndex = idx;
+                btn.addEventListener('click', () => {
+                    if (state.completed) return;
+                    state.answers[qIndex] = idx;
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.getElementById('submitBtn').disabled = false;
+                    saveState();
+                });
+                grid.appendChild(btn);
+            });
+
+            const submitBtn = document.getElementById('submitBtn');
+            const hasSelection = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !hasSelection;
+            submitBtn.textContent = hasSelection ? 'Next question →' : 'Submit answer';
+
+            const newSubmit = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            newSubmit.id = 'submitBtn';
+            newSubmit.addEventListener('click', () => {
+                if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+                    state.currentIndex++;
+                    saveState();
+                    renderCurrentQuestion();
+                } else {
+                    finalizeQuiz();
+                }
+            });
+
+            document.getElementById('questionView').classList.remove('hide');
+            document.getElementById('resultView').classList.add('hide');
+        }
+
+        // ---------- FINALIZE ----------
+        function finalizeQuiz() {
+            let score = 0;
+            state.questions.forEach((q, idx) => {
+                const ansIdx = state.answers[idx];
+                if (ansIdx === null || ansIdx === undefined) return;
+                const opt = state.optionsList[idx][ansIdx];
+                if (opt && opt.isCorrect) score++;
+            });
+            state.score = score;
+            state.completed = true;
+            saveState();
+            renderResult();
+        }
+
+        // ---------- RENDER RESULT ----------
+        function renderResult() {
+            document.getElementById('questionView').classList.add('hide');
+            document.getElementById('resultView').classList.remove('hide');
+
+            const score = state.score;
+            const total = TOTAL_QUESTIONS;
+            document.getElementById('scoreDisplay').innerHTML = `${score}<small>/${total}</small>`;
+
+            const msgEl = document.getElementById('scoreMessage');
+            const congratsEl = document.getElementById('congratsMessage');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+
+            if (score === total) {
+                msgEl.style.display = 'none';
+                congratsEl.style.display = 'block';
+                congratsEl.textContent = '🎉 Perfect score! You got all 5 correct!';
+                tryAgainBtn.style.display = 'none';
+            } else {
+                msgEl.style.display = 'block';
+                msgEl.textContent = `You scored ${score}/${total}. Try again to improve.`;
+                msgEl.style.color = '#a83e37';
+                congratsEl.style.display = 'none';
+                tryAgainBtn.style.display = 'inline-flex';
+            }
+
+            const newTryBtn = tryAgainBtn.cloneNode(true);
+            tryAgainBtn.parentNode.replaceChild(newTryBtn, tryAgainBtn);
+            newTryBtn.id = 'tryAgainBtn';
+            newTryBtn.addEventListener('click', resetAndStartNewQuiz);
+
+            document.getElementById('statusText').textContent = 'Quiz completed';
+            document.getElementById('progressBadge').textContent = `${total} / ${total}`;
+        }
+
+        // ---------- START / RESET ----------
+        function startNewQuiz() {
+            let questions = null;
+            let attempts = 0;
+            while (attempts < 120 && !questions) {
+                questions = generateQuestionSet(TOTAL_QUESTIONS);
+                attempts++;
+            }
+            if (!questions) {
+                alert('Could not generate a valid quiz. Please refresh and try again.');
+                return;
+            }
+
+            const optionsList = questions.map(q => buildOptions(q));
+
+            state = {
+                questions,
+                currentIndex: 0,
+                answers: new Array(TOTAL_QUESTIONS).fill(null),
+                optionsList,
+                completed: false,
+                score: 0
+            };
+            saveState();
+            renderCurrentQuestion();
+        }
+
+        function resetAndStartNewQuiz() {
+            clearState();
+            startNewQuiz();
+        }
+
+        // ---------- INIT ----------
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+            if (saved && saved.questions && saved.questions.length === TOTAL_QUESTIONS) {
+                state = saved;
+                if (!state.optionsList || state.optionsList.length !== TOTAL_QUESTIONS) {
+                    state.optionsList = state.questions.map(q => buildOptions(q));
+                }
+                if (!state.answers || state.answers.length !== TOTAL_QUESTIONS) {
+                    state.answers = new Array(TOTAL_QUESTIONS).fill(null);
+                }
+                if (state.completed === undefined) state.completed = false;
+                if (state.score === undefined) state.score = 0;
+
+                if (state.completed) renderResult();
+                else renderCurrentQuestion();
+            } else {
+                startNewQuiz();
+            }
+
+            window.addEventListener('beforeunload', () => {
+                if (state && state.questions) saveState();
+            });
+        });
+
+        window.__quizState = () => state;
+        window.__resetQuiz = resetAndStartNewQuiz;
+    })();
+</script>
+</body>
+</html>

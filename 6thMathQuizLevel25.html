@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Improper Fraction → Decimal</title>
+    <style>
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --cream: #fbf8ef;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0; padding: 0; min-height: 100%; width: 100%;
+        }
+        body {
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            padding: 1.2vh 1.2vw;
+            overflow-x: hidden;
+        }
+        .quiz-card {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: clamp(20px, 3.5vh, 32px);
+            margin: 0 0 4px 0;
+            color: var(--ink);
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: clamp(10px, 1.8vh, 16px);
+        }
+        .subhead {
+            color: var(--muted);
+            margin: clamp(8px, 1.5vh, 12px) 0 clamp(14px, 2.5vh, 20px) 0;
+            font-size: clamp(13px, 1.6vh, 15px);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: clamp(12px, 1.4vh, 13px);
+            font-weight: 800;
+            color: var(--green);
+        }
+        .question-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(14px, 2.5vh, 24px) clamp(14px, 2.5vw, 20px);
+            margin: clamp(8px, 1.5vh, 10px) 0 clamp(10px, 2vh, 16px);
+            border: 1px solid var(--border-light);
+        }
+        .question-text {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 600;
+            color: var(--green);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: clamp(14px, 2.5vh, 24px);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(8px, 1.5vh, 14px);
+            margin-top: clamp(6px, 1vh, 10px);
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            border-radius: 13px;
+            padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px);
+            font-size: clamp(18px, 3vh, 26px);
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            user-select: none;
+            text-align: center;
+            min-height: 60px;
+        }
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--green2);
+            background: #f8fbf7;
+        }
+        .option-btn.selected {
+            border-color: var(--green2);
+            background: #edf5ef;
+            box-shadow: 0 0 0 3px #1d5b4e25;
+        }
+        .option-btn.disabled { cursor: default; opacity: 0.75; }
+        .btn-group {
+            display: flex; flex-wrap: wrap;
+            gap: clamp(10px, 1.5vh, 14px);
+            justify-content: center;
+            margin-top: clamp(12px, 2vh, 20px);
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: clamp(9px, 1.5vh, 12px) clamp(18px, 2.5vw, 24px);
+            border-radius: 12px;
+            font-size: clamp(14px, 1.8vh, 15px);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green2);
+            border-color: var(--green2);
+            transform: scale(1.02);
+        }
+        .btn:hover:not(:disabled):not(.btn-primary) {
+            background: #f0f4ed;
+            border-color: #8ca99a;
+        }
+        .btn:disabled {
+            opacity: 0.5; cursor: not-allowed;
+            transform: none !important;
+        }
+        .result-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(20px, 4vh, 32px) clamp(16px, 3vw, 24px);
+            margin: clamp(12px, 2vh, 16px) 0;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .score-big {
+            font-size: clamp(40px, 8vh, 64px);
+            font-weight: 900;
+            color: var(--green);
+            line-height: 1.1;
+        }
+        .score-big small {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .score-message {
+            font-size: clamp(15px, 2.2vh, 20px);
+            font-weight: 500;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+        }
+        .congrats-message {
+            font-size: clamp(16px, 2.6vh, 24px);
+            font-weight: 700;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+            color: #216342;
+        }
+        .hide { display: none !important; }
+
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.05;
+            font-weight: 800;
+        }
+        .frac .fn {
+            border-bottom: 3px solid currentColor;
+            padding: 0 10px 2px 10px;
+        }
+        .frac .fd {
+            padding: 3px 10px 0 10px;
+        }
+        
+        /* Fixed line break styling */
+        .division-expr {
+            display: block; /* Block to allow internal inline-flex to sit on new line */
+            font-size: clamp(26px, 5vh, 42px);
+            font-weight: 800;
+            color: var(--green2);
+            margin-top: 12px;
+        }
+        .division-inner {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .division-expr .op {
+            font-weight: 400;
+            color: var(--green);
+        }
+        .question-prompt {
+            font-size: clamp(14px, 2.1vh, 18px);
+            color: var(--muted);
+            font-weight: 700;
+            margin-bottom: 0px;
+        }
+
+        @media (max-width: 650px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .quiz-card { padding: 14px; }
+            h1 { font-size: 20px; }
+            .question-text { font-size: 20px; }
+            .option-btn { font-size: 18px; padding: 12px 14px; }
+            .score-big { font-size: 42px; }
+            .result-area { padding: 20px 14px; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <h1>Improper Fraction → Decimal</h1>
+    <div class="subhead">
+        <div id="statusText">Answer all 5 questions. Score shown at the end.</div>
+        <div class="progress-badge" id="progressBadge">0 / 5</div>
+    </div>
+
+    <div id="questionView">
+        <div class="question-area">
+            <div class="question-text" id="questionText"></div>
+            <div class="options-grid" id="optionsGrid"></div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="submitBtn" disabled>Submit answer</button>
+        </div>
+    </div>
+
+    <div id="resultView" class="hide">
+        <div class="result-area">
+            <div class="score-big" id="scoreDisplay">0<small>/5</small></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="congrats-message" id="congratsMessage" style="display: none;"></div>
+            <div class="btn-group" id="resultButtons" style="margin-top: 24px;">
+                <button class="btn" id="tryAgainBtn">🔄 Try again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- CONSTANTS ----------
+        const STORAGE_KEY = 'improper_fraction_to_decimal_quiz_v3';
+        const TOTAL_QUESTIONS = 5;
+
+        // ---------- DECIMAL HELPERS ----------
+        function decimalString(num, den) {
+            const integerPart = Math.floor(num / den);
+            let r = num % den;
+            if (r === 0) return String(integerPart);
+            let digits = '';
+            for (let i = 0; i < 4; i++) {
+                r = r * 10;
+                const digit = Math.floor(r / den);
+                digits += digit;
+                r = r % den;
+                if (r === 0) break;
+            }
+            let s = integerPart + '.' + digits;
+            s = s.replace(/0+$/, '');
+            if (s.endsWith('.')) s = s.slice(0, -1);
+            return s;
+        }
+
+        function trimTrailingZeros(s) {
+            if (s.indexOf('.') !== -1) {
+                s = s.replace(/0+$/, '');
+                s = s.replace(/\.$/, '');
+            }
+            return s;
+        }
+
+        // ---------- GENERATE SINGLE QUESTION ----------
+        function generateOneQuestion(usedPairs) {
+            const MAX_ATTEMPTS = 3000;
+            for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                const den = Math.floor(Math.random() * 8) + 2; // 2..9
+                if (den >= 9) continue;
+                const num = Math.floor(Math.random() * (9 - den)) + (den + 1);
+
+                if (num % den === 0) continue; // Ensure true decimal, not integer
+
+                const pairKey = `${num}/${den}`;
+                if (usedPairs.has(pairKey)) continue;
+
+                const presentation = Math.random() < 0.5 ? 'fraction' : 'division';
+                return { num, den, presentation, pairKey };
+            }
+            return null;
+        }
+
+        function generateQuestionSet(N) {
+            const usedPairs = new Set();
+            const questions = [];
+            for (let q = 0; q < N; q++) {
+                const question = generateOneQuestion(usedPairs);
+                if (!question) return null;
+                usedPairs.add(question.pairKey);
+                questions.push(question);
+            }
+            return questions;
+        }
+
+        // ---------- BUILD OPTIONS ----------
+        function buildOptions(q) {
+            const { num, den } = q;
+            const correctStr = decimalString(num, den);
+            const correctVal = parseFloat(correctStr);
+
+            const seen = new Set();
+            seen.add(correctStr);
+            const options = [{ str: correctStr, val: correctVal, correct: true }];
+
+            const fracCands = [];
+            if (den >= 2 && num <= 9) fracCands.push({ n: den, d: num });
+            if (den + 1 <= 9) fracCands.push({ n: num, d: den + 1 });
+            if (num - 1 > 0) fracCands.push({ n: num - 1, d: den });
+            if (num + 1 <= 9) fracCands.push({ n: num + 1, d: den });
+            if (den - 1 >= 2) fracCands.push({ n: num, d: den - 1 });
+            if (num - 2 > 0) fracCands.push({ n: num - 2, d: den });
+
+            const MAX_ATTEMPTS = 600;
+            let attempts = 0;
+
+            while (options.length < 4 && attempts < MAX_ATTEMPTS) {
+                attempts++;
+                let candStr, candVal;
+
+                const roll = Math.random();
+                if (roll < 0.6 && fracCands.length > 0) {
+                    const idx = Math.floor(Math.random() * fracCands.length);
+                    const c = fracCands.splice(idx, 1)[0];
+                    if (c.n <= 0 || c.d <= 0 || c.d === 1) continue;
+                    if (c.n % c.d === 0) continue;
+                    candStr = decimalString(c.n, c.d);
+                    candVal = parseFloat(candStr);
+                } else if (roll < 0.8) {
+                    const factor = Math.random() < 0.5 ? 10 : 0.1;
+                    candVal = parseFloat((correctVal * factor).toFixed(4));
+                    candStr = trimTrailingZeros(candVal.toFixed(4));
+                } else {
+                    const delta = (Math.random() < 0.5 ? 1 : -1) * (Math.floor(Math.random() * 9) + 1) / 100;
+                    candVal = parseFloat((correctVal + delta).toFixed(4));
+                    candStr = trimTrailingZeros(candVal.toFixed(4));
+                }
+
+                if (!candStr || candVal <= 0) continue;
+                if (candStr === correctStr) continue;
+                if (seen.has(candStr)) continue;
+                if (Number.isInteger(candVal) && candVal > 0 && candStr.indexOf('.') === -1) {
+                    continue;
+                }
+                seen.add(candStr);
+                options.push({ str: candStr, val: candVal, correct: false });
+            }
+
+            let delta = 0.1;
+            while (options.length < 4) {
+                const v = parseFloat((correctVal + delta).toFixed(4));
+                const s = trimTrailingZeros(v.toFixed(4));
+                if (!seen.has(s) && v > 0) {
+                    seen.add(s);
+                    options.push({ str: s, val: v, correct: false });
+                }
+                delta += 0.1;
+            }
+
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            return options;
+        }
+
+        // ---------- STATE ----------
+        let state = {
+            questions: [],
+            currentIndex: 0,
+            answers: [],
+            optionsList: [],
+            completed: false,
+            score: 0
+        };
+
+        function saveState() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+            catch (e) { /* ignore */ }
+        }
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+        function clearState() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        }
+
+        // ---------- RENDER QUESTION ----------
+        function renderCurrentQuestion() {
+            if (state.completed) { renderResult(); return; }
+            const qIndex = state.currentIndex;
+            if (qIndex >= state.questions.length) {
+                state.completed = true;
+                saveState();
+                renderResult();
+                return;
+            }
+
+            const q = state.questions[qIndex];
+            const options = state.optionsList[qIndex];
+            const selectedIdx = state.answers[qIndex];
+
+            document.getElementById('progressBadge').textContent = `${qIndex + 1} / ${TOTAL_QUESTIONS}`;
+            document.getElementById('statusText').textContent = `Question ${qIndex + 1} of ${TOTAL_QUESTIONS}`;
+
+            const qt = document.getElementById('questionText');
+            const promptHTML = `<div class="question-prompt">Convert to a decimal:</div>`;
+
+            let exprHTML;
+            if (q.presentation === 'fraction') {
+                exprHTML = `
+                    <div style="display:flex; justify-content:center; align-items:center; margin-top:12px;">
+                        <span class="frac" style="font-size:clamp(30px,5.5vh,48px); color:var(--green2);">
+                            <span class="fn">${q.num}</span>
+                            <span class="fd">${q.den}</span>
+                        </span>
+                        <span style="font-size:clamp(28px,5vh,44px); font-weight:700; margin-left:14px; color:var(--green);">= ?</span>
+                    </div>`;
+            } else {
+                // Updated division block with inner flex for proper layout
+                exprHTML = `
+                    <div class="division-expr">
+                        <div class="division-inner">
+                            <span>${q.num}</span>
+                            <span class="op">÷</span>
+                            <span>${q.den}</span>
+                            <span class="op">=</span>
+                            <span>?</span>
+                        </div>
+                    </div>`;
+            }
+            qt.innerHTML = promptHTML + exprHTML;
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (selectedIdx === idx) btn.classList.add('selected');
+
+                btn.textContent = opt.str;
+
+                btn.dataset.optIndex = idx;
+                btn.addEventListener('click', () => {
+                    if (state.completed) return;
+                    state.answers[qIndex] = idx;
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.getElementById('submitBtn').disabled = false;
+                    saveState();
+                });
+                grid.appendChild(btn);
+            });
+
+            const submitBtn = document.getElementById('submitBtn');
+            const hasSelection = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !hasSelection;
+            submitBtn.textContent = hasSelection ? 'Next question →' : 'Submit answer';
+
+            const newSubmit = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            newSubmit.id = 'submitBtn';
+            newSubmit.addEventListener('click', () => {
+                if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+                    state.currentIndex++;
+                    saveState();
+                    renderCurrentQuestion();
+                } else {
+                    finalizeQuiz();
+                }
+            });
+
+            document.getElementById('questionView').classList.remove('hide');
+            document.getElementById('resultView').classList.add('hide');
+        }
+
+        // ---------- FINALIZE ----------
+        function finalizeQuiz() {
+            let score = 0;
+            state.questions.forEach((q, idx) => {
+                const ansIdx = state.answers[idx];
+                if (ansIdx === null || ansIdx === undefined) return;
+                const opt = state.optionsList[idx][ansIdx];
+                if (opt && opt.correct) score++;
+            });
+            state.score = score;
+            state.completed = true;
+            saveState();
+            renderResult();
+        }
+
+        // ---------- RENDER RESULT ----------
+        function renderResult() {
+            document.getElementById('questionView').classList.add('hide');
+            document.getElementById('resultView').classList.remove('hide');
+
+            const score = state.score;
+            const total = TOTAL_QUESTIONS;
+            document.getElementById('scoreDisplay').innerHTML = `${score}<small>/${total}</small>`;
+
+            const msgEl = document.getElementById('scoreMessage');
+            const congratsEl = document.getElementById('congratsMessage');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+
+            if (score === total) {
+                msgEl.style.display = 'none';
+                congratsEl.style.display = 'block';
+                congratsEl.textContent = '🎉 Perfect score! You got all 5 correct!';
+                tryAgainBtn.style.display = 'none';
+            } else {
+                msgEl.style.display = 'block';
+                msgEl.textContent = `You scored ${score}/${total}. Try again to improve.`;
+                msgEl.style.color = '#a83e37';
+                congratsEl.style.display = 'none';
+                tryAgainBtn.style.display = 'inline-flex';
+            }
+
+            const newTryBtn = tryAgainBtn.cloneNode(true);
+            tryAgainBtn.parentNode.replaceChild(newTryBtn, tryAgainBtn);
+            newTryBtn.id = 'tryAgainBtn';
+            newTryBtn.addEventListener('click', resetAndStartNewQuiz);
+
+            document.getElementById('statusText').textContent = 'Quiz completed';
+            document.getElementById('progressBadge').textContent = `${total} / ${total}`;
+        }
+
+        // ---------- START / RESET ----------
+        function startNewQuiz() {
+            let questions = null;
+            let attempts = 0;
+            while (attempts < 200 && !questions) {
+                questions = generateQuestionSet(TOTAL_QUESTIONS);
+                attempts++;
+            }
+            if (!questions) {
+                alert('Could not generate a valid quiz. Please refresh and try again.');
+                return;
+            }
+
+            const optionsList = questions.map(q => buildOptions(q));
+
+            state = {
+                questions,
+                currentIndex: 0,
+                answers: new Array(TOTAL_QUESTIONS).fill(null),
+                optionsList,
+                completed: false,
+                score: 0
+            };
+            saveState();
+            renderCurrentQuestion();
+        }
+
+        function resetAndStartNewQuiz() {
+            clearState();
+            startNewQuiz();
+        }
+
+        // ---------- INIT ----------
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+            if (saved && saved.questions && saved.questions.length === TOTAL_QUESTIONS) {
+                state = saved;
+                if (!state.optionsList || state.optionsList.length !== TOTAL_QUESTIONS) {
+                    state.optionsList = state.questions.map(q => buildOptions(q));
+                }
+                if (!state.answers || state.answers.length !== TOTAL_QUESTIONS) {
+                    state.answers = new Array(TOTAL_QUESTIONS).fill(null);
+                }
+                if (state.completed === undefined) state.completed = false;
+                if (state.score === undefined) state.score = 0;
+
+                if (state.completed) renderResult();
+                else renderCurrentQuestion();
+            } else {
+                startNewQuiz();
+            }
+
+            window.addEventListener('beforeunload', () => {
+                if (state && state.questions) saveState();
+            });
+        });
+
+        window.__quizState = () => state;
+        window.__resetQuiz = resetAndStartNewQuiz;
+    })();
+</script>
+</body>
+</html>
