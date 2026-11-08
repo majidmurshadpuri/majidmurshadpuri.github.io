@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Decimal Comparison: Greatest / Smallest</title>
+    <style>
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --cream: #fbf8ef;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0; padding: 0; min-height: 100%; width: 100%;
+        }
+        body {
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            padding: 1.2vh 1.2vw;
+            overflow-x: hidden;
+        }
+        .quiz-card {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: clamp(20px, 3.5vh, 32px);
+            margin: 0 0 4px 0;
+            color: var(--ink);
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: clamp(10px, 1.8vh, 16px);
+        }
+        .subhead {
+            color: var(--muted);
+            margin: clamp(8px, 1.5vh, 12px) 0 clamp(14px, 2.5vh, 20px) 0;
+            font-size: clamp(13px, 1.6vh, 15px);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: clamp(12px, 1.4vh, 13px);
+            font-weight: 800;
+            color: var(--green);
+        }
+        .question-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(14px, 2.5vh, 24px) clamp(14px, 2.5vw, 20px);
+            margin: clamp(8px, 1.5vh, 10px) 0 clamp(10px, 2vh, 16px);
+            border: 1px solid var(--border-light);
+        }
+        .question-text {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 600;
+            color: var(--green);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: clamp(14px, 2.5vh, 24px);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(8px, 1.5vh, 14px);
+            margin-top: clamp(6px, 1vh, 10px);
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            border-radius: 13px;
+            padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px);
+            font-size: clamp(18px, 3vh, 26px);
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            user-select: none;
+            text-align: center;
+            min-height: 60px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--green2);
+            background: #f8fbf7;
+        }
+        .option-btn.selected {
+            border-color: var(--green2);
+            background: #edf5ef;
+            box-shadow: 0 0 0 3px #1d5b4e25;
+        }
+        .option-btn.disabled { cursor: default; opacity: 0.75; }
+        .btn-group {
+            display: flex; flex-wrap: wrap;
+            gap: clamp(10px, 1.5vh, 14px);
+            justify-content: center;
+            margin-top: clamp(12px, 2vh, 20px);
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: clamp(9px, 1.5vh, 12px) clamp(18px, 2.5vw, 24px);
+            border-radius: 12px;
+            font-size: clamp(14px, 1.8vh, 15px);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green2);
+            border-color: var(--green2);
+            transform: scale(1.02);
+        }
+        .btn:hover:not(:disabled):not(.btn-primary) {
+            background: #f0f4ed;
+            border-color: #8ca99a;
+        }
+        .btn:disabled {
+            opacity: 0.5; cursor: not-allowed;
+            transform: none !important;
+        }
+        .result-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(20px, 4vh, 32px) clamp(16px, 3vw, 24px);
+            margin: clamp(12px, 2vh, 16px) 0;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .score-big {
+            font-size: clamp(40px, 8vh, 64px);
+            font-weight: 900;
+            color: var(--green);
+            line-height: 1.1;
+        }
+        .score-big small {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .score-message {
+            font-size: clamp(15px, 2.2vh, 20px);
+            font-weight: 500;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+        }
+        .congrats-message {
+            font-size: clamp(16px, 2.6vh, 24px);
+            font-weight: 700;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+            color: #216342;
+        }
+        .hide { display: none !important; }
+
+        .direction-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: #3d2f10;
+            font-weight: 900;
+            font-size: clamp(12px, 1.8vh, 15px);
+            padding: 5px 18px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .question-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 16px);
+            margin-top: 8px;
+        }
+        .number-chip {
+            background: #f2f7f1;
+            border: 2px solid #d3e0d5;
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-size: clamp(18px, 3.2vh, 28px);
+            font-weight: 800;
+            color: var(--green2);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1.5px;
+            word-break: break-all;
+        }
+
+        @media (max-width: 650px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .quiz-card { padding: 14px; }
+            h1 { font-size: 20px; }
+            .question-text { font-size: 20px; }
+            .option-btn { font-size: 16px; padding: 12px 14px; }
+            .score-big { font-size: 42px; }
+            .result-area { padding: 20px 14px; }
+            .number-chip { font-size: 16px; padding: 8px 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <h1>Greatest / Smallest Decimal</h1>
+    <div class="subhead">
+        <div id="statusText">Answer all 5 questions. Score shown at the end.</div>
+        <div class="progress-badge" id="progressBadge">0 / 5</div>
+    </div>
+
+    <div id="questionView">
+        <div class="question-area">
+            <div style="text-align:center;">
+                <span class="direction-badge" id="directionBadge">Greatest</span>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options-grid" id="optionsGrid"></div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="submitBtn" disabled>Submit answer</button>
+        </div>
+    </div>
+
+    <div id="resultView" class="hide">
+        <div class="result-area">
+            <div class="score-big" id="scoreDisplay">0<small>/5</small></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="congrats-message" id="congratsMessage" style="display: none;"></div>
+            <div class="btn-group" id="resultButtons" style="margin-top: 24px;">
+                <button class="btn" id="tryAgainBtn">🔄 Try again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // =====================================================================
+        // HAND-CRAFTED 5-QUESTION QUIZ
+        // Each question forces comparison of different integer-part lengths
+        // while keeping fractional lengths constant.
+        // =====================================================================
+
+        // Helper: precise string comparison of decimal values
+        function compareDecimalStrings(a, b) {
+            const [ai, af = ''] = String(a).split('.');
+            const [bi, bf = ''] = String(b).split('.');
+            const intLen = Math.max(ai.length, bi.length);
+            const Aint = ai.padStart(intLen, '0');
+            const Bint = bi.padStart(intLen, '0');
+            if (Aint < Bint) return -1;
+            if (Aint > Bint) return 1;
+            const fracLen = Math.max(af.length, bf.length);
+            const Af = af.padEnd(fracLen, '0');
+            const Bf = bf.padEnd(fracLen, '0');
+            if (Af < Bf) return -1;
+            if (Af > Bf) return 1;
+            return 0;
+        }
+
+        // =====================================================================
+        // FIVE HAND-CRAFTED QUESTIONS
+        // =====================================================================
+
+        // Question 1 — Level 1: Basic Misconception (fewer integer digits CAN be greater)
+        // Fractional length is exactly 2 for all options.
+        // Naive whole-number logic says 105.10 is biggest (most digits).
+        // Correct greatest is actually 9.90, since 9.90 < 10.50 < 99.10 < 105.10 is FALSE.
+        // True order: 9.90 < 10.50 < 99.10 < 105.10 — wait, we want fewer digits to be bigger.
+        // So we choose numbers where 9.90 > something with more digits — impossible unless integers differ.
+        // Actually with 1-digit integer, value max is 9.99, so a 2-digit integer (10.xx) is always bigger.
+        // So the misconception test is: student sees "105.10" and picks it as greatest, but what about smallest?
+        // Let's ask SELECT THE SMALLEST. Student may think 9.90 is smallest (it has fewest digits),
+        // but actually it's the biggest! So correct smallest is 10.50 (since 9.90 > 10.50).
+        // Wait, 9.90 vs 10.50: 9 < 10, so 9.90 < 10.50. So 9.90 IS smallest.
+        // Let me reframe: I want a 1-digit integer that's bigger than a 2-digit integer? Impossible.
+        // But I can make the 1-digit integer bigger than a 3-digit integer? No, also impossible.
+        // The misconception is "more digits = greater". So to break it, I need MORE digits to be SMALLER.
+        // e.g., 105.10 vs 9.90 — 9.90 is smaller because 9 < 105. That still aligns with intuition.
+        // The real trap: 99.10 vs 100.05 — 99.10 is smaller (99 < 100). Still aligns.
+        // To truly break "more digits = greater", I need e.g. 8.99 vs 10.01 where 8.99 < 10.01 — aligns.
+        // So the misconception manifests in FRACTIONAL lengths, but user demands same fractional length.
+        // Therefore the misconception here is "more INTEGER digits = greater".
+        // But that's actually TRUE mathematically for positive numbers! 100.xx > 99.xx.
+        // So we need a different trap: LEADING ZEROS in integer part.
+        // e.g., 099.10 visually has 3 digits, but value is 99.10.
+        // Let's use that.
+
+        // Q1: SELECT THE GREATEST
+        // All have 2 decimal places. Integer parts vary in digit count (with leading zeros used cleverly).
+        // Options: 9.90, 099.10, 009.90 (wait, leading zeros make it visually longer but value same as 9.90 — can't have duplicates).
+        // Use: 9.90 (1-digit int), 10.50 (2-digit int), 099.10 (3-digit int visually, value 99.10), 009.90 (3-digit visually, value 9.90 — duplicate).
+        // Avoid duplicates: 9.90, 10.50, 099.10, 100.05. Values: 9.9, 10.5, 99.1, 100.05.
+        // Greatest = 100.05. Trap: student sees 099.10 as having 3 digits and thinks it's big, but 100.05 is actually bigger.
+        // Hmm, still aligns with "more digits = bigger" if they count 100.05 as 3 digits too.
+        // Better trap: SELECT THE SMALLEST. Student might think 100.05 is biggest, so not smallest. Smallest is 9.90.
+        // Still aligns.
+        // Let me use: 5.88 (1-digit), 15.88 (2-digit), 105.88 (3-digit), 025.88 (leading zero, 3-digit visually, value 25.88).
+        // Select GREATEST: 105.88. But student who counts digits might pick 025.88 thinking it's 25? No.
+        // The core trap with leading zeros: 025.88 LOOKS like 3 digits, so student thinks it's big (like 105). But it's only 25.88.
+
+        // Let's use a clever value trap:
+        // Q1: SELECT THE GREATEST
+        // Options: 9.88, 89.88, 099.88, 909.88
+        // Values: 9.88, 89.88, 99.88, 909.88
+        // Correct: 909.88. But 099.88 LOOKS like 3 digits (999-ish) but is only 99.88.
+        // Student counting digits might pick 099.88 thinking "3 digits = hundreds". But 909.88 is also 3 digits.
+        // Still not a strong misconception breaker.
+
+        // Let's try a smaller trick:
+        // Q1: SELECT THE SMALLEST
+        // Options: 10.50, 9.99, 105.00, 099.99
+        // Values: 10.50, 9.99, 105.00, 99.99
+        // Correct smallest: 9.99. Student counting digits might pick 9.99 anyway (fewest digits).
+        // Trap fails.
+
+        // OK, the real "more digits" misconception works best with FRACTIONAL lengths, but user forbids that.
+        // So the misconception must be about INTEGER-part digit count or leading zeros.
+        // A student thinks 099.10 (3 digits) is bigger than 9.90 (1 digit) — TRUE mathematically (99.10 > 9.90).
+        // The misconception that fails: 099.10 (3 digits) is smaller than 100.00 (3 digits)? No, 99.10 < 100.00 — student might pick 099.10 as bigger because "0 at start looks like 0 hundred" but that's not a common misconception.
+
+        // Let me re-read the prompt: "A number containing more total digits is always greater."
+        // If fractional lengths are the same, then total digit count is determined by integer part length.
+        // So the misconception here would be: "more integer digits = greater". But that's true for positive numbers.
+        // UNLESS leading zeros are involved. e.g., 099.10 has 5 total digits, but value 99.10.
+        // 100.05 also has 6 total digits (if we count leading zero in 099 as a digit), but value 100.05.
+        // Actually 099.10 has 5 characters, 100.05 has 6 characters. Student thinks 6 chars > 5 chars, so 100.05 > 099.10 — TRUE.
+        // So the misconception "more total digits = greater" actually WORKS here for positive integers. We can't break it.
+
+        // The only way to break "more digits = greater" is via fractional lengths. But user forbids it.
+        // So the misconception must be something else: "more digits AFTER decimal = greater". But user says fractional lengths must be equal.
+        // So the only remaining misconception is about ZEROS in integer part or digit repetition.
+        // Let me focus on leading zeros: student might think 09.90 (3 chars) is bigger than 9.90 (4 chars)? No.
+        // Actually 09.90 has 4 chars, 9.90 has 4 chars — same.
+
+        // Let's go with a different angle: ZEROS between digits.
+        // e.g., 105.00 vs 100.55 vs 099.55 vs 9.55
+        // Select GREATEST: 105.00 (value 105). Student might pick 099.55 thinking 99 is bigger than 100? No.
+
+        // I think the best achievable misconception within the constraints is:
+        // - Leading zeros in integer part making a number look bigger/smaller than it is.
+        // - A smaller integer part with more digits (due to leading zeros) tricking digit-counters.
+
+        // Q1: SELECT THE GREATEST
+        // Options: 8.88 (1-digit int), 88.88 (2-digit int), 088.88 (visually 3-digit but value 88.88 — duplicate of 88.88), 888.88 (3-digit int)
+        // Can't have duplicates. Use: 8.88, 88.88, 088.89 (value 88.89), 888.88
+        // Values: 8.88, 88.88, 88.89, 888.88. Greatest = 888.88.
+        // Trap: student might think 088.89 (looks long) is bigger, but 888.88 is clearly 888.
+        // Not a strong trap.
+
+        // Let's use a much smaller trap: SELECT THE SMALLEST.
+        // Options: 10.05 (2-digit int), 09.99 (2-digit with leading zero, value 9.99), 100.50 (3-digit int), 009.50 (3-digit with two leading zeros, value 9.50).
+        // Values: 10.05, 9.99, 100.50, 9.50.
+        // Correct SMALLEST = 9.50 (009.50). Student might see 009.50 and think it's big (3 digits) but it's smallest.
+        // Student might see 09.99 and think it's big (3 chars) but it's 9.99 — second smallest.
+        // This works! Leading zeros create visual length illusion.
+        // Correct answer = 009.50 (D). Select SMALLEST.
+
+        const Q1 = {
+            level: 1,
+            direction: 'smallest',
+            options: [
+                { str: '10.05',  val: 10.05  },
+                { str: '09.99',  val: 9.99   },
+                { str: '100.50', val: 100.50 },
+                { str: '009.50', val: 9.50   }
+            ],
+            correct: '009.50'
+        };
+
+        // Q2 — Level 2: Zero Traps
+        // Constant fractional length = 2. Varying integer digit counts with zeros in middle/end.
+        // Options: 50.08, 5.08, 500.80, 050.80
+        // Values: 50.08, 5.08, 500.80, 50.80
+        // Select GREATEST = 500.80. Trap: 050.80 looks like it has 3 digits (could be 50) but student might think 050 > 500? No.
+        // Let me make a better zero trap.
+        // Options: 70.07, 7.07, 070.70, 700.70
+        // Values: 70.07, 7.07, 70.70, 700.70
+        // Select SMALLEST = 7.07. Student might pick 070.70 thinking it's small (starts with 0) but it's actually 70.70.
+        // Correct answer = 7.07. 
+
+        const Q2 = {
+            level: 2,
+            direction: 'smallest',
+            options: [
+                { str: '70.07',  val: 70.07  },
+                { str: '7.07',   val: 7.07   },
+                { str: '070.70', val: 70.70  },
+                { str: '700.70', val: 700.70 }
+            ],
+            correct: '7.07'
+        };
+
+        // Q3 — Level 3: Digit Repetition Traps
+        // Constant fractional length = 3. Varying integer digit counts.
+        // Options: 99.999, 9.999, 099.099, 999.099
+        // Values: 99.999, 9.999, 99.099, 999.099
+        // Select GREATEST = 999.099. Trap: student sees many 9s and thinks 99.999 is biggest (has 99 before decimal and many 9s).
+        // Correct is 999.099 (which also has 999).
+
+        // Let's use a progressive digit trap with integer parts.
+        // Options: 55.555, 5.555, 505.505, 055.555
+        // Values: 55.555, 5.555, 505.505, 55.555 (duplicate!)
+        // Use: 55.555, 5.555, 505.505, 055.550
+        // Values: 55.555, 5.555, 505.505, 55.550
+        // Select GREATEST = 505.505.
+        // Hmm not tricky enough.
+
+        // Use digit repetition with same digits but different integer lengths:
+        // Options: 11.111, 1.111, 111.111, 011.111
+        // Values: 11.111, 1.111, 111.111, 11.111 (duplicate!)
+        // Use: 11.111, 1.111, 111.111, 011.110
+        // Values: 11.111, 1.111, 111.111, 11.110
+        // Select SMALLEST = 1.111. Too obvious (fewest digits).
+        // Better: SELECT GREATEST. 111.111. Too obvious.
+
+        // Repetition trap: 9.999, 99.999, 999.999 — 999.999 obviously biggest.
+        // Zero trap + repetition: 099.009 vs 99.990 vs 999.009 vs 9.990
+        // Values: 99.009, 99.990, 999.009, 9.990
+        // Select GREATEST = 999.009. Still somewhat obvious.
+
+        // Let me try: 99.090, 9.909, 909.090, 099.909
+        // Values: 99.090, 9.909, 909.090, 99.909
+        // Select GREATEST = 909.090.
+        // Student might pick 099.909 thinking it's 99.909 (second biggest). Not correct.
+        // Correct is 909.090.
+
+        // Actually let's use a subtle trap:
+        // Options: 88.888, 8.888, 888.008, 088.880
+        // Values: 88.888, 8.888, 888.008, 88.880
+        // Select GREATEST = 888.008.
+        // Trap: 088.880 looks like 88.880, but 888.008 is obviously bigger.
+        // Not tricky.
+
+        // Try SELECT SMALLEST with digit repetition:
+        // Options: 77.770, 7.770, 777.077, 077.700
+        // Values: 77.770, 7.770, 777.077, 77.700
+        // Select SMALLEST = 7.770. Too easy.
+
+        // OK, the real trick with repetition and varying integer length:
+        // Make the first digits identical, then vary decimal position.
+        // e.g., 9.999, 99.999, 999.999 — if integer parts differ by length, the one with 999 integer is biggest.
+        // So not tricky for greatest/smallest — obvious.
+        // The trick must use leading zeros to make a number visually longer but numerically smaller.
+        // Options: 99.999, 9.999, 099.990, 999.090
+        // Values: 99.999, 9.999, 99.990, 999.090
+        // Select GREATEST = 999.090. Still obvious.
+
+        // Let's focus on the fact that with same fractional length, comparison reduces to integer comparison.
+        // So the "misconception" must be about leading zeros or digit interpretation.
+        // E.g., "099.999" — student might read "99.999" but think it has more digits than "99.999".
+        // But value is identical.
+
+        // Best trap: 009.090 vs 90.900 vs 909.009 vs 090.909
+        // Values: 9.090, 90.900, 909.009, 90.909
+        // Select GREATEST = 909.009. Somewhat obvious.
+
+        // Let me try SELECT SMALLEST:
+        // Options: 50.500, 5.500, 505.005, 050.505
+        // Values: 50.500, 5.500, 505.005, 50.505
+        // Select SMALLEST = 5.500. Too easy.
+
+        // OK, let's use the "closely spaced" idea with leading zeros:
+        // Options: 09.990, 9.990, 090.990, 90.990
+        // Values: 9.990, 9.990 (duplicate!), ...
+        // Avoid duplicate.
+
+        // Use: 09.991, 9.991, 090.991, 90.991
+        // Values: 9.991, 9.991 (duplicate!)
+        // Avoid.
+
+        // Use: 09.990, 9.991, 090.990, 90.990
+        // Values: 9.990, 9.991, 90.990, 90.990 (duplicate!)
+        // Avoid.
+
+        // Use: 09.990, 9.991, 090.989, 90.991
+        // Values: 9.990, 9.991, 90.989, 90.991
+        // Select GREATEST = 90.991.
+        // Select SMALLEST = 9.990.
+        // Student might see 09.990 and think it's 9.990 with extra 0, so should be smaller than 9.991? Actually 9.990 < 9.991, so 09.990 is smallest.
+        // Not a strong trap.
+
+        // I'll go with a cleaner digit repetition + leading zero trap:
+        // Q3: SELECT THE GREATEST
+        // Options: 77.777, 7.777, 077.077, 777.077
+        // Values: 77.777, 7.777, 77.077, 777.077
+        // Correct = 777.077. Trap: 077.077 LOOKS like 77.077, but 777.077 is clearly bigger.
+        // Student might pick 77.777 (lots of 7s) but 777.077 is bigger.
+
+        // Actually, let me make a genuinely tricky one:
+        // 98.989, 9.898, 989.898, 098.989
+        // Values: 98.989, 9.898, 989.898, 98.989 (duplicate!)
+        // Use: 98.989, 9.898, 989.898, 098.988
+        // Values: 98.989, 9.898, 989.898, 98.988
+        // Select SMALLEST = 9.898. Too easy (fewest int digits).
+
+        // OK, the core issue: with same fractional length and all positive, the integer part determines order.
+        // So "number of integer digits" determines magnitude EXCEPT for leading zeros.
+        // Therefore the only real traps are LEADING ZEROS (making a number look longer than it is)
+        // and STRATEGICLY PLACED ZEROS to confuse digit-reading.
+
+        // Q3: SELECT THE SMALLEST
+        // Options: 60.060, 6.060, 600.006, 060.600
+        // Values: 60.060, 6.060, 600.006, 60.600
+        // Correct = 6.060. Student might see 060.600 and think it's small (starts with 0) but it's 60.600.
+        // Correct answer is clearly 6.060 (only 1 digit before decimal).
+        // Still too obvious (fewest integer digits).
+
+        // To make it less obvious: have a number with MORE integer digits but LOWER value due to leading zeros.
+        // e.g., 060.060 (value 60.060) vs 6.060 (value 6.060) — 6.060 is still smaller.
+        // What if: 009.090 (value 9.090) vs 10.000 (value 10.000)? 9.090 < 10.000.
+        // Student sees 009.090 (3 digits with leading zeros) and might think it's 9.090, yes.
+        // Let me try to trick with a number like 099.999 (value 99.999) vs 100.000 (value 100). Student might think 099.999 > 100 because 99.999 has many 9s? Actually 99.999 < 100. This is a real misconception! Students often think 99.999 > 100 because of the 9s. Great trap!
+
+        // Q3: SELECT THE GREATEST
+        // Options: 99.999, 100.000, 099.999, 9.999
+        // Values: 99.999, 100.000, 99.999 (duplicate!), 9.999
+        // Avoid duplicate: replace one 99.999 with 99.998
+        // Options: 99.998, 100.000, 099.999, 9.999
+        // Values: 99.998, 100.000, 99.999, 9.999
+        // Select GREATEST = 100.000 (student might think 099.999 is biggest because 3 digits + lots of 9s).
+        // Wait, 100.000 has 3 integer digits too. Student might compare 099 vs 100 and think 099 > 100 because 9 > 1? YES! That's the misconception!
+        // 099.999 vs 100.000: student sees 099.999 has three 9s in integer part (if they ignore leading zero, it's 99) but 100.000 has 100.
+        // Actually 099 = 99 < 100, so 100.000 > 099.999. Correct.
+        // But student might think "099.999 has more 9s, so it's bigger". This is a classic misconception!
+        // Correct answer: 100.000.
+
+        const Q3 = {
+            level: 3,
+            direction: 'greatest',
+            options: [
+                { str: '99.998',  val: 99.998  },
+                { str: '100.000', val: 100.000 },
+                { str: '099.999', val: 99.999  },
+                { str: '9.999',   val: 9.999   }
+            ],
+            correct: '100.000'
+        };
+
+        // Q4 — Level 4: Length Illusions
+        // Constant fractional length = 3. Varying integer digit counts significantly.
+        // Options: 999.999, 9.999, 99.009, 009.099
+        // Values: 999.999, 9.999, 99.009, 9.099
+        // Select SMALLEST = 9.099 (009.099).
+        // Student might see 009.099 (3 digits) and think it's big (like 99) but it's only 9.099.
+        // Correct answer = 009.099.
+
+        const Q4 = {
+            level: 4,
+            direction: 'smallest',
+            options: [
+                { str: '999.999', val: 999.999 },
+                { str: '9.999',   val: 9.999   },
+                { str: '99.009',  val: 99.009  },
+                { str: '009.099', val: 9.099   }
+            ],
+            correct: '009.099'
+        };
+
+        // Q5 — Level 5: Advanced Decimal Traps
+        // Constant fractional length = 4. Varying integer digit counts.
+        // Combining all traps: 0999.0009, 999.9009, 9.0099, 99.9990
+        // Values: 999.0009, 999.9009, 9.0099, 99.9990
+        // Select GREATEST = 999.9009. Student might see 0999.0009 (4 integer digits) and pick it as biggest, but 999.9009 > 999.0009.
+        // Correct answer = 999.9009.
+
+        const Q5 = {
+            level: 5,
+            direction: 'greatest',
+            options: [
+                { str: '0999.0009', val: 999.0009 },
+                { str: '999.9009',  val: 999.9009 },
+                { str: '9.0099',    val: 9.0099   },
+                { str: '99.9990',   val: 99.9990  }
+            ],
+            correct: '999.9009'
+        };
+
+        // =====================================================================
+        // VALIDATION & STATE
+        // =====================================================================
+        const QUIZ = [Q1, Q2, Q3, Q4, Q5];
+        const TOTAL_QUESTIONS = 5;
+        const STORAGE_KEY = 'decimal_greatest_smallest_misconception_quiz_v2';
+
+        // Validate each question
+        QUIZ.forEach((q, i) => {
+            // Check 1: exactly one correct
+            const matches = q.options.filter(o => o.str === q.correct);
+            if (matches.length !== 1) {
+                console.error(`Q${i + 1}: expected exactly one correct, found ${matches.length}`);
+            }
+            // Check 2: all integer parts same length — WAIT, user says "integer parts MUST VARY".
+            // Re-read: "The number of digits in the INTEGER PART MUST VARY among the four options."
+            // OK so integer parts must vary (different lengths).
+            const intLens = q.options.map(o => o.str.split('.')[0].length);
+            if (new Set(intLens).size < 2) {
+                console.error(`Q${i + 1}: integer parts must vary in length:`, intLens);
+            }
+            // Check 3: fractional parts must be EQUAL length
+            const fracLens = q.options.map(o => o.str.split('.')[1].length);
+            if (new Set(fracLens).size !== 1) {
+                console.error(`Q${i + 1}: fractional lengths must be equal:`, fracLens);
+            }
+            // Check 4: no two options numerically equal
+            for (let a = 0; a < q.options.length; a++) {
+                for (let b = a + 1; b < q.options.length; b++) {
+                    if (compareDecimalStrings(q.options[a].str, q.options[b].str) === 0) {
+                        console.error(`Q${i + 1}: options ${q.options[a].str} and ${q.options[b].str} are equal`);
+                    }
+                }
+            }
+            // Check 5: correct answer actually is the greatest/smallest
+            const cmp = (a, b) => compareDecimalStrings(a.str, b.str);
+            const sorted = [...q.options].sort(cmp);
+            const expected = q.direction === 'greatest' ? sorted[3] : sorted[0];
+            if (expected.str !== q.correct) {
+                console.error(`Q${i + 1}: correct answer is ${q.correct}, but ${q.direction} should be ${expected.str}`);
+            }
+        });
+
+        // =====================================================================
+        // QUIZ ENGINE
+        // =====================================================================
+        let state = {
+            currentIndex: 0,
+            answers: new Array(TOTAL_QUESTIONS).fill(null),
+            completed: false,
+            score: 0
+        };
+
+        function saveState() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+            catch (e) { /* ignore */ }
+        }
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+        function clearState() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        }
+
+        function renderCurrentQuestion() {
+            if (state.completed) { renderResult(); return; }
+            const qIndex = state.currentIndex;
+            if (qIndex >= TOTAL_QUESTIONS) {
+                state.completed = true;
+                saveState();
+                renderResult();
+                return;
+            }
+
+            const q = QUIZ[qIndex];
+            const selectedIdx = state.answers[qIndex];
+
+            document.getElementById('progressBadge').textContent = `${qIndex + 1} / ${TOTAL_QUESTIONS}`;
+            document.getElementById('statusText').textContent = `Question ${qIndex + 1} of ${TOTAL_QUESTIONS} (Level ${q.level})`;
+
+            const dirBadge = document.getElementById('directionBadge');
+            dirBadge.textContent = q.direction === 'greatest' ? '⬆ Select the Greatest' : '⬇ Select the Smallest';
+
+            // Build the question text area
+            const qt = document.getElementById('questionText');
+            let listHTML = '<div class="question-list">';
+            q.options.forEach((opt) => {
+                listHTML += `<span class="number-chip">${opt.str}</span>`;
+            });
+            listHTML += '</div>';
+            qt.innerHTML = listHTML +
+                `<div style="font-size:clamp(14px,2.1vh,18px); margin-top:14px; color:var(--muted); font-weight:700;">
+                    Which one is the ${q.direction} number?
+                </div>`;
+
+            // Build the option buttons (shuffled order already encoded in QUIZ array)
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (selectedIdx === idx) btn.classList.add('selected');
+                btn.textContent = opt.str;
+
+                btn.addEventListener('click', () => {
+                    if (state.completed) return;
+                    state.answers[qIndex] = idx;
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.getElementById('submitBtn').disabled = false;
+                    saveState();
+                });
+                grid.appendChild(btn);
+            });
+
+            const submitBtn = document.getElementById('submitBtn');
+            const hasSelection = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !hasSelection;
+            submitBtn.textContent = hasSelection ? (qIndex === TOTAL_QUESTIONS - 1 ? 'Finish quiz →' : 'Next question →') : 'Submit answer';
+
+            // Replace submit to avoid stale listeners
+            const newSubmit = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            newSubmit.id = 'submitBtn';
+            newSubmit.addEventListener('click', () => {
+                if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+                    state.currentIndex++;
+                    saveState();
+                    renderCurrentQuestion();
+                } else {
+                    finalizeQuiz();
+                }
+            });
+
+            document.getElementById('questionView').classList.remove('hide');
+            document.getElementById('resultView').classList.add('hide');
+        }
+
+        function finalizeQuiz() {
+            let score = 0;
+            QUIZ.forEach((q, idx) => {
+                const ansIdx = state.answers[idx];
+                if (ansIdx === null || ansIdx === undefined) return;
+                if (q.options[ansIdx].str === q.correct) score++;
+            });
+            state.score = score;
+            state.completed = true;
+            saveState();
+            renderResult();
+        }
+
+        function renderResult() {
+            document.getElementById('questionView').classList.add('hide');
+            document.getElementById('resultView').classList.remove('hide');
+
+            const score = state.score;
+            document.getElementById('scoreDisplay').innerHTML = `${score}<small>/${TOTAL_QUESTIONS}</small>`;
+
+            const msgEl = document.getElementById('scoreMessage');
+            const congratsEl = document.getElementById('congratsMessage');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+
+            if (score === TOTAL_QUESTIONS) {
+                msgEl.style.display = 'none';
+                congratsEl.style.display = 'block';
+                congratsEl.textContent = '🎉 Perfect score! You have mastered decimal place value!';
+                tryAgainBtn.style.display = 'none';
+            } else {
+                msgEl.style.display = 'block';
+                msgEl.textContent = `You scored ${score}/${TOTAL_QUESTIONS}. Remember: compare place values, not digit counts!`;
+                msgEl.style.color = '#a83e37';
+                congratsEl.style.display = 'none';
+                tryAgainBtn.style.display = 'inline-flex';
+            }
+
+            const newTryBtn = tryAgainBtn.cloneNode(true);
+            tryAgainBtn.parentNode.replaceChild(newTryBtn, tryAgainBtn);
+            newTryBtn.id = 'tryAgainBtn';
+            newTryBtn.addEventListener('click', resetAndStartNewQuiz);
+
+            document.getElementById('statusText').textContent = 'Quiz completed';
+            document.getElementById('progressBadge').textContent = `${TOTAL_QUESTIONS} / ${TOTAL_QUESTIONS}`;
+        }
+
+        function startNewQuiz() {
+            state = {
+                currentIndex: 0,
+                answers: new Array(TOTAL_QUESTIONS).fill(null),
+                completed: false,
+                score: 0
+            };
+            saveState();
+            renderCurrentQuestion();
+        }
+
+        function resetAndStartNewQuiz() {
+            clearState();
+            startNewQuiz();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+            if (saved && saved.answers && saved.answers.length === TOTAL_QUESTIONS) {
+                state = saved;
+                if (state.completed === undefined) state.completed = false;
+                if (state.score === undefined) state.score = 0;
+                if (state.completed) renderResult();
+                else renderCurrentQuestion();
+            } else {
+                startNewQuiz();
+            }
+
+            window.addEventListener('beforeunload', () => {
+                saveState();
+            });
+        });
+
+        window.__quizState = () => state;
+        window.__resetQuiz = resetAndStartNewQuiz;
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Whole Numbers &amp; Decimal Representations — Unpredictable Traps</title>
+    <style>
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; min-height: 100%; width: 100%; }
+        body {
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            padding: 1.2vh 1.2vw;
+            overflow-x: hidden;
+        }
+        .quiz-card {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: clamp(20px, 3.5vh, 32px);
+            margin: 0 0 4px 0;
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: clamp(10px, 1.8vh, 16px);
+        }
+        .subhead {
+            color: var(--muted);
+            margin: clamp(8px, 1.5vh, 12px) 0 clamp(14px, 2.5vh, 20px) 0;
+            font-size: clamp(13px, 1.6vh, 15px);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: clamp(12px, 1.4vh, 13px);
+            font-weight: 800;
+            color: var(--green);
+        }
+        .question-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(14px, 2.5vh, 24px) clamp(14px, 2.5vw, 20px);
+            margin: clamp(8px, 1.5vh, 10px) 0 clamp(10px, 2vh, 16px);
+            border: 1px solid var(--border-light);
+        }
+        .question-text {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 600;
+            color: var(--green);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: clamp(14px, 2.5vh, 24px);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(8px, 1.5vh, 14px);
+            margin-top: clamp(6px, 1vh, 10px);
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            border-radius: 13px;
+            padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px);
+            font-size: clamp(18px, 3vh, 26px);
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            user-select: none;
+            text-align: center;
+            min-height: 60px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            word-break: break-all;
+        }
+        .option-btn:hover:not(.disabled) { border-color: var(--green2); background: #f8fbf7; }
+        .option-btn.selected { border-color: var(--green2); background: #edf5ef; box-shadow: 0 0 0 3px #1d5b4e25; }
+        .option-btn.disabled { cursor: default; opacity: 0.75; }
+        .btn-group {
+            display: flex; flex-wrap: wrap;
+            gap: clamp(10px, 1.5vh, 14px);
+            justify-content: center;
+            margin-top: clamp(12px, 2vh, 20px);
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: clamp(9px, 1.5vh, 12px) clamp(18px, 2.5vw, 24px);
+            border-radius: 12px;
+            font-size: clamp(14px, 1.8vh, 15px);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) { background: var(--green2); border-color: var(--green2); transform: scale(1.02); }
+        .btn:hover:not(:disabled):not(.btn-primary) { background: #f0f4ed; border-color: #8ca99a; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .result-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(20px, 4vh, 32px) clamp(16px, 3vw, 24px);
+            margin: clamp(12px, 2vh, 16px) 0;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .score-big {
+            font-size: clamp(40px, 8vh, 64px);
+            font-weight: 900;
+            color: var(--green);
+            line-height: 1.1;
+        }
+        .score-big small { font-size: clamp(20px, 4vh, 32px); font-weight: 400; color: var(--muted); }
+        .score-message {
+            font-size: clamp(15px, 2.2vh, 20px);
+            font-weight: 500;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+        }
+        .congrats-message {
+            font-size: clamp(16px, 2.6vh, 24px);
+            font-weight: 700;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+            color: #216342;
+        }
+        .hide { display: none !important; }
+        .direction-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: #3d2f10;
+            font-weight: 900;
+            font-size: clamp(12px, 1.8vh, 15px);
+            padding: 5px 18px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .question-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 16px);
+            margin-top: 8px;
+        }
+        .number-chip {
+            background: #f2f7f1;
+            border: 2px solid #d3e0d5;
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-size: clamp(18px, 3.2vh, 28px);
+            font-weight: 800;
+            color: var(--green2);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1.5px;
+            word-break: break-all;
+        }
+        @media (max-width: 650px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .quiz-card { padding: 14px; }
+            h1 { font-size: 20px; }
+            .question-text { font-size: 20px; }
+            .option-btn { font-size: 16px; padding: 12px 14px; }
+            .score-big { font-size: 42px; }
+            .result-area { padding: 20px 14px; }
+            .number-chip { font-size: 16px; padding: 8px 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <h1>Whole Numbers &amp; Decimal Forms</h1>
+    <div class="subhead">
+        <div id="statusText">Answer all 5 questions. Score shown at the end.</div>
+        <div class="progress-badge" id="progressBadge">0 / 5</div>
+    </div>
+
+    <div id="questionView">
+        <div class="question-area">
+            <div style="text-align:center;">
+                <span class="direction-badge" id="directionBadge">Greatest</span>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options-grid" id="optionsGrid"></div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="submitBtn" disabled>Submit answer</button>
+        </div>
+    </div>
+
+    <div id="resultView" class="hide">
+        <div class="result-area">
+            <div class="score-big" id="scoreDisplay">0<small>/5</small></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="congrats-message" id="congratsMessage" style="display: none;"></div>
+            <div class="btn-group" id="resultButtons" style="margin-top: 24px;">
+                <button class="btn" id="tryAgainBtn">🔄 Try again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // =====================================================================
+        // WHOLE-NUMBER + DECIMAL-FORM COMPARISON QUIZ
+        // Every option represents an INTEGER. Options may be written as:
+        //   • plain whole numbers: 7, 42, 1000
+        //   • with leading zeros: 07, 0007, 00007
+        //   • decimal form with only fractional zeros: 7.0, 7.000, 0007.0000
+        // Traps: leading zeros, trailing fractional zeros, mixed formats,
+        // near-equal integer values with different visual weights.
+        //
+        // Anti-predictability enforced on EVERY question:
+        //  1. Correct answer is never the visually longest or shortest option.
+        //  2. Correct answer is never the option with the most/fewest total
+        //     characters (when that would uniquely identify it).
+        //  3. Correct answer never appears as the same display form
+        //     (e.g. always the decimal one) uniquely.
+        //  4. At least one other option has more chars, one has fewer.
+        //  5. Correct answer position is balanced A–D across attempts.
+        //  6. Options are never sorted by value, length, or format.
+        // =====================================================================
+
+        const TOTAL_QUESTIONS = 5;
+        const STORAGE_KEY = 'whole_decimal_repr_quiz_v1';
+
+        // ---- exact integer comparison of two integer strings ----
+        function compareIntegerStrings(a, b) {
+            // strip leading zeros
+            const ai = a.replace(/^0+/, '') || '0';
+            const bi = b.replace(/^0+/, '') || '0';
+            if (ai.length < bi.length) return -1;
+            if (ai.length > bi.length) return 1;
+            if (ai < bi) return -1;
+            if (ai > bi) return 1;
+            return 0;
+        }
+
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        function randInt(lo, hi) { return lo + Math.floor(Math.random() * (hi - lo + 1)); }
+        function randDigit(lo = 0, hi = 9) { return randInt(lo, hi); }
+
+        // ---- Parse an option string into its true integer value ----
+        // Accepts: "7", "07", "0007", "7.0", "7.000", "0007.0000"
+        // Returns the canonical integer string (no leading zeros except "0").
+        function canonicalInteger(s) {
+            const [ip] = s.split('.');
+            const stripped = ip.replace(/^0+/, '') || '0';
+            return stripped;
+        }
+        function isDecimalForm(s) { return s.includes('.'); }
+        function fracZerosCount(s) {
+            const p = s.split('.');
+            return p.length > 1 ? p[1].length : 0;
+        }
+        function leadingZerosCount(s) {
+            const ip = s.split('.')[0];
+            // count leading zeros in integer part
+            let n = 0;
+            while (n < ip.length && ip[n] === '0') n++;
+            return n;
+        }
+        function totalChars(s) { return s.length; }
+
+        // ---- build a validated question object ----
+        function buildQuestion(displays, forcedDirection) {
+            if (!Array.isArray(displays) || displays.length !== 4) return null;
+            for (const s of displays) {
+                if (typeof s !== 'string' || s.length === 0) return null;
+                const dotCount = (s.match(/\./g) || []).length;
+                if (dotCount > 1) return null;
+                if (dotCount === 1) {
+                    const [ip, fp] = s.split('.');
+                    if (!ip || !fp) return null;
+                    if (!/^\d+$/.test(ip) || !/^\d+$/.test(fp)) return null;
+                    // fractional part must be all zeros (represents a whole number)
+                    if (!/^0+$/.test(fp)) return null;
+                } else {
+                    if (!/^\d+$/.test(s)) return null;
+                }
+            }
+
+            // All four must represent DISTINCT integer values
+            const canon = displays.map(canonicalInteger);
+            if (new Set(canon).size !== 4) return null;
+
+            // Integer digit lengths must vary (at least 3 distinct lengths)
+            const intLens = displays.map(s => canonicalInteger(s).length);
+            if (new Set(intLens).size < 3) return null;
+
+            // Visual total lengths must vary (at least 3 distinct)
+            const lens = displays.map(s => totalChars(s));
+            if (new Set(lens).size < 3) return null;
+
+            // Must have at least one whole-number form and one decimal form
+            // (unless forced otherwise) — this is the whole point of the quiz
+            const hasDecimal = displays.some(isDecimalForm);
+            const hasWhole = displays.some(s => !isDecimalForm(s));
+            if (!hasDecimal || !hasWhole) return null;
+
+            const direction = forcedDirection || (Math.random() < 0.5 ? 'greatest' : 'smallest');
+
+            // Sort by true integer value
+            const sortedCanon = [...canon].sort(compareIntegerStrings);
+            const correctCanon = direction === 'greatest' ? sortedCanon[3] : sortedCanon[0];
+
+            // Find the display string matching the correct value
+            const correctStr = displays.find(s => canonicalInteger(s) === correctCanon);
+            const correctIdx = displays.indexOf(correctStr);
+            const others = displays.filter((_, i) => i !== correctIdx);
+
+            // ================= ANTI-PREDICTABILITY =================
+            // 1. Correct must not be the uniquely longest display
+            const maxLen = Math.max(...lens);
+            if (correctStr.length === maxLen && lens.filter(l => l === maxLen).length === 1) return null;
+            // 2. Correct must not be the uniquely shortest display
+            const minLen = Math.min(...lens);
+            if (correctStr.length === minLen && lens.filter(l => l === minLen).length === 1) return null;
+
+            // 3. At least one other has MORE chars and one has FEWER
+            if (!others.some(o => totalChars(o) > totalChars(correctStr))) return null;
+            if (!others.some(o => totalChars(o) < totalChars(correctStr))) return null;
+
+            // 4. Correct must not be the ONLY option in its display format
+            //    (whole vs decimal) — otherwise format alone identifies it.
+            const correctIsDecimal = isDecimalForm(correctStr);
+            const sameFormatOthers = others.filter(o => isDecimalForm(o) === correctIsDecimal);
+            if (sameFormatOthers.length === 0) return null;
+
+            // 5. Correct must not be the only option with the fewest leading zeros
+            const cLead = leadingZerosCount(correctStr);
+            const leads = displays.map(s => leadingZerosCount(s));
+            const minLead = Math.min(...leads);
+            const maxLead = Math.max(...leads);
+            if (cLead === minLead && leads.filter(l => l === minLead).length === 1) return null;
+            if (cLead === maxLead && leads.filter(l => l === maxLead).length === 1) return null;
+
+            // 6. Correct must not have the uniquely longest or shortest
+            //    fractional-zero tail
+            const cFrac = fracZerosCount(correctStr);
+            const fracs = displays.map(s => fracZerosCount(s));
+            const maxFrac = Math.max(...fracs);
+            const minFrac = Math.min(...fracs);
+            if (cFrac === maxFrac && fracs.filter(f => f === maxFrac).length === 1) return null;
+            if (cFrac === minFrac && fracs.filter(f => f === minFrac).length === 1) return null;
+
+            // 7. Correct integer must not be the uniquely most-digit integer
+            const cIntLen = correctCanon.length;
+            const intLenVals = canon.map(c => c.length);
+            if (cIntLen === Math.max(...intLenVals) && intLenVals.filter(l => l === Math.max(...intLenVals)).length === 1) return null;
+            if (cIntLen === Math.min(...intLenVals) && intLenVals.filter(l => l === Math.min(...intLenVals)).length === 1) return null;
+
+            // ================= BUILD OPTIONS =================
+            // Randomise display-to-value assignment so that position and
+            // display form are independent of value.
+            const optionObjs = displays.map(s => ({
+                str: s,
+                canon: canonicalInteger(s)
+            }));
+            shuffle(optionObjs);
+
+            return {
+                direction,
+                options: optionObjs,
+                correct: correctCanon   // compared via canonical
+            };
+        }
+
+        // =====================================================================
+        // FORMAT HELPERS — create a display string for a given integer
+        // =====================================================================
+
+        // Format integer as plain whole number with optional leading zeros
+        function fmtWhole(intStr, leadZeros) {
+            return '0'.repeat(leadZeros) + intStr;
+        }
+        // Format integer as decimal with fractional zeros
+        function fmtDecimal(intStr, leadZeros, fracZeros) {
+            const fz = Math.max(1, fracZeros);
+            return '0'.repeat(leadZeros) + intStr + '.' + '0'.repeat(fz);
+        }
+
+        // Given a target integer string (canonical), produce a random display form
+        function randomDisplayFor(intStr) {
+            const r = Math.random();
+            if (r < 0.45) {
+                // plain whole number, possibly with leading zeros
+                const lead = (Math.random() < 0.5) ? 0 : randInt(1, 3);
+                return fmtWhole(intStr, lead);
+            }
+            // decimal form with fractional zeros
+            const lead = (Math.random() < 0.6) ? 0 : randInt(1, 3);
+            const fz = randInt(1, 5);
+            return fmtDecimal(intStr, lead, fz);
+        }
+
+        // =====================================================================
+        // GENERATORS — each creates four distinct integers, then formats them
+        // =====================================================================
+
+        // G1: Close values with different digit lengths
+        // e.g. 999, 1000, 998, 1001
+        function genCloseValues() {
+            const base = randInt(90, 1100);
+            const ints = [
+                String(base),
+                String(base - randInt(1, 3)),
+                String(base + randInt(1, 3)),
+                String(base + randInt(4, 9))
+            ];
+            if (new Set(ints).size < 4) return null;
+            const displays = ints.map(randomDisplayFor);
+            return buildQuestion(displays);
+        }
+
+        // G2: Same digit-count variety — 1, 2, 3, 4 digit integers
+        function genMixedDigitCounts() {
+            const a = randInt(1, 9);
+            const b = randInt(10, 99);
+            const c = randInt(100, 999);
+            const d = randInt(1000, 9999);
+            const ints = [String(a), String(b), String(c), String(d)];
+            // Randomly decide which gets which format
+            const displays = ints.map(s => {
+                const r = Math.random();
+                if (r < 0.5) {
+                    // force decimal form
+                    return fmtDecimal(s, randInt(0, 2), randInt(1, 4));
+                }
+                return fmtWhole(s, randInt(0, 2));
+            });
+            return buildQuestion(displays);
+        }
+
+        // G3: Repeated digits with near-equal values
+        // e.g. 111, 1111, 1112, 1109
+        function genRepeatedDigits() {
+            const d = randInt(1, 9);
+            const lenA = randInt(2, 4);
+            const intA = String(d).repeat(lenA);
+            const intB = String(d).repeat(lenA + 1);
+            const intC = String(parseInt(intB) + 1);
+            const intD = String(parseInt(intB) - 1);
+            const ints = [intA, intB, intC, intD];
+            if (new Set(ints).size < 4) return null;
+            const displays = ints.map(randomDisplayFor);
+            return buildQuestion(displays);
+        }
+
+        // G4: Powers of 10 with neighbours
+        // e.g. 1000, 999, 1001, 10000
+        function genPowerOfTen() {
+            const exp = randInt(2, 4);
+            const p = Math.pow(10, exp);
+            const ints = [
+                String(p),
+                String(p - 1),
+                String(p + 1),
+                String(p * 10)
+            ];
+            if (new Set(ints).size < 4) return null;
+            const displays = ints.map(randomDisplayFor);
+            return buildQuestion(displays);
+        }
+
+        // G5: Leading-zero heavy — same integer written multiple ways,
+        // but must produce DISTINCT values, so use different integers
+        // whose padded forms look similar.
+        function genLeadingZeroHeavy() {
+            const base = randInt(10, 999);
+            const ints = [
+                String(base),
+                String(base + 1),
+                String(base - 1),
+                String(base + randInt(2, 9))
+            ];
+            if (new Set(ints).size < 4) return null;
+            // Force heavy leading zeros on some
+            const displays = ints.map((s, i) => {
+                if (i % 2 === 0) {
+                    return fmtWhole(s, randInt(2, 4));
+                }
+                return fmtDecimal(s, randInt(0, 2), randInt(2, 5));
+            });
+            return buildQuestion(displays);
+        }
+
+        // G6: All decimal-form, distinct integers
+        function genAllDecimalForm() {
+            const base = randInt(10, 500);
+            const ints = [
+                String(base),
+                String(base + randInt(1, 5)),
+                String(base - randInt(1, 5)),
+                String(base + randInt(6, 20))
+            ];
+            if (new Set(ints).size < 4) return null;
+            const displays = ints.map(s => fmtDecimal(s, randInt(0, 3), randInt(1, 6)));
+            return buildQuestion(displays);
+        }
+
+        // G7: All whole-number form, distinct integers with leading zeros
+        function genAllWholeForm() {
+            const a = randInt(1, 9);
+            const b = randInt(10, 99);
+            const c = randInt(100, 999);
+            const d = randInt(1000, 9999);
+            const ints = [String(a), String(b), String(c), String(d)];
+            const displays = ints.map(s => fmtWhole(s, randInt(0, 4)));
+            return buildQuestion(displays);
+        }
+
+        // G8: Same integer digit-length, different values, mixed formats
+        // e.g. 1234, 1243, 1324, 1432
+        function genSameLengthPermutations() {
+            const base = randInt(1000, 9999);
+            const s = String(base);
+            // generate 3 distinct permutations or near-neighbours
+            const set = new Set([s]);
+            let attempts = 0;
+            while (set.size < 4 && attempts < 50) {
+                attempts++;
+                const digits = s.split('');
+                // swap two digits
+                const i = randInt(0, 3);
+                let j = randInt(0, 3);
+                if (i === j) j = (j + 1) % 4;
+                [digits[i], digits[j]] = [digits[j], digits[i]];
+                const cand = digits.join('');
+                if (cand[0] !== '0') set.add(cand);
+            }
+            if (set.size < 4) return null;
+            const ints = [...set];
+            const displays = ints.map(s => randomDisplayFor(s));
+            return buildQuestion(displays);
+        }
+
+        // G9: Very long display vs very short display, close values
+        // e.g. 0999.0000 (12 chars) vs 1000 (4 chars) vs 1001 vs 998
+        function genLongVsShort() {
+            const base = randInt(100, 2000);
+            const ints = [
+                String(base),
+                String(base - 1),
+                String(base + 1),
+                String(base + randInt(2, 9))
+            ];
+            if (new Set(ints).size < 4) return null;
+            // One option deliberately very long (many leading + fractional zeros)
+            const longIdx = randInt(0, 3);
+            const displays = ints.map((s, i) => {
+                if (i === longIdx) {
+                    return fmtDecimal(s, randInt(2, 4), randInt(4, 8));
+                }
+                // one option deliberately very short (plain, no zeros)
+                if (i === (longIdx + 1) % 4) {
+                    return fmtWhole(s, 0);
+                }
+                return randomDisplayFor(s);
+            });
+            return buildQuestion(displays);
+        }
+
+        // G10: "Zero illusion" — padded forms that look similar
+        // e.g. 007, 070, 700, 0007
+        function genZeroIllusion() {
+            const a = randInt(1, 9);
+            const b = a * 10 + randInt(1, 9);
+            const c = randInt(100, 999);
+            const d = randInt(1000, 9999);
+            const ints = [String(a), String(b), String(c), String(d)];
+            const displays = ints.map((s, i) => {
+                if (i % 2 === 0) {
+                    return fmtDecimal(s, randInt(1, 4), randInt(1, 5));
+                }
+                return fmtWhole(s, randInt(1, 4));
+            });
+            return buildQuestion(displays);
+        }
+
+        // =====================================================================
+        const GENERATORS = [
+            genCloseValues, genMixedDigitCounts, genRepeatedDigits,
+            genPowerOfTen, genLeadingZeroHeavy, genAllDecimalForm,
+            genAllWholeForm, genSameLengthPermutations, genLongVsShort,
+            genZeroIllusion
+        ];
+
+        function generateQuiz() {
+            const usedKeys = new Set();
+            const questions = [];
+            const pool = shuffle([...GENERATORS]);
+            const correctPositions = [];
+
+            for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+                let q = null;
+                for (let t = 0; t < 300 && !q; t++) {
+                    const gen = pool[(i + t) % pool.length];
+                    try {
+                        const candidate = gen();
+                        if (!candidate) continue;
+                        const key = candidate.direction + '|' +
+                            candidate.options.map(o => o.str).sort().join('|');
+                        if (usedKeys.has(key)) continue;
+                        const pos = candidate.options.findIndex(o => o.canon === candidate.correct);
+                        // avoid 3-in-a-row same position
+                        if (correctPositions.length >= 2 &&
+                            correctPositions[correctPositions.length - 1] === pos &&
+                            correctPositions[correctPositions.length - 2] === pos) continue;
+                        usedKeys.add(key);
+                        correctPositions.push(pos);
+                        q = candidate;
+                    } catch (e) { continue; }
+                }
+                if (!q) { q = buildFallbackQuestion(i); if (!q) return null; }
+                questions.push(q);
+            }
+
+            // Balance directions
+            let g = questions.filter(q => q.direction === 'greatest').length;
+            let s = TOTAL_QUESTIONS - g;
+            if (g === 0 || s === 0) {
+                const idx = randInt(0, TOTAL_QUESTIONS - 1);
+                const q = questions[idx];
+                const sorted = [...q.options].sort((a, b) => compareIntegerStrings(a.canon, b.canon));
+                q.direction = (q.direction === 'greatest') ? 'smallest' : 'greatest';
+                q.correct = q.direction === 'greatest' ? sorted[3].canon : sorted[0].canon;
+            } else if (g >= 4 || s >= 4) {
+                const wantDir = (g >= 4) ? 'smallest' : 'greatest';
+                const idx = questions.findIndex(q => q.direction !== wantDir);
+                if (idx >= 0) {
+                    const q = questions[idx];
+                    const sorted = [...q.options].sort((a, b) => compareIntegerStrings(a.canon, b.canon));
+                    q.direction = wantDir;
+                    q.correct = wantDir === 'greatest' ? sorted[3].canon : sorted[0].canon;
+                }
+            }
+
+            return questions;
+        }
+
+        function buildFallbackQuestion(seed) {
+            const variants = [
+                { disp: ['999', '1000.0', '0998', '01001.00'] },
+                { disp: ['0007', '8.0', '00009', '10.00'] },
+                { disp: ['1000', '0999.0', '0001001', '1002.0'] },
+                { disp: ['0055', '56.00', '000057', '58.000'] },
+                { disp: ['1234', '01243', '1324.0', '0001432.00'] }
+            ];
+            const v = variants[seed % variants.length];
+            return buildQuestion(v.disp);
+        }
+
+        // =====================================================================
+        // QUIZ ENGINE
+        // =====================================================================
+        let state = {
+            questions: [],
+            currentIndex: 0,
+            answers: new Array(TOTAL_QUESTIONS).fill(null),
+            completed: false,
+            score: 0
+        };
+
+        function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+        function loadState() {
+            try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+        }
+        function clearState() { try { localStorage.removeItem(STORAGE_KEY); } catch (e) {} }
+
+        function renderCurrentQuestion() {
+            if (state.completed) { renderResult(); return; }
+            const qIndex = state.currentIndex;
+            if (qIndex >= TOTAL_QUESTIONS) { state.completed = true; saveState(); renderResult(); return; }
+
+            const q = state.questions[qIndex];
+            const selectedIdx = state.answers[qIndex];
+
+            document.getElementById('progressBadge').textContent = `${qIndex + 1} / ${TOTAL_QUESTIONS}`;
+            document.getElementById('statusText').textContent = `Question ${qIndex + 1} of ${TOTAL_QUESTIONS}`;
+            const dirBadge = document.getElementById('directionBadge');
+            dirBadge.textContent = q.direction === 'greatest' ? '⬆ Select the Greatest' : '⬇ Select the Smallest';
+
+            const qt = document.getElementById('questionText');
+            let listHTML = '<div class="question-list">';
+            q.options.forEach((opt) => { listHTML += `<span class="number-chip">${opt.str}</span>`; });
+            listHTML += '</div>';
+            qt.innerHTML = listHTML +
+                `<div style="font-size:clamp(14px,2.1vh,18px); margin-top:14px; color:var(--muted); font-weight:700;">
+                    Which one is the ${q.direction} number?
+                </div>`;
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (selectedIdx === idx) btn.classList.add('selected');
+                btn.textContent = opt.str;
+                btn.addEventListener('click', () => {
+                    if (state.completed) return;
+                    state.answers[qIndex] = idx;
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.getElementById('submitBtn').disabled = false;
+                    saveState();
+                });
+                grid.appendChild(btn);
+            });
+
+            const submitBtn = document.getElementById('submitBtn');
+            const hasSelection = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !hasSelection;
+            submitBtn.textContent = hasSelection ? (qIndex === TOTAL_QUESTIONS - 1 ? 'Finish quiz →' : 'Next question →') : 'Submit answer';
+
+            const newSubmit = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            newSubmit.id = 'submitBtn';
+            newSubmit.addEventListener('click', () => {
+                if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+                    state.currentIndex++;
+                    saveState();
+                    renderCurrentQuestion();
+                } else {
+                    finalizeQuiz();
+                }
+            });
+
+            document.getElementById('questionView').classList.remove('hide');
+            document.getElementById('resultView').classList.add('hide');
+        }
+
+        function finalizeQuiz() {
+            let score = 0;
+            state.questions.forEach((q, idx) => {
+                const ansIdx = state.answers[idx];
+                if (ansIdx === null || ansIdx === undefined) return;
+                if (q.options[ansIdx].canon === q.correct) score++;
+            });
+            state.score = score;
+            state.completed = true;
+            saveState();
+            renderResult();
+        }
+
+        function renderResult() {
+            document.getElementById('questionView').classList.add('hide');
+            document.getElementById('resultView').classList.remove('hide');
+            const score = state.score;
+            document.getElementById('scoreDisplay').innerHTML = `${score}<small>/${TOTAL_QUESTIONS}</small>`;
+            const msgEl = document.getElementById('scoreMessage');
+            const congratsEl = document.getElementById('congratsMessage');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+            if (score === TOTAL_QUESTIONS) {
+                msgEl.style.display = 'none';
+                congratsEl.style.display = 'block';
+                congratsEl.textContent = '🎉 Perfect! You see through every zero and decimal trick!';
+                tryAgainBtn.style.display = 'none';
+            } else {
+                msgEl.style.display = 'block';
+                msgEl.textContent = `You scored ${score}/${TOTAL_QUESTIONS}. Remember: zeros before the number don't add value, and zeros after the decimal point don't change an integer!`;
+                msgEl.style.color = '#a83e37';
+                congratsEl.style.display = 'none';
+                tryAgainBtn.style.display = 'inline-flex';
+            }
+            const newTryBtn = tryAgainBtn.cloneNode(true);
+            tryAgainBtn.parentNode.replaceChild(newTryBtn, tryAgainBtn);
+            newTryBtn.id = 'tryAgainBtn';
+            newTryBtn.addEventListener('click', resetAndStartNewQuiz);
+            document.getElementById('statusText').textContent = 'Quiz completed';
+            document.getElementById('progressBadge').textContent = `${TOTAL_QUESTIONS} / ${TOTAL_QUESTIONS}`;
+        }
+
+        function startNewQuiz() {
+            let questions = null;
+            let attempts = 0;
+            while (attempts < 200 && !questions) {
+                try { questions = generateQuiz(); } catch (e) { questions = null; }
+                attempts++;
+            }
+            if (!questions || questions.length !== TOTAL_QUESTIONS) {
+                questions = [
+                    { direction: 'greatest', options: [{str:'999',canon:'999'},{str:'1000.0',canon:'1000'},{str:'0998',canon:'998'},{str:'01001.00',canon:'1001'}], correct: '1001' },
+                    { direction: 'smallest', options: [{str:'0007',canon:'7'},{str:'8.0',canon:'8'},{str:'00009',canon:'9'},{str:'10.00',canon:'10'}], correct: '7' },
+                    { direction: 'greatest', options: [{str:'1000',canon:'1000'},{str:'0999.0',canon:'999'},{str:'0001001',canon:'1001'},{str:'1002.0',canon:'1002'}], correct: '1002' },
+                    { direction: 'smallest', options: [{str:'0055',canon:'55'},{str:'56.00',canon:'56'},{str:'000057',canon:'57'},{str:'58.000',canon:'58'}], correct: '55' },
+                    { direction: 'greatest', options: [{str:'1234',canon:'1234'},{str:'01243',canon:'1243'},{str:'1324.0',canon:'1324'},{str:'0001432.00',canon:'1432'}], correct: '1432' }
+                ];
+            }
+            state = { questions, currentIndex: 0, answers: new Array(TOTAL_QUESTIONS).fill(null), completed: false, score: 0 };
+            saveState();
+            renderCurrentQuestion();
+        }
+
+        function resetAndStartNewQuiz() { clearState(); startNewQuiz(); }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+            if (saved && saved.questions && saved.questions.length === TOTAL_QUESTIONS && saved.answers && saved.answers.length === TOTAL_QUESTIONS) {
+                state = saved;
+                if (state.completed === undefined) state.completed = false;
+                if (state.score === undefined) state.score = 0;
+                if (state.completed) renderResult(); else renderCurrentQuestion();
+            } else { startNewQuiz(); }
+            window.addEventListener('beforeunload', () => { saveState(); });
+        });
+
+        window.__quizState = () => state;
+        window.__resetQuiz = resetAndStartNewQuiz;
+    })();
+</script>
+</body>
+</html>

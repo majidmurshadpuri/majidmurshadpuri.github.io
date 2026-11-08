@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Greatest / Smallest – Unpredictable Traps</title>
+    <style>
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; min-height: 100%; width: 100%; }
+        body {
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            padding: 1.2vh 1.2vw;
+            overflow-x: hidden;
+        }
+        .quiz-card {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: clamp(20px, 3.5vh, 32px);
+            margin: 0 0 4px 0;
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: clamp(10px, 1.8vh, 16px);
+        }
+        .subhead {
+            color: var(--muted);
+            margin: clamp(8px, 1.5vh, 12px) 0 clamp(14px, 2.5vh, 20px) 0;
+            font-size: clamp(13px, 1.6vh, 15px);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: clamp(12px, 1.4vh, 13px);
+            font-weight: 800;
+            color: var(--green);
+        }
+        .question-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(14px, 2.5vh, 24px) clamp(14px, 2.5vw, 20px);
+            margin: clamp(8px, 1.5vh, 10px) 0 clamp(10px, 2vh, 16px);
+            border: 1px solid var(--border-light);
+        }
+        .question-text {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 600;
+            color: var(--green);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: clamp(14px, 2.5vh, 24px);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(8px, 1.5vh, 14px);
+            margin-top: clamp(6px, 1vh, 10px);
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            border-radius: 13px;
+            padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px);
+            font-size: clamp(18px, 3vh, 26px);
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            user-select: none;
+            text-align: center;
+            min-height: 60px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            word-break: break-all;
+        }
+        .option-btn:hover:not(.disabled) { border-color: var(--green2); background: #f8fbf7; }
+        .option-btn.selected { border-color: var(--green2); background: #edf5ef; box-shadow: 0 0 0 3px #1d5b4e25; }
+        .option-btn.disabled { cursor: default; opacity: 0.75; }
+        .btn-group {
+            display: flex; flex-wrap: wrap;
+            gap: clamp(10px, 1.5vh, 14px);
+            justify-content: center;
+            margin-top: clamp(12px, 2vh, 20px);
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: clamp(9px, 1.5vh, 12px) clamp(18px, 2.5vw, 24px);
+            border-radius: 12px;
+            font-size: clamp(14px, 1.8vh, 15px);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) { background: var(--green2); border-color: var(--green2); transform: scale(1.02); }
+        .btn:hover:not(:disabled):not(.btn-primary) { background: #f0f4ed; border-color: #8ca99a; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .result-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(20px, 4vh, 32px) clamp(16px, 3vw, 24px);
+            margin: clamp(12px, 2vh, 16px) 0;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .score-big {
+            font-size: clamp(40px, 8vh, 64px);
+            font-weight: 900;
+            color: var(--green);
+            line-height: 1.1;
+        }
+        .score-big small { font-size: clamp(20px, 4vh, 32px); font-weight: 400; color: var(--muted); }
+        .score-message {
+            font-size: clamp(15px, 2.2vh, 20px);
+            font-weight: 500;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+        }
+        .congrats-message {
+            font-size: clamp(16px, 2.6vh, 24px);
+            font-weight: 700;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+            color: #216342;
+        }
+        .hide { display: none !important; }
+        .direction-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: #3d2f10;
+            font-weight: 900;
+            font-size: clamp(12px, 1.8vh, 15px);
+            padding: 5px 18px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .question-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 16px);
+            margin-top: 8px;
+        }
+        .number-chip {
+            background: #f2f7f1;
+            border: 2px solid #d3e0d5;
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-size: clamp(18px, 3.2vh, 28px);
+            font-weight: 800;
+            color: var(--green2);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1.5px;
+            word-break: break-all;
+        }
+        @media (max-width: 650px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .quiz-card { padding: 14px; }
+            h1 { font-size: 20px; }
+            .question-text { font-size: 20px; }
+            .option-btn { font-size: 16px; padding: 12px 14px; }
+            .score-big { font-size: 42px; }
+            .result-area { padding: 20px 14px; }
+            .number-chip { font-size: 16px; padding: 8px 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <h1>Greatest / Smallest – Unpredictable</h1>
+    <div class="subhead">
+        <div id="statusText">Answer all 5 questions. Score shown at the end.</div>
+        <div class="progress-badge" id="progressBadge">0 / 5</div>
+    </div>
+
+    <div id="questionView">
+        <div class="question-area">
+            <div style="text-align:center;">
+                <span class="direction-badge" id="directionBadge">Greatest</span>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options-grid" id="optionsGrid"></div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="submitBtn" disabled>Submit answer</button>
+        </div>
+    </div>
+
+    <div id="resultView" class="hide">
+        <div class="result-area">
+            <div class="score-big" id="scoreDisplay">0<small>/5</small></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="congrats-message" id="congratsMessage" style="display: none;"></div>
+            <div class="btn-group" id="resultButtons" style="margin-top: 24px;">
+                <button class="btn" id="tryAgainBtn">🔄 Try again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // =====================================================================
+        // UNPREDICTABLE EXPERT QUIZ
+        // Key anti-predictability rules enforced on EVERY question:
+        //   1. The correct answer is NEVER the only whole number.
+        //   2. The correct answer is NEVER the only decimal.
+        //   3. If direction = greatest, at least one other option has a
+        //      STRICTLY LONGER display string (more chars). Same for smallest.
+        //      → digit-count guessing is unreliable.
+        //   4. The correct answer is NEVER the option with the most total
+        //      digits. And NEVER the option with the fewest total digits.
+        //   5. Correct answer position is uniformly random among A–D.
+        //   6. No two options share the same total digit length AND the
+        //      same visual class (whole vs decimal) unless forced — we
+        //      enforce a spread of lengths.
+        // =====================================================================
+
+        const TOTAL_QUESTIONS = 5;
+        const STORAGE_KEY = 'unpredictable_compare_quiz_v6';
+
+        function compareDecimalStrings(a, b) {
+            const [ai, af = ''] = String(a).split('.');
+            const [bi, bf = ''] = String(b).split('.');
+            const intLen = Math.max(ai.length, bi.length);
+            const Aint = ai.padStart(intLen, '0');
+            const Bint = bi.padStart(intLen, '0');
+            if (Aint < Bint) return -1;
+            if (Aint > Bint) return 1;
+            const fracLen = Math.max(af.length, bf.length);
+            const Af = af.padEnd(fracLen, '0');
+            const Bf = bf.padEnd(fracLen, '0');
+            if (Af < Bf) return -1;
+            if (Af > Bf) return 1;
+            return 0;
+        }
+
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function randInt(lo, hi) { return lo + Math.floor(Math.random() * (hi - lo + 1)); }
+        function randDigit(lo = 0, hi = 9) { return randInt(lo, hi); }
+
+        function totalDigits(s) { return s.replace('.', '').length; }
+        function isWhole(s) { return !s.includes('.'); }
+
+        // ---- Core validator with anti-predictability checks ----
+        function buildQuestion(displays, level, forcedDirection) {
+            if (!Array.isArray(displays) || displays.length !== 4) return null;
+            for (const s of displays) {
+                if (typeof s !== 'string' || s.length === 0) return null;
+                const dotCount = (s.match(/\./g) || []).length;
+                if (dotCount > 1) return null;
+                if (dotCount === 1) {
+                    const [ip, fp] = s.split('.');
+                    if (!ip || !fp) return null;
+                    if (!/^\d+$/.test(ip) || !/^\d+$/.test(fp)) return null;
+                } else {
+                    if (!/^\d+$/.test(s)) return null;
+                }
+            }
+
+            const opts = displays.map(s => ({ str: s, val: parseFloat(s) }));
+            if (new Set(opts.map(o => o.str)).size !== 4) return null;
+            if (new Set(opts.map(o => o.val)).size !== 4) return null;
+
+            // distinct frac lengths
+            const fracLens = opts.map(o => { const p = o.str.split('.'); return p.length > 1 ? p[1].length : 0; });
+            if (new Set(fracLens).size < 2) return null;
+            // distinct int lengths
+            const intLens = opts.map(o => o.str.split('.')[0].length);
+            if (new Set(intLens).size < 2) return null;
+
+            for (let i = 0; i < opts.length; i++)
+                for (let j = i + 1; j < opts.length; j++)
+                    if (compareDecimalStrings(opts[i].str, opts[j].str) === 0) return null;
+
+            // determine direction and correct value
+            const direction = forcedDirection || (Math.random() < 0.5 ? 'greatest' : 'smallest');
+            const sorted = [...opts].sort((a, b) => compareDecimalStrings(a.str, b.str));
+            const correctStr = direction === 'greatest' ? sorted[3].str : sorted[0].str;
+            const correctObj = opts.find(o => o.str === correctStr);
+            const others = opts.filter(o => o.str !== correctStr);
+
+            // ---- ANTI-PREDICTABILITY RULES ----
+            // Rule A: correct must not be the only whole number
+            const wholeCount = opts.filter(o => isWhole(o.str)).length;
+            if (wholeCount === 1 && isWhole(correctStr)) return null;
+            // Rule B: correct must not be the only decimal
+            const decCount = opts.length - wholeCount;
+            if (decCount === 1 && !isWhole(correctStr)) return null;
+
+            // Rule C: correct must not have the strictly maximum total digits
+            const correctLen = totalDigits(correctStr);
+            if (others.every(o => totalDigits(o.str) < correctLen)) return null;
+            // Rule D: correct must not have the strictly minimum total digits
+            if (others.every(o => totalDigits(o.str) > correctLen)) return null;
+            // Rule E: at least one other option must have MORE total digits
+            // AND at least one other must have FEWER total digits
+            // (so digit-count alone never wins)
+            if (!others.some(o => totalDigits(o.str) > correctLen)) return null;
+            if (!others.some(o => totalDigits(o.str) < correctLen)) return null;
+
+            // Rule F: the correct answer must not be the visually longest string
+            // AND must not be the visually shortest string
+            const lens = opts.map(o => o.str.length);
+            const maxLen = Math.max(...lens);
+            const minLen = Math.min(...lens);
+            if (correctStr.length === maxLen && lens.filter(l => l === maxLen).length === 1) return null;
+            if (correctStr.length === minLen && lens.filter(l => l === minLen).length === 1) return null;
+
+            // Rule G: correct must not be the only option of its "type"
+            // (whole vs decimal already partly covered, but also check
+            // that both whole and decimal types appear when possible)
+            // If both types appear, fine. If only one type appears, that's ok
+            // but the correct must not be the "obvious" pick.
+
+            // Rule H: spread total digit lengths — at least 3 distinct lengths
+            if (new Set(lens).size < 3) return null;
+
+            // Rule I: if direction is greatest, correct should not be the
+            // option that "looks biggest" by having the largest integer part
+            // integer part of correct must not be strictly the largest
+            const correctIntLen = correctStr.split('.')[0].length;
+            if (others.every(o => o.str.split('.')[0].length < correctIntLen)) return null;
+            // and not strictly the smallest
+            if (others.every(o => o.str.split('.')[0].length > correctIntLen)) return null;
+
+            return { level, direction, options: shuffle(opts), correct: correctStr };
+        }
+
+        // =====================================================================
+        // BALANCED GENERATORS — each explicitly avoids the "whole number
+        // always wins" trap by mixing types and magnitudes.
+        // =====================================================================
+
+        // G1: Whole number buried among decimals — correct may be a decimal
+        function genWholeAmongDecimals() {
+            const base = randInt(10, 60);
+            // Build 4 values around base; 1-2 whole, 2-3 decimal
+            const w1 = base;
+            const d1 = `${base - 1}.${randInt(900, 999)}`;        // just below w1
+            const d2 = `${base}.${randInt(1, 9)}${randInt(10, 99)}`; // just above w1
+            const w2 = base + randInt(1, 3);                       // another whole
+            const d3 = `${base - 1}.${randInt(9000, 9999)}`;      // just below
+
+            let arr;
+            const r = Math.random();
+            if (r < 0.5) {
+                arr = [String(w1), d1, d2, String(w2)];
+            } else {
+                arr = [String(w1), d1, d3, String(w2)];
+            }
+            // Ensure distinct
+            if (new Set(arr.map(parseFloat)).size < 4) return null;
+            return buildQuestion(arr, 1);
+        }
+
+        // G2: Mixed close values — some whole, some decimal
+        function genMixedClose() {
+            const base = randInt(5, 30);
+            const s1 = String(base);                                   // whole
+            const s2 = `${base - 1}.${randInt(9990, 9999)}`;          // barely below
+            const s3 = `${base}.${randInt(1, 9)}`;                     // slightly above
+            const s4 = `${base + 1}.${randInt(1, 9)}${randInt(10, 99)}`; // clearly above
+            // s4 is largest, s2 smallest → correct depends on direction
+            if (new Set([s1, s2, s3, s4].map(parseFloat)).size < 4) return null;
+            return buildQuestion([s1, s2, s3, s4], 2);
+        }
+
+        // G3: All decimals — varied integer parts
+        function genAllDecimals() {
+            const base = randInt(10, 99);
+            const s1 = `${base}.${randInt(1, 9)}`;
+            const s2 = `${base - 1}.${randInt(900, 999)}`;
+            const s3 = `${base + 1}.${randInt(1, 9)}${randInt(10, 99)}`;
+            const s4 = `${base - 1}.${randInt(9000, 9999)}`;
+            if (new Set([s1, s2, s3, s4].map(parseFloat)).size < 4) return null;
+            return buildQuestion([s1, s2, s3, s4], 3);
+        }
+
+        // G4: All whole numbers (allowed — but with varied digit lengths)
+        function genAllWhole() {
+            const a = randInt(1, 9);
+            const b = randInt(10, 99);
+            const c = randInt(100, 999);
+            const d = randInt(1000, 9999);
+            const arr = [String(a), String(b), String(c), String(d)];
+            // shuffle so the largest isn't always in same slot
+            return buildQuestion(arr, 4);
+        }
+
+        // G5: Two wholes + two decimals, close in value
+        function genTwoTwo() {
+            const base = randInt(20, 80);
+            const w1 = base;
+            const w2 = base + 2;
+            const d1 = `${base - 1}.${randInt(950, 999)}`;
+            const d2 = `${base + 1}.${randInt(1, 9)}${randInt(10, 99)}`;
+            const arr = [String(w1), String(w2), d1, d2];
+            if (new Set(arr.map(parseFloat)).size < 4) return null;
+            return buildQuestion(arr, 5);
+        }
+
+        // G6: Decimal with long tail vs whole — either can win
+        function genLongTailVsWhole() {
+            const base = randInt(10, 50);
+            const w = base;
+            const d1 = `${base - 1}.${randInt(9990, 9999)}${randInt(10, 99)}`;
+            const d2 = `${base + 1}.${randInt(1, 9)}`;
+            const d3 = `${base - 1}.${randInt(900, 999)}${randInt(10, 99)}`;
+            const arr = [String(w), d1, d2, d3];
+            if (new Set(arr.map(parseFloat)).size < 4) return null;
+            return buildQuestion(arr, 6);
+        }
+
+        // G7: Zero padding trap, all decimals
+        function genZeroTrap() {
+            const i = randInt(1, 9);
+            const n = randInt(1, 9);
+            const s1 = `${i}.${n}0000`;
+            const s2 = `${i}.0${n}000`;
+            const s3 = `${i}.00${n}00`;
+            const s4 = `${i}.${n}${randDigit()}${randDigit()}`;
+            if (new Set([s1, s2, s3, s4].map(parseFloat)).size < 4) return null;
+            return buildQuestion([s1, s2, s3, s4], 7);
+        }
+
+        // G8: Repeated digits with tiny difference
+        function genRepeatedTiny() {
+            const i = randInt(1, 9);
+            const d = randInt(6, 9);
+            const len = randInt(5, 8);
+            let base = String(d).repeat(len);
+            const s1 = `${i}.${base}`;
+            const s2 = `${i}.${base}${randDigit()}`;
+            const s3 = `${i}.${base.slice(0, -1)}${d - 1}${randDigit()}`;
+            const s4 = `${i}.${base.slice(0, -2)}${d - 1}${randDigit()}${randDigit()}`;
+            if (new Set([s1, s2, s3, s4].map(parseFloat)).size < 4) return null;
+            return buildQuestion([s1, s2, s3, s4], 8);
+        }
+
+        // G9: Whole-number illusion — whole may be smaller than a decimal
+        function genWholeIllusion() {
+            const base = randInt(5, 40);
+            const s1 = `${base}.${randInt(1, 9)}${randInt(10, 99)}`;  // decimal bigger than whole base
+            const s2 = String(base - 1);                               // whole, smaller
+            const s3 = `${base - 1}.${randInt(900, 999)}`;            // just below whole base
+            const s4 = String(base + 1);                               // whole, bigger
+            if (new Set([s1, s2, s3, s4].map(parseFloat)).size < 4) return null;
+            return buildQuestion([s1, s2, s3, s4], 9);
+        }
+
+        // G10: Mixed long fractions with different integer parts
+        function genMixedLong() {
+            const base = randInt(10, 99);
+            const s1 = `${base}.${randInt(1, 9)}`;
+            const s2 = `${base - 1}.${randInt(9000, 9999)}`;
+            const s3 = `${base + 1}.${randInt(10, 99)}`;
+            const s4 = `${base - 1}.${randInt(90000, 99999)}`;
+            if (new Set([s1, s2, s3, s4].map(parseFloat)).size < 4) return null;
+            return buildQuestion([s1, s2, s3, s4], 10);
+        }
+
+        // G11: All four visually similar in length
+        function genBalancedLengths() {
+            const base = randInt(10, 99);
+            // Construct strings of similar character length
+            const s1 = `${base}.${randInt(100, 999)}`;
+            const s2 = `${base + 1}.${randInt(10, 99)}`;
+            const s3 = `${base - 1}.${randInt(1000, 9999)}`;
+            const s4 = `${base}.${randInt(10000, 99999)}`;
+            if (new Set([s1, s2, s3, s4].map(parseFloat)).size < 4) return null;
+            return buildQuestion([s1, s2, s3, s4], 11);
+        }
+
+        // G12: Three decimals, one whole — whole can be correct
+        function genThreeDecOneWhole() {
+            const base = randInt(20, 60);
+            const w = base;
+            const d1 = `${base - 1}.${randInt(900, 999)}`;
+            const d2 = `${base + 1}.${randInt(1, 9)}`;
+            const d3 = `${base}.${randInt(1, 9)}`;
+            // If direction = greatest, w is NOT largest (d2 is). If smallest,
+            // w is not smallest (d1 is). So w can never be correct → forces
+            // decimal to be correct. To allow w to be correct, use base+1 as w.
+            const arr = [String(w), d1, d2, d3];
+            // Push correct away from whole: shuffle
+            if (new Set(arr.map(parseFloat)).size < 4) return null;
+            return buildQuestion(arr, 12);
+        }
+
+        // G13: Whole number is deliberately NOT the answer
+        function genWholeNeverWins() {
+            const base = randInt(10, 40);
+            const w = base + 5;                     // whole, but bigger than all
+            const d1 = `${base + 4}.${randInt(900, 999)}`;   // just below w
+            const d2 = `${base + 6}.${randInt(1, 9)}`;       // just above w
+            const d3 = `${base + 3}.${randInt(9000, 9999)}`; // well below
+            // w is middle. Correct for greatest = d2 (decimal). Correct for
+            // smallest = d3 (decimal). Whole never correct.
+            const arr = [String(w), d1, d2, d3];
+            if (new Set(arr.map(parseFloat)).size < 4) return null;
+            return buildQuestion(arr, 13);
+        }
+
+        // =====================================================================
+        const GENERATORS = [
+            genWholeAmongDecimals, genMixedClose, genAllDecimals, genAllWhole,
+            genTwoTwo, genLongTailVsWhole, genZeroTrap, genRepeatedTiny,
+            genWholeIllusion, genMixedLong, genBalancedLengths,
+            genThreeDecOneWhole, genWholeNeverWins
+        ];
+
+        function generateQuiz() {
+            const usedKeys = new Set();
+            const questions = [];
+            const pool = shuffle([...GENERATORS]);
+            let correctPositions = [];
+
+            for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+                let q = null;
+                for (let t = 0; t < 250 && !q; t++) {
+                    const gen = pool[(i + t) % pool.length];
+                    try {
+                        const candidate = gen();
+                        if (!candidate) continue;
+                        const key = candidate.direction + '|' +
+                            candidate.options.map(o => o.str).sort().join('|');
+                        if (usedKeys.has(key)) continue;
+                        // Avoid correct answer repeating same position too often
+                        const pos = candidate.options.findIndex(o => o.str === candidate.correct);
+                        const recent = correctPositions.slice(-3);
+                        if (recent.length === 3 && recent.every(p => p === pos)) continue;
+                        usedKeys.add(key);
+                        correctPositions.push(pos);
+                        q = candidate;
+                    } catch (e) { continue; }
+                }
+                if (!q) { q = buildFallbackQuestion(i); if (!q) return null; }
+                questions.push(q);
+            }
+
+            // balance directions
+            let g = questions.filter(q => q.direction === 'greatest').length;
+            let s = TOTAL_QUESTIONS - g;
+            if (g === 0 || s === 0) {
+                const idx = randInt(0, TOTAL_QUESTIONS - 1);
+                const q = questions[idx];
+                const sorted = [...q.options].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                q.direction = (q.direction === 'greatest') ? 'smallest' : 'greatest';
+                q.correct = q.direction === 'greatest' ? sorted[3].str : sorted[0].str;
+            } else if (g >= 4) {
+                const idx = questions.findIndex(q => q.direction === 'greatest');
+                if (idx >= 0) {
+                    const q = questions[idx];
+                    const sorted = [...q.options].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                    q.direction = 'smallest';
+                    q.correct = sorted[0].str;
+                }
+            } else if (s >= 4) {
+                const idx = questions.findIndex(q => q.direction === 'smallest');
+                if (idx >= 0) {
+                    const q = questions[idx];
+                    const sorted = [...q.options].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                    q.direction = 'greatest';
+                    q.correct = sorted[3].str;
+                }
+            }
+
+            return questions;
+        }
+
+        function buildFallbackQuestion(seed) {
+            const variants = [
+                { disp: ['12.3456001', '12.3456002', '12.34560011', '12.34560012'], level: 1 },
+                { disp: ['49.9999', '50.0001', '49.99999', '50.0'], level: 2 },
+                { disp: ['5.10000', '5.100', '5.01000', '5.00100'], level: 3 },
+                { disp: ['99.99', '100', '99.999', '100.001'], level: 4 },
+                { disp: ['8.777777', '8.777778', '8.777779', '8.7777777'], level: 5 }
+            ];
+            const v = variants[seed % variants.length];
+            return buildQuestion(v.disp, v.level);
+        }
+
+        // =====================================================================
+        // QUIZ ENGINE
+        // =====================================================================
+        let state = { questions: [], currentIndex: 0, answers: new Array(TOTAL_QUESTIONS).fill(null), completed: false, score: 0 };
+
+        function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+        function loadState() {
+            try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+        }
+        function clearState() { try { localStorage.removeItem(STORAGE_KEY); } catch (e) {} }
+
+        function renderCurrentQuestion() {
+            if (state.completed) { renderResult(); return; }
+            const qIndex = state.currentIndex;
+            if (qIndex >= TOTAL_QUESTIONS) { state.completed = true; saveState(); renderResult(); return; }
+
+            const q = state.questions[qIndex];
+            const selectedIdx = state.answers[qIndex];
+
+            document.getElementById('progressBadge').textContent = `${qIndex + 1} / ${TOTAL_QUESTIONS}`;
+            document.getElementById('statusText').textContent = `Question ${qIndex + 1} of ${TOTAL_QUESTIONS}`;
+            const dirBadge = document.getElementById('directionBadge');
+            dirBadge.textContent = q.direction === 'greatest' ? '⬆ Select the Greatest' : '⬇ Select the Smallest';
+
+            const qt = document.getElementById('questionText');
+            let listHTML = '<div class="question-list">';
+            q.options.forEach((opt) => { listHTML += `<span class="number-chip">${opt.str}</span>`; });
+            listHTML += '</div>';
+            qt.innerHTML = listHTML +
+                `<div style="font-size:clamp(14px,2.1vh,18px); margin-top:14px; color:var(--muted); font-weight:700;">
+                    Which one is the ${q.direction} number?
+                </div>`;
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (selectedIdx === idx) btn.classList.add('selected');
+                btn.textContent = opt.str;
+                btn.addEventListener('click', () => {
+                    if (state.completed) return;
+                    state.answers[qIndex] = idx;
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.getElementById('submitBtn').disabled = false;
+                    saveState();
+                });
+                grid.appendChild(btn);
+            });
+
+            const submitBtn = document.getElementById('submitBtn');
+            const hasSelection = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !hasSelection;
+            submitBtn.textContent = hasSelection ? (qIndex === TOTAL_QUESTIONS - 1 ? 'Finish quiz →' : 'Next question →') : 'Submit answer';
+
+            const newSubmit = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            newSubmit.id = 'submitBtn';
+            newSubmit.addEventListener('click', () => {
+                if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+                    state.currentIndex++;
+                    saveState();
+                    renderCurrentQuestion();
+                } else {
+                    finalizeQuiz();
+                }
+            });
+
+            document.getElementById('questionView').classList.remove('hide');
+            document.getElementById('resultView').classList.add('hide');
+        }
+
+        function finalizeQuiz() {
+            let score = 0;
+            state.questions.forEach((q, idx) => {
+                const ansIdx = state.answers[idx];
+                if (ansIdx === null || ansIdx === undefined) return;
+                if (q.options[ansIdx].str === q.correct) score++;
+            });
+            state.score = score;
+            state.completed = true;
+            saveState();
+            renderResult();
+        }
+
+        function renderResult() {
+            document.getElementById('questionView').classList.add('hide');
+            document.getElementById('resultView').classList.remove('hide');
+            const score = state.score;
+            document.getElementById('scoreDisplay').innerHTML = `${score}<small>/${TOTAL_QUESTIONS}</small>`;
+            const msgEl = document.getElementById('scoreMessage');
+            const congratsEl = document.getElementById('congratsMessage');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+            if (score === TOTAL_QUESTIONS) {
+                msgEl.style.display = 'none';
+                congratsEl.style.display = 'block';
+                congratsEl.textContent = '🎉 Masterful! You saw past every trap!';
+                tryAgainBtn.style.display = 'none';
+            } else {
+                msgEl.style.display = 'block';
+                msgEl.textContent = `You scored ${score}/${TOTAL_QUESTIONS}. The traps are designed so no single clue gives it away — compare place by place!`;
+                msgEl.style.color = '#a83e37';
+                congratsEl.style.display = 'none';
+                tryAgainBtn.style.display = 'inline-flex';
+            }
+            const newTryBtn = tryAgainBtn.cloneNode(true);
+            tryAgainBtn.parentNode.replaceChild(newTryBtn, tryAgainBtn);
+            newTryBtn.id = 'tryAgainBtn';
+            newTryBtn.addEventListener('click', resetAndStartNewQuiz);
+            document.getElementById('statusText').textContent = 'Quiz completed';
+            document.getElementById('progressBadge').textContent = `${TOTAL_QUESTIONS} / ${TOTAL_QUESTIONS}`;
+        }
+
+        function startNewQuiz() {
+            let questions = null;
+            let attempts = 0;
+            while (attempts < 120 && !questions) {
+                try { questions = generateQuiz(); } catch (e) { questions = null; }
+                attempts++;
+            }
+            if (!questions || questions.length !== TOTAL_QUESTIONS) {
+                questions = [
+                    { direction: 'greatest', options: [{str:'42.999',val:42.999},{str:'43',val:43},{str:'42.9999',val:42.9999},{str:'43.1',val:43.1}], correct: '43.1' },
+                    { direction: 'smallest', options: [{str:'19.999',val:19.999},{str:'20',val:20},{str:'20.001',val:20.001},{str:'19.9999',val:19.9999}], correct: '19.999' },
+                    { direction: 'greatest', options: [{str:'5.120',val:5.12},{str:'5.121',val:5.121},{str:'5.1201',val:5.1201},{str:'5.12001',val:5.12001}], correct: '5.121' },
+                    { direction: 'smallest', options: [{str:'99.99',val:99.99},{str:'100',val:100},{str:'99.999',val:99.999},{str:'100.001',val:100.001}], correct: '99.99' },
+                    { direction: 'greatest', options: [{str:'8.777777',val:8.777777},{str:'8.777778',val:8.777778},{str:'8.777779',val:8.777779},{str:'8.7777777',val:8.7777777}], correct: '8.777779' }
+                ];
+            }
+            state = { questions, currentIndex: 0, answers: new Array(TOTAL_QUESTIONS).fill(null), completed: false, score: 0 };
+            saveState();
+            renderCurrentQuestion();
+        }
+
+        function resetAndStartNewQuiz() { clearState(); startNewQuiz(); }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+            if (saved && saved.questions && saved.questions.length === TOTAL_QUESTIONS && saved.answers && saved.answers.length === TOTAL_QUESTIONS) {
+                state = saved;
+                if (state.completed === undefined) state.completed = false;
+                if (state.score === undefined) state.score = 0;
+                if (state.completed) renderResult(); else renderCurrentQuestion();
+            } else { startNewQuiz(); }
+            window.addEventListener('beforeunload', () => { saveState(); });
+        });
+
+        window.__quizState = () => state;
+        window.__resetQuiz = resetAndStartNewQuiz;
+    })();
+</script>
+</body>
+</html>

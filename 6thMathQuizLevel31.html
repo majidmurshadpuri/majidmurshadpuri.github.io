@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Greatest / Smallest Decimal – Randomized Challenge</title>
+    <style>
+        :root {
+            --green: #123c35;
+            --green2: #1d5b4e;
+            --gold: #e7b95b;
+            --cream: #fbf8ef;
+            --ink: #172b27;
+            --muted: #66736e;
+            --red: #a83e37;
+            --card-bg: #ffffff;
+            --border-light: #e5e5d9;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0; padding: 0; min-height: 100%; width: 100%;
+        }
+        body {
+            background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            padding: 1.2vh 1.2vw;
+            overflow-x: hidden;
+        }
+        .quiz-card {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #172b270d;
+            padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: clamp(20px, 3.5vh, 32px);
+            margin: 0 0 4px 0;
+            color: var(--ink);
+            border-bottom: 2px solid #e5e5d9;
+            padding-bottom: clamp(10px, 1.8vh, 16px);
+        }
+        .subhead {
+            color: var(--muted);
+            margin: clamp(8px, 1.5vh, 12px) 0 clamp(14px, 2.5vh, 20px) 0;
+            font-size: clamp(13px, 1.6vh, 15px);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .progress-badge {
+            background: #edf0e9;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: clamp(12px, 1.4vh, 13px);
+            font-weight: 800;
+            color: var(--green);
+        }
+        .question-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(14px, 2.5vh, 24px) clamp(14px, 2.5vw, 20px);
+            margin: clamp(8px, 1.5vh, 10px) 0 clamp(10px, 2vh, 16px);
+            border: 1px solid var(--border-light);
+        }
+        .question-text {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 600;
+            color: var(--green);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: clamp(14px, 2.5vh, 24px);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(8px, 1.5vh, 14px);
+            margin-top: clamp(6px, 1vh, 10px);
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            border-radius: 13px;
+            padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px);
+            font-size: clamp(18px, 3vh, 26px);
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            user-select: none;
+            text-align: center;
+            min-height: 60px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            word-break: break-all;
+        }
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--green2);
+            background: #f8fbf7;
+        }
+        .option-btn.selected {
+            border-color: var(--green2);
+            background: #edf5ef;
+            box-shadow: 0 0 0 3px #1d5b4e25;
+        }
+        .option-btn.disabled { cursor: default; opacity: 0.75; }
+        .btn-group {
+            display: flex; flex-wrap: wrap;
+            gap: clamp(10px, 1.5vh, 14px);
+            justify-content: center;
+            margin-top: clamp(12px, 2vh, 20px);
+        }
+        .btn {
+            background: #ffffff;
+            border: 2px solid #e6e9e1;
+            color: var(--green);
+            font-weight: 800;
+            padding: clamp(9px, 1.5vh, 12px) clamp(18px, 2.5vw, 24px);
+            border-radius: 12px;
+            font-size: clamp(14px, 1.8vh, 15px);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            box-shadow: 0 10px 18px -8px #1b4e6470;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green2);
+            border-color: var(--green2);
+            transform: scale(1.02);
+        }
+        .btn:hover:not(:disabled):not(.btn-primary) {
+            background: #f0f4ed;
+            border-color: #8ca99a;
+        }
+        .btn:disabled {
+            opacity: 0.5; cursor: not-allowed;
+            transform: none !important;
+        }
+        .result-area {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: clamp(20px, 4vh, 32px) clamp(16px, 3vw, 24px);
+            margin: clamp(12px, 2vh, 16px) 0;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .score-big {
+            font-size: clamp(40px, 8vh, 64px);
+            font-weight: 900;
+            color: var(--green);
+            line-height: 1.1;
+        }
+        .score-big small {
+            font-size: clamp(20px, 4vh, 32px);
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .score-message {
+            font-size: clamp(15px, 2.2vh, 20px);
+            font-weight: 500;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+        }
+        .congrats-message {
+            font-size: clamp(16px, 2.6vh, 24px);
+            font-weight: 700;
+            margin: clamp(12px, 2vh, 18px) 0;
+            line-height: 1.5;
+            color: #216342;
+        }
+        .hide { display: none !important; }
+
+        .direction-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: #3d2f10;
+            font-weight: 900;
+            font-size: clamp(12px, 1.8vh, 15px);
+            padding: 5px 18px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .question-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 16px);
+            margin-top: 8px;
+        }
+        .number-chip {
+            background: #f2f7f1;
+            border: 2px solid #d3e0d5;
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-size: clamp(18px, 3.2vh, 28px);
+            font-weight: 800;
+            color: var(--green2);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1.5px;
+            word-break: break-all;
+        }
+
+        @media (max-width: 650px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .quiz-card { padding: 14px; }
+            h1 { font-size: 20px; }
+            .question-text { font-size: 20px; }
+            .option-btn { font-size: 16px; padding: 12px 14px; }
+            .score-big { font-size: 42px; }
+            .result-area { padding: 20px 14px; }
+            .number-chip { font-size: 16px; padding: 8px 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <h1>Greatest / Smallest Decimal</h1>
+    <div class="subhead">
+        <div id="statusText">Answer all 5 questions. Score shown at the end.</div>
+        <div class="progress-badge" id="progressBadge">0 / 5</div>
+    </div>
+
+    <div id="questionView">
+        <div class="question-area">
+            <div style="text-align:center;">
+                <span class="direction-badge" id="directionBadge">Greatest</span>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options-grid" id="optionsGrid"></div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="submitBtn" disabled>Submit answer</button>
+        </div>
+    </div>
+
+    <div id="resultView" class="hide">
+        <div class="result-area">
+            <div class="score-big" id="scoreDisplay">0<small>/5</small></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="congrats-message" id="congratsMessage" style="display: none;"></div>
+            <div class="btn-group" id="resultButtons" style="margin-top: 24px;">
+                <button class="btn" id="tryAgainBtn">🔄 Try again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // =====================================================================
+        // RANDOMIZED DECIMAL COMPARISON QUIZ — 5 fresh questions per attempt
+        //
+        // Design goals (per spec):
+        //  • 5 randomly generated questions every attempt — never the same set.
+        //  • Balanced greatest/smallest mix.
+        //  • 4 distinct decimal options per question.
+        //  • Integer & fractional part lengths VARY deliberately.
+        //  • Traps: zeros in misleading places, leading zeros, repeated digits,
+        //    similar-looking numbers, long decisive fractional tails, and
+        //    "more digits ≠ bigger" illusions.
+        //  • Exactly one correct answer per question.
+        //  • No duplicate questions within an attempt.
+        // =====================================================================
+
+        const TOTAL_QUESTIONS = 5;
+        const STORAGE_KEY = 'random_decimal_compare_quiz_v3';
+
+        // ---------- precise decimal-string comparison ----------
+        function compareDecimalStrings(a, b) {
+            const [ai, af = ''] = String(a).split('.');
+            const [bi, bf = ''] = String(b).split('.');
+            const intLen = Math.max(ai.length, bi.length);
+            const Aint = ai.padStart(intLen, '0');
+            const Bint = bi.padStart(intLen, '0');
+            if (Aint < Bint) return -1;
+            if (Aint > Bint) return 1;
+            const fracLen = Math.max(af.length, bf.length);
+            const Af = af.padEnd(fracLen, '0');
+            const Bf = bf.padEnd(fracLen, '0');
+            if (Af < Bf) return -1;
+            if (Af > Bf) return 1;
+            return 0;
+        }
+
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function randInt(lo, hi) { // inclusive
+            return lo + Math.floor(Math.random() * (hi - lo + 1));
+        }
+
+        function randDigit(lo = 0, hi = 9) {
+            return randInt(lo, hi);
+        }
+
+        // ---------- helper: build a validated question object ----------
+        // Returns null if the 4 displays violate the constraints.
+        function buildQuestion(displays, level, forcedDirection) {
+            if (!Array.isArray(displays) || displays.length !== 4) return null;
+            // All must be valid decimal strings with exactly one dot
+            for (const s of displays) {
+                if (typeof s !== 'string' || (s.match(/\./g) || []).length !== 1) return null;
+                const [ip, fp] = s.split('.');
+                if (ip.length === 0 || fp.length === 0) return null;
+                if (!/^\d+$/.test(ip) || !/^\d+$/.test(fp)) return null;
+            }
+
+            const opts = displays.map(s => ({ str: s, val: parseFloat(s) }));
+            if (new Set(opts.map(o => o.str)).size !== 4) return null;
+            if (new Set(opts.map(o => o.val)).size !== 4) return null;
+
+            // Fractional part lengths must vary (at least 2 distinct lengths)
+            const fracLens = opts.map(o => o.str.split('.')[1].length);
+            if (new Set(fracLens).size < 2) return null;
+
+            // Integer part lengths must vary (at least 2 distinct lengths)
+            const intLens = opts.map(o => o.str.split('.')[0].length);
+            if (new Set(intLens).size < 2) return null;
+
+            // No two numerically equal
+            for (let i = 0; i < opts.length; i++) {
+                for (let j = i + 1; j < opts.length; j++) {
+                    if (compareDecimalStrings(opts[i].str, opts[j].str) === 0) return null;
+                }
+            }
+
+            const direction = forcedDirection || (Math.random() < 0.5 ? 'greatest' : 'smallest');
+            const sorted = [...opts].sort((a, b) => compareDecimalStrings(a.str, b.str));
+            const correct = direction === 'greatest' ? sorted[3].str : sorted[0].str;
+
+            return {
+                level,
+                direction,
+                options: shuffle(opts),
+                correct
+            };
+        }
+
+        // =====================================================================
+        // QUESTION GENERATORS — diverse trap families
+        // Each returns a valid question or null. Generators are chosen
+        // randomly per slot so patterns vary across attempts.
+        // =====================================================================
+
+        // ---- Family 1: "More fractional digits ≠ bigger" ----
+        // Short frac with high first digit beats longer fracs with lower first digit.
+        // e.g. 8.9 > 8.87 > 8.879 > 8.8789
+        function genMoreDigitsSmaller() {
+            const intDigit = randInt(1, 9);
+            const h = randInt(7, 9);               // high first frac digit for the short one
+            const low = randInt(0, h - 1);         // lower first frac digit for longer ones
+            const m = randDigit();
+            const n = randDigit();
+            const p = randDigit();
+
+            const s1 = `${intDigit}.${h}`;
+            const s2 = `${intDigit}.${low}${m}`;
+            const s3 = `${intDigit}.${low}${m}${n}`;
+            const s4 = `${intDigit}.${low}${m}${n}${p}`;
+
+            return buildQuestion([s1, s2, s3, s4], 1);
+        }
+
+        // ---- Family 2: Zero-padding illusion (0.5, 0.50, 0.05, 0.005) ----
+        // intLen = 1. frac lengths differ. Decisive at first non-zero digit.
+        function genZeroPadding() {
+            const intDigit = randInt(1, 9);
+            const nz = randInt(1, 9);              // a non-zero digit
+            const z1 = randInt(0, 2);              // 0..2 leading zeros before nz
+            const z2 = z1 + randInt(1, 2);
+            const z3 = z2 + randInt(1, 2);
+
+            function makeFrac(zeros, tailDigits) {
+                let f = '0'.repeat(zeros) + nz;
+                if (tailDigits > 0) f += String(randDigit()).repeat(tailDigits);
+                return f;
+            }
+
+            const s1 = `${intDigit}.${nz}`;                       // shortest
+            const s2 = `${intDigit}.${makeFrac(z1, 0)}`;          // longer with zeros
+            const s3 = `${intDigit}.${makeFrac(z2, 0)}`;          // even longer
+            const s4 = `${intDigit}.${makeFrac(z3, randInt(1, 3))}`; // longest
+
+            return buildQuestion([s1, s2, s3, s4], 2);
+        }
+
+        // ---- Family 3: Repeated-digit progressive reveal ----
+        // e.g. 4.0999 vs 4.09999 vs 4.0989 vs 4.099
+        function genRepeatedDigits() {
+            const intDigit = randInt(1, 9);
+            const d = randInt(7, 9);               // repeated digit (7, 8, or 9)
+            const d2 = d - 1;                      // slightly smaller repeated digit
+
+            const s1 = `${intDigit}.0${d}${d}${d}`;                 // len 4
+            const s2 = `${intDigit}.0${d}${d}${d}${d}`;             // len 5
+            const s3 = `${intDigit}.0${d}${d}${d}${d}${d}`;         // len 6
+            const s4 = `${intDigit}.0${d2}${d}${d}${d}${d}`;        // len 6 but lower first repeated digit
+
+            return buildQuestion([s1, s2, s3, s4], 3);
+        }
+
+        // ---- Family 4: Length illusion with near-identical numbers ----
+        // e.g. 12.7, 12.699, 12.69999, 12.7000001
+        function genLengthIllusion() {
+            const intPart = randInt(10, 99);
+            const v = randInt(1, 9);
+
+            const s1 = `${intPart}.${v}`;                              // len 1
+            const s2 = `${intPart}.${v - 1}99`;                        // len 3
+            const s3 = `${intPart}.${v - 1}9999`;                      // len 5
+            const s4 = `${intPart}.${v}00000${randInt(1, 9)}`;         // len 7
+
+            return buildQuestion([s1, s2, s3, s4], 4);
+        }
+
+        // ---- Family 5: Leading-zero illusion ----
+        // Different integer-part lengths, with leading zeros in some.
+        // e.g. 099.9 vs 100.0 vs 9.99 vs 0999.0
+        function genLeadingZeros() {
+            // Choose a base integer magnitude
+            const base = randInt(10, 200);
+            const a = base;                              // e.g. 100
+            const b = base - randInt(1, 9);              // e.g. 95
+            const c = base + randInt(1, 9);              // e.g. 105
+
+            // Format with leading zeros to create visual length illusions
+            const padLen = randInt(2, 4);
+            const fmt = (num, len) => String(num).padStart(len, '0');
+
+            const s1 = `${fmt(a, padLen)}.${randInt(1, 9)}`;           // padded integer
+            const s2 = `${b}.${randInt(10, 99)}`;                      // shorter integer
+            const s3 = `${c}.${randInt(100, 999)}`;                    // longer integer
+            const s4 = `${fmt(b, padLen)}.${randInt(1000, 9999)}`;    // padded, long frac
+
+            // Deduplicate integer values
+            const vals = [parseFloat(s1), parseFloat(s2), parseFloat(s3), parseFloat(s4)];
+            if (new Set(vals).size < 4) return null;
+
+            return buildQuestion([s1, s2, s3, s4], 5);
+        }
+
+        // ---- Family 6: Long decisive fractional tail ----
+        // All integer parts equal; fractional parts share a long prefix,
+        // differing only in the last digit(s).
+        function genLongTail() {
+            const intPart = randInt(1, 99);
+            const prefixLen = randInt(5, 9);
+            let prefix = '';
+            for (let i = 0; i < prefixLen; i++) prefix += randDigit();
+
+            // Four numbers share prefix but differ at the end
+            const t1 = prefix + randDigit();
+            const t2 = prefix + randDigit() + randDigit();
+            const t3 = prefix + randDigit() + randDigit() + randDigit();
+            const t4 = prefix + randDigit() + randDigit() + randDigit() + randDigit();
+
+            // Ensure last digits differ enough to create distinct values
+            const s1 = `${intPart}.${t1}`;
+            const s2 = `${intPart}.${t2}`;
+            const s3 = `${intPart}.${t3}`;
+            const s4 = `${intPart}.${t4}`;
+
+            return buildQuestion([s1, s2, s3, s4], 6);
+        }
+
+        // ---- Family 7: All integer parts identical, fractional parts vary ----
+        // Classic "compare fractional place values" drill.
+        function genSameInteger() {
+            const intPart = randInt(1, 99);
+            // Use a variety of fractional lengths and digit patterns
+            const f1 = String(randInt(0, 9));
+            const f2 = String(randInt(10, 99)).padStart(2, '0');
+            const f3 = String(randInt(100, 999)).padStart(3, '0');
+            const f4 = String(randInt(1000, 9999)).padStart(4, '0');
+
+            const s1 = `${intPart}.${f1}`;
+            const s2 = `${intPart}.${f2}`;
+            const s3 = `${intPart}.${f3}`;
+            const s4 = `${intPart}.${f4}`;
+
+            // Must have distinct values
+            const vals = [parseFloat(s1), parseFloat(s2), parseFloat(s3), parseFloat(s4)];
+            if (new Set(vals).size < 4) return null;
+
+            return buildQuestion([s1, s2, s3, s4], 7);
+        }
+
+        // ---- Family 8: Whole-number confusion with trailing zeros ----
+        // Numbers like 3.2 vs 3.20 vs 3.200 are numerically equal → NOT allowed.
+        // Instead use visually similar but distinct values with trailing zeros.
+        function genTrailingZeroTrap() {
+            const intPart = randInt(1, 9);
+            // Construct four distinct values that differ at a late place
+            const a = `${intPart}.5`;
+            const b = `${intPart}.50${randInt(1, 9)}`;        // 5.501 etc. — bigger than 5.5
+            const c = `${intPart}.49${randInt(10, 99)}`;      // 5.4912 etc. — smaller than 5.5
+            const d = `${intPart}.500${randInt(0, 9)}`;       // 5.5003 etc. — slightly bigger than 5.5
+
+            // Ensure distinct
+            const vals = [parseFloat(a), parseFloat(b), parseFloat(c), parseFloat(d)];
+            if (new Set(vals).size < 4) return null;
+
+            return buildQuestion([a, b, c, d], 8);
+        }
+
+        // ---- Family 9: Very long fractional parts, same integer ----
+        // Decisive difference deep in the fraction.
+        function genDeepFraction() {
+            const intPart = randInt(1, 9);
+            const baseLen = randInt(4, 7);
+            let base = '';
+            for (let i = 0; i < baseLen; i++) base += randDigit();
+
+            const s1 = `${intPart}.${base}1`;
+            const s2 = `${intPart}.${base}19`;
+            const s3 = `${intPart}.${base}2`;
+            const s4 = `${intPart}.${base}199`;
+
+            const vals = [parseFloat(s1), parseFloat(s2), parseFloat(s3), parseFloat(s4)];
+            if (new Set(vals).size < 4) return null;
+
+            return buildQuestion([s1, s2, s3, s4], 9);
+        }
+
+        // ---- Family 10: Mixed integer lengths with close values ----
+        // Different integer-part lengths but numerically close (e.g., 9.x vs 10.x).
+        function genMixedIntegerLengths() {
+            const big = randInt(1, 9);
+            const small = big - 1; // ensures close values
+            const tiny = Math.max(1, small - 1);
+
+            // Build: small.9xxx , big.0xxx , small.99xxx , big.00xxx
+            const s1 = `${small}.${randInt(8, 9)}${randInt(0, 9)}`;
+            const s2 = `${big}.0${randInt(0, 9)}${randInt(0, 9)}`;
+            const s3 = `${small}.${randInt(9, 9)}${randInt(9, 9)}${randInt(1, 9)}`;
+            const s4 = `${big}.00${randInt(1, 9)}${randInt(1, 9)}`;
+
+            const vals = [parseFloat(s1), parseFloat(s2), parseFloat(s3), parseFloat(s4)];
+            if (new Set(vals).size < 4) return null;
+
+            return buildQuestion([s1, s2, s3, s4], 10);
+        }
+
+        // ---- Family 11: Zeros inside fractional part ----
+        // e.g. 5.05 vs 5.005 vs 5.0005 vs 5.5
+        function genInnerZeros() {
+            const intPart = randInt(1, 9);
+            const nz = randInt(1, 9);
+            const s1 = `${intPart}.${nz}`;
+            const s2 = `${intPart}.0${nz}`;
+            const s3 = `${intPart}.00${nz}`;
+            const s4 = `${intPart}.000${nz}${randInt(1, 9)}`;
+
+            return buildQuestion([s1, s2, s3, s4], 11);
+        }
+
+        // ---- Family 12: Similar-looking numbers differing at one place ----
+        // e.g. 7.1234 vs 7.1235 vs 7.1233 vs 7.1243
+        function genSimilarNumbers() {
+            const intPart = randInt(1, 9);
+            const len = randInt(3, 5);
+            let base = '';
+            for (let i = 0; i < len; i++) base += randDigit();
+
+            const d = randDigit(1, 8);
+            // Four variants: change one digit in different positions
+            const s1 = `${intPart}.${base}${d}`;
+            const s2 = `${intPart}.${base}${d + 1}`;
+            const s3 = `${intPart}.${base}${Math.max(0, d - 1)}`;
+            const s4 = `${intPart}.${base.slice(0, -1)}${d}${randDigit()}`;
+
+            const vals = [parseFloat(s1), parseFloat(s2), parseFloat(s3), parseFloat(s4)];
+            if (new Set(vals).size < 4) return null;
+
+            return buildQuestion([s1, s2, s3, s4], 12);
+        }
+
+        // =====================================================================
+        // GENERATOR POOL & QUIZ BUILDER
+        // =====================================================================
+
+        const GENERATORS = [
+            genMoreDigitsSmaller,
+            genZeroPadding,
+            genRepeatedDigits,
+            genLengthIllusion,
+            genLeadingZeros,
+            genLongTail,
+            genSameInteger,
+            genTrailingZeroTrap,
+            genDeepFraction,
+            genMixedIntegerLengths,
+            genInnerZeros,
+            genSimilarNumbers
+        ];
+
+        function generateQuiz() {
+            const usedKeys = new Set();
+            const questions = [];
+
+            // Shuffle the generator pool so different families appear each attempt
+            const pool = shuffle([...GENERATORS]);
+
+            for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+                let q = null;
+                // Try generators starting at index i, cycling through the pool
+                for (let t = 0; t < 80 && !q; t++) {
+                    const gen = pool[(i + t) % pool.length];
+                    try {
+                        const candidate = gen();
+                        if (!candidate) continue;
+
+                        // Unique question key: sorted option strings + direction
+                        const key = candidate.direction + '|' +
+                            candidate.options.map(o => o.str).sort().join('|');
+                        if (usedKeys.has(key)) continue;
+
+                        usedKeys.add(key);
+                        q = candidate;
+                    } catch (e) {
+                        // Generator failed — try another
+                        continue;
+                    }
+                }
+                if (!q) {
+                    // Fallback: guaranteed-valid simple question
+                    q = buildFallbackQuestion(i);
+                    if (!q) return null;
+                }
+                questions.push(q);
+            }
+
+            // Ensure a balanced mix: at most 4 of one direction
+            ensureBalancedDirections(questions);
+
+            return questions;
+        }
+
+        function buildFallbackQuestion(seed) {
+            const variants = [
+                { disp: ['8.9', '8.87', '8.879', '8.8789'], level: 1 },
+                { disp: ['6.5', '6.05', '6.005', '6.0005'], level: 2 },
+                { disp: ['4.0999', '4.09999', '4.099', '4.0989'], level: 3 },
+                { disp: ['12.7', '12.699', '12.69999', '12.7000001'], level: 4 },
+                { disp: ['23.7777777', '23.77777778', '23.777777777', '23.7777777778'], level: 5 }
+            ];
+            const v = variants[seed % variants.length];
+            return buildQuestion(v.disp, v.level);
+        }
+
+        function ensureBalancedDirections(questions) {
+            // Count directions
+            let gCount = 0, sCount = 0;
+            questions.forEach(q => { if (q.direction === 'greatest') gCount++; else sCount++; });
+
+            // If one direction dominates (5-0 or 4-1 is fine, but we want at least 2 of each)
+            if (gCount === 0) {
+                // Force at least one question to 'smallest' by rebuilding
+                // For simplicity, flip a random question's direction if it doesn't
+                // break correctness (we rebuild the correct answer)
+                const idx = randInt(0, questions.length - 1);
+                const q = questions[idx];
+                const sorted = [...q.options].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                q.direction = 'smallest';
+                q.correct = sorted[0].str;
+            } else if (sCount === 0) {
+                const idx = randInt(0, questions.length - 1);
+                const q = questions[idx];
+                const sorted = [...q.options].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                q.direction = 'greatest';
+                q.correct = sorted[3].str;
+            } else if (gCount === 1) {
+                // Try to make it 2+ of each
+                const idx = questions.findIndex(q => q.direction === 'smallest');
+                if (idx >= 0 && Math.random() < 0.5) {
+                    const q = questions[idx];
+                    const sorted = [...q.options].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                    q.direction = 'greatest';
+                    q.correct = sorted[3].str;
+                }
+            } else if (sCount === 1) {
+                const idx = questions.findIndex(q => q.direction === 'greatest');
+                if (idx >= 0 && Math.random() < 0.5) {
+                    const q = questions[idx];
+                    const sorted = [...q.options].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                    q.direction = 'smallest';
+                    q.correct = sorted[0].str;
+                }
+            }
+        }
+
+        // =====================================================================
+        // QUIZ ENGINE
+        // =====================================================================
+        let state = {
+            questions: [],
+            currentIndex: 0,
+            answers: new Array(TOTAL_QUESTIONS).fill(null),
+            completed: false,
+            score: 0
+        };
+
+        function saveState() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+            catch (e) { /* ignore */ }
+        }
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+        function clearState() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        }
+
+        function renderCurrentQuestion() {
+            if (state.completed) { renderResult(); return; }
+            const qIndex = state.currentIndex;
+            if (qIndex >= TOTAL_QUESTIONS) {
+                state.completed = true;
+                saveState();
+                renderResult();
+                return;
+            }
+
+            const q = state.questions[qIndex];
+            const selectedIdx = state.answers[qIndex];
+
+            document.getElementById('progressBadge').textContent = `${qIndex + 1} / ${TOTAL_QUESTIONS}`;
+            document.getElementById('statusText').textContent = `Question ${qIndex + 1} of ${TOTAL_QUESTIONS}`;
+
+            const dirBadge = document.getElementById('directionBadge');
+            dirBadge.textContent = q.direction === 'greatest' ? '⬆ Select the Greatest' : '⬇ Select the Smallest';
+
+            const qt = document.getElementById('questionText');
+            let listHTML = '<div class="question-list">';
+            q.options.forEach((opt) => {
+                listHTML += `<span class="number-chip">${opt.str}</span>`;
+            });
+            listHTML += '</div>';
+            qt.innerHTML = listHTML +
+                `<div style="font-size:clamp(14px,2.1vh,18px); margin-top:14px; color:var(--muted); font-weight:700;">
+                    Which one is the ${q.direction} number?
+                </div>`;
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (selectedIdx === idx) btn.classList.add('selected');
+                btn.textContent = opt.str;
+
+                btn.addEventListener('click', () => {
+                    if (state.completed) return;
+                    state.answers[qIndex] = idx;
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.getElementById('submitBtn').disabled = false;
+                    saveState();
+                });
+                grid.appendChild(btn);
+            });
+
+            const submitBtn = document.getElementById('submitBtn');
+            const hasSelection = state.answers[qIndex] !== null && state.answers[qIndex] !== undefined;
+            submitBtn.disabled = !hasSelection;
+            submitBtn.textContent = hasSelection ? (qIndex === TOTAL_QUESTIONS - 1 ? 'Finish quiz →' : 'Next question →') : 'Submit answer';
+
+            const newSubmit = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            newSubmit.id = 'submitBtn';
+            newSubmit.addEventListener('click', () => {
+                if (state.answers[qIndex] === null || state.answers[qIndex] === undefined) return;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+                    state.currentIndex++;
+                    saveState();
+                    renderCurrentQuestion();
+                } else {
+                    finalizeQuiz();
+                }
+            });
+
+            document.getElementById('questionView').classList.remove('hide');
+            document.getElementById('resultView').classList.add('hide');
+        }
+
+        function finalizeQuiz() {
+            let score = 0;
+            state.questions.forEach((q, idx) => {
+                const ansIdx = state.answers[idx];
+                if (ansIdx === null || ansIdx === undefined) return;
+                if (q.options[ansIdx].str === q.correct) score++;
+            });
+            state.score = score;
+            state.completed = true;
+            saveState();
+            renderResult();
+        }
+
+        function renderResult() {
+            document.getElementById('questionView').classList.add('hide');
+            document.getElementById('resultView').classList.remove('hide');
+
+            const score = state.score;
+            document.getElementById('scoreDisplay').innerHTML = `${score}<small>/${TOTAL_QUESTIONS}</small>`;
+
+            const msgEl = document.getElementById('scoreMessage');
+            const congratsEl = document.getElementById('congratsMessage');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+
+            if (score === TOTAL_QUESTIONS) {
+                msgEl.style.display = 'none';
+                congratsEl.style.display = 'block';
+                congratsEl.textContent = '🎉 Perfect score! You have mastered decimal place value!';
+                tryAgainBtn.style.display = 'none';
+            } else {
+                msgEl.style.display = 'block';
+                msgEl.textContent = `You scored ${score}/${TOTAL_QUESTIONS}. Remember: compare place values, not digit counts!`;
+                msgEl.style.color = '#a83e37';
+                congratsEl.style.display = 'none';
+                tryAgainBtn.style.display = 'inline-flex';
+            }
+
+            const newTryBtn = tryAgainBtn.cloneNode(true);
+            tryAgainBtn.parentNode.replaceChild(newTryBtn, tryAgainBtn);
+            newTryBtn.id = 'tryAgainBtn';
+            newTryBtn.addEventListener('click', resetAndStartNewQuiz);
+
+            document.getElementById('statusText').textContent = 'Quiz completed';
+            document.getElementById('progressBadge').textContent = `${TOTAL_QUESTIONS} / ${TOTAL_QUESTIONS}`;
+        }
+
+        // ---------- START / RESET ----------
+        function startNewQuiz() {
+            let questions = null;
+            let attempts = 0;
+            while (attempts < 50 && !questions) {
+                try {
+                    questions = generateQuiz();
+                } catch (e) {
+                    questions = null;
+                }
+                attempts++;
+            }
+            if (!questions || questions.length !== TOTAL_QUESTIONS) {
+                // Ultimate fallback: the hand-crafted set from Level 30
+                questions = [
+                    { direction: 'greatest', options: [{str:'8.87',val:8.87},{str:'8.9',val:8.9},{str:'8.8789',val:8.8789},{str:'8.879',val:8.879}], correct: '8.9' },
+                    { direction: 'smallest', options: [{str:'6.5',val:6.5},{str:'6.05',val:6.05},{str:'6.005',val:6.005},{str:'6.0005',val:6.0005}], correct: '6.0005' },
+                    { direction: 'greatest', options: [{str:'4.09999',val:4.09999},{str:'4.0999',val:4.0999},{str:'4.099',val:4.099},{str:'4.0989',val:4.0989}], correct: '4.09999' },
+                    { direction: 'smallest', options: [{str:'12.7000001',val:12.7000001},{str:'12.7',val:12.7},{str:'12.699',val:12.699},{str:'12.69999',val:12.69999}], correct: '12.699' },
+                    { direction: 'greatest', options: [{str:'23.7777777',val:23.7777777},{str:'23.77777778',val:23.77777778},{str:'23.777777777',val:23.777777777},{str:'23.7777777778',val:23.7777777778}], correct: '23.77777778' }
+                ];
+            }
+
+            state = {
+                questions,
+                currentIndex: 0,
+                answers: new Array(TOTAL_QUESTIONS).fill(null),
+                completed: false,
+                score: 0
+            };
+            saveState();
+            renderCurrentQuestion();
+        }
+
+        function resetAndStartNewQuiz() {
+            clearState();
+            startNewQuiz();
+        }
+
+        // ---------- INIT ----------
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+            if (saved && saved.questions && saved.questions.length === TOTAL_QUESTIONS && saved.answers && saved.answers.length === TOTAL_QUESTIONS) {
+                state = saved;
+                if (state.completed === undefined) state.completed = false;
+                if (state.score === undefined) state.score = 0;
+                if (state.completed) renderResult();
+                else renderCurrentQuestion();
+            } else {
+                startNewQuiz();
+            }
+
+            window.addEventListener('beforeunload', () => {
+                saveState();
+            });
+        });
+
+        window.__quizState = () => state;
+        window.__resetQuiz = resetAndStartNewQuiz;
+    })();
+</script>
+</body>
+</html>
