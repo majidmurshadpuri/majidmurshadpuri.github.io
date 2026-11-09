@@ -193,6 +193,25 @@ footer .hearts{font-size:1.3rem;letter-spacing:.4em}
 .pclose{position:absolute;top:-14px;right:-8px;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
   background:var(--coral);color:#fff;font-size:1.1rem;box-shadow:0 6px 16px rgba(0,0,0,.35);z-index:2}
 
+
+/* ---- full-screen mode (real fullscreen + fallback for phones that block it) ---- */
+.player-overlay:fullscreen{background:#000;padding:0}
+.player-overlay:-webkit-full-screen{background:#000;padding:0}
+.player-overlay:fullscreen .player,.player-overlay.pseudo .player{
+  width:100% !important;max-width:none !important;height:100% !important;max-height:none !important;
+  border-radius:0;padding:0;background:#000;transform:none;gap:0}
+.player-overlay:-webkit-full-screen .player{width:100% !important;height:100% !important;max-width:none !important;max-height:none !important;border-radius:0;padding:0;background:#000;transform:none;gap:0}
+.player-overlay:fullscreen .frame,.player-overlay.pseudo .frame,
+.player-overlay:-webkit-full-screen .frame{aspect-ratio:auto !important;width:100%;height:100% !important;max-height:none !important;border-radius:0}
+.player-overlay:fullscreen .ptitle,.player-overlay:fullscreen .row,
+.player-overlay:-webkit-full-screen .ptitle,.player-overlay:-webkit-full-screen .row,
+.player-overlay.pseudo .ptitle,.player-overlay.pseudo .row{display:none}
+.player-overlay:fullscreen .pclose,.player-overlay:-webkit-full-screen .pclose,.player-overlay.pseudo .pclose{top:12px;right:12px;opacity:.85}
+.player-overlay.pseudo{padding:0;background:#000}
+/* phone held upright + normal video: turn the player sideways so it reads as landscape */
+.player-overlay.pseudo.rot .player{
+  position:fixed;top:0;left:0;width:100vh !important;width:100dvh !important;height:100vw !important;height:100dvw !important;
+  transform-origin:top left;transform:rotate(90deg) translateY(-100%)}
 @media (max-width:720px){ .round{width:42px;height:42px} .top{padding-left:12px;padding-right:12px} main{padding-left:16px;padding-right:16px} }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card{opacity:1;transform:none}}
 </style>
@@ -282,7 +301,7 @@ footer .hearts{font-size:1.3rem;letter-spacing:.4em}
                   never get "New" (they can still be "Latest" if they are first).
 
  HOW TO REMOVE one: delete its line. Keep the commas between lines.
- Titles with an apostrophe: write it like  'Hum Dono\'s Ghazal'  (put a \ before ').
+ Own titles with an apostrophe: write  'Hum Dono\'s Ghazal'  (put a \ before ').
 -->
 <script id="my-videos">
 /* How many days an item keeps its green "New" label: */
@@ -290,24 +309,24 @@ var NEW_DAYS = 14;
 
 /* ---------- NORMAL VIDEOS (newest on top) ---------- */
 var VIDEOS = [
-  { url:'https://youtu.be/a30NaQcsUj0', title:'Poetry Video 1 — replace with your title' },
-  { url:'https://youtu.be/Lg1u-XvIf3c', title:'Poetry Video 2 — replace with your title' },
-  { url:'https://youtu.be/hOvkuK5O08w', title:'Poetry Video 3 — replace with your title' },
-  { url:'https://youtu.be/evdy6kgqYHs', title:'Poetry Video 4 — replace with your title' },
-  { url:'https://youtu.be/0jF7yoVOCis', title:'Poetry Video 5 — replace with your title' },
-  { url:'https://youtu.be/LPeKIc85f_k', title:'Poetry Video 6 — replace with your title' },
-  { url:'https://youtu.be/NIZrn4Z1X0s', title:'Poetry Video 7 — replace with your title' }
+  { url:'https://youtu.be/a30NaQcsUj0' },
+  { url:'https://youtu.be/Lg1u-XvIf3c' },
+  { url:'https://youtu.be/hOvkuK5O08w' },
+  { url:'https://youtu.be/evdy6kgqYHs' },
+  { url:'https://youtu.be/0jF7yoVOCis' },
+  { url:'https://youtu.be/LPeKIc85f_k' },
+  { url:'https://youtu.be/NIZrn4Z1X0s' }
   /* Example of a NEW one (paste above, at the top):
-  { url:'https://youtu.be/XXXXXXXXXXX', title:'My new ghazal', date:'2026-11-20' },
+  { url:'https://youtu.be/XXXXXXXXXXX', date:'2026-11-20' },
   */
 ];
 
 /* ---------- SHORTS (newest on top) ---------- */
 var SHORTS = [
-  { url:'https://youtube.com/shorts/cQUfTkNxpQc', title:'Short 1 — replace with your title' },
-  { url:'https://youtube.com/shorts/mmnMg8JzT9g', title:'Short 2 — replace with your title' }
+  { url:'https://youtube.com/shorts/cQUfTkNxpQc' },
+  { url:'https://youtube.com/shorts/mmnMg8JzT9g' }
   /* Example of a NEW short (paste above, at the top):
-  { url:'https://youtube.com/shorts/XXXXXXXXXXX', title:'A fresh sher', date:'2026-11-20' },
+  { url:'https://youtube.com/shorts/XXXXXXXXXXX', date:'2026-11-20' },
   */
 ];
 </script>
@@ -365,6 +384,24 @@ var SHORTS = [
   }
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
+  /* ---- automatic titles: asked from YouTube in the visitor's browser, then remembered for 3 days ---- */
+  function getTitle(id,ok,fail){
+    var key='mm-yt-title-'+id;
+    try{
+      var c=JSON.parse(localStorage.getItem(key)||'null');
+      if(c&&c.t&&(Date.now()-c.ts)<3*86400000){ok(c.t);return}
+    }catch(e){}
+    fetch('https://www.youtube.com/oembed?format=json&url='+encodeURIComponent('https://www.youtube.com/watch?v='+id))
+      .then(function(r){return r.ok?r.json():null})
+      .then(function(j){
+        if(j&&j.title){
+          try{localStorage.setItem(key,JSON.stringify({t:j.title,ts:Date.now()}))}catch(e){}
+          ok(j.title);
+        }else fail();
+      })
+      .catch(fail);
+  }
+
   /* build cards */
   var observer=('IntersectionObserver' in window)?new IntersectionObserver(function(es){
     es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');observer.unobserve(e.target)}});
@@ -385,16 +422,20 @@ var SHORTS = [
 
       var when=item.date?'<p class="when">'+esc(prettyDate(item.date))+'</p>':'';
       card.innerHTML=badge+
-        '<button class="open" type="button" aria-label="Play: '+esc(item.title)+'">'+
+        '<button class="open" type="button" aria-label="Play video">'+
           '<div class="thumb">'+
             '<img loading="lazy" alt="" src="https://i.ytimg.com/vi/'+id+'/hqdefault.jpg">'+
             '<div class="play"><span>▶</span></div>'+
           '</div>'+
-          '<h3>'+esc(item.title)+'</h3>'+when+
+          '<h3>'+esc(item.title||'Loading title…')+'</h3>'+when+
         '</button>';
       var img=card.querySelector('img');
       img.addEventListener('error',function(){img.style.display='none'}); /* gradient shows if thumbnail can't load */
-      card.querySelector('button.open').addEventListener('click',function(){openPlayer(id,item.title,kind)});
+      var h3=card.querySelector('h3');
+      if(!item.title){
+        getTitle(id,function(t){item.title=t;h3.textContent=t},function(){item.title='Poetry video';h3.textContent=item.title});
+      }
+      card.querySelector('button.open').addEventListener('click',function(){openPlayer(id,item.title||'Poetry video',kind)});
       grid.appendChild(card);
       if(observer)observer.observe(card);else card.classList.add('in');
     });
@@ -428,8 +469,43 @@ var SHORTS = [
   /* Videos only play when this page is served from a real website address
      (https://...). Opened as a local file, the player cannot start. */
   var LIVE=/^https?:$/.test(location.protocol);
+  var curKind='video';
+
+  function fsElement(){return document.fullscreenElement||document.webkitFullscreenElement||null}
+
+  /* landscape lock (Android phones & tablets; ignored where unsupported) */
+  function lockLandscape(){
+    try{
+      if(curKind==='video' && screen.orientation && screen.orientation.lock){
+        screen.orientation.lock('landscape').catch(function(){});
+      }
+    }catch(e){}
+  }
+  function unlockOrientation(){
+    try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock()}catch(e){}
+  }
+
+  /* fallback for devices where real fullscreen is blocked (e.g. iPhone):
+     fill the screen and, for normal videos held upright, rotate to landscape */
+  function updateRot(){
+    var on=overlay.classList.contains('pseudo')&&curKind==='video'&&window.innerHeight>window.innerWidth;
+    overlay.classList.toggle('rot',on);
+  }
+  function pseudoFull(){overlay.classList.add('pseudo');updateRot()}
+  window.addEventListener('resize',updateRot);
+  window.addEventListener('orientationchange',function(){setTimeout(updateRot,200)});
+
+  function goFull(){
+    var req=overlay.requestFullscreen||overlay.webkitRequestFullscreen||overlay.msRequestFullscreen;
+    if(!req){pseudoFull();return}
+    try{
+      var r=req.call(overlay);
+      if(r&&r.then){r.then(lockLandscape).catch(pseudoFull)}else{lockLandscape()}
+    }catch(e){pseudoFull()}
+  }
 
   function openPlayer(id,title,kind){
+    curKind=kind;
     player.classList.toggle('short',kind==='short');
     if(LIVE){
       var src='https://www.youtube-nocookie.com/embed/'+id+
@@ -442,17 +518,26 @@ var SHORTS = [
     }
     overlay.querySelector('#ptitle').textContent=title;
     overlay.classList.add('open');document.body.classList.add('no-scroll');
+    goFull(); /* must run inside the tap, so the browser allows it */
   }
   function closePlayer(){
-    overlay.classList.remove('open');frame.innerHTML=''; /* removing the iframe stops playback */
+    overlay.classList.remove('open','pseudo','rot');
+    frame.innerHTML=''; /* removing the iframe stops playback */
     document.body.classList.remove('no-scroll');
+    unlockOrientation();
+    if(fsElement()){
+      try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}
+    }
   }
-  /* full-screen button (the player also has its own full-screen icon) */
-  overlay.querySelector('#fsbtn').addEventListener('click',function(){
-    var f=frame.querySelector('iframe')||frame;
-    var req=f.requestFullscreen||f.webkitRequestFullscreen||f.msRequestFullscreen;
-    if(req){try{req.call(f)}catch(e){}}
-  });
+  /* leaving full screen (back button, Esc, swipe) closes the video */
+  function onFsChange(){
+    if(!fsElement() && overlay.classList.contains('open') && !overlay.classList.contains('pseudo')) closePlayer();
+  }
+  document.addEventListener('fullscreenchange',onFsChange);
+  document.addEventListener('webkitfullscreenchange',onFsChange);
+
+  /* the "Full screen" button inside the popup (shown only if full screen didn't start) */
+  overlay.querySelector('#fsbtn').addEventListener('click',goFull);
   overlay.querySelector('.pclose').addEventListener('click',closePlayer);
   overlay.addEventListener('click',function(e){if(e.target===overlay)closePlayer()});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'){closePlayer();closeD()}});
