@@ -1,0 +1,35 @@
+{
+  "poet": { "u": "غالبؔ", "h": "ग़ालिब", "r": "Mirza Ghalib" },
+  "couplets": [
+    {
+      "u": ["ہزاروں خواہشیں ایسی کہ ہر خواہش پہ دم نکلے","بہت نکلے مرے ارمان لیکن پھر بھی کم نکلے"],
+      "h": ["हज़ारों ख़्वाहिशें ऐसी कि हर ख़्वाहिश पे दम निकले","बहुत निकले मिरे अरमान लेकिन फिर भी कम निकले"],
+      "r": ["Hazaaron khwahishen aisi ke har khwahish pe dam nikle","Bahut nikle mere armaan lekin phir bhi kam nikle"]
+    },
+    {
+      "u": ["ڈرے کیوں میرا قاتل کیا رہے گا اس کی گردن پر","وہ خوں جو چشمِ تر سے عمر بھر یوں دم بہ دم نکلے"],
+      "h": ["डरे क्यूँ मेरा क़ातिल क्या रहेगा उस की गर्दन पर","वो ख़ूँ जो चश्म-ए-तर से उम्र भर यूँ दम-ब-दम निकले"],
+      "r": ["Darey kyun mera qaatil kya rahega us ki gardan par","Woh khoon jo chashm-e-tar se umr bhar yun dam-ba-dam nikle"]
+    },
+    {
+      "u": ["نکلنا خلد سے آدم کا سنتے آئے ہیں لیکن","بہت بے آبرو ہو کر ترے کوچے سے ہم نکلے"],
+      "h": ["निकलना ख़ुल्द से आदम का सुनते आए हैं लेकिन","बहुत बे-आबरू हो कर तिरे कूचे से हम निकले"],
+      "r": ["Nikalna khuld se Aadam ka sunte aaye hain lekin","Bahut be-aabru ho kar tere kooche se hum nikle"]
+    },
+    {
+      "u": ["بھرم کھل جائے ظالم تیرے قامت کی درازی کا","اگر اس طرّۂ پر پیچ و خم کا پیچ و خم نکلے"],
+      "h": ["भरम खुल जाए ज़ालिम तेरे क़ामत की दराज़ी का","अगर इस तुर्रा-ए-पुर-पेच-ओ-ख़म का पेच-ओ-ख़म निकले"],
+      "r": ["Bharam khul jaaye zaalim tere qaamat ki daraazi ka","Agar is turra-e-pur-pech-o-kham ka pech-o-kham nikle"]
+    },
+    {
+      "u": ["مگر لکھوائے کوئی اس کو خط تو ہم سے لکھوائے","ہوئی صبح اور گھر سے کان پر رکھ کر قلم نکلے"],
+      "h": ["मगर लिखवाए कोई उस को ख़त तो हम से लिखवाए","हुई सुब्ह और घर से कान पर रख कर क़लम निकले"],
+      "r": ["Magar likhwaaye koi us ko khat to hum se likhwaaye","Hui subah aur ghar se kaan par rakh kar qalam nikle"]
+    },
+    { "maqta": true,
+      "u": ["کہاں میخانے کا دروازہ غالبؔ اور کہاں واعظ","پر اتنا جانتے ہیں کل وہ جاتا تھا کہ ہم نکلے"],
+      "h": ["कहाँ मय-ख़ाने का दरवाज़ा ग़ालिब और कहाँ वाइज़","पर इतना जानते हैं कल वो जाता था कि हम निकले"],
+      "r": ["Kahan maikhaane ka darwaaza Ghalib aur kahan waaiz","Par itna jaante hain kal woh jaata tha ke hum nikle"]
+    }
+  ]
+}

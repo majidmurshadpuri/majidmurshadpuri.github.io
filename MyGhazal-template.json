@@ -1,0 +1,30 @@
+{
+  "poet": { "u": "ماجد مرشدپوری", "h": "माजिद मुर्शदपुरी", "r": "Majid Murshadpuri" },
+
+  "couplets": [
+    {
+      "u": ["Urdu line 1 of couplet 1", "Urdu line 2 of couplet 1"],
+      "h": ["Hindi line 1 of couplet 1", "Hindi line 2 of couplet 1"],
+      "r": ["Roman line 1 of couplet 1", "Roman line 2 of couplet 1"]
+    },
+    {
+      "u": ["Urdu line 1 of couplet 2", "Urdu line 2 of couplet 2"],
+      "h": ["Hindi line 1 of couplet 2", "Hindi line 2 of couplet 2"],
+      "r": ["Roman line 1 of couplet 2", "Roman line 2 of couplet 2"]
+    },
+    {
+      "maqta": true,
+      "u": ["Urdu line 1 of the LAST couplet (with your takhallus)", "Urdu line 2"],
+      "h": ["Hindi line 1 of the LAST couplet", "Hindi line 2"],
+      "r": ["Roman line 1 of the LAST couplet", "Roman line 2"]
+    }
+  ]
+}
+
+HOW TO USE THIS TEMPLATE
+ 1. Delete these notes (everything after the final closing brace) and save the file as MyGhazal26.json (next free number).
+ 2. Each couplet = one { ... } block with exactly TWO lines in each script.
+ 3. Put a comma after every couplet except the last. Keep the double quotes " " around every line.
+ 4. The first couplet is marked Matla automatically. Add  "maqta": true,  on the signature couplet.
+ 5. Optional: give your own title by adding after "poet":   "title": { "u": "...", "h": "...", "r": "..." },
+ 6. Only have Urdu for now? Leave out "h" and "r" — the page will show it in Urdu and say so politely.

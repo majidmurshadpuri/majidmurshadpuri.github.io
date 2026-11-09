@@ -1,0 +1,45 @@
+{
+  "poet": { "u": "غالبؔ", "h": "ग़ालिब", "r": "Mirza Ghalib" },
+  "couplets": [
+    {
+      "u": ["دلِ ناداں تجھے ہوا کیا ہے","آخر اس درد کی دوا کیا ہے"],
+      "h": ["दिल-ए-नादाँ तुझे हुआ क्या है","आख़िर इस दर्द की दवा क्या है"],
+      "r": ["Dil-e-naadaan tujhe hua kya hai","Aakhir is dard ki dawa kya hai"]
+    },
+    {
+      "u": ["ہم ہیں مشتاق اور وہ بیزار","یا الٰہی یہ ماجرا کیا ہے"],
+      "h": ["हम हैं मुश्ताक़ और वो बेज़ार","या इलाही ये माजरा क्या है"],
+      "r": ["Hum hain mushtaaq aur woh bezaar","Ya ilaahi yeh maajra kya hai"]
+    },
+    {
+      "u": ["میں بھی منہ میں زبان رکھتا ہوں","کاش پوچھو کہ مدعا کیا ہے"],
+      "h": ["मैं भी मुँह में ज़बान रखता हूँ","काश पूछो कि मुद्दआ क्या है"],
+      "r": ["Main bhi munh mein zabaan rakhta hoon","Kaash poochho ke muddaa kya hai"]
+    },
+    {
+      "u": ["جبکہ تجھ بن نہیں کوئی موجود","پھر یہ ہنگامہ اے خدا کیا ہے"],
+      "h": ["जब कि तुझ बिन नहीं कोई मौजूद","फिर ये हंगामा ऐ ख़ुदा क्या है"],
+      "r": ["Jab ke tujh bin nahin koi maujood","Phir yeh hangaama ae Khuda kya hai"]
+    },
+    {
+      "u": ["سبزہ و گل کہاں سے آئے ہیں","ابر کیا چیز ہے ہوا کیا ہے"],
+      "h": ["सब्ज़ा ओ गुल कहाँ से आए हैं","अब्र क्या चीज़ है हवा क्या है"],
+      "r": ["Sabza-o-gul kahan se aaye hain","Abr kya cheez hai hawa kya hai"]
+    },
+    {
+      "u": ["ہم کو ان سے وفا کی ہے امید","جو نہیں جانتے وفا کیا ہے"],
+      "h": ["हम को उन से वफ़ा की है उम्मीद","जो नहीं जानते वफ़ा क्या है"],
+      "r": ["Hum ko un se wafa ki hai umeed","Jo nahin jaante wafa kya hai"]
+    },
+    {
+      "u": ["جان تم پر نثار کرتا ہوں","میں نہیں جانتا دعا کیا ہے"],
+      "h": ["जान तुम पर निसार करता हूँ","मैं नहीं जानता दुआ क्या है"],
+      "r": ["Jaan tum par nisaar karta hoon","Main nahin jaanta dua kya hai"]
+    },
+    { "maqta": true,
+      "u": ["میں نے مانا کہ کچھ نہیں غالبؔ","مفت ہاتھ آئے تو برا کیا ہے"],
+      "h": ["मैं ने माना कि कुछ नहीं ग़ालिब","मुफ़्त हाथ आए तो बुरा क्या है"],
+      "r": ["Maine maana ke kuchh nahin Ghalib","Muft haath aaye to bura kya hai"]
+    }
+  ]
+}
