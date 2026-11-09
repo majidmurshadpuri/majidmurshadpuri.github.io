@@ -277,29 +277,19 @@
 <script>
     (function(){
         // =====================================================================
-        // HAND-CRAFTED 5-QUESTION QUIZ — each question targets a specific
-        // misconception, progresses in difficulty (Level 1 → Level 5), and
-        // satisfies all mandatory constraints:
-        //   * Same integer-part digit count within each question
-        //   * Varying fractional-part lengths
-        //   * Exactly one correct answer
-        //   * No two options equal in value (no 7.5 vs 7.500 traps)
+        // HELPERS
         // =====================================================================
 
-        // Helper: compare two decimal string values precisely (as BigInt-scaled)
+        // Compare two decimal string values precisely.
         // Returns -1, 0, 1
         function compareDecimalStrings(a, b) {
-            // Split into int and frac parts
             const [ai, af = ''] = String(a).split('.');
             const [bi, bf = ''] = String(b).split('.');
-            // Integer parts must have equal length for our quiz, but let's be general.
-            // Pad to equal length
             const intLen = Math.max(ai.length, bi.length);
             const Aint = ai.padStart(intLen, '0');
             const Bint = bi.padStart(intLen, '0');
             if (Aint < Bint) return -1;
             if (Aint > Bint) return 1;
-            // Fractional: pad to equal length
             const fracLen = Math.max(af.length, bf.length);
             const Af = af.padEnd(fracLen, '0');
             const Bf = bf.padEnd(fracLen, '0');
@@ -308,145 +298,292 @@
             return 0;
         }
 
-        // =====================================================================
-        // FIVE HAND-CRAFTED QUESTIONS
-        // =====================================================================
-
-        // Question 1 — Level 1: Basic Misconception Detection
-        // Integer parts: all 1 digit. Fractional lengths: 1, 2, 3, 4 (varies).
-        // Misconception: "Longer decimal part = bigger number".
-        // Numbers: 8.9, 8.87, 8.879, 8.8789
-        // True order: 8.8789 < 8.879 < 8.87 < 8.9
-        // SELECT THE GREATEST → 8.9 (option B in the layout below)
-        const Q1 = {
-            level: 1,
-            direction: 'greatest',
-            options: [
-                { str: '8.87',   val: 8.87   },
-                { str: '8.9',    val: 8.9    },
-                { str: '8.8789', val: 8.8789 },
-                { str: '8.879',  val: 8.879  }
-            ],
-            correct: '8.9'
-        };
-
-        // Question 2 — Level 2: Zero Traps
-        // Integer parts: all 1 digit. Fractional lengths: 1, 3, 4, 5.
-        // Misconception: leading/trailing zeros change value; more decimal places mean bigger.
-        // Numbers: 6.5, 6.05, 6.005, 6.0005
-        // True order: 6.0005 < 6.005 < 6.05 < 6.5
-        // SELECT THE SMALLEST → 6.0005 (option D)
-        const Q2 = {
-            level: 2,
-            direction: 'smallest',
-            options: [
-                { str: '6.5',    val: 6.5    },
-                { str: '6.05',   val: 6.05   },
-                { str: '6.005',  val: 6.005  },
-                { str: '6.0005', val: 6.0005 }
-            ],
-            correct: '6.0005'
-        };
-
-        // Question 3 — Level 3: Digit Repetition Traps
-        // Integer parts: all 1 digit. Fractional lengths: 3, 4, 5, 6.
-        // Misconception: repeated 9s indicate larger; longer repetition means bigger.
-        // Numbers: 4.099, 4.0989, 4.0999, 4.09999
-        // True order: 4.0989 < 4.099 < 4.0999 < 4.09999
-        // SELECT THE GREATEST → 4.09999 (option A)
-        const Q3 = {
-            level: 3,
-            direction: 'greatest',
-            options: [
-                { str: '4.09999', val: 4.09999 },
-                { str: '4.0999',  val: 4.0999  },
-                { str: '4.099',   val: 4.099   },
-                { str: '4.0989',  val: 4.0989  }
-            ],
-            correct: '4.09999'
-        };
-
-        // Question 4 — Level 4: Length Illusions
-        // Integer parts: all 2 digits. Fractional lengths: 1, 3, 5, 7.
-        // Misconception: the longest-looking number is the greatest.
-        // Numbers: 12.7, 12.699, 12.69999, 12.7000001
-        // True order: 12.699 < 12.69999 < 12.7 < 12.7000001
-        // SELECT THE SMALLEST → 12.699 (option C)
-        const Q4 = {
-            level: 4,
-            direction: 'smallest',
-            options: [
-                { str: '12.7000001', val: 12.7000001 },
-                { str: '12.7',       val: 12.7       },
-                { str: '12.699',     val: 12.699     },
-                { str: '12.69999',   val: 12.69999   }
-            ],
-            correct: '12.699'
-        };
-
-        // Question 5 — Level 5: Advanced Decimal Traps
-        // Integer parts: all 2 digits. Fractional lengths: 7, 8, 9, 10.
-        // Misconception: the number with the most digits after decimal is biggest.
-        // Uses the progressive digit-revelation technique from the prompt.
-        // Numbers: 23.7777777, 23.77777778, 23.777777777, 23.7777777778
-        // True order: 23.7777777 < 23.777777777 < 23.7777777778 < 23.77777778
-        // SELECT THE GREATEST → 23.77777778 (option B)
-        const Q5 = {
-            level: 5,
-            direction: 'greatest',
-            options: [
-                { str: '23.7777777',    val: 23.7777777    },
-                { str: '23.77777778',   val: 23.77777778   },
-                { str: '23.777777777',  val: 23.777777777  },
-                { str: '23.7777777778', val: 23.7777777778 }
-            ],
-            correct: '23.77777778'
-        };
-
-        // =====================================================================
-        // VALIDATION & STATE
-        // =====================================================================
-        const QUIZ = [Q1, Q2, Q3, Q4, Q5];
-        const TOTAL_QUESTIONS = 5;
-        const STORAGE_KEY = 'decimal_greatest_smallest_misconception_quiz_v1';
-
-        // Validate each question
-        QUIZ.forEach((q, i) => {
-            // Check 1: exactly one correct
-            const matches = q.options.filter(o => o.str === q.correct);
-            if (matches.length !== 1) {
-                console.error(`Q${i + 1}: expected exactly one correct, found ${matches.length}`);
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
             }
-            // Check 2: all integer parts same length
+            return a;
+        }
+
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function randDigit(exclude = []) {
+            const pool = [0,1,2,3,4,5,6,7,8,9].filter(d => !exclude.includes(d));
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        // Validate a generated question against all mandatory rules
+        function validateQuestion(q) {
+            if (!q || q.options.length !== 4) return false;
+            // All integer parts must have the SAME length (level 30 rule)
             const intLens = q.options.map(o => o.str.split('.')[0].length);
-            if (new Set(intLens).size !== 1) {
-                console.error(`Q${i + 1}: integer parts have different lengths:`, intLens);
-            }
-            // Check 3: fractional parts vary in length
+            if (new Set(intLens).size !== 1) return false;
+            // Fractional parts must VARY in length
             const fracLens = q.options.map(o => o.str.split('.')[1].length);
-            if (new Set(fracLens).size < 2) {
-                console.error(`Q${i + 1}: fractional lengths do not vary:`, fracLens);
-            }
-            // Check 4: no two options are numerically equal
-            for (let a = 0; a < q.options.length; a++) {
-                for (let b = a + 1; b < q.options.length; b++) {
-                    if (compareDecimalStrings(q.options[a].str, q.options[b].str) === 0) {
-                        console.error(`Q${i + 1}: options ${q.options[a].str} and ${q.options[b].str} are equal`);
-                    }
+            if (new Set(fracLens).size < 2) return false;
+            // No two numerically equal
+            for (let a = 0; a < 4; a++) {
+                for (let b = a + 1; b < 4; b++) {
+                    if (compareDecimalStrings(q.options[a].str, q.options[b].str) === 0) return false;
                 }
             }
-            // Check 5: correct answer actually is the greatest/smallest
-            const cmp = (a, b) => compareDecimalStrings(a.str, b.str);
-            const sorted = [...q.options].sort(cmp);
+            // Exactly one correct match
+            const matches = q.options.filter(o => o.str === q.correct);
+            if (matches.length !== 1) return false;
+            // Correct answer truly is greatest/smallest
+            const sorted = [...q.options].sort((x, y) => compareDecimalStrings(x.str, y.str));
             const expected = q.direction === 'greatest' ? sorted[3] : sorted[0];
-            if (expected.str !== q.correct) {
-                console.error(`Q${i + 1}: correct answer is ${q.correct}, but ${q.direction} should be ${expected.str}`);
-            }
-        });
+            if (expected.str !== q.correct) return false;
+            return true;
+        }
 
         // =====================================================================
-        // QUIZ ENGINE
+        // QUESTION GENERATORS
+        // Each generator produces one of the 5 difficulty styles with random values.
+        // All maintain: same integer-part digit count, varying fractional lengths.
         // =====================================================================
+
+        // Common helper: pick a random integer part string of given length (non-zero leading)
+        function randIntPart(len) {
+            let s = String(randInt(1, 9)); // first digit non-zero
+            for (let i = 1; i < len; i++) s += String(randDigit());
+            return s;
+        }
+
+        // ---- LEVEL 1: Basic misconception - "longer decimal = bigger" ----
+        // Integer parts same length (1-2 digits). Fractional lengths: 1,2,3,4.
+        // The shortest fractional happens to be the greatest (or smallest) to trap.
+        function generateLevel1(usedKeys) {
+            for (let attempt = 0; attempt < 300; attempt++) {
+                const intLen = randInt(1, 2);
+                const intPart = randIntPart(intLen);
+
+                const direction = Math.random() < 0.5 ? 'greatest' : 'smallest';
+
+                // Build 4 fractional strings of increasing length 1,2,3,4
+                // For "greatest": the 1-digit fraction should be the largest
+                // For "smallest": the 1-digit fraction should be the smallest
+                // We'll generate values then check.
+                const fracLens = [1, 2, 3, 4];
+                const fracs = [];
+
+                // Start with the "trap" value for the 1-digit fraction
+                // For greatest trap: 1-digit fraction is high (e.g., 9), others are lower
+                // For smallest trap: 1-digit fraction is low (e.g., 0), others higher
+                // Actually simpler: randomize and let validation sort it out.
+                for (const fl of fracLens) {
+                    let f = '';
+                    for (let i = 0; i < fl; i++) f += String(randDigit());
+                    // Avoid leading-zero-only fracs that might equal integer? Not an issue.
+                    fracs.push(f);
+                }
+
+                // Pair them up, but assign fracLens randomly to positions so the
+                // "shortest" isn't always first.
+                const order = shuffle([0,1,2,3]);
+                const opts = order.map((idx, pos) => {
+                    const fl = fracLens[pos];
+                    const f = fracs[idx];
+                    return { str: intPart + '.' + f, val: parseFloat(intPart + '.' + f) };
+                });
+
+                const sorted = [...opts].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                const correct = direction === 'greatest' ? sorted[3].str : sorted[0].str;
+
+                const q = { level: 1, direction, options: opts, correct };
+                if (!validateQuestion(q)) continue;
+                const key = opts.map(o => o.str).sort().join('|') + '|' + direction;
+                if (usedKeys.has(key)) continue;
+                usedKeys.add(key);
+                return q;
+            }
+            return null;
+        }
+
+        // ---- LEVEL 2: Zero traps - "leading/trailing zeros change value" ----
+        // Integer parts same length. Fractional lengths vary. Heavy use of zeros.
+        function generateLevel2(usedKeys) {
+            for (let attempt = 0; attempt < 300; attempt++) {
+                const intLen = randInt(1, 2);
+                const intPart = randIntPart(intLen);
+                const direction = Math.random() < 0.5 ? 'greatest' : 'smallest';
+
+                const fracLens = shuffle([1, 3, 4, 5]);
+                const opts = fracLens.map(fl => {
+                    // Build a fraction with lots of zeros, some non-zero digit
+                    let f = '';
+                    for (let i = 0; i < fl; i++) {
+                        // Bias toward zeros
+                        f += (Math.random() < 0.6) ? '0' : String(randDigit());
+                    }
+                    // Ensure at least one non-zero digit somewhere (or all zeros is fine)
+                    return { str: intPart + '.' + f, val: parseFloat(intPart + '.' + f) };
+                });
+
+                const sorted = [...opts].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                const correct = direction === 'greatest' ? sorted[3].str : sorted[0].str;
+
+                const q = { level: 2, direction, options: opts, correct };
+                if (!validateQuestion(q)) continue;
+                const key = opts.map(o => o.str).sort().join('|') + '|' + direction;
+                if (usedKeys.has(key)) continue;
+                usedKeys.add(key);
+                return q;
+            }
+            return null;
+        }
+
+        // ---- LEVEL 3: Digit repetition traps - "more 9s = bigger" ----
+        // Integer parts same length. Fractional lengths vary with repeated digits.
+        function generateLevel3(usedKeys) {
+            for (let attempt = 0; attempt < 300; attempt++) {
+                const intLen = randInt(1, 2);
+                const intPart = randIntPart(intLen);
+                const direction = Math.random() < 0.5 ? 'greatest' : 'smallest';
+
+                const repDigit = randInt(1, 9);
+                const fracLens = shuffle([3, 4, 5, 6]);
+                const opts = fracLens.map(fl => {
+                    let f = '';
+                    // Fill mostly with repDigit, sprinkle others
+                    for (let i = 0; i < fl; i++) {
+                        if (Math.random() < 0.75) f += String(repDigit);
+                        else f += String(randDigit());
+                    }
+                    return { str: intPart + '.' + f, val: parseFloat(intPart + '.' + f) };
+                });
+
+                const sorted = [...opts].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                const correct = direction === 'greatest' ? sorted[3].str : sorted[0].str;
+
+                const q = { level: 3, direction, options: opts, correct };
+                if (!validateQuestion(q)) continue;
+                const key = opts.map(o => o.str).sort().join('|') + '|' + direction;
+                if (usedKeys.has(key)) continue;
+                usedKeys.add(key);
+                return q;
+            }
+            return null;
+        }
+
+        // ---- LEVEL 4: Length illusions - longest-looking is not greatest ----
+        // Integer parts same length (2 digits typically). Fractional lengths: 1,3,5,7.
+        // Use close values so length alone misleads.
+        function generateLevel4(usedKeys) {
+            for (let attempt = 0; attempt < 300; attempt++) {
+                const intLen = 2;
+                const intPart = randIntPart(intLen);
+                const direction = Math.random() < 0.5 ? 'greatest' : 'smallest';
+
+                // Base fractional value, then create progressively longer variants
+                // by appending digits. The longest is NOT necessarily biggest.
+                const baseFracDigits = [
+                    String(randDigit()),
+                    String(randDigit()),
+                    String(randDigit()),
+                    String(randDigit()),
+                    String(randDigit()),
+                    String(randDigit()),
+                    String(randDigit())
+                ];
+
+                // Fractional lengths 1,3,5,7
+                const fracLens = shuffle([1, 3, 5, 7]);
+                const opts = fracLens.map((fl, i) => {
+                    // Build a unique fraction by taking fl digits from base pool + random tail
+                    let f = '';
+                    for (let k = 0; k < fl; k++) {
+                        if (k < baseFracDigits.length) f += baseFracDigits[k];
+                        else f += String(randDigit());
+                    }
+                    // For the shortest ones, make them intentionally high/low to trap
+                    return { str: intPart + '.' + f, val: parseFloat(intPart + '.' + f) };
+                });
+
+                const sorted = [...opts].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                const correct = direction === 'greatest' ? sorted[3].str : sorted[0].str;
+
+                const q = { level: 4, direction, options: opts, correct };
+                if (!validateQuestion(q)) continue;
+                const key = opts.map(o => o.str).sort().join('|') + '|' + direction;
+                if (usedKeys.has(key)) continue;
+                usedKeys.add(key);
+                return q;
+            }
+            return null;
+        }
+
+        // ---- LEVEL 5: Advanced progressive digit revelation ----
+        // Integer parts same length (2 digits). Fractional lengths: 7,8,9,10.
+        // Values are extremely close; the one with intermediate length can be greatest.
+        function generateLevel5(usedKeys) {
+            for (let attempt = 0; attempt < 300; attempt++) {
+                const intLen = 2;
+                const intPart = randIntPart(intLen);
+                const direction = Math.random() < 0.5 ? 'greatest' : 'smallest';
+
+                // Choose a base fraction (7 digits) then append one extra digit per longer variant
+                const base = [];
+                for (let i = 0; i < 10; i++) base.push(String(randDigit()));
+
+                const fracLens = shuffle([7, 8, 9, 10]);
+                const opts = fracLens.map(fl => {
+                    let f = '';
+                    for (let k = 0; k < fl; k++) f += base[k];
+                    return { str: intPart + '.' + f, val: parseFloat(intPart + '.' + f) };
+                });
+
+                // Ensure not all equal
+                const sorted = [...opts].sort((a, b) => compareDecimalStrings(a.str, b.str));
+                if (compareDecimalStrings(sorted[0].str, sorted[3].str) === 0) continue;
+
+                const correct = direction === 'greatest' ? sorted[3].str : sorted[0].str;
+
+                const q = { level: 5, direction, options: opts, correct };
+                if (!validateQuestion(q)) continue;
+                const key = opts.map(o => o.str).sort().join('|') + '|' + direction;
+                if (usedKeys.has(key)) continue;
+                usedKeys.add(key);
+                return q;
+            }
+            return null;
+        }
+
+        // =====================================================================
+        // QUIZ BUILDER
+        // =====================================================================
+        function buildQuiz() {
+            const usedKeys = new Set();
+            const generators = [generateLevel1, generateLevel2, generateLevel3, generateLevel4, generateLevel5];
+            const quiz = [];
+            for (let i = 0; i < 5; i++) {
+                let q = generators[i](usedKeys);
+                if (!q) {
+                    // Fallback: try any generator
+                    for (let k = 0; k < generators.length && !q; k++) {
+                        q = generators[k](usedKeys);
+                    }
+                }
+                if (!q) {
+                    q = generateLevel1(new Set());
+                }
+                quiz.push(q);
+            }
+            return quiz;
+        }
+
+        // =====================================================================
+        // STATE
+        // =====================================================================
+        const TOTAL_QUESTIONS = 5;
+        const STORAGE_KEY = 'decimal_greatest_smallest_random_quiz_v30';
+
+        let QUIZ = [];
+
         let state = {
             currentIndex: 0,
             answers: new Array(TOTAL_QUESTIONS).fill(null),
@@ -455,19 +592,26 @@
         };
 
         function saveState() {
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-            catch (e) { /* ignore */ }
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ state, QUIZ }));
+            } catch (e) { /* ignore */ }
         }
         function loadState() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
-                return raw ? JSON.parse(raw) : null;
+                if (!raw) return null;
+                const parsed = JSON.parse(raw);
+                if (parsed && parsed.QUIZ && parsed.QUIZ.length === TOTAL_QUESTIONS) return parsed;
+                return null;
             } catch (e) { return null; }
         }
         function clearState() {
             try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
         }
 
+        // =====================================================================
+        // RENDERING
+        // =====================================================================
         function renderCurrentQuestion() {
             if (state.completed) { renderResult(); return; }
             const qIndex = state.currentIndex;
@@ -487,7 +631,6 @@
             const dirBadge = document.getElementById('directionBadge');
             dirBadge.textContent = q.direction === 'greatest' ? '⬆ Select the Greatest' : '⬇ Select the Smallest';
 
-            // Build the question text area
             const qt = document.getElementById('questionText');
             let listHTML = '<div class="question-list">';
             q.options.forEach((opt) => {
@@ -499,7 +642,6 @@
                     Which one is the ${q.direction} number?
                 </div>`;
 
-            // Build the option buttons (shuffled order already encoded in QUIZ array)
             const grid = document.getElementById('optionsGrid');
             grid.innerHTML = '';
             q.options.forEach((opt, idx) => {
@@ -524,7 +666,6 @@
             submitBtn.disabled = !hasSelection;
             submitBtn.textContent = hasSelection ? (qIndex === TOTAL_QUESTIONS - 1 ? 'Finish quiz →' : 'Next question →') : 'Submit answer';
 
-            // Replace submit to avoid stale listeners
             const newSubmit = submitBtn.cloneNode(true);
             submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
             newSubmit.id = 'submitBtn';
@@ -590,7 +731,11 @@
             document.getElementById('progressBadge').textContent = `${TOTAL_QUESTIONS} / ${TOTAL_QUESTIONS}`;
         }
 
+        // =====================================================================
+        // START / RESET
+        // =====================================================================
         function startNewQuiz() {
+            QUIZ = buildQuiz();
             state = {
                 currentIndex: 0,
                 answers: new Array(TOTAL_QUESTIONS).fill(null),
@@ -608,8 +753,9 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             const saved = loadState();
-            if (saved && saved.answers && saved.answers.length === TOTAL_QUESTIONS) {
-                state = saved;
+            if (saved) {
+                QUIZ = saved.QUIZ;
+                state = saved.state;
                 if (state.completed === undefined) state.completed = false;
                 if (state.score === undefined) state.score = 0;
                 if (state.completed) renderResult();
@@ -623,8 +769,11 @@
             });
         });
 
+        // Expose for debugging / testing
         window.__quizState = () => state;
+        window.__quiz = () => QUIZ;
         window.__resetQuiz = resetAndStartNewQuiz;
+        window.__compareDecimalStrings = compareDecimalStrings;
     })();
 </script>
 </body>
