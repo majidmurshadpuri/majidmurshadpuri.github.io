@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-10",
+  "title": {
+    "u": "بچے کی دعا",
+    "h": "बच्चे की दुआ",
+    "r": "Bachche ki Dua"
+  },
+  "poet": {
+    "u": "علامہ اقبال",
+    "h": "अल्लामा इक़बाल",
+    "r": "Allama Iqbal"
+  },
+  "stanzas": [
+    {
+      "u": [
+        "لب پہ آتی ہے دعا بن کے تمنا میری",
+        "زندگی شمع کی صورت ہو خدایا میری",
+        "دور دنیا کا مرے دم سے اندھیرا ہو جائے",
+        "ہر جگہ میرے چمکنے سے اجالا ہو جائے"
+      ],
+      "h": [
+        "लब पे आती है दुआ बन के तमन्ना मेरी",
+        "ज़िंदगी शम्अ की सूरत हो ख़ुदाया मेरी",
+        "दूर दुनिया का मिरे दम से अँधेरा हो जाए",
+        "हर जगह मेरे चमकने से उजाला हो जाए"
+      ],
+      "r": [
+        "Lab pe aati hai dua ban ke tamanna meri",
+        "Zindagi shama ki soorat ho khudaya meri",
+        "Door duniya ka mire dam se andhera ho jaye",
+        "Har jagah mere chamakne se ujaala ho jaye"
+      ]
+    },
+    {
+      "u": [
+        "ہو مرے دم سے یونہی میرے وطن کی زینت",
+        "جس طرح پھول سے ہوتی ہے چمن کی زینت",
+        "زندگی ہو مری پروانے کی صورت یا رب",
+        "علم کی شمع سے ہو مجھ کو محبت یا رب"
+      ],
+      "h": [
+        "हो मिरे दम से यूँ ही मेरे वतन की ज़ीनत",
+        "जिस तरह फूल से होती है चमन की ज़ीनत",
+        "ज़िंदगी हो मिरी परवाने की सूरत या रब",
+        "इल्म की शम्अ से हो मुझ को मोहब्बत या रब"
+      ],
+      "r": [
+        "Ho mire dam se yunhi mere watan ki zeenat",
+        "Jis tarah phool se hoti hai chaman ki zeenat",
+        "Zindagi ho miri parwane ki soorat ya Rab",
+        "Ilm ki shama se ho mujh ko mohabbat ya Rab"
+      ]
+    }
+  ]
+}

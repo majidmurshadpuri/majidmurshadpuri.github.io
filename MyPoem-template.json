@@ -1,0 +1,49 @@
+{
+  "_HOW_TO_USE": "1) Copy this file. 2) Name it  My<Form><Number>.json  (MyGhazal26.json, MyNazm1.json, MyRubai1.json …). For poems of OTHER poets: <PoetName><Form><Number>.json (TehzeebHafiNazm1.json) and list the poet once in PoetryConfig.json. 3) Fill in u / h / r (Urdu / Hindi / Roman). 4) Upload. Nothing else to edit — the website lists it, counts it and labels it New/Latest by itself. Delete all the _notes before uploading if you like (they are harmless).",
+  "_numbering": "Keep numbers continuous per form: MyNazm1, MyNazm2, MyNazm3 … (a missing number ends that form).",
+  "date": "2026-11-20",
+  "_date_note": "Optional. The day it was added. Without it, the day you uploaded the file is used.",
+  "poet": {
+    "u": "ماجد مرشدپوری",
+    "h": "माजिद मुर्शदपुरी",
+    "r": "Majid Murshadpuri"
+  },
+  "_poet_note": "Optional for your own poems (that name is used). Needed for others only if you want the name spelled/written nicely.",
+  "title": {
+    "u": "Optional title",
+    "h": "वैकल्पिक शीर्षक",
+    "r": "Optional title"
+  },
+  "_title_note": "Optional. Without it, the first line becomes the title.",
+  "couplets": [
+    {
+      "u": [
+        "Urdu line 1",
+        "Urdu line 2"
+      ],
+      "h": [
+        "Hindi line 1",
+        "Hindi line 2"
+      ],
+      "r": [
+        "Roman line 1",
+        "Roman line 2"
+      ]
+    },
+    {
+      "u": [
+        "…",
+        "…"
+      ],
+      "h": [
+        "…",
+        "…"
+      ],
+      "r": [
+        "…",
+        "…"
+      ]
+    }
+  ],
+  "_for_a_nazm": "For a nazm use the word  \"stanzas\"  instead of  \"couplets\" — each stanza can have as many lines as you like (2, 4, 6 …). Everything else is the same."
+}

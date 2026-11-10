@@ -1,0 +1,8 @@
+{
+  "_note": "Add a poet's name ONCE here when you add the first poem of a NEW poet. Capital letters split the name: TehzeebHafi = Tehzeeb Hafi. Poems themselves are named <Poet><Form><Number>.json e.g. TehzeebHafiNazm1.json. 'moreForms' is only for a poetry form not already known (known: Ghazal, Nazm, Rubai, Qita, Sher, Geet, Doha, Marsiya, Naat, Hamd).",
+  "poets": [
+    "MirTaqiMir",
+    "AllamaIqbal"
+  ],
+  "moreForms": []
+}
