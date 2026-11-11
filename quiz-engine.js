@@ -1,5 +1,5 @@
 /* ============================================================
-   Quiz Engine - Master File for Levels 1-10
+   Quiz Engine - Master File for Levels 1-20
    ============================================================ */
 
 window.QuizEngine = (function () {
@@ -56,7 +56,6 @@ window.QuizEngine = (function () {
     while (b) { let t = b; b = a % b; a = t; }
     return a;
   }
-  function lcm(a, b) { return (a * b) / gcd(a, b); }
 
   function is5Smooth(n, primes) {
     if (n < 1) return false;
@@ -79,13 +78,21 @@ window.QuizEngine = (function () {
     return isMathJax ? `\\(${factors.join(' \\times ')}\\)` : factors.join(' × ');
   }
 
-  // --- Generators for Special Types ---
+  function getFactors(n) {
+    const factors = [];
+    for (let i = 1; i <= n; i++) { if (n % i === 0) factors.push(i); }
+    return factors;
+  }
+
+  // --- Special Generators ---
   function generateSpecialQuestions(cfg) {
-    const validNumbers = [];
-    for (let n = cfg.minNumber; n <= cfg.maxNumber; n++) {
-      if (is5Smooth(n, cfg.primes)) validNumbers.push(n);
+    let validNumbers = [];
+    if (cfg.primes) {
+      for (let n = cfg.minNumber; n <= cfg.maxNumber; n++) {
+        if (is5Smooth(n, cfg.primes)) validNumbers.push(n);
+      }
     }
-    
+
     const noReuse = cfg.uniqueness === 'no-reused-numbers';
     const usedKeys = new Set();
     const questions = [];
@@ -98,58 +105,138 @@ window.QuizEngine = (function () {
         if (cfg.type === 'prime-factorization') {
           const number = validNumbers[Math.floor(Math.random() * validNumbers.length)];
           if (noReuse && usedKeys.has(number)) continue;
-          ok = true;
-          usedKeys.add(number);
-          question = { 
-            number: number, 
-            mathjax: primeFactorization(number, cfg.primes, true), 
-            plain: primeFactorization(number, cfg.primes, false) 
-          };
+          ok = true; usedKeys.add(number);
+          question = { number, mathjax: primeFactorization(number, cfg.primes, true), plain: primeFactorization(number, cfg.primes, false) };
         } 
         else if (cfg.type === 'lcm' || cfg.type === 'hcf') {
           const nums = [];
-          for (let i = 0; i < cfg.numCount; i++) {
-            nums.push(validNumbers[Math.floor(Math.random() * validNumbers.length)]);
-          }
+          for (let i = 0; i < cfg.numCount; i++) nums.push(validNumbers[Math.floor(Math.random() * validNumbers.length)]);
           const sortedKey = [...nums].sort((a,b)=>a-b).join('-');
           if (noReuse && usedKeys.has(sortedKey)) continue;
           
           let result = nums[0];
           for (let i = 1; i < nums.length; i++) {
-            if (cfg.type === 'lcm') result = lcm(result, nums[i]);
+            if (cfg.type === 'lcm') result = (result * nums[i]) / gcd(result, nums[i]);
             else result = gcd(result, nums[i]);
           }
-          ok = true;
-          usedKeys.add(sortedKey);
+          ok = true; usedKeys.add(sortedKey);
           question = { nums, result };
         }
         else if (cfg.type === 'fraction') {
           const num = validNumbers[Math.floor(Math.random() * validNumbers.length)];
           const den = validNumbers[Math.floor(Math.random() * validNumbers.length)];
           if (num === den) continue;
-          
           const g = gcd(num, den);
-          if (g === 1) continue; // Must be reducible
+          if (g === 1) continue; 
 
           const pairKey = num + '/' + den;
           if (noReuse && usedKeys.has(pairKey)) continue;
 
-          let factor1 = 1, factor2 = num;
+          let numF1 = 1, numF2 = num, denF1 = 1, denF2 = den;
           if (cfg.hasExpression) {
-            const factors = [];
-            for(let i=1; i<=num; i++) if(num % i === 0) factors.push(i);
-            const nonTrivial = factors.filter(f => f !== 1 && f !== num);
-            if (nonTrivial.length > 0) {
-              factor1 = nonTrivial[Math.floor(Math.random() * nonTrivial.length)];
-              factor2 = num / factor1;
+            if (cfg.expressionMode === 'both' || Math.random() < 0.5) {
+              const fs = getFactors(num).filter(f => f !== 1 && f !== num);
+              if (fs.length > 0) { numF1 = fs[Math.floor(Math.random() * fs.length)]; numF2 = num / numF1; }
+            }
+            if (cfg.expressionMode === 'both' || Math.random() < 0.5) {
+              const fs = getFactors(den).filter(f => f !== 1 && f !== den);
+              if (fs.length > 0) { denF1 = fs[Math.floor(Math.random() * fs.length)]; denF2 = den / denF1; }
             }
           }
-          ok = true;
-          usedKeys.add(pairKey);
-          question = { 
-            num, den, factor1, factor2, 
-            correctNum: num / g, correctDen: den / g 
-          };
+          ok = true; usedKeys.add(pairKey);
+          question = { num, den, numF1, numF2, denF1, denF2, correctNum: num / g, correctDen: den / g };
+        }
+        else if (cfg.type === 'fraction-op') {
+          let n1, d1, n2, d2;
+          if (cfg.numbersType === '1-digit') {
+            n1 = Math.floor(Math.random() * 8) + 2; d1 = Math.floor(Math.random() * 8) + 2;
+            n2 = Math.floor(Math.random() * 8) + 2; d2 = Math.floor(Math.random() * 8) + 2;
+          } else {
+            n1 = validNumbers[Math.floor(Math.random() * validNumbers.length)];
+            d1 = validNumbers[Math.floor(Math.random() * validNumbers.length)];
+            n2 = validNumbers[Math.floor(Math.random() * validNumbers.length)];
+            d2 = validNumbers[Math.floor(Math.random() * validNumbers.length)];
+          }
+          if (n1 === d1 || n2 === d2) continue;
+
+          const key = `${n1}/${d1} ${cfg.operator} ${n2}/${d2}`;
+          if (noReuse && usedKeys.has(key)) continue;
+
+          let rawNum, rawDen;
+          if (cfg.operator === '×') { rawNum = n1 * n2; rawDen = d1 * d2; }
+          else { rawNum = n1 * d2; rawDen = d1 * n2; }
+
+          const g = gcd(rawNum, rawDen);
+          const cNum = rawNum / g, cDen = rawDen / g;
+          if (cNum === 1 && cDen === 1) continue;
+
+          ok = true; usedKeys.add(key);
+          question = { n1, d1, n2, d2, correctNum: cNum, correctDen: cDen };
+        }
+        else if (cfg.type === 'fraction-whole') {
+          const smooth2 = validNumbers.filter(n => n >= 10 && n <= 99);
+          const smooth3 = validNumbers.filter(n => n >= 100 && n <= 999);
+          
+          let den, wholeNum, numerator = 1, found = false;
+          if (cfg.operator === '×') {
+            den = (Math.random() < 0.5 ? smooth2 : smooth3)[Math.floor(Math.random() * (Math.random() < 0.5 ? smooth2.length : smooth3.length))];
+            wholeNum = Math.floor(Math.random() * 11) + 2;
+            for (let i = 0; i < 1000; i++) {
+              const cand = Math.floor(Math.random() * 90) + 10;
+              if ((cand * wholeNum) >= 10 && (cand * wholeNum) <= 999 && is5Smooth(cand * wholeNum, cfg.primes)) { numerator = cand; found = true; break; }
+            }
+          } else {
+            const comp1 = validNumbers.filter(n => n >= 2 && n <= 9 && ![2,3,5].includes(n));
+            const comp2 = smooth2;
+            const denPool = Math.random() < 0.5 ? comp1 : comp2;
+            const wholePool = Math.random() < 0.5 ? comp1 : comp2;
+            const numPool = Math.random() < 0.5 ? comp1 : comp2;
+            den = denPool[Math.floor(Math.random() * denPool.length)];
+            wholeNum = wholePool[Math.floor(Math.random() * wholePool.length)];
+            numerator = numPool[Math.floor(Math.random() * numPool.length)];
+            found = true;
+          }
+          if (!found) continue;
+          if (gcd(numerator, den) === den) continue;
+
+          const isFractionFirst = Math.random() < 0.5;
+          const key = `${isFractionFirst ? 'F' : 'W'}${wholeNum}-${numerator}/${den}`;
+          if (noReuse && usedKeys.has(key)) continue;
+
+          let rawNum, rawDen;
+          if (cfg.operator === '×') { rawNum = numerator * wholeNum; rawDen = den; }
+          else {
+            if (isFractionFirst) { rawNum = numerator; rawDen = den * wholeNum; }
+            else { rawNum = wholeNum * den; rawDen = numerator; }
+          }
+          const g = gcd(rawNum, rawDen);
+          ok = true; usedKeys.add(key);
+          question = { wholeNum, numerator, den, isFractionFirst, correctNum: rawNum / g, correctDen: rawDen / g };
+        }
+        else if (cfg.type === 'fraction-add-sub') {
+          const max = cfg.numbersType === '1-digit' ? 9 : 99;
+          const d = Math.floor(Math.random() * (max - 2)) + 2;
+          let n1, n2;
+          if (cfg.numbersType === '1-digit') {
+            const cands = []; for(let i=1; i<=9; i++) if(i !== d) cands.push(i);
+            n1 = cands[Math.floor(Math.random() * cands.length)];
+            do { n2 = cands[Math.floor(Math.random() * cands.length)]; } while (n1 === n2);
+          } else {
+            n1 = Math.floor(Math.random() * 99) + 1; if (n1 === d) continue;
+            n2 = Math.floor(Math.random() * 99) + 1; if (n2 === d || n2 === n1) continue;
+          }
+
+          const op = Math.random() < 0.5 ? '+' : '−';
+          const rawNum = op === '+' ? n1 + n2 : n1 - n2;
+          if (rawNum <= 0) continue;
+
+          const g = gcd(rawNum, d);
+          if (rawNum / g === d / g) continue;
+
+          const key = `${n1}/${d} ${op} ${n2}/${d}`;
+          if (noReuse && usedKeys.has(key)) continue;
+          ok = true; usedKeys.add(key);
+          question = { n1, n2, d, operation: op, correctNum: rawNum / g, correctDen: d / g };
         }
       }
       if (!ok) return null;
@@ -168,12 +255,12 @@ window.QuizEngine = (function () {
       let attempts = 0;
       while (distractors.length < cfg.options.count - 1 && attempts < 3000) {
         attempts++;
-        const candidateNum = validNumbers[Math.floor(Math.random() * validNumbers.length)];
-        if (candidateNum === correctQ.number) continue;
-        const plain = primeFactorization(candidateNum, cfg.primes, false);
+        const cand = validNumbers[Math.floor(Math.random() * validNumbers.length)];
+        if (cand === correctQ.number) continue;
+        const plain = primeFactorization(cand, cfg.primes, false);
         if (seen.has(plain)) continue;
         seen.add(plain);
-        distractors.push({ mathjax: primeFactorization(candidateNum, cfg.primes, true), plain });
+        distractors.push({ mathjax: primeFactorization(cand, cfg.primes, true), plain });
       }
     } 
     else if (cfg.type === 'lcm' || cfg.type === 'hcf') {
@@ -186,12 +273,9 @@ window.QuizEngine = (function () {
         if (roll < 0.4) {
           const f = [2,3,4,5][Math.floor(Math.random() * 4)];
           cand = Math.random() < 0.5 ? correctQ.result * f : Math.floor(correctQ.result / f);
-        } else {
-          cand = correctQ.result + (Math.floor(Math.random() * 20) - 10);
-        }
+        } else { cand = correctQ.result + (Math.floor(Math.random() * 20) - 10); }
         if (cand <= 0 || seen.has(cand)) continue;
-        seen.add(cand);
-        distractors.push(cand);
+        seen.add(cand); distractors.push(cand);
       }
     }
     else if (cfg.type === 'fraction') {
@@ -202,20 +286,40 @@ window.QuizEngine = (function () {
         let cNum = correctQ.correctNum, cDen = correctQ.correctDen;
         if (Math.random() < 0.5) cNum = Math.max(1, cNum + (Math.floor(Math.random() * 5) - 2));
         else cDen = Math.max(1, cDen + (Math.floor(Math.random() * 5) - 2));
-        
-        const g = gcd(cNum, cDen);
-        cNum /= g; cDen /= g;
-        
+        const g = gcd(cNum, cDen); cNum /= g; cDen /= g;
         const key = cNum + '/' + cDen;
         if (seen.has(key)) continue;
-        seen.add(key);
-        distractors.push({ num: cNum, den: cDen });
+        seen.add(key); distractors.push({ num: cNum, den: cDen });
+      }
+    }
+    else if (cfg.type === 'fraction-op' || cfg.type === 'fraction-whole' || cfg.type === 'fraction-add-sub') {
+      seen.add(correctQ.correctNum + '/' + correctQ.correctDen);
+      let attempts = 0;
+      while (distractors.length < cfg.options.count - 1 && attempts < 3000) {
+        attempts++;
+        let cNum, cDen;
+        if (Math.random() < 0.6) {
+          if (cfg.numbersType === '1-digit' || cfg.type === 'fraction-whole') {
+            cNum = Math.floor(Math.random() * 8) + 2; cDen = Math.floor(Math.random() * 8) + 2;
+          } else {
+            cNum = Math.floor(Math.random() * 99) + 1; cDen = Math.floor(Math.random() * 98) + 2;
+          }
+          if (cNum === cDen) continue;
+          const g = gcd(cNum, cDen); cNum /= g; cDen /= g;
+        } else {
+          cNum = correctQ.correctNum; cDen = correctQ.correctDen;
+          if (Math.random() < 0.5) cNum = Math.max(1, cNum + (Math.floor(Math.random() * 5) - 2));
+          else cDen = Math.max(1, cDen + (Math.floor(Math.random() * 5) - 2));
+          const g = gcd(cNum, cDen); cNum /= g; cDen /= g;
+        }
+        const key = cNum + '/' + cDen;
+        if (seen.has(key) || (cNum === 1 && cDen === 1)) continue;
+        seen.add(key); distractors.push({ num: cNum, den: cDen });
       }
     }
 
-    const correctOption = cfg.type === 'prime-factorization' 
-      ? { mathjax: correctQ.mathjax, plain: correctQ.plain }
-      : cfg.type === 'fraction' ? { num: correctQ.correctNum, den: correctQ.correctDen } 
+    const correctOption = (['prime-factorization'].includes(cfg.type)) ? { mathjax: correctQ.mathjax, plain: correctQ.plain }
+      : (['fraction', 'fraction-op', 'fraction-whole', 'fraction-add-sub'].includes(cfg.type)) ? { num: correctQ.correctNum, den: correctQ.correctDen }
       : correctQ.result;
 
     const options = [correctOption, ...distractors];
@@ -226,7 +330,7 @@ window.QuizEngine = (function () {
     return options;
   }
 
-  // --- Standard Arithmetic Logic (Levels 1 & 2) ---
+  // --- Standard Arithmetic Logic ---
   function generateStandardQuestions(cfg, poolA, poolB) {
     const noReuse = cfg.uniqueness === 'no-reused-numbers';
     const usedNums = new Set();
@@ -289,9 +393,7 @@ window.QuizEngine = (function () {
       const a = poolA[Math.floor(Math.random() * poolA.length)];
       const b = poolB[Math.floor(Math.random() * poolB.length)];
       let candidate = computeResult(a, b, cfg.operator);
-      if (Math.random() < (optCfg.perturbChance || 0)) {
-        candidate += Math.floor(Math.random() * (pHi - pLo + 1)) + pLo;
-      }
+      if (Math.random() < (optCfg.perturbChance || 0)) candidate += Math.floor(Math.random() * (pHi - pLo + 1)) + pLo;
       if (candidate <= 0 || seen.has(candidate)) continue;
       seen.add(candidate); distractors.push(candidate);
     }
@@ -316,10 +418,16 @@ window.QuizEngine = (function () {
     const totalQuestions = cfg.questionCount;
     let questions = [], optionsList = [], poolA = [], poolB = [], validNums = [];
 
-    if (['prime-factorization', 'lcm', 'hcf', 'fraction'].includes(cfg.type)) {
+    const specialTypes = ['prime-factorization', 'lcm', 'hcf', 'fraction', 'fraction-op', 'fraction-whole', 'fraction-add-sub'];
+    
+    if (specialTypes.includes(cfg.type)) {
       loadMathJax();
-      for (let n = cfg.minNumber; n <= cfg.maxNumber; n++) {
-        if (is5Smooth(n, cfg.primes)) validNums.push(n);
+      if (cfg.primes) {
+        const min = Math.min(cfg.minNumber || 2, 2);
+        const max = cfg.maxNumber || 99;
+        for (let n = min; n <= max; n++) {
+          if (is5Smooth(n, cfg.primes)) validNums.push(n);
+        }
       }
       let attempts = 0;
       while (questions.length === 0 && attempts < 300) {
@@ -385,8 +493,20 @@ window.QuizEngine = (function () {
         const numStr = q.nums.map(n => `<span class="qe-number-highlight" style="font-weight:800;color:#1d5b4e;font-size:1.2em;background:#edf5ef;padding:2px 14px;border-radius:12px;border:1px solid #c8ddd0;">${n}</span>`).join(' and ');
         qTextEl.innerHTML = `Find the HCF of ${numStr}`;
       } else if (cfg.type === 'fraction') {
-        const topText = cfg.hasExpression ? `${q.factor1} &times; ${q.factor2}` : `${q.num}`;
-        qTextEl.innerHTML = `Reduce the fraction to its lowest form: <br><br><span style="display:inline-flex; flex-direction:column; align-items:center; font-size:clamp(28px, 6vh, 48px); font-weight:800; color:#1d5b4e; line-height:1.1; margin-top:10px;"><span style="border-bottom: 3px solid #123c35; padding: 0 15px 5px 15px;">${topText}</span><span style="padding: 5px 15px 0 15px;">${q.den}</span></span>`;
+        const topText = cfg.hasExpression ? `${q.numF1} &times; ${q.numF2}` : `${q.num}`;
+        const botText = cfg.hasExpression ? `${q.denF1} &times; ${q.denF2}` : `${q.den}`;
+        qTextEl.innerHTML = `Reduce the fraction to its lowest form: <br><br><span style="display:inline-flex; flex-direction:column; align-items:center; font-size:clamp(28px, 6vh, 48px); font-weight:800; color:#1d5b4e; line-height:1.1; margin-top:10px;"><span style="border-bottom: 3px solid #123c35; padding: 0 15px 5px 15px;">${topText}</span><span style="padding: 5px 15px 0 15px;">${botText}</span></span>`;
+      } else if (cfg.type === 'fraction-op') {
+        const opSymbol = cfg.operator === '×' ? '&times;' : '&divide;';
+        qTextEl.innerHTML = `Multiply/Divide and reduce to lowest form: <br><br><span style="display:inline-flex; align-items:center; font-size:clamp(24px, 5vh, 40px); font-weight:800; color:#1d5b4e; line-height:1.1; margin-top:10px;"><span style="display:inline-flex; flex-direction:column; align-items:center; margin: 0 10px;"><span style="border-bottom: 3px solid #123c35; padding: 0 15px 5px 15px;">${q.n1}</span><span style="padding: 5px 15px 0 15px;">${q.d1}</span></span><span style="margin: 0 10px;">${opSymbol}</span><span style="display:inline-flex; flex-direction:column; align-items:center; margin: 0 10px;"><span style="border-bottom: 3px solid #123c35; padding: 0 15px 5px 15px;">${q.n2}</span><span style="padding: 5px 15px 0 15px;">${q.d2}</span></span></span>`;
+      } else if (cfg.type === 'fraction-whole') {
+        const fractionHtml = `<span style="display:inline-flex; flex-direction:column; align-items:center; margin: 0 10px;"><span style="border-bottom: 3px solid #123c35; padding: 0 15px 5px 15px;">${q.numerator}</span><span style="padding: 5px 15px 0 15px;">${q.den}</span></span>`;
+        const wholeHtml = `<span style="margin: 0 10px; font-size: clamp(28px, 6vh, 48px); font-weight:800; color:#1d5b4e;">${q.wholeNum}</span>`;
+        const opSymbol = cfg.operator === '×' ? '&times;' : '&divide;';
+        const exprHtml = q.isFractionFirst ? fractionHtml + `<span style="margin:0 10px;">${opSymbol}</span>` + wholeHtml : wholeHtml + `<span style="margin:0 10px;">${opSymbol}</span>` + fractionHtml;
+        qTextEl.innerHTML = `Multiply/Divide and reduce to lowest form: <br><br><span style="display:inline-flex; align-items:center; font-size:clamp(28px, 6vh, 48px); font-weight:800; color:#1d5b4e; line-height:1.1; margin-top:10px;">${exprHtml}</span>`;
+      } else if (cfg.type === 'fraction-add-sub') {
+        qTextEl.innerHTML = `<span style="display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px;"><span style="display:inline-flex; flex-direction:column; align-items:center; font-size:clamp(24px,5vh,40px); font-weight:800; color:#1d5b4e; line-height:1.1;"><span style="border-bottom:3px solid #123c35; padding:0 12px 4px 12px;">${q.n1}</span><span style="padding:4px 12px 0 12px;">${q.d}</span></span><span style="font-size:clamp(28px,5vh,44px); font-weight:300; margin:0 6px;">${q.operation}</span><span style="display:inline-flex; flex-direction:column; align-items:center; font-size:clamp(24px,5vh,40px); font-weight:800; color:#1d5b4e; line-height:1.1;"><span style="border-bottom:3px solid #123c35; padding:0 12px 4px 12px;">${q.n2}</span><span style="padding:4px 12px 0 12px;">${q.d}</span></span><span style="font-size:clamp(24px,5vh,40px); font-weight:700; margin-left:8px; color:#123c35;">= ?</span></span>`;
       } else {
         qTextEl.innerHTML = `<span class="qe-operand">${q.num1}</span><span class="qe-op">${cfg.operator}</span><span class="qe-operand">${q.num2}</span><span class="qe-eq">=</span><span class="qe-qmark">?</span>`;
       }
@@ -400,7 +520,7 @@ window.QuizEngine = (function () {
         
         if (cfg.type === 'prime-factorization') {
           btn.innerHTML = opt.mathjax;
-        } else if (cfg.type === 'fraction') {
+        } else if (['fraction', 'fraction-op', 'fraction-whole', 'fraction-add-sub'].includes(cfg.type)) {
           btn.innerHTML = `<span style="display:inline-flex; flex-direction:column; align-items:center; line-height:1.1;"><span style="border-bottom: 2px solid currentColor; padding: 0 8px 2px 8px;">${opt.num}</span><span style="padding: 2px 8px 0 8px;">${opt.den}</span></span>`;
         } else {
           btn.textContent = opt;
@@ -433,7 +553,7 @@ window.QuizEngine = (function () {
       state.questions.forEach((q, idx) => {
         const chosenOpt = state.optionsList[idx][state.answers[idx]];
         if (cfg.type === 'prime-factorization') { if (chosenOpt && chosenOpt.plain === q.plain) score++; }
-        else if (cfg.type === 'fraction') { if (chosenOpt && chosenOpt.num === q.correctNum && chosenOpt.den === q.correctDen) score++; }
+        else if (['fraction', 'fraction-op', 'fraction-whole', 'fraction-add-sub'].includes(cfg.type)) { if (chosenOpt && chosenOpt.num === q.correctNum && chosenOpt.den === q.correctDen) score++; }
         else if (cfg.type === 'lcm' || cfg.type === 'hcf') { if (chosenOpt === q.result) score++; }
         else { if (chosenOpt === q.result) score++; }
       });
@@ -468,7 +588,7 @@ window.QuizEngine = (function () {
 
     tryAgainBtn.addEventListener('click', () => {
       let freshQuestions, freshOptionsList;
-      if (['prime-factorization', 'lcm', 'hcf', 'fraction'].includes(cfg.type)) {
+      if (specialTypes.includes(cfg.type)) {
         freshQuestions = generateSpecialQuestions(cfg);
         if (freshQuestions) freshOptionsList = freshQuestions.map(q => buildSpecialOptions(q, cfg, validNums));
       } else {
