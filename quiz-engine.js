@@ -1,19 +1,20 @@
 /* ============================================================
    Quiz Engine
-   ------------------------------------------------------------
-   Public API (attached to window.QuizEngine):
-     QuizEngine.mount({ levelConfig, hostEl, onFinished, onStateChange })
-     QuizEngine.unmount(hostEl)
    ============================================================ */
 
 window.QuizEngine = (function () {
   'use strict';
 
   function generateAllNumbers(operandCfg) {
-    const { digits, allowedDigits, distinctDigits } = operandCfg;
+    if (operandCfg.type === 'range') return []; // handled differently
+
+    const { digits, allowedDigits, distinctDigits, requireSpecificDigit, firstDigitExclude } = operandCfg;
     const results = [];
+
     (function recurse(prefix, used) {
       if (prefix.length === digits) {
+        if (requireSpecificDigit !== undefined && !prefix.includes(requireSpecificDigit)) return;
+        if (firstDigitExclude && prefix.length > 0 && firstDigitExclude.includes(prefix[0])) return;
         results.push(Number(prefix.join('')));
         return;
       }
@@ -34,6 +35,7 @@ window.QuizEngine = (function () {
       case '×': return a * b;
       case '+': return a + b;
       case '-': return a - b;
+      case '÷': return a / b;
       default:  throw new Error('Unsupported operator: ' + operator);
     }
   }
@@ -43,6 +45,39 @@ window.QuizEngine = (function () {
     const usedNums = new Set();
     const questions = [];
 
+    // Handle Division Range (Level 2)
+    if (cfg.operandB.type === 'range') {
+      const { min, max, excludeMultiplesOf } = cfg.operandB;
+      const validDivisors = [];
+      for (let d = min; d <= max; d++) {
+        let skip = false;
+        for (let ex of excludeMultiplesOf) {
+          if (d % ex === 0) { skip = true; break; }
+        }
+        if (!skip) validDivisors.push(d);
+      }
+
+      for (let q = 0; q < cfg.questionCount; q++) {
+        let divisor, dividend, ok = false, attempts = 0;
+        while (!ok && attempts < 5000) {
+          attempts++;
+          divisor = validDivisors[Math.floor(Math.random() * validDivisors.length)];
+          const quotient = poolA[Math.floor(Math.random() * poolA.length)];
+          dividend = quotient * divisor;
+          
+          if (noReuse && (usedNums.has(quotient) || usedNums.has(divisor))) continue;
+          ok = true;
+        }
+        if (!ok) return null;
+
+        usedNums.add(dividend);
+        usedNums.add(divisor);
+        questions.push({ num1: dividend, num2: divisor, result: dividend / divisor });
+      }
+      return questions;
+    }
+
+    // Handle standard Operators (Level 1)
     for (let q = 0; q < cfg.questionCount; q++) {
       let num1, num2, ok = false, attempts = 0;
       while (!ok && attempts < 5000) {
@@ -71,29 +106,58 @@ window.QuizEngine = (function () {
     const distractors = [];
     const seen = new Set([correctResult]);
 
-    const [pLo, pHi] = optCfg.perturbRange  || [-100, 100];
-    const [fLo, fHi] = optCfg.fallbackRange || [-1000, 1000];
-
-    let attempts = 0;
-    while (distractors.length < needCount && attempts < 3000) {
-      attempts++;
-      const a = poolA[Math.floor(Math.random() * poolA.length)];
-      const b = poolB[Math.floor(Math.random() * poolB.length)];
-      let candidate = computeResult(a, b, cfg.operator);
-      if (Math.random() < (optCfg.perturbChance || 0)) {
-        candidate += Math.floor(Math.random() * (pHi - pLo + 1)) + pLo;
+    // Handle Division Options (Derived from Quotient)
+    if (optCfg.distractorMode === 'derive-from-answer') {
+      let attempts = 0;
+      while (distractors.length < needCount && attempts < 3000) {
+        attempts++;
+        if (Math.random() < 0.6) {
+          const candidate = poolA[Math.floor(Math.random() * poolA.length)];
+          if (seen.has(candidate)) continue;
+          seen.add(candidate);
+          distractors.push(candidate);
+        } else {
+          const s = correctResult.toString();
+          const digits = s.split('').map(Number);
+          const pos = Math.floor(Math.random() * digits.length);
+          const replacements = optCfg.answerDigits.filter(d => d !== digits[pos]);
+          if (replacements.length === 0) continue;
+          const newDigit = replacements[Math.floor(Math.random() * replacements.length)];
+          const newDigits = [...digits];
+          newDigits[pos] = newDigit;
+          if (newDigits[0] === 0) continue;
+          const candidate = parseInt(newDigits.join(''), 10);
+          if (seen.has(candidate)) continue;
+          seen.add(candidate);
+          distractors.push(candidate);
+        }
       }
-      if (candidate <= 0 || seen.has(candidate)) continue;
-      seen.add(candidate);
-      distractors.push(candidate);
-    }
+    } else {
+      // Standard Distractors (Level 1)
+      const [pLo, pHi] = optCfg.perturbRange  || [-100, 100];
+      const [fLo, fHi] = optCfg.fallbackRange || [-1000, 1000];
 
-    while (distractors.length < needCount) {
-      const delta = Math.floor(Math.random() * (fHi - fLo + 1)) + fLo;
-      const candidate = Math.max(1, correctResult + delta);
-      if (seen.has(candidate)) continue;
-      seen.add(candidate);
-      distractors.push(candidate);
+      let attempts = 0;
+      while (distractors.length < needCount && attempts < 3000) {
+        attempts++;
+        const a = poolA[Math.floor(Math.random() * poolA.length)];
+        const b = poolB[Math.floor(Math.random() * poolB.length)];
+        let candidate = computeResult(a, b, cfg.operator);
+        if (Math.random() < (optCfg.perturbChance || 0)) {
+          candidate += Math.floor(Math.random() * (pHi - pLo + 1)) + pLo;
+        }
+        if (candidate <= 0 || seen.has(candidate)) continue;
+        seen.add(candidate);
+        distractors.push(candidate);
+      }
+
+      while (distractors.length < needCount) {
+        const delta = Math.floor(Math.random() * (fHi - fLo + 1)) + fLo;
+        const candidate = Math.max(1, correctResult + delta);
+        if (seen.has(candidate)) continue;
+        seen.add(candidate);
+        distractors.push(candidate);
+      }
     }
 
     const options = [correctResult, ...distractors];
@@ -107,12 +171,17 @@ window.QuizEngine = (function () {
   function createController(levelConfig, hostEl, onFinished, onStateChange) {
     const cfg = levelConfig;
     const totalQuestions = cfg.questionCount;
-    const poolA = generateAllNumbers(cfg.operandA);
-    const poolB = generateAllNumbers(cfg.operandB);
-
-    if (poolA.length === 0 || poolB.length === 0) {
-      throw new Error('Operand config produced an empty number pool.');
+    let poolA = [];
+    let poolB = [];
+    
+    if (cfg.operandB.type === 'range') {
+      poolA = generateAllNumbers(cfg.operandA.operandB); // The quotient rules
+    } else {
+      poolA = generateAllNumbers(cfg.operandA);
+      poolB = generateAllNumbers(cfg.operandB);
     }
+
+    if (poolA.length === 0) throw new Error('Operand config produced an empty number pool.');
 
     let questions = null;
     let attempts = 0;
