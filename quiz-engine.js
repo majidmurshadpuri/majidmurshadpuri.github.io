@@ -1,5 +1,5 @@
 /* ============================================================
-   Quiz Engine - Master File for Levels 1-20
+   Quiz Engine - Master File (Fixed for Level 15)
    ============================================================ */
 
 window.QuizEngine = (function () {
@@ -88,7 +88,7 @@ window.QuizEngine = (function () {
   function generateSpecialQuestions(cfg) {
     let validNumbers = [];
     if (cfg.primes) {
-      for (let n = cfg.minNumber; n <= cfg.maxNumber; n++) {
+      for (let n = 10; n <= 999; n++) {
         if (is5Smooth(n, cfg.primes)) validNumbers.push(n);
       }
     }
@@ -103,14 +103,20 @@ window.QuizEngine = (function () {
         attempts++;
         
         if (cfg.type === 'prime-factorization') {
-          const number = validNumbers[Math.floor(Math.random() * validNumbers.length)];
+          const min = cfg.minNumber || 10;
+          const max = cfg.maxNumber || 99;
+          const pool = validNumbers.filter(n => n >= min && n <= max);
+          const number = pool[Math.floor(Math.random() * pool.length)];
           if (noReuse && usedKeys.has(number)) continue;
           ok = true; usedKeys.add(number);
           question = { number, mathjax: primeFactorization(number, cfg.primes, true), plain: primeFactorization(number, cfg.primes, false) };
         } 
         else if (cfg.type === 'lcm' || cfg.type === 'hcf') {
+          const min = cfg.minNumber || 10;
+          const max = cfg.maxNumber || 99;
+          const pool = validNumbers.filter(n => n >= min && n <= max);
           const nums = [];
-          for (let i = 0; i < cfg.numCount; i++) nums.push(validNumbers[Math.floor(Math.random() * validNumbers.length)]);
+          for (let i = 0; i < cfg.numCount; i++) nums.push(pool[Math.floor(Math.random() * pool.length)]);
           const sortedKey = [...nums].sort((a,b)=>a-b).join('-');
           if (noReuse && usedKeys.has(sortedKey)) continue;
           
@@ -123,8 +129,12 @@ window.QuizEngine = (function () {
           question = { nums, result };
         }
         else if (cfg.type === 'fraction') {
-          const num = validNumbers[Math.floor(Math.random() * validNumbers.length)];
-          const den = validNumbers[Math.floor(Math.random() * validNumbers.length)];
+          const min = cfg.minNumber || 10;
+          const max = cfg.maxNumber || 99;
+          const pool = validNumbers.filter(n => n >= min && n <= max);
+          
+          const num = pool[Math.floor(Math.random() * pool.length)];
+          const den = pool[Math.floor(Math.random() * pool.length)];
           if (num === den) continue;
           const g = gcd(num, den);
           if (g === 1) continue; 
@@ -178,19 +188,31 @@ window.QuizEngine = (function () {
           const smooth3 = validNumbers.filter(n => n >= 100 && n <= 999);
           
           let den, wholeNum, numerator = 1, found = false;
+          
           if (cfg.operator === '×') {
-            den = (Math.random() < 0.5 ? smooth2 : smooth3)[Math.floor(Math.random() * (Math.random() < 0.5 ? smooth2.length : smooth3.length))];
+            // BUG FIX: Properly pick from the pools
+            const isTwoDigit = Math.random() < 0.5;
+            const pool = isTwoDigit ? smooth2 : smooth3;
+            den = pool[Math.floor(Math.random() * pool.length)];
+            
             wholeNum = Math.floor(Math.random() * 11) + 2;
+            
             for (let i = 0; i < 1000; i++) {
               const cand = Math.floor(Math.random() * 90) + 10;
-              if ((cand * wholeNum) >= 10 && (cand * wholeNum) <= 999 && is5Smooth(cand * wholeNum, cfg.primes)) { numerator = cand; found = true; break; }
+              if ((cand * wholeNum) >= 10 && (cand * wholeNum) <= 999 && is5Smooth(cand * wholeNum, cfg.primes)) { 
+                numerator = cand; 
+                found = true; 
+                break; 
+              }
             }
           } else {
             const comp1 = validNumbers.filter(n => n >= 2 && n <= 9 && ![2,3,5].includes(n));
             const comp2 = smooth2;
+            
             const denPool = Math.random() < 0.5 ? comp1 : comp2;
             const wholePool = Math.random() < 0.5 ? comp1 : comp2;
             const numPool = Math.random() < 0.5 ? comp1 : comp2;
+            
             den = denPool[Math.floor(Math.random() * denPool.length)];
             wholeNum = wholePool[Math.floor(Math.random() * wholePool.length)];
             numerator = numPool[Math.floor(Math.random() * numPool.length)];
@@ -292,7 +314,7 @@ window.QuizEngine = (function () {
         seen.add(key); distractors.push({ num: cNum, den: cDen });
       }
     }
-    else if (cfg.type === 'fraction-op' || cfg.type === 'fraction-whole' || cfg.type === 'fraction-add-sub') {
+    else if (['fraction-op', 'fraction-whole', 'fraction-add-sub'].includes(cfg.type)) {
       seen.add(correctQ.correctNum + '/' + correctQ.correctDen);
       let attempts = 0;
       while (distractors.length < cfg.options.count - 1 && attempts < 3000) {
@@ -423,9 +445,7 @@ window.QuizEngine = (function () {
     if (specialTypes.includes(cfg.type)) {
       loadMathJax();
       if (cfg.primes) {
-        const min = Math.min(cfg.minNumber || 2, 2);
-        const max = cfg.maxNumber || 99;
-        for (let n = min; n <= max; n++) {
+        for (let n = 2; n <= 999; n++) {
           if (is5Smooth(n, cfg.primes)) validNums.push(n);
         }
       }
