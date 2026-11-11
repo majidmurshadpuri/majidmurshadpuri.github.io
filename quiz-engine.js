@@ -1,5 +1,5 @@
 /* ============================================================
-   Quiz Engine - Master File (Fixed for Level 15)
+   Quiz Engine - Master File (Exact Level 15 Logic)
    ============================================================ */
 
 window.QuizEngine = (function () {
@@ -88,7 +88,7 @@ window.QuizEngine = (function () {
   function generateSpecialQuestions(cfg) {
     let validNumbers = [];
     if (cfg.primes) {
-      for (let n = 10; n <= 999; n++) {
+      for (let n = 2; n <= 999; n++) {
         if (is5Smooth(n, cfg.primes)) validNumbers.push(n);
       }
     }
@@ -184,30 +184,44 @@ window.QuizEngine = (function () {
           question = { n1, d1, n2, d2, correctNum: cNum, correctDen: cDen };
         }
         else if (cfg.type === 'fraction-whole') {
-          const smooth2 = validNumbers.filter(n => n >= 10 && n <= 99);
-          const smooth3 = validNumbers.filter(n => n >= 100 && n <= 999);
+          // EXACT ORIGINAL LOGIC RESTORED
+          const smooth2Digit = validNumbers.filter(n => n >= 10 && n <= 99);
+          const smooth3Digit = validNumbers.filter(n => n >= 100 && n <= 999);
           
-          let den, wholeNum, numerator = 1, found = false;
+          let den, wholeNum, numerator = 1, foundNum = false;
           
           if (cfg.operator === '×') {
-            // BUG FIX: Properly pick from the pools
-            const isTwoDigit = Math.random() < 0.5;
-            const pool = isTwoDigit ? smooth2 : smooth3;
-            den = pool[Math.floor(Math.random() * pool.length)];
-            
+            const denPool = Math.random() < 0.5 ? smooth2Digit : smooth3Digit;
+            den = denPool[Math.floor(Math.random() * denPool.length)];
             wholeNum = Math.floor(Math.random() * 11) + 2;
+
+            // Try to find a valid numerator exactly as the original code did
+            for (let attemptNum = 0; attemptNum < 1000; attemptNum++) {
+              const candidateNum = Math.floor(Math.random() * 90) + 10; // 10 to 99
+              const product = candidateNum * wholeNum;
+              if ((product >= 10 && product <= 999) && is5Smooth(product, cfg.primes)) {
+                numerator = candidateNum;
+                foundNum = true;
+                break;
+              }
+            }
             
-            for (let i = 0; i < 1000; i++) {
-              const cand = Math.floor(Math.random() * 90) + 10;
-              if ((cand * wholeNum) >= 10 && (cand * wholeNum) <= 999 && is5Smooth(cand * wholeNum, cfg.primes)) { 
-                numerator = cand; 
-                found = true; 
-                break; 
+            // Fallback: if we couldn't find one in 1000 tries, we safely construct one
+            // so the quiz never crashes, but we still respect the smooth constraints.
+            if (!foundNum) {
+              const ansPool = Math.random() < 0.5 ? smooth2Digit : smooth3Digit;
+              const ans = ansPool[Math.floor(Math.random() * ansPool.length)];
+              const factors = getFactors(ans);
+              const possibleWholes = factors.filter(f => f >= 2 && f <= 12);
+              if (possibleWholes.length > 0) {
+                wholeNum = possibleWholes[Math.floor(Math.random() * possibleWholes.length)];
+                numerator = ans / wholeNum;
+                foundNum = true;
               }
             }
           } else {
             const comp1 = validNumbers.filter(n => n >= 2 && n <= 9 && ![2,3,5].includes(n));
-            const comp2 = smooth2;
+            const comp2 = smooth2Digit;
             
             const denPool = Math.random() < 0.5 ? comp1 : comp2;
             const wholePool = Math.random() < 0.5 ? comp1 : comp2;
@@ -216,10 +230,11 @@ window.QuizEngine = (function () {
             den = denPool[Math.floor(Math.random() * denPool.length)];
             wholeNum = wholePool[Math.floor(Math.random() * wholePool.length)];
             numerator = numPool[Math.floor(Math.random() * numPool.length)];
-            found = true;
+            foundNum = true;
           }
-          if (!found) continue;
-          if (gcd(numerator, den) === den) continue;
+          
+          if (!foundNum) continue;
+          if (gcd(numerator, den) === den) continue; 
 
           const isFractionFirst = Math.random() < 0.5;
           const key = `${isFractionFirst ? 'F' : 'W'}${wholeNum}-${numerator}/${den}`;
