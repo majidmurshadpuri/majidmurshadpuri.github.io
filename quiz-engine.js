@@ -5,12 +5,25 @@
 window.QuizEngine = (function () {
   'use strict';
 
-  function generateAllNumbers(operandCfg) {
-    if (operandCfg.type === 'range') return []; // handled differently
+  // Ensure MathJax is loaded if the quiz needs it
+  function loadMathJax() {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], processEscapes: true },
+        options: { ignoreHtmlClass: 'tex2jax_ignore', processHtmlClass: 'tex2jax_process' }
+      };
+      const script = document.createElement('script');
+      script.id = 'MathJax-script';
+      script.async = true;
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      document.head.appendChild(script);
+    }
+  }
 
+  function generateAllNumbers(operandCfg) {
+    if (operandCfg.type === 'range') return [];
     const { digits, allowedDigits, distinctDigits, requireSpecificDigit, firstDigitExclude } = operandCfg;
     const results = [];
-
     (function recurse(prefix, used) {
       if (prefix.length === digits) {
         if (requireSpecificDigit !== undefined && !prefix.includes(requireSpecificDigit)) return;
@@ -20,11 +33,9 @@ window.QuizEngine = (function () {
       }
       for (const d of allowedDigits) {
         if (distinctDigits && used.has(d)) continue;
-        used.add(d);
-        prefix.push(d);
+        used.add(d); prefix.push(d);
         recurse(prefix, used);
-        prefix.pop();
-        used.delete(d);
+        prefix.pop(); used.delete(d);
       }
     })([], new Set());
     return results;
@@ -40,20 +51,129 @@ window.QuizEngine = (function () {
     }
   }
 
+  // --- Prime Factorization Logic ---
+  function is5Smooth(n, primes) {
+    if (n < 1) return false;
+    let x = n;
+    for (let p of primes) { while (x % p === 0) x /= p; }
+    return x === 1;
+  }
+
+  function primeFactorization(n, primes, isMathJax) {
+    if (n < 2) return String(n);
+    const factors = [];
+    let x = n;
+    for (let p of primes) {
+      if (x % p === 0) {
+        let count = 0;
+        while (x % p === 0) { x /= p; count++; }
+        if (count === 1) factors.push(String(p));
+        else factors.push(isMathJax ? `${p}^{${count}}` : `${p}^${count}`);
+      }
+    }
+    return isMathJax ? `\\(${factors.join(' \\times ')}\\)` : factors.join(' × ');
+  }
+
+  function generatePrimeFactorQuestionSet(cfg) {
+    const validNumbers = [];
+    for (let n = cfg.minNumber; n <= cfg.maxNumber; n++) {
+      if (is5Smooth(n, cfg.primes)) validNumbers.push(n);
+    }
+    
+    const noReuse = cfg.uniqueness === 'no-reused-numbers';
+    const usedNumbers = new Set();
+    const questions = [];
+
+    for (let q = 0; q < cfg.questionCount; q++) {
+      let number, ok = false, attempts = 0;
+      while (!ok && attempts < 5000) {
+        attempts++;
+        number = validNumbers[Math.floor(Math.random() * validNumbers.length)];
+        if (noReuse && usedNumbers.has(number)) continue;
+        ok = true;
+      }
+      if (!ok) return null;
+      usedNumbers.add(number);
+      questions.push({
+        number: number,
+        mathjax: primeFactorization(number, cfg.primes, true),
+        plain: primeFactorization(number, cfg.primes, false)
+      });
+    }
+    return questions;
+  }
+
+  function buildPrimeFactorOptions(correctQ, cfg) {
+    const allValid = [];
+    for (let n = cfg.minNumber; n <= cfg.maxNumber; n++) {
+      if (is5Smooth(n, cfg.primes)) allValid.push(n);
+    }
+    
+    const distractors = [];
+    const seen = new Set([correctQ.plain]);
+    let attempts = 0;
+
+    while (distractors.length < cfg.options.count - 1 && attempts < 3000) {
+      attempts++;
+      if (Math.random() < 0.7) {
+        const candidateNum = allValid[Math.floor(Math.random() * allValid.length)];
+        if (candidateNum === correctQ.number) continue;
+        const plain = primeFactorization(candidateNum, cfg.primes, false);
+        if (seen.has(plain)) continue;
+        seen.add(plain);
+        distractors.push({ mathjax: primeFactorization(candidateNum, cfg.primes, true), plain });
+      } else {
+        // Perturb exponent logic
+        const parts = correctQ.plain.split(' × ');
+        const parsed = parts.map(p => {
+          const match = p.match(/^(\d)(?:\^(\d+))?$/);
+          return match ? { prime: Number(match[1]), exp: match[2] ? Number(match[2]) : 1 } : null;
+        }).filter(x => x !== null);
+
+        const pos = Math.floor(Math.random() * parsed.length);
+        const newParsed = parsed.map((p, i) => {
+          if (i !== pos) return { ...p };
+          const delta = Math.random() < 0.5 ? 1 : -1;
+          let newExp = p.exp + delta;
+          if (newExp < 1) newExp = 1;
+          return { ...p, exp: newExp };
+        });
+
+        let val = 1;
+        for (let p of newParsed) for (let i = 0; i < p.exp; i++) val *= p.prime;
+        if (val < cfg.minNumber || val > cfg.maxNumber) continue;
+
+        const plainParts = newParsed.map(p => p.exp === 1 ? String(p.prime) : `${p.prime}^${p.exp}`);
+        const mjParts = newParsed.map(p => p.exp === 1 ? String(p.prime) : `${p.prime}^{${p.exp}}`);
+        const plain = plainParts.join(' × ');
+        const mathjax = `\\(${mjParts.join(' \\times ')}\\)`;
+        
+        if (seen.has(plain)) continue;
+        seen.add(plain);
+        distractors.push({ mathjax, plain });
+      }
+    }
+
+    const options = [{ mathjax: correctQ.mathjax, plain: correctQ.plain }, ...distractors];
+    for (let i = options.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [options[i], options[j]] = [options[j], options[i]];
+    }
+    return options;
+  }
+
+  // --- Standard Arithmetic Logic (Levels 1 & 2) ---
   function generateQuestionSet(cfg, poolA, poolB) {
     const noReuse = cfg.uniqueness === 'no-reused-numbers';
     const usedNums = new Set();
     const questions = [];
 
-    // Handle Division Range (Level 2)
     if (cfg.operandB.type === 'range') {
       const { min, max, excludeMultiplesOf } = cfg.operandB;
       const validDivisors = [];
       for (let d = min; d <= max; d++) {
         let skip = false;
-        for (let ex of excludeMultiplesOf) {
-          if (d % ex === 0) { skip = true; break; }
-        }
+        for (let ex of excludeMultiplesOf) { if (d % ex === 0) { skip = true; break; } }
         if (!skip) validDivisors.push(d);
       }
 
@@ -64,20 +184,16 @@ window.QuizEngine = (function () {
           divisor = validDivisors[Math.floor(Math.random() * validDivisors.length)];
           const quotient = poolA[Math.floor(Math.random() * poolA.length)];
           dividend = quotient * divisor;
-          
           if (noReuse && (usedNums.has(quotient) || usedNums.has(divisor))) continue;
           ok = true;
         }
         if (!ok) return null;
-
-        usedNums.add(dividend);
-        usedNums.add(divisor);
+        usedNums.add(dividend); usedNums.add(divisor);
         questions.push({ num1: dividend, num2: divisor, result: dividend / divisor });
       }
       return questions;
     }
 
-    // Handle standard Operators (Level 1)
     for (let q = 0; q < cfg.questionCount; q++) {
       let num1, num2, ok = false, attempts = 0;
       while (!ok && attempts < 5000) {
@@ -89,10 +205,7 @@ window.QuizEngine = (function () {
         ok = true;
       }
       if (!ok) return null;
-
-      usedNums.add(num1);
-      usedNums.add(num2);
-
+      usedNums.add(num1); usedNums.add(num2);
       const result = computeResult(num1, num2, cfg.operator);
       if (result <= 0) { q--; continue; }
       questions.push({ num1, num2, result });
@@ -106,7 +219,6 @@ window.QuizEngine = (function () {
     const distractors = [];
     const seen = new Set([correctResult]);
 
-    // Handle Division Options (Derived from Quotient)
     if (optCfg.distractorMode === 'derive-from-answer') {
       let attempts = 0;
       while (distractors.length < needCount && attempts < 3000) {
@@ -114,8 +226,7 @@ window.QuizEngine = (function () {
         if (Math.random() < 0.6) {
           const candidate = poolA[Math.floor(Math.random() * poolA.length)];
           if (seen.has(candidate)) continue;
-          seen.add(candidate);
-          distractors.push(candidate);
+          seen.add(candidate); distractors.push(candidate);
         } else {
           const s = correctResult.toString();
           const digits = s.split('').map(Number);
@@ -123,20 +234,16 @@ window.QuizEngine = (function () {
           const replacements = optCfg.answerDigits.filter(d => d !== digits[pos]);
           if (replacements.length === 0) continue;
           const newDigit = replacements[Math.floor(Math.random() * replacements.length)];
-          const newDigits = [...digits];
-          newDigits[pos] = newDigit;
+          const newDigits = [...digits]; newDigits[pos] = newDigit;
           if (newDigits[0] === 0) continue;
           const candidate = parseInt(newDigits.join(''), 10);
           if (seen.has(candidate)) continue;
-          seen.add(candidate);
-          distractors.push(candidate);
+          seen.add(candidate); distractors.push(candidate);
         }
       }
     } else {
-      // Standard Distractors (Level 1)
       const [pLo, pHi] = optCfg.perturbRange  || [-100, 100];
       const [fLo, fHi] = optCfg.fallbackRange || [-1000, 1000];
-
       let attempts = 0;
       while (distractors.length < needCount && attempts < 3000) {
         attempts++;
@@ -147,16 +254,13 @@ window.QuizEngine = (function () {
           candidate += Math.floor(Math.random() * (pHi - pLo + 1)) + pLo;
         }
         if (candidate <= 0 || seen.has(candidate)) continue;
-        seen.add(candidate);
-        distractors.push(candidate);
+        seen.add(candidate); distractors.push(candidate);
       }
-
       while (distractors.length < needCount) {
         const delta = Math.floor(Math.random() * (fHi - fLo + 1)) + fLo;
         const candidate = Math.max(1, correctResult + delta);
         if (seen.has(candidate)) continue;
-        seen.add(candidate);
-        distractors.push(candidate);
+        seen.add(candidate); distractors.push(candidate);
       }
     }
 
@@ -171,29 +275,29 @@ window.QuizEngine = (function () {
   function createController(levelConfig, hostEl, onFinished, onStateChange) {
     const cfg = levelConfig;
     const totalQuestions = cfg.questionCount;
-    let poolA = [];
-    let poolB = [];
-    
-    if (cfg.operandB.type === 'range') {
-      poolA = generateAllNumbers(cfg.operandA.operandB); // The quotient rules
+    let poolA = [], poolB = [], questions = [], optionsList = [];
+
+    if (cfg.type === 'prime-factorization') {
+      loadMathJax();
+      questions = generatePrimeFactorQuestionSet(cfg);
+      if (!questions) throw new Error('Could not generate questions.');
+      optionsList = questions.map(q => buildPrimeFactorOptions(q, cfg));
     } else {
-      poolA = generateAllNumbers(cfg.operandA);
-      poolB = generateAllNumbers(cfg.operandB);
+      if (cfg.operandB.type === 'range') {
+        poolA = generateAllNumbers(cfg.operandA.operandB);
+      } else {
+        poolA = generateAllNumbers(cfg.operandA);
+        poolB = generateAllNumbers(cfg.operandB);
+      }
+      let attempts = 0;
+      while (questions.length === 0 && attempts < 300) {
+        const q = generateQuestionSet(cfg, poolA, poolB);
+        if (q) questions = q;
+        attempts++;
+      }
+      if (questions.length === 0) throw new Error('Could not generate questions.');
+      optionsList = questions.map(q => buildOptions(q.result, cfg, poolA, poolB));
     }
-
-    if (poolA.length === 0) throw new Error('Operand config produced an empty number pool.');
-
-    let questions = null;
-    let attempts = 0;
-    while (!questions && attempts < 300) {
-      questions = generateQuestionSet(cfg, poolA, poolB);
-      attempts++;
-    }
-    if (!questions) throw new Error('Could not generate a question set.');
-
-    const optionsList = questions.map(q =>
-      buildOptions(q.result, cfg, poolA, poolB)
-    );
 
     let state = {
       levelId: cfg.id,
@@ -269,12 +373,16 @@ window.QuizEngine = (function () {
       badgeEl.textContent = `${qi + 1} / ${totalQuestions}`;
       statusEl.textContent = `Question ${qi + 1} of ${totalQuestions}`;
 
-      qTextEl.innerHTML = `
-        <span class="qe-operand">${q.num1}</span>
-        <span class="qe-op">${cfg.operator}</span>
-        <span class="qe-operand">${q.num2}</span>
-        <span class="qe-eq">=</span>
-        <span class="qe-qmark">?</span>`;
+      if (cfg.type === 'prime-factorization') {
+        qTextEl.innerHTML = cfg.questionTemplate.replace('{number}', `<span class="qe-number-highlight" style="font-weight:800;color:#1d5b4e;font-size:1.2em;background:#edf5ef;padding:2px 14px;border-radius:12px;border:1px solid #c8ddd0;">${q.number}</span>`);
+      } else {
+        qTextEl.innerHTML = `
+          <span class="qe-operand">${q.num1}</span>
+          <span class="qe-op">${cfg.operator}</span>
+          <span class="qe-operand">${q.num2}</span>
+          <span class="qe-eq">=</span>
+          <span class="qe-qmark">?</span>`;
+      }
 
       optionsGrid.innerHTML = '';
       opts.forEach((opt, idx) => {
@@ -282,7 +390,13 @@ window.QuizEngine = (function () {
         btn.type = 'button';
         btn.className = 'qe-option-btn';
         if (sel === idx) btn.classList.add('qe-selected');
-        btn.textContent = opt;
+        
+        if (cfg.type === 'prime-factorization') {
+          btn.innerHTML = opt.mathjax;
+        } else {
+          btn.textContent = opt;
+        }
+        
         btn.addEventListener('click', () => {
           if (state.completed) return;
           state.answers[qi] = idx;
@@ -296,6 +410,10 @@ window.QuizEngine = (function () {
         optionsGrid.appendChild(btn);
       });
 
+      if (cfg.type === 'prime-factorization' && window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([optionsGrid]).catch(err => console.log('MathJax error:', err));
+      }
+
       const hasSel = state.answers[qi] !== null && state.answers[qi] !== undefined;
       submitBtn.disabled = !hasSel;
       submitBtn.textContent = hasSel ? 'Next question →' : 'Submit answer';
@@ -307,8 +425,12 @@ window.QuizEngine = (function () {
     function finalize() {
       let score = 0;
       state.questions.forEach((q, idx) => {
-        const chosen = state.optionsList[idx][state.answers[idx]];
-        if (chosen === q.result) score++;
+        const chosenOpt = state.optionsList[idx][state.answers[idx]];
+        if (cfg.type === 'prime-factorization') {
+          if (chosenOpt && chosenOpt.plain === q.plain) score++;
+        } else {
+          if (chosenOpt === q.result) score++;
+        }
       });
       state.score = score;
       state.completed = true;
@@ -328,18 +450,15 @@ window.QuizEngine = (function () {
         scoreMsgEl.style.display = 'none';
         scoreMsgEl.textContent = '';
         congratsEl.classList.remove('qe-hide');
-        congratsEl.textContent =
-          `🎉 Congratulations! Perfect ${totalQuestions}/${totalQuestions}!`;
+        congratsEl.textContent = `🎉 Congratulations! Perfect ${totalQuestions}/${totalQuestions}!`;
         tryAgainBtn.style.display = 'none';
       } else {
         scoreMsgEl.style.display = 'block';
-        scoreMsgEl.textContent =
-          `You scored ${state.score}/${totalQuestions}. Try again to improve.`;
+        scoreMsgEl.textContent = `You scored ${state.score}/${totalQuestions}. Try again to improve.`;
         scoreMsgEl.style.color = '#a83e37';
         congratsEl.classList.add('qe-hide');
         tryAgainBtn.style.display = 'inline-flex';
       }
-
       statusEl.textContent = 'Quiz completed';
       badgeEl.textContent = `${totalQuestions} / ${totalQuestions}`;
     }
@@ -347,8 +466,7 @@ window.QuizEngine = (function () {
     submitBtn.addEventListener('click', () => {
       const qi = state.currentIndex;
       if (state.answers[qi] === null || state.answers[qi] === undefined) return;
-      optionsGrid.querySelectorAll('.qe-option-btn')
-        .forEach(b => b.classList.add('qe-disabled'));
+      optionsGrid.querySelectorAll('.qe-option-btn').forEach(b => b.classList.add('qe-disabled'));
 
       if (state.currentIndex < totalQuestions - 1) {
         state.currentIndex++;
@@ -360,15 +478,22 @@ window.QuizEngine = (function () {
     });
 
     tryAgainBtn.addEventListener('click', () => {
-      const freshQuestions = generateQuestionSet(cfg, poolA, poolB);
+      let freshQuestions, freshOptionsList;
+      if (cfg.type === 'prime-factorization') {
+        freshQuestions = generatePrimeFactorQuestionSet(cfg);
+        if (freshQuestions) freshOptionsList = freshQuestions.map(q => buildPrimeFactorOptions(q, cfg));
+      } else {
+        freshQuestions = generateQuestionSet(cfg, poolA, poolB);
+        if (freshQuestions) freshOptionsList = freshQuestions.map(q => buildOptions(q.result, cfg, poolA, poolB));
+      }
       if (!freshQuestions) { alert('Could not regenerate a quiz. Please reload.'); return; }
+      
       state = {
         levelId: cfg.id,
         questions: freshQuestions,
         currentIndex: 0,
         answers: new Array(totalQuestions).fill(null),
-        optionsList: freshQuestions.map(q =>
-          buildOptions(q.result, cfg, poolA, poolB)),
+        optionsList: freshOptionsList,
         completed: false,
         score: 0
       };
