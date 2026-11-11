@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Maths Practice Library | Majid Murshadpuri</title>
+<meta name="description" content="Class 6, 7 & 8 Mathematics — interactive SA I practice papers and quizzes by Majid Murshadpuri.">
+<meta name="author" content="Majid Murshadpuri">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#35205a">
+<link rel="canonical" href="https://majidmurshadpuri.github.io/MathsPracticeLibrary.html">
+
+<style>
+:root{
+  --sky1:#ffd9b8; --sky2:#ffb199; --sky3:#e98aa0; --sky4:#8e5a9b;
+  --ink:#3a1d3b; --ink-soft:#6b4467;
+  --paper:#fff6e6; --saffron:#ffc857; --coral:#ff7f6b; --blush:#ffd3d3; --mint:#bfe8cf; --lilac:#d9c6f2;
+  --glow:#ffe9a8; --shadow:rgba(80,30,70,.22);
+  --hand:"Segoe Print","Bradley Hand","Chalkboard SE","Marker Felt","Comic Sans MS","Comic Neue",cursive;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+}
+[data-theme="night"]{
+  --sky1:#4a2c6b; --sky2:#35205a; --sky3:#241448; --sky4:#150c2e;
+  --ink:#fff1dc; --ink-soft:#e3c9d8;
+  --paper:#3b2760; --saffron:#ffc857; --coral:#ff8a76; --blush:#5a3568; --mint:#2f5a63; --lilac:#4b3a82;
+  --glow:#ffd777; --shadow:rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans);color:var(--ink);min-height:100vh;overflow-x:hidden;
+  background:linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 35%,var(--sky3) 70%,var(--sky4) 100%) fixed;
+}
+body.no-scroll{overflow:hidden}
+
+/* ---------- sky ---------- */
+.sky{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.sun{
+  position:absolute;width:min(26vw,200px);aspect-ratio:1;border-radius:50%;right:-8%;top:6%;
+  background:radial-gradient(circle at 35% 35%,#fffbe8 0%,#f3e7c0 55%,#d9c690 100%);
+  box-shadow:0 0 90px 24px rgba(255,240,190,.28);animation:bob 9s ease-in-out infinite;
+}
+.blob{position:absolute;border-radius:50%;filter:blur(50px);opacity:.28;animation:drift 18s ease-in-out infinite}
+.b1{width:340px;height:340px;background:#ff8fa3;left:-80px;top:30%}
+.b2{width:300px;height:300px;background:#ffd27a;right:10%;bottom:8%;animation-delay:-6s}
+.b3{width:260px;height:260px;background:#b49cf0;left:35%;top:-80px;animation-delay:-11s}
+.stars{position:absolute;inset:0}
+.stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff6d8;animation:twinkle 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.12)}}
+@keyframes twinkle{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.4)}}
+
+/* ---------- top bar ---------- */
+.top{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;justify-content:space-between;
+  padding:max(14px,env(safe-area-inset-top)) 18px 14px}
+.mark{font-family:var(--hand);font-size:clamp(.95rem,4.6vw,1.7rem);white-space:nowrap;color:var(--ink);text-decoration:none;
+  background:var(--paper);padding:9px clamp(14px,4.4vw,24px);border-radius:999px;box-shadow:0 6px 18px var(--shadow);
+  transform:rotate(-2deg);transition:transform .25s;max-width:calc(100vw - 128px);overflow:hidden;text-overflow:ellipsis}
+.mark:hover{transform:rotate(1deg) scale(1.05)}
+.top-actions{display:flex;gap:10px;align-items:center}
+.round{width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;background:var(--paper);color:var(--ink);font-size:1.25rem;
+  box-shadow:0 6px 18px var(--shadow);display:grid;place-items:center;transition:transform .25s}
+.round:hover{transform:scale(1.1) rotate(-6deg)}
+.burger{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.burger span{display:block;width:20px;height:2.5px;border-radius:2px;background:var(--ink)}
+
+/* ---------- drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(40,12,50,.45);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .35s;z-index:40}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(86vw,340px);z-index:50;background:var(--paper);
+  padding:max(22px,env(safe-area-inset-top)) 26px 30px;transform:translateX(105%);
+  transition:transform .45s cubic-bezier(.2,.9,.3,1.1);border-radius:34px 0 0 34px;box-shadow:-14px 0 50px var(--shadow);
+  display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.drawer.open{transform:none}
+.drawer h3{font-family:var(--hand);font-weight:400;font-size:1.5rem;margin:16px 0 4px}
+.drawer p.small{color:var(--ink-soft);font-size:.92rem;line-height:1.5;margin-bottom:8px}
+.d-link{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:22px;text-decoration:none;color:#3a1d3b;
+  font-family:var(--hand);font-size:1.15rem;transition:transform .25s,box-shadow .25s}
+.d-link:hover{transform:translateX(-6px) rotate(-1deg);box-shadow:0 10px 24px var(--shadow)}
+.d-link .e{font-size:1.5rem}
+.d-home{background:var(--mint);color:#173a2c}
+.d-about{background:var(--saffron)}
+.d-quiz{background:var(--coral)}
+.d-close{align-self:flex-end}
+.drawer .foot{margin-top:auto;font-family:var(--hand);color:var(--ink-soft);font-size:.9rem}
+
+/* ---------- layout ---------- */
+main{position:relative;z-index:2;max-width:1060px;margin:0 auto;padding:0 20px 40px}
+.hero{padding:88px 0 6px;position:relative}
+.hi{font-family:var(--hand);font-size:clamp(1.8rem,8vw,3.4rem);line-height:1.2}
+.hi .wave{display:inline-block;animation:wave 2.4s ease-in-out infinite;transform-origin:70% 70%}
+@keyframes wave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(16deg)}20%,40%{transform:rotate(-8deg)}}
+.pill{font-family:var(--hand);font-size:clamp(1.1rem,4.6vw,2rem);background:var(--saffron);color:#3a1d3b;
+  padding:6px 22px;border-radius:999px;box-shadow:0 6px 16px var(--shadow);display:inline-block;transform:rotate(-1.5deg);margin-top:12px}
+.lede{margin-top:14px;max-width:36rem;font-size:clamp(1rem,2.8vw,1.2rem);line-height:1.65}
+.chalk{position:absolute;right:2%;bottom:0;font-family:var(--hand);font-size:3rem;opacity:.9;transform:rotate(8deg);letter-spacing:.1em}
+
+/* search */
+.search{margin:26px 0 6px;max-width:520px}
+.search input{
+  width:100%;padding:14px 22px;border-radius:999px;border:2.5px dashed var(--coral);background:transparent;color:var(--ink);
+  font-family:var(--hand);font-size:1.1rem;outline:none;
+}
+.search input::placeholder{color:var(--ink-soft);opacity:.85}
+.search input:focus{border-style:solid;box-shadow:0 0 0 5px rgba(255,127,107,.25)}
+
+.section-title{font-family:var(--hand);font-weight:400;font-size:clamp(1.5rem,4vw,2.2rem);margin:26px 0 4px}
+.section-sub{color:var(--ink-soft);margin-bottom:26px;line-height:1.6}
+
+/* ---------- wall of notes ---------- */
+.wall{display:grid;grid-template-columns:repeat(2,1fr);gap:34px 30px;padding:10px 0 30px}
+.note{position:relative;opacity:0;transform:translateY(30px) rotate(var(--r,0deg));transition:opacity .7s,transform .7s}
+.note.in{opacity:1;transform:rotate(var(--r,0deg))}
+.note a{display:block;text-decoration:none;color:var(--ink);height:100%;padding:34px 26px 28px;border-radius:6px 28px 8px 30px;
+  box-shadow:0 14px 30px var(--shadow);transition:transform .3s cubic-bezier(.2,.9,.3,1.3),box-shadow .3s}
+.note a:hover{transform:rotate(calc(var(--r,0deg) * -1)) scale(1.04) translateY(-6px);box-shadow:0 24px 44px var(--shadow)}
+.note::before{content:"";position:absolute;top:-12px;left:50%;width:84px;height:26px;margin-left:-42px;
+  background:rgba(255,255,255,.55);border:1px dashed rgba(60,30,60,.18);transform:rotate(-3deg);z-index:2}
+.note:nth-child(1){--r:-2.2deg} .note:nth-child(1) a{background:#8a5a14}
+.note:nth-child(2){--r:1.8deg;margin-top:26px} .note:nth-child(2) a{background:var(--blush)}
+.note:nth-child(3){--r:1.4deg} .note:nth-child(3) a{background:var(--mint)}
+.note:nth-child(4){--r:-1.6deg;margin-top:26px} .note:nth-child(4) a{background:var(--lilac)}
+.note .ico{font-size:2.6rem;display:inline-block;transition:transform .4s}
+.note a:hover .ico{transform:rotate(14deg) scale(1.2)}
+.note h3{font-family:var(--hand);font-weight:400;font-size:1.35rem;line-height:1.3;margin:12px 0 8px}
+.note p{line-height:1.6;font-size:.98rem;opacity:.9}
+.note .go{display:inline-block;margin-top:14px;font-family:var(--hand);border-bottom:2px dotted currentColor}
+.badge{position:absolute;top:-14px;right:-8px;z-index:3;background:var(--coral);color:#fff;font-family:var(--hand);font-size:.8rem;
+  padding:6px 12px;border-radius:999px;box-shadow:0 6px 14px var(--shadow);animation:wiggle 2.4s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-4deg) scale(1.08)}}
+.empty{display:none;text-align:center;font-family:var(--hand);font-size:1.2rem;padding:30px 10px;color:var(--ink-soft)}
+
+/* ---------- tip jar ---------- */
+.jar{margin:20px auto;max-width:640px;text-align:center;padding:30px 24px;background:var(--paper);
+  border-radius:46px 20px 46px 20px;box-shadow:0 18px 40px var(--shadow);transform:rotate(-.8deg)}
+.jar h2{font-family:var(--hand);font-weight:400;font-size:1.4rem;margin-bottom:8px}
+.jar p{font-family:var(--serif);font-style:italic;font-size:clamp(1.05rem,3.2vw,1.3rem);line-height:1.55}
+
+footer{position:relative;z-index:2;text-align:center;padding:50px 20px 70px;font-family:var(--hand);color:var(--ink-soft);line-height:1.8}
+footer .hearts{font-size:1.4rem;letter-spacing:.4em}
+footer a{color:inherit}
+
+@media (max-width:720px){
+  .wall{grid-template-columns:1fr;gap:34px}
+  .note:nth-child(n){margin-top:0}
+  .chalk{display:none}
+  .round{width:42px;height:42px}
+  .top{padding-left:12px;padding-right:12px}
+  main{padding-left:16px;padding-right:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.note{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div class="sky" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="stars" id="stars"></div>
+  <div class="sun"></div>
+</div>
+
+<header class="top">
+  <a class="mark" href="index.html">Majid Murshadpuri ✿</a>
+  <div class="top-actions">
+    <button class="round burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <button class="round d-close" id="drawerClose" type="button" aria-label="Close menu">✕</button>
+  <h3>Come on in 🚪</h3>
+  <p class="small">Maths, at your own pace. Pick a door.</p>
+  <a class="d-link d-home" href="index.html"><span class="e">🏡</span> Back to Home</a>
+  <a class="d-link d-quiz" href="6thMathQuizHome.html"><span class="e">🎯</span> Class 6 Quiz</a>
+  <a class="d-link d-about" href="MyResume.html"><span class="e">🌻</span> About Me</a>
+  <div class="foot">made with chai &amp; curiosity ☕</div>
+</aside>
+
+<main>
+  <section class="hero">
+    <p class="hi">Dear students <span class="wave">👋</span></p>
+    <span class="pill">Maths Practice Library</span>
+    <p class="lede">
+      Interactive SA I practice papers and quizzes for Class 6, 7 &amp; 8.
+      No rush, no pressure — learn Mathematics at your own pace, and come back whenever you like.
+    </p>
+    <div class="chalk" aria-hidden="true">+ − × ÷</div>
+  </section>
+
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="🔍 Search · کھوجیں · ढूंढें" aria-label="Search Maths practice papers" autocomplete="off" />
+  </div>
+
+  <h2 class="section-title">Pinned on my board</h2>
+  <p class="section-sub">Pick any note. Nothing here is in a hurry.</p>
+
+  <div class="wall" id="toolsGrid">
+
+    <div class="note">
+      <span class="badge">quiz ✨</span>
+      <a href="6thMathQuizHome.html">
+        <div class="ico">🎯</div>
+        <h3>Class 6 · Math Quiz</h3>
+        <p>Test your skills and track your progress!</p>
+        <span class="go">open this one →</span>
+      </a>
+    </div>
+
+    <div class="note">
+      <a href="6th Math SA I Practice.html">
+        <div class="ico">6️⃣</div>
+        <h3>Class 6 · SA I · Maths Practice</h3>
+        <p>Dear Students! Learn Mathematics at your own pace.</p>
+        <span class="go">open this one →</span>
+      </a>
+    </div>
+
+    <div class="note">
+      <a href="7th Math SA I Practice.html">
+        <div class="ico">7️⃣</div>
+        <h3>Class 7 · SA I · Maths Practice</h3>
+        <p>Dear Students! Learn Mathematics at your own pace.</p>
+        <span class="go">open this one →</span>
+      </a>
+    </div>
+
+    <div class="note">
+      <a href="8th Math SA I Practice.html">
+        <div class="ico">8️⃣</div>
+        <h3>Class 8 · SA I · Maths Practice</h3>
+        <p>Dear Students! Learn Mathematics at your own pace.</p>
+        <span class="go">open this one →</span>
+      </a>
+    </div>
+
+  </div>
+  <p class="empty" id="empty">Nothing found — try another word. ☕</p>
+
+  <section class="jar">
+    <h2>🫙 A small thought</h2>
+    <p>Every equation is a small story with a satisfying ending.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="hearts">✿ ☕ ✿</div>
+  no rules here · just a home for words, numbers &amp; code<br>
+  <small>Majid Murshadpuri · Hapur, Uttar Pradesh · <a href="index.html">Home</a></small>
+</footer>
+
+<script>
+(function(){
+  /* stars */
+  var st=document.getElementById('stars');
+  for(var i=0;i<60;i++){
+    var s=document.createElement('i');
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*70+'%';
+    s.style.animationDelay=(Math.random()*3)+'s';
+    s.style.transform='scale('+(0.6+Math.random()*1.2)+')';
+    st.appendChild(s);
+  }
+
+  /* drawer */
+  var burger=document.getElementById('burger'),drawer=document.getElementById('drawer'),
+      scrim=document.getElementById('scrim'),dclose=document.getElementById('drawerClose');
+  function openD(){drawer.classList.add('open');scrim.classList.add('open');drawer.setAttribute('aria-hidden','false');
+    burger.setAttribute('aria-expanded','true');document.body.classList.add('no-scroll')}
+  function closeD(){drawer.classList.remove('open');scrim.classList.remove('open');drawer.setAttribute('aria-hidden','true');
+    burger.setAttribute('aria-expanded','false');document.body.classList.remove('no-scroll')}
+  burger.addEventListener('click',openD);dclose.addEventListener('click',closeD);scrim.addEventListener('click',closeD);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeD()});
+
+  /* reveal on scroll */
+  var cards=Array.prototype.slice.call(document.querySelectorAll('.note'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+    },{threshold:.15});
+    cards.forEach(function(c){io.observe(c)});
+  }else{cards.forEach(function(c){c.classList.add('in')})}
+
+  /* live search */
+  var input=document.getElementById('searchInput'),empty=document.getElementById('empty');
+  input.addEventListener('input',function(){
+    var q=input.value.toLowerCase().trim(),shown=0;
+    cards.forEach(function(c){
+      var ok=!q||c.textContent.toLowerCase().indexOf(q)>-1;
+      c.style.display=ok?'':'none';
+      if(ok){shown++;c.classList.add('in')}
+    });
+    empty.style.display=shown?'none':'block';
+  });
+})();
+</script>
+</body>
+</html>
