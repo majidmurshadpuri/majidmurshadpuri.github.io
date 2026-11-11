@@ -120,6 +120,100 @@
       "maxNumber": 99,
       "hasExpression": true,
       "options": { "count": 4 }
-    }
+    },
+    {
+  "id": 11,
+  "title": "Simplifying Fractions (2×2 Expression)",
+  "type": "fraction",
+  "questionCount": 5,
+  "uniqueness": "no-reused-numbers",
+  "primes": [2, 3, 5],
+  "minNumber": 10,
+  "maxNumber": 99,
+  "hasExpression": true,
+  "expressionMode": "both",
+  "options": { "count": 4 }
+},
+{
+  "id": 12,
+  "title": "Simplifying Fractions (3×3 Expression)",
+  "type": "fraction",
+  "questionCount": 5,
+  "uniqueness": "no-reused-numbers",
+  "primes": [2, 3, 5],
+  "minNumber": 100,
+  "maxNumber": 999,
+  "hasExpression": true,
+  "expressionMode": "both",
+  "options": { "count": 4 }
+},
+{
+  "id": 13,
+  "title": "Multiplication of Fractions (1-Digit)",
+  "type": "fraction-op",
+  "questionCount": 5,
+  "operator": "×",
+  "numbersType": "1-digit",
+  "options": { "count": 4 }
+},
+{
+  "id": 14,
+  "title": "Division of Fractions (1-Digit)",
+  "type": "fraction-op",
+  "questionCount": 5,
+  "operator": "÷",
+  "numbersType": "1-digit",
+  "options": { "count": 4 }
+},
+{
+  "id": 15,
+  "title": "Multiplying Fraction and Whole Number",
+  "type": "fraction-whole",
+  "questionCount": 5,
+  "operator": "×",
+  "options": { "count": 4 }
+},
+{
+  "id": 16,
+  "title": "Dividing Fraction and Whole Number",
+  "type": "fraction-whole",
+  "questionCount": 5,
+  "operator": "÷",
+  "options": { "count": 4 }
+},
+{
+  "id": 17,
+  "title": "Multiplication of Fractions (2-Digit)",
+  "type": "fraction-op",
+  "questionCount": 5,
+  "operator": "×",
+  "numbersType": "2-digit",
+  "options": { "count": 4 }
+},
+{
+  "id": 18,
+  "title": "Division of Fractions (2-Digit)",
+  "type": "fraction-op",
+  "questionCount": 5,
+  "operator": "÷",
+  "numbersType": "2-digit",
+  "options": { "count": 4 }
+},
+{
+  "id": 19,
+  "title": "Same-Denominator Fractions (1-Digit)",
+  "type": "fraction-add-sub",
+  "questionCount": 5,
+  "numbersType": "1-digit",
+  "options": { "count": 4 }
+},
+{
+  "id": 20,
+  "title": "Same-Denominator Fractions (1-2 Digit)",
+  "type": "fraction-add-sub",
+  "questionCount": 5,
+  "numbersType": "1-2-digit",
+  "options": { "count": 4 }
+}
   ]
 }
