@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Math Quiz</title>
 
+<!-- Updated paths to match your folder structure -->
 <link rel="stylesheet" href="quiz-engine.css">
 
 <style>
@@ -262,6 +263,7 @@
   </div>
 </div>
 
+<!-- Updated JS path -->
 <script src="quiz-engine.js"></script>
 <script>
 (function () {
@@ -286,15 +288,11 @@
   const nextLevelWrapper       = document.getElementById('nextLevelWrapper');
   const nextLevelBtn           = document.getElementById('nextLevelBtn');
 
-  // If a class starts at a specific level, define it here.
-  // E.g. a Class 7 student begins at Level 7. Adjust freely.
-  const CLASS_STARTING_LEVEL = { "5": 1, "6": 4, "7": 7, "8": 10 };
-
   let studentsList = [];
   let activeStudentId = null;
   let activeStudent = null;
-  let progress = null;            // { currentLevel, completedLevels: {} }
-  let levelsCache = null;         // array of all levels from levels.json
+  let progress = null;
+  let levelsCache = null;
   let controller = null;
 
   function loadJSON(key) {
@@ -308,72 +306,31 @@
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  // ---------- Embedded fallback (mirror of config/levels.json) ----------
+  // Fallback matches the single-level JSON exactly
   const EMBEDDED_LEVELS = {
     "levels": [
-      { "id": 1, "title": "Times Tables · 2–9", "operator": "×",
-        "operandA": { "digits": 1, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "operandB": { "digits": 1, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-5,5], "fallbackRange": [-15,15] } },
-      { "id": 2, "title": "2-Digit × 1-Digit", "operator": "×",
-        "operandA": { "digits": 2, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "operandB": { "digits": 1, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-10,10], "fallbackRange": [-50,50] } },
-      { "id": 3, "title": "2-Digit + 2-Digit", "operator": "+",
-        "operandA": { "digits": 2, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "operandB": { "digits": 2, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.4, "perturbRange": [-10,10], "fallbackRange": [-30,30] } },
-      { "id": 4, "title": "3-Digit × 3-Digit · Digits 6–9", "operator": "×",
+      {
+        "id": 1,
+        "title": "3‑Digit Multiplication · Digits 6–9",
+        "operator": "×",
         "operandA": { "digits": 3, "allowedDigits": [6,7,8,9], "distinctDigits": true },
         "operandB": { "digits": 3, "allowedDigits": [6,7,8,9], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-100,100], "fallbackRange": [-1000,1000] } },
-      { "id": 5, "title": "2-Digit × 3-Digit · Digits 4–9", "operator": "×",
-        "operandA": { "digits": 2, "allowedDigits": [4,5,6,7,8,9], "distinctDigits": true },
-        "operandB": { "digits": 3, "allowedDigits": [4,5,6,7,8,9], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-50,50], "fallbackRange": [-500,500] } },
-      { "id": 6, "title": "3-Digit × 2-Digit · Mixed Digits", "operator": "×",
-        "operandA": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "operandB": { "digits": 2, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.25, "perturbRange": [-100,100], "fallbackRange": [-1000,1000] } },
-      { "id": 7, "title": "3-Digit × 3-Digit · Full Range", "operator": "×",
-        "operandA": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "operandB": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-200,200], "fallbackRange": [-2000,2000] } },
-      { "id": 8, "title": "4-Digit × 2-Digit", "operator": "×",
-        "operandA": { "digits": 4, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "operandB": { "digits": 2, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-500,500], "fallbackRange": [-5000,5000] } },
-      { "id": 9, "title": "3-Digit − 3-Digit", "operator": "-",
-        "operandA": { "digits": 3, "allowedDigits": [3,4,5,6,7,8,9], "distinctDigits": true },
-        "operandB": { "digits": 3, "allowedDigits": [1,2,3,4,5,6,7,8], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.4, "perturbRange": [-100,100], "fallbackRange": [-500,500] } },
-      { "id": 10, "title": "4-Digit × 3-Digit", "operator": "×",
-        "operandA": { "digits": 4, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "operandB": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
-        "questionCount": 5, "uniqueness": "no-reused-numbers",
-        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-500,500], "fallbackRange": [-5000,5000] } }
+        "questionCount": 5,
+        "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-100,100], "fallbackRange": [-1000,1000] }
+      }
     ]
   };
 
-  // ---------- Load all levels (fetched once, cached) ----------
   async function loadAllLevels() {
     if (levelsCache) return levelsCache;
 
     try {
-      const res = await fetch('config/levels.json', { cache: 'no-store' });
+      const res = await fetch('quiz-levels.json', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         const list = Array.isArray(data) ? data : data.levels;
-        if (Array.isArray(list)) {
+        if (Array.isArray(list) && list.length > 0) {
           levelsCache = list;
           return levelsCache;
         }
@@ -392,7 +349,6 @@
     return list.find(l => l.id > id) || null;
   }
 
-  // ---------- Progress ----------
   function getProgressKey() { return PROGRESS_KEY_PREFIX + activeStudentId; }
 
   function defaultProgress() {
@@ -408,7 +364,6 @@
   }
   function saveProgress() { saveJSON(getProgressKey(), progress); }
 
-  // ---------- Screens ----------
   function hideAllScreens() {
     studentSelectionScreen.classList.add('hide');
     addStudentFormOverlay.classList.add('hide');
@@ -452,7 +407,6 @@
   async function loginStudent(student) {
     activeStudent = student;
 
-    // Ensure levels are loaded before touching progress
     try { await loadAllLevels(); }
     catch (e) {
       alert('Could not load levels.json.');
@@ -461,10 +415,8 @@
 
     loadProgress();
 
-    // First time this student logs in? Start at the level matching their class.
     if (!progress.currentLevel || !findLevel(progress.currentLevel)) {
-      const startingLevel = CLASS_STARTING_LEVEL[student.class] || 1;
-      progress.currentLevel = startingLevel;
+      progress.currentLevel = 1;
       saveProgress();
     }
 
@@ -491,7 +443,6 @@
 
     const levelCfg = findLevel(levelId);
     if (!levelCfg) {
-      // Ran off the end — gracefully stop at the last known level.
       const all = levelsCache || [];
       if (all.length === 0) { alert('No levels found.'); return; }
       const fallback = all[all.length - 1];
@@ -513,7 +464,6 @@
         if (score === total) {
           progress.completedLevels[levelId] = total;
           saveProgress();
-          // Only show the Next button if there actually *is* a next level
           if (findNextLevel(levelId)) showNextLevelButton();
           else hideNextLevelButton();
         } else {
@@ -527,7 +477,6 @@
     });
   }
 
-  // ---------- Event listeners ----------
   switchStudentBtn.addEventListener('click', showStudentSelection);
   showAddFormBtn.addEventListener('click', showAddStudentForm);
   cancelAddStudentBtn.addEventListener('click', showStudentSelection);
@@ -551,7 +500,6 @@
     if (next) openLevel(next.id);
   });
 
-  // ---------- Init ----------
   async function init() {
     const savedList = loadJSON(STUDENTS_LIST_KEY);
     studentsList = Array.isArray(savedList) ? savedList : [];
