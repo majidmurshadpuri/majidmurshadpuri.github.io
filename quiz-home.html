@@ -1,11 +1,12 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Math Quiz</title>
 
-<!-- Updated paths to match your folder structure -->
+<!-- Quiz engine stylesheet -->
 <link rel="stylesheet" href="quiz-engine.css">
 
 <style>
@@ -263,7 +264,6 @@
   </div>
 </div>
 
-<!-- Updated JS path -->
 <script src="quiz-engine.js"></script>
 <script>
 (function () {
@@ -306,7 +306,6 @@
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  // Fallback matches the single-level JSON exactly
   const EMBEDDED_LEVELS = {
     "levels": [
       {
@@ -460,6 +459,7 @@
     controller = QuizEngine.mount({
       levelConfig: levelCfg,
       hostEl: levelHost,
+      studentData: activeStudent,
       onFinished: (score, total) => {
         if (score === total) {
           progress.completedLevels[levelId] = total;
