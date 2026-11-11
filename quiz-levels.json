@@ -1,0 +1,104 @@
+{
+  "levels": [
+    {
+      "id": 1,
+      "title": "Times Tables · 2–9",
+      "operator": "×",
+      "operandA": { "digits": 1, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 1, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-5,5], "fallbackRange": [-15,15] }
+    },
+    {
+      "id": 2,
+      "title": "2-Digit × 1-Digit",
+      "operator": "×",
+      "operandA": { "digits": 2, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 1, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-10,10], "fallbackRange": [-50,50] }
+    },
+    {
+      "id": 3,
+      "title": "2-Digit + 2-Digit",
+      "operator": "+",
+      "operandA": { "digits": 2, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 2, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.4, "perturbRange": [-10,10], "fallbackRange": [-30,30] }
+    },
+    {
+      "id": 4,
+      "title": "3-Digit × 3-Digit · Digits 6–9",
+      "operator": "×",
+      "operandA": { "digits": 3, "allowedDigits": [6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 3, "allowedDigits": [6,7,8,9], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-100,100], "fallbackRange": [-1000,1000] }
+    },
+    {
+      "id": 5,
+      "title": "2-Digit × 3-Digit · Digits 4–9",
+      "operator": "×",
+      "operandA": { "digits": 2, "allowedDigits": [4,5,6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 3, "allowedDigits": [4,5,6,7,8,9], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-50,50], "fallbackRange": [-500,500] }
+    },
+    {
+      "id": 6,
+      "title": "3-Digit × 2-Digit · Mixed Digits",
+      "operator": "×",
+      "operandA": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 2, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.25, "perturbRange": [-100,100], "fallbackRange": [-1000,1000] }
+    },
+    {
+      "id": 7,
+      "title": "3-Digit × 3-Digit · Full Range",
+      "operator": "×",
+      "operandA": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-200,200], "fallbackRange": [-2000,2000] }
+    },
+    {
+      "id": 8,
+      "title": "4-Digit × 2-Digit",
+      "operator": "×",
+      "operandA": { "digits": 4, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 2, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-500,500], "fallbackRange": [-5000,5000] }
+    },
+    {
+      "id": 9,
+      "title": "3-Digit − 3-Digit",
+      "operator": "-",
+      "operandA": { "digits": 3, "allowedDigits": [3,4,5,6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 3, "allowedDigits": [1,2,3,4,5,6,7,8], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.4, "perturbRange": [-100,100], "fallbackRange": [-500,500] }
+    },
+    {
+      "id": 10,
+      "title": "4-Digit × 3-Digit",
+      "operator": "×",
+      "operandA": { "digits": 4, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "operandB": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+      "questionCount": 5,
+      "uniqueness": "no-reused-numbers",
+      "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-500,500], "fallbackRange": [-5000,5000] }
+    }
+  ]
+}

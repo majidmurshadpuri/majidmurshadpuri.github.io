@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Quiz</title>
+
+<link rel="stylesheet" href="engine/quiz-engine.css">
+
+<style>
+  :root {
+    --green: #123c35;
+    --green2: #1d5b4e;
+    --ink: #172b27;
+    --muted: #66736e;
+    --card-bg: #ffffff;
+    --border-light: #e5e5d9;
+  }
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: linear-gradient(145deg, #e9f0e9, #f8f4e9);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 22px 16px 44px;
+  }
+
+  .main-wrapper {
+    width: 100%;
+    max-width: 860px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+  }
+
+  .page-header {
+    text-align: center;
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 16px;
+    position: relative;
+  }
+  .page-header h1 {
+    font-size: clamp(24px, 5vw, 32px);
+    margin: 0 0 10px 0;
+    color: var(--ink);
+  }
+  .student-info {
+    font-size: 16px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .student-info strong { color: var(--green); font-weight: 700; }
+
+  .switch-student-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: transparent;
+    border: 1px solid var(--muted);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .switch-student-btn:hover { background: var(--muted); color: #fff; }
+
+  .form-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    width: 100%;
+  }
+  .student-form {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 40px 32px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 15px 35px rgba(23, 43, 39, 0.08);
+    text-align: center;
+  }
+  .student-form h2 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    color: var(--green);
+  }
+  .student-form p {
+    color: var(--muted);
+    margin: 0 0 28px 0;
+    font-size: 15px;
+  }
+  .form-group { text-align: left; margin-bottom: 20px; }
+  .form-group label {
+    display: block;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e6e9e1;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--ink);
+    transition: border 0.15s;
+  }
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--green2);
+    box-shadow: 0 0 0 3px rgba(29, 91, 78, 0.12);
+  }
+
+  .btn {
+    background: #fff;
+    border: 2px solid #e6e9e1;
+    color: var(--green);
+    font-weight: 800;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+    box-shadow: 0 10px 18px -8px rgba(27, 78, 100, 0.44);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--green2);
+    border-color: var(--green2);
+    transform: scale(1.02);
+  }
+  .btn-full { width: 100%; }
+  .btn-secondary {
+    background: #f0f4ed;
+    border-color: #d0d9d3;
+    color: var(--green);
+  }
+  .btn-secondary:hover { background: #e2e9e4; }
+
+  .hide { display: none !important; }
+
+  .student-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .student-list-item {
+    background: #f8faf7;
+    border: 1px solid var(--border-light);
+    padding: 14px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.15s;
+  }
+  .student-list-item:hover {
+    background: #edf2ee;
+    border-color: var(--green2);
+  }
+  .student-list-item .class-tag {
+    font-size: 13px;
+    color: var(--muted);
+    background: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border-light);
+  }
+
+  .level-host { width: 100%; }
+
+  .next-level-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    padding-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="main-wrapper">
+
+  <div id="studentSelectionScreen" class="form-overlay hide">
+    <div class="student-form">
+      <h2>👥 Select Student</h2>
+      <p>Choose your profile or add a new one.</p>
+      <div id="studentListContainer" class="student-list"></div>
+      <button class="btn btn-primary btn-full" id="showAddFormBtn" style="margin-bottom:12px;">
+        ➕ Add New Student
+      </button>
+    </div>
+  </div>
+
+  <div id="addStudentFormOverlay" class="form-overlay hide">
+    <div class="student-form">
+      <h2>📋 New Student Details</h2>
+      <p>Enter your name and class to begin the quiz.</p>
+      <div class="form-group">
+        <label for="studentNameInput">Full name</label>
+        <input type="text" id="studentNameInput" placeholder="e.g. Aarav Sharma" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="studentClassSelect">Class</label>
+        <select id="studentClassSelect">
+          <option value="" disabled selected>Select your class</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" id="saveNewStudentBtn">🚀 Save & Start Quiz</button>
+      <button class="btn btn-secondary btn-full hide" id="cancelAddStudentBtn" style="margin-top:10px;">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <div id="quizArea" class="hide">
+    <div class="page-header">
+      <button class="switch-student-btn" id="switchStudentBtn">Switch Student</button>
+      <h1>Math Quiz</h1>
+      <div class="student-info" id="studentInfoText"></div>
+    </div>
+
+    <div id="levelHost" class="level-host"></div>
+
+    <div class="next-level-wrapper hide" id="nextLevelWrapper">
+      <button class="btn btn-primary" id="nextLevelBtn">🚀 Move to next level</button>
+    </div>
+  </div>
+</div>
+
+<script src="engine/quiz-engine.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const STUDENTS_LIST_KEY   = 'math_quiz_students_list_v1';
+  const ACTIVE_STUDENT_KEY  = 'math_quiz_active_student_id_v1';
+  const PROGRESS_KEY_PREFIX = 'math_quiz_progress_v3_';
+
+  const studentSelectionScreen = document.getElementById('studentSelectionScreen');
+  const studentListContainer   = document.getElementById('studentListContainer');
+  const showAddFormBtn         = document.getElementById('showAddFormBtn');
+  const addStudentFormOverlay  = document.getElementById('addStudentFormOverlay');
+  const studentNameInput       = document.getElementById('studentNameInput');
+  const studentClassSelect     = document.getElementById('studentClassSelect');
+  const saveNewStudentBtn      = document.getElementById('saveNewStudentBtn');
+  const cancelAddStudentBtn    = document.getElementById('cancelAddStudentBtn');
+  const quizArea               = document.getElementById('quizArea');
+  const studentInfoText        = document.getElementById('studentInfoText');
+  const switchStudentBtn       = document.getElementById('switchStudentBtn');
+  const levelHost              = document.getElementById('levelHost');
+  const nextLevelWrapper       = document.getElementById('nextLevelWrapper');
+  const nextLevelBtn           = document.getElementById('nextLevelBtn');
+
+  // If a class starts at a specific level, define it here.
+  // E.g. a Class 7 student begins at Level 7. Adjust freely.
+  const CLASS_STARTING_LEVEL = { "5": 1, "6": 4, "7": 7, "8": 10 };
+
+  let studentsList = [];
+  let activeStudentId = null;
+  let activeStudent = null;
+  let progress = null;            // { currentLevel, completedLevels: {} }
+  let levelsCache = null;         // array of all levels from levels.json
+  let controller = null;
+
+  function loadJSON(key) {
+    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; }
+    catch (e) { return null; }
+  }
+  function saveJSON(key, obj) {
+    try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {}
+  }
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+
+  // ---------- Embedded fallback (mirror of config/levels.json) ----------
+  const EMBEDDED_LEVELS = {
+    "levels": [
+      { "id": 1, "title": "Times Tables · 2–9", "operator": "×",
+        "operandA": { "digits": 1, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 1, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-5,5], "fallbackRange": [-15,15] } },
+      { "id": 2, "title": "2-Digit × 1-Digit", "operator": "×",
+        "operandA": { "digits": 2, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 1, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-10,10], "fallbackRange": [-50,50] } },
+      { "id": 3, "title": "2-Digit + 2-Digit", "operator": "+",
+        "operandA": { "digits": 2, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 2, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.4, "perturbRange": [-10,10], "fallbackRange": [-30,30] } },
+      { "id": 4, "title": "3-Digit × 3-Digit · Digits 6–9", "operator": "×",
+        "operandA": { "digits": 3, "allowedDigits": [6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 3, "allowedDigits": [6,7,8,9], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-100,100], "fallbackRange": [-1000,1000] } },
+      { "id": 5, "title": "2-Digit × 3-Digit · Digits 4–9", "operator": "×",
+        "operandA": { "digits": 2, "allowedDigits": [4,5,6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 3, "allowedDigits": [4,5,6,7,8,9], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-50,50], "fallbackRange": [-500,500] } },
+      { "id": 6, "title": "3-Digit × 2-Digit · Mixed Digits", "operator": "×",
+        "operandA": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 2, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.25, "perturbRange": [-100,100], "fallbackRange": [-1000,1000] } },
+      { "id": 7, "title": "3-Digit × 3-Digit · Full Range", "operator": "×",
+        "operandA": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-200,200], "fallbackRange": [-2000,2000] } },
+      { "id": 8, "title": "4-Digit × 2-Digit", "operator": "×",
+        "operandA": { "digits": 4, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 2, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-500,500], "fallbackRange": [-5000,5000] } },
+      { "id": 9, "title": "3-Digit − 3-Digit", "operator": "-",
+        "operandA": { "digits": 3, "allowedDigits": [3,4,5,6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 3, "allowedDigits": [1,2,3,4,5,6,7,8], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.4, "perturbRange": [-100,100], "fallbackRange": [-500,500] } },
+      { "id": 10, "title": "4-Digit × 3-Digit", "operator": "×",
+        "operandA": { "digits": 4, "allowedDigits": [1,2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "operandB": { "digits": 3, "allowedDigits": [2,3,4,5,6,7,8,9], "distinctDigits": true },
+        "questionCount": 5, "uniqueness": "no-reused-numbers",
+        "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-500,500], "fallbackRange": [-5000,5000] } }
+    ]
+  };
+
+  // ---------- Load all levels (fetched once, cached) ----------
+  async function loadAllLevels() {
+    if (levelsCache) return levelsCache;
+
+    try {
+      const res = await fetch('config/levels.json', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : data.levels;
+        if (Array.isArray(list)) {
+          levelsCache = list;
+          return levelsCache;
+        }
+      }
+    } catch (e) { /* fall through */ }
+
+    levelsCache = EMBEDDED_LEVELS.levels;
+    return levelsCache;
+  }
+
+  function findLevel(id) {
+    return (levelsCache || []).find(l => l.id === id) || null;
+  }
+  function findNextLevel(id) {
+    const list = levelsCache || [];
+    return list.find(l => l.id > id) || null;
+  }
+
+  // ---------- Progress ----------
+  function getProgressKey() { return PROGRESS_KEY_PREFIX + activeStudentId; }
+
+  function defaultProgress() {
+    return { currentLevel: 1, completedLevels: {} };
+  }
+
+  function loadProgress() {
+    const saved = loadJSON(getProgressKey());
+    progress = saved && typeof saved === 'object'
+      ? { ...defaultProgress(), ...saved }
+      : defaultProgress();
+    if (!progress.completedLevels) progress.completedLevels = {};
+  }
+  function saveProgress() { saveJSON(getProgressKey(), progress); }
+
+  // ---------- Screens ----------
+  function hideAllScreens() {
+    studentSelectionScreen.classList.add('hide');
+    addStudentFormOverlay.classList.add('hide');
+    quizArea.classList.add('hide');
+    nextLevelWrapper.classList.add('hide');
+  }
+
+  function showStudentSelection() {
+    hideAllScreens();
+    studentSelectionScreen.classList.remove('hide');
+    studentListContainer.innerHTML = '';
+    if (studentsList.length === 0) {
+      studentListContainer.innerHTML =
+        '<p style="text-align:center;color:var(--muted);">No students found. Add a new one below!</p>';
+    } else {
+      studentsList.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'student-list-item';
+        div.innerHTML =
+          `<span>👤 ${s.name}</span><span class="class-tag">Class ${s.class}</span>`;
+        div.addEventListener('click', () => {
+          activeStudentId = s.id;
+          saveJSON(ACTIVE_STUDENT_KEY, activeStudentId);
+          loginStudent(s);
+        });
+        studentListContainer.appendChild(div);
+      });
+    }
+    if (studentsList.length === 0) cancelAddStudentBtn.classList.add('hide');
+  }
+
+  function showAddStudentForm() {
+    hideAllScreens();
+    addStudentFormOverlay.classList.remove('hide');
+    studentNameInput.value = '';
+    studentClassSelect.value = '';
+    if (studentsList.length > 0) cancelAddStudentBtn.classList.remove('hide');
+    else cancelAddStudentBtn.classList.add('hide');
+  }
+
+  async function loginStudent(student) {
+    activeStudent = student;
+
+    // Ensure levels are loaded before touching progress
+    try { await loadAllLevels(); }
+    catch (e) {
+      alert('Could not load levels.json.');
+      return;
+    }
+
+    loadProgress();
+
+    // First time this student logs in? Start at the level matching their class.
+    if (!progress.currentLevel || !findLevel(progress.currentLevel)) {
+      const startingLevel = CLASS_STARTING_LEVEL[student.class] || 1;
+      progress.currentLevel = startingLevel;
+      saveProgress();
+    }
+
+    hideAllScreens();
+    quizArea.classList.remove('hide');
+    updateHeaderText();
+    openLevel(progress.currentLevel);
+  }
+
+  function updateHeaderText() {
+    if (!activeStudent || !progress) return;
+    const lvl = progress.currentLevel || 1;
+    const lvlCfg = findLevel(lvl);
+    const lvlTitle = lvlCfg ? ` — ${lvlCfg.title}` : '';
+    studentInfoText.innerHTML =
+      `<strong>${activeStudent.name}</strong> (Class ${activeStudent.class}) — Level ${lvl}${lvlTitle}`;
+  }
+
+  function hideNextLevelButton() { nextLevelWrapper.classList.add('hide'); }
+  function showNextLevelButton() { nextLevelWrapper.classList.remove('hide'); }
+
+  function openLevel(levelId) {
+    if (controller) { try { controller.destroy(); } catch (e) {} controller = null; }
+
+    const levelCfg = findLevel(levelId);
+    if (!levelCfg) {
+      // Ran off the end — gracefully stop at the last known level.
+      const all = levelsCache || [];
+      if (all.length === 0) { alert('No levels found.'); return; }
+      const fallback = all[all.length - 1];
+      progress.currentLevel = fallback.id;
+      saveProgress();
+      updateHeaderText();
+      return openLevel(fallback.id);
+    }
+
+    progress.currentLevel = levelCfg.id;
+    saveProgress();
+    updateHeaderText();
+    hideNextLevelButton();
+
+    controller = QuizEngine.mount({
+      levelConfig: levelCfg,
+      hostEl: levelHost,
+      onFinished: (score, total) => {
+        if (score === total) {
+          progress.completedLevels[levelId] = total;
+          saveProgress();
+          // Only show the Next button if there actually *is* a next level
+          if (findNextLevel(levelId)) showNextLevelButton();
+          else hideNextLevelButton();
+        } else {
+          if (progress.completedLevels[levelId] === total) {
+            delete progress.completedLevels[levelId];
+            saveProgress();
+          }
+          hideNextLevelButton();
+        }
+      }
+    });
+  }
+
+  // ---------- Event listeners ----------
+  switchStudentBtn.addEventListener('click', showStudentSelection);
+  showAddFormBtn.addEventListener('click', showAddStudentForm);
+  cancelAddStudentBtn.addEventListener('click', showStudentSelection);
+
+  saveNewStudentBtn.addEventListener('click', async () => {
+    const name = studentNameInput.value.trim();
+    const cls = studentClassSelect.value;
+    if (!name) { alert("Please enter the student's name."); return; }
+    if (!cls)  { alert('Please select the class.'); return; }
+
+    const newStudent = { id: generateId(), name, class: cls };
+    studentsList.push(newStudent);
+    saveJSON(STUDENTS_LIST_KEY, studentsList);
+    activeStudentId = newStudent.id;
+    saveJSON(ACTIVE_STUDENT_KEY, activeStudentId);
+    await loginStudent(newStudent);
+  });
+
+  nextLevelBtn.addEventListener('click', () => {
+    const next = findNextLevel(progress.currentLevel);
+    if (next) openLevel(next.id);
+  });
+
+  // ---------- Init ----------
+  async function init() {
+    const savedList = loadJSON(STUDENTS_LIST_KEY);
+    studentsList = Array.isArray(savedList) ? savedList : [];
+
+    const savedActiveId = loadJSON(ACTIVE_STUDENT_KEY);
+    if (savedActiveId) activeStudentId = savedActiveId;
+
+    if (studentsList.length === 0) {
+      showAddStudentForm();
+      return;
+    }
+    if (activeStudentId) {
+      const student = studentsList.find(s => s.id === activeStudentId);
+      if (student) { await loginStudent(student); return; }
+    }
+    showStudentSelection();
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
