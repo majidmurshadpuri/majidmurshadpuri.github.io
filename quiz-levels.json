@@ -4,11 +4,24 @@
       "id": 1,
       "title": "3‑Digit Multiplication · Digits 6–9",
       "operator": "×",
-      "operandA": { "digits": 3, "allowedDigits": [6, 7, 8, 9], "distinctDigits": true },
-      "operandB": { "digits": 3, "allowedDigits": [6, 7, 8, 9], "distinctDigits": true },
+      "operandA": { 
+        "digits": 3, 
+        "allowedDigits": [6, 7, 8, 9], 
+        "distinctDigits": true 
+      },
+      "operandB": { 
+        "digits": 3, 
+        "allowedDigits": [6, 7, 8, 9], 
+        "distinctDigits": true 
+      },
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "options": { "count": 4, "perturbChance": 0.3, "perturbRange": [-100, 100], "fallbackRange": [-1000, 1000] }
+      "options": { 
+        "count": 4, 
+        "perturbChance": 0.3, 
+        "perturbRange": [-100, 100], 
+        "fallbackRange": [-1000, 1000] 
+      }
     }
   ]
 }
