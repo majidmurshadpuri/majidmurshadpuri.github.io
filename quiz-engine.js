@@ -1,6 +1,76 @@
 window.QuizEngine = (function () {
   'use strict';
 
+  // =========================================================================
+  // ANTI-CHEATING & RESILIENCE PROTECTION MODULE
+  // =========================================================================
+
+  function initGlobalAntiCheat() {
+    // 1. Block Context Menu, Selection & Dragging
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+    document.addEventListener('dragstart', e => e.preventDefault());
+
+    // 2. Block Keyboard Shortcuts (Copy, PrintScreen, DevTools, Inspect)
+    document.addEventListener('keydown', e => {
+      const isControl = e.ctrlKey || e.metaKey;
+      const key = e.key ? e.key.toLowerCase() : '';
+
+      if (
+        e.key === 'F12' ||
+        e.key === 'PrintScreen' ||
+        (isControl && ['c', 'u', 's', 'p', 'a', 'i', 'j'].includes(key)) ||
+        (isControl && e.shiftKey && ['i', 'j', 'c'].includes(key))
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        triggerSecurityWarning('Screen Capture or Shortcut Blocked!');
+        return false;
+      }
+    });
+
+    // 3. Clear Clipboard on Copy Attempts
+    document.addEventListener('copy', e => {
+      e.preventDefault();
+      if (e.clipboardData) e.clipboardData.setData('text/plain', 'Cheating prohibited!');
+      triggerSecurityWarning('Copying text is restricted!');
+    });
+
+    // 4. Block Screen Capture / Display Media APIs if requested
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+      const origGetDisplayMedia = navigator.mediaDevices.getDisplayMedia;
+      navigator.mediaDevices.getDisplayMedia = function () {
+        triggerSecurityWarning('Screen Recording is strictly blocked!');
+        return Promise.reject(new Error('Screen capture blocked by security policy'));
+      };
+    }
+  }
+
+  function triggerSecurityWarning(msg) {
+    if (document.getElementById('qe-security-warning-modal')) return;
+
+    const warningEl = document.createElement('div');
+    warningEl.id = 'qe-security-warning-modal';
+    warningEl.className = 'qe-security-warning';
+    warningEl.innerHTML = `
+      <h2>⚠️ Security Alert</h2>
+      <p>${msg}</p>
+      <p><small>The current question will be regenerated to preserve quiz integrity.</small></p>
+      <button class="qe-btn qe-btn-primary" id="qe-dismiss-warning">Resume Test</button>
+    `;
+    document.body.appendChild(warningEl);
+
+    document.querySelectorAll('.qe-root').forEach(el => el.classList.add('qe-security-blur'));
+
+    document.getElementById('qe-dismiss-warning').addEventListener('click', () => {
+      warningEl.remove();
+      document.querySelectorAll('.qe-root').forEach(el => el.classList.remove('qe-security-blur'));
+    });
+  }
+
+  // Execute global anti-cheat setup once
+  if (typeof window !== 'undefined') initGlobalAntiCheat();
+
   function loadMathJax() {
     if (!window.MathJax) {
       window.MathJax = {
@@ -193,7 +263,7 @@ window.QuizEngine = (function () {
     return true;
   }
 
-  // --- Advanced Generators for Levels 31 - 34 ---
+  // --- Generators for Levels 31 - 34 ---
   function buildQuestionLevel31(displays, level, forcedDirection) {
     if (!Array.isArray(displays) || displays.length !== 4) return null;
     for (const s of displays) {
@@ -342,412 +412,403 @@ window.QuizEngine = (function () {
     return { direction, options: shuffle(displays.map(s => ({ str: s, canon: canonicalInteger(s) }))), correctCanon, correctStr };
   }
 
+  function generateSingleSpecialQuestion(cfg, index, validNumbers, usedKeys) {
+    const primesList = cfg.primes || [2, 3, 5];
+    const smooth1Digit = validNumbers.filter(n => n >= 2 && n <= 9);
+    const smooth2Digit = validNumbers.filter(n => n >= 10 && n <= 99);
+    const compositeSmooth1Digit = smooth1Digit.filter(n => !primesList.includes(n));
+    const compositeSmooth2Digit = smooth2Digit;
+
+    let question, ok = false, attempts = 0;
+    while (!ok && attempts < 10000) {
+      attempts++;
+      
+      if (cfg.type === 'prime-factorization') {
+        const min = cfg.minNumber || 10, max = cfg.maxNumber || 99;
+        const pool = validNumbers.filter(n => n >= min && n <= max);
+        const number = pool[Math.floor(Math.random() * pool.length)];
+        if (usedKeys.has(number)) continue;
+        ok = true; usedKeys.add(number);
+        question = { number, mathjax: primeFactorization(number, primesList, true), plain: primeFactorization(number, primesList, false) };
+      } 
+      else if (cfg.type === 'lcm' || cfg.type === 'hcf') {
+        const min = cfg.minNumber || 10, max = cfg.maxNumber || 99;
+        const pool = validNumbers.filter(n => n >= min && n <= max);
+        const nums = [];
+        for (let i = 0; i < cfg.numCount; i++) nums.push(pool[Math.floor(Math.random() * pool.length)]);
+        const sortedKey = [...nums].sort((a,b)=>a-b).join('-');
+        if (usedKeys.has(sortedKey)) continue;
+        let result = nums[0];
+        for (let i = 1; i < nums.length; i++) {
+          if (cfg.type === 'lcm') result = (result * nums[i]) / gcd(result, nums[i]);
+          else result = gcd(result, nums[i]);
+        }
+        ok = true; usedKeys.add(sortedKey);
+        question = { nums, result };
+      }
+      else if (cfg.type === 'fraction') {
+        const min = cfg.minNumber || 10, max = cfg.maxNumber || 99;
+        const pool = validNumbers.filter(n => n >= min && n <= max);
+        const num = pool[Math.floor(Math.random() * pool.length)];
+        const den = pool[Math.floor(Math.random() * pool.length)];
+        if (num === den) continue;
+        const g = gcd(num, den);
+        if (g === 1) continue; 
+        const pairKey = num + '/' + den;
+        if (usedKeys.has(pairKey)) continue;
+        let numF1 = 1, numF2 = num, denF1 = 1, denF2 = den;
+        if (cfg.hasExpression) {
+          if (cfg.expressionMode === 'both' || Math.random() < 0.5) {
+            const fs = getFactors(num).filter(f => f !== 1 && f !== num);
+            if (fs.length > 0) { numF1 = fs[Math.floor(Math.random() * fs.length)]; numF2 = num / numF1; }
+          }
+          if (cfg.expressionMode === 'both' || Math.random() < 0.5) {
+            const fs = getFactors(den).filter(f => f !== 1 && f !== den);
+            if (fs.length > 0) { denF1 = fs[Math.floor(Math.random() * fs.length)]; denF2 = den / denF1; }
+          }
+        }
+        ok = true; usedKeys.add(pairKey);
+        question = { num, den, numF1, numF2, denF1, denF2, correctNum: num / g, correctDen: den / g };
+      }
+      else if (cfg.type === 'fraction-op') {
+        let n1, d1, n2, d2;
+        if (cfg.numbersType === '1-digit') {
+          n1 = Math.floor(Math.random() * 8) + 2; d1 = Math.floor(Math.random() * 8) + 2;
+          n2 = Math.floor(Math.random() * 8) + 2; d2 = Math.floor(Math.random() * 8) + 2;
+        } else {
+          n1 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
+          d1 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
+          n2 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
+          d2 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
+        }
+        if (n1 === d1 || n2 === d2) continue;
+        const key = `${n1}/${d1} ${cfg.operator} ${n2}/${d2}`;
+        if (usedKeys.has(key)) continue;
+        let rawNum, rawDen;
+        if (cfg.operator === '×') { rawNum = n1 * n2; rawDen = d1 * d2; }
+        else { rawNum = n1 * d2; rawDen = d1 * n2; }
+        const g = gcd(rawNum, rawDen);
+        const cNum = rawNum / g, cDen = rawDen / g;
+        if (cNum === 1 && cDen === 1) continue;
+        ok = true; usedKeys.add(key);
+        question = { n1, d1, n2, d2, correctNum: cNum, correctDen: cDen };
+      }
+      else if (cfg.type === 'fraction-whole') {
+        let den, wholeNum, numerator;
+        const isFractionFirst = Math.random() < 0.5;
+
+        if (cfg.operator === '×') {
+          den = Math.floor(Math.random() * 8) + 2;
+          numerator = Math.floor(Math.random() * 8) + 1;
+          wholeNum = Math.floor(Math.random() * 11) + 2;
+        } else {
+          const denPool = Math.random() < 0.5 ? compositeSmooth1Digit : compositeSmooth2Digit;
+          den = denPool[Math.floor(Math.random() * denPool.length)];
+
+          const wholePool = Math.random() < 0.5 ? compositeSmooth1Digit : compositeSmooth2Digit;
+          wholeNum = wholePool[Math.floor(Math.random() * wholePool.length)];
+
+          const numPool = Math.random() < 0.5 ? compositeSmooth1Digit : compositeSmooth2Digit;
+          numerator = numPool[Math.floor(Math.random() * numPool.length)];
+        }
+
+        if (gcd(numerator, den) === den) continue; 
+        const key = `${isFractionFirst ? 'F' : 'W'}${wholeNum}-${numerator}/${den}`;
+        if (usedKeys.has(key)) continue;
+
+        let rawNum, rawDen;
+        if (cfg.operator === '×') { rawNum = numerator * wholeNum; rawDen = den; }
+        else {
+          if (isFractionFirst) { rawNum = numerator; rawDen = den * wholeNum; }
+          else { rawNum = wholeNum * den; rawDen = numerator; }
+        }
+
+        const g = gcd(rawNum, rawDen);
+        ok = true; usedKeys.add(key);
+        question = { wholeNum, numerator, den, isFractionFirst, correctNum: rawNum / g, correctDen: rawDen / g };
+      }
+      else if (cfg.type === 'fraction-add-sub') {
+        let d, n1, n2;
+        if (cfg.numbersType === '1-digit') {
+          d = Math.floor(Math.random() * 8) + 2;
+          const cands = []; for (let n = 1; n <= 9; n++) if (n !== d) cands.push(n);
+          if (cands.length < 2) continue;
+          n1 = cands[Math.floor(Math.random() * cands.length)];
+          do { n2 = cands[Math.floor(Math.random() * cands.length)]; } while (n1 === n2);
+        } else {
+          d = Math.floor(Math.random() * 98) + 2;
+          n1 = Math.floor(Math.random() * 99) + 1; if (n1 === d) continue;
+          n2 = Math.floor(Math.random() * 99) + 1; if (n2 === d || n2 === n1) continue;
+        }
+
+        const op = Math.random() < 0.5 ? '+' : '−';
+        const rawNum = op === '+' ? n1 + n2 : n1 - n2;
+        if (rawNum <= 0) continue;
+
+        const g = gcd(rawNum, d);
+        const cNum = rawNum / g, cDen = d / g;
+        if (cNum === 0 || cNum === cDen) continue;
+
+        const key = `${n1}/${d} ${op} ${n2}/${d}`;
+        if (usedKeys.has(key)) continue;
+
+        ok = true; usedKeys.add(key);
+        question = { n1, n2, d, operation: op, correctNum: cNum, correctDen: cDen };
+      }
+      else if (cfg.type === 'proper-fraction-add-sub') {
+        let n1, d1, n2, d2;
+        if (cfg.numbersType === '1-digit') {
+          d1 = Math.floor(Math.random() * 8) + 2;
+          n1 = Math.floor(Math.random() * (d1 - 1)) + 1;
+          d2 = Math.floor(Math.random() * 8) + 2;
+          n2 = Math.floor(Math.random() * (d2 - 1)) + 1;
+          if (n1 === d1 || n2 === d2 || n1 === n2 || d1 === d2 || n1 === d2 || d1 === n2) continue;
+        } else {
+          n1 = Math.floor(Math.random() * 9) + 1;
+          n2 = Math.floor(Math.random() * 9) + 1;
+          if (n2 === n1) continue;
+          d1 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
+          d2 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
+          if (d2 === d1 || n1 === d1 || n1 === d2 || n2 === d1 || n2 === d2) continue;
+        }
+
+        const op = Math.random() < 0.5 ? '+' : '−';
+        let rawNum, rawDen;
+        if (op === '+') { rawNum = n1 * d2 + n2 * d1; rawDen = d1 * d2; }
+        else { rawNum = n1 * d2 - n2 * d1; rawDen = d1 * d2; if (rawNum <= 0) continue; }
+
+        const g = gcd(rawNum, rawDen);
+        const cNum = rawNum / g, cDen = rawDen / g;
+        if (cNum === 0 || cNum === cDen) continue;
+
+        const key = `${n1}/${d1} ${op} ${n2}/${d2}`;
+        if (usedKeys.has(key)) continue;
+
+        ok = true; usedKeys.add(key);
+        question = { n1, d1, n2, d2, operation: op, correctNum: cNum, correctDen: cDen };
+      }
+      else if (cfg.type === 'order-4-fractions') {
+        const allDen = [2,3,4,5,6,7,8,9];
+        for (let i = allDen.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [allDen[i], allDen[j]] = [allDen[j], allDen[i]];
+        }
+        const denoms = allDen.slice(0, 4);
+        const fracs = [];
+        let validFracs = true;
+        const usedNums = new Set();
+        for (const d of denoms) {
+          const possible = [];
+          for (let n = 1; n < d; n++) { if (!usedNums.has(n) && !denoms.includes(n)) possible.push(n); }
+          if (possible.length === 0) { validFracs = false; break; }
+          const n = possible[Math.floor(Math.random() * possible.length)];
+          usedNums.add(n); fracs.push({ n, d });
+        }
+        if (!validFracs || !isDifficultySuitable(fracs)) continue;
+
+        const fracStr = fracs.map(f => `${f.n}/${f.d}`).sort().join('|');
+        if (usedKeys.has(fracStr)) continue;
+
+        const direction = Math.random() < 0.5 ? 'asc' : 'desc';
+        const sorted = [...fracs].sort((a, b) => (a.n * b.d) - (b.n * a.d));
+        if (direction === 'desc') sorted.reverse();
+
+        ok = true; usedKeys.add(fracStr);
+        question = { fractions: fracs, direction, correctOrder: sorted };
+      }
+      else if (cfg.type === 'division-to-fraction') {
+        const a = Math.floor(Math.random() * 12) + 1;
+        const b = Math.floor(Math.random() * 11) + 2;
+        const key = `${a}÷${b}`;
+        if (usedKeys.has(key)) continue;
+        ok = true; usedKeys.add(key);
+        question = { a, b, correctNum: a, correctDen: b };
+      }
+      else if (cfg.type === 'improper-to-decimal') {
+        const [minNum, maxNum] = cfg.numRange || [2, 99];
+        const [minDen, maxDen] = cfg.denRange || [2, 99];
+        const den = Math.floor(Math.random() * (maxDen - minDen + 1)) + minDen;
+        const num = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
+
+        if (num <= den || num % den === 0) continue;
+        const key = `${num}/${den}`;
+        if (usedKeys.has(key)) continue;
+
+        const presentation = Math.random() < 0.5 ? 'fraction' : 'division';
+        ok = true; usedKeys.add(key);
+        question = { num, den, presentation, correctStr: decimalString(num, den) };
+      }
+      else if (cfg.type === 'decimal-comparison') {
+        const direction = Math.random() < 0.5 ? 'greatest' : 'smallest';
+        let opts = [], correctStr = '';
+        const subLevel = index + 1;
+
+        if (cfg.mode === 'randomized-challenge') {
+          const generators = [
+            () => {
+              const id = randInt(1, 9), h = randInt(7, 9), low = randInt(0, h - 1), m = randDigit(), n = randDigit(), p = randDigit();
+              return buildQuestionLevel31([`${id}.${h}`, `${id}.${low}${m}`, `${id}.${low}${m}${n}`, `${id}.${low}${m}${n}${p}`], 1);
+            },
+            () => {
+              const id = randInt(1, 9), nz = randInt(1, 9);
+              return buildQuestionLevel31([`${id}.${nz}`, `${id}.0${nz}`, `${id}.00${nz}`, `${id}.000${nz}${randDigit()}`], 2);
+            },
+            () => {
+              const id = randInt(1, 9), d = randInt(7, 9), d2 = d - 1;
+              return buildQuestionLevel31([`${id}.0${d}${d}${d}`, `${id}.0${d}${d}${d}${d}`, `${id}.0${d}${d}${d}${d}${d}`, `${id}.0${d2}${d}${d}${d}${d}`], 3);
+            },
+            () => {
+              const ip = randInt(10, 99), v = randInt(1, 9);
+              return buildQuestionLevel31([`${ip}.${v}`, `${ip}.${v - 1}99`, `${ip}.${v - 1}9999`, `${ip}.${v}00000${randInt(1, 9)}`], 4);
+            }
+          ];
+          const qObj = generators[index % generators.length]();
+          if (!qObj) continue;
+          const key = qObj.options.map(o => o.str).sort().join('|') + '|' + qObj.direction;
+          if (usedKeys.has(key)) continue;
+          ok = true; usedKeys.add(key);
+          question = { options: qObj.options, direction: qObj.direction, correctStr: qObj.correctStr, level: subLevel };
+        }
+        else if (cfg.mode === 'unpredictable-traps') {
+          const generators = [
+            () => {
+              const base = randInt(10, 60), w1 = base, d1 = `${base - 1}.${randInt(900, 999)}`, d2 = `${base}.${randInt(1, 9)}${randInt(10, 99)}`, w2 = base + randInt(1, 3);
+              return buildQuestionLevel32([String(w1), d1, d2, String(w2)], 1);
+            },
+            () => {
+              const base = randInt(5, 30), s1 = String(base), s2 = `${base - 1}.${randInt(9990, 9999)}`, s3 = `${base}.${randInt(1, 9)}`, s4 = `${base + 1}.${randInt(1, 9)}${randInt(10, 99)}`;
+              return buildQuestionLevel32([s1, s2, s3, s4], 2);
+            },
+            () => {
+              const base = randInt(10, 99), s1 = `${base}.${randInt(1, 9)}`, s2 = `${base - 1}.${randInt(900, 999)}`, s3 = `${base + 1}.${randInt(1, 9)}${randInt(10, 99)}`, s4 = `${base - 1}.${randInt(9000, 9999)}`;
+              return buildQuestionLevel32([s1, s2, s3, s4], 3);
+            }
+          ];
+          const qObj = generators[index % generators.length]();
+          if (!qObj) continue;
+          const key = qObj.options.map(o => o.str).sort().join('|') + '|' + qObj.direction;
+          if (usedKeys.has(key)) continue;
+          ok = true; usedKeys.add(key);
+          question = { options: qObj.options, direction: qObj.direction, correctStr: qObj.correctStr, level: subLevel };
+        }
+        else if (cfg.mode === 'sub-1-traps') {
+          const fmtWithZeros = f => Math.random() < 0.35 ? '.' + f : '0'.repeat(randInt(1, 4)) + '.' + f;
+          const generators = [
+            () => {
+              const h = randInt(7, 9), low = randInt(1, h - 1);
+              return buildQuestionLevel33([fmtWithZeros(String(h)), fmtWithZeros(`${low}${randDigit()}`), fmtWithZeros(`${low}${randDigit()}${randDigit()}`), fmtWithZeros(`${low}${randDigit()}${randDigit()}${randDigit()}`)]);
+            },
+            () => {
+              const nz = randInt(1, 9);
+              return buildQuestionLevel33([fmtWithZeros(`${nz}`), fmtWithZeros(`0${nz}`), fmtWithZeros(`00${nz}`), fmtWithZeros(`000${nz}${randDigit()}`)]);
+            }
+          ];
+          const qObj = generators[index % generators.length]();
+          if (!qObj) continue;
+          const key = qObj.options.map(o => o.str).sort().join('|') + '|' + qObj.direction;
+          if (usedKeys.has(key)) continue;
+          ok = true; usedKeys.add(key);
+          question = { options: qObj.options, direction: qObj.direction, correctStr: qObj.correctStr, level: subLevel };
+        }
+        else if (cfg.mode === 'whole-and-decimal-repr') {
+          const randomDisplayFor = intStr => Math.random() < 0.45 ? '0'.repeat(randInt(0, 3)) + intStr : '0'.repeat(randInt(0, 3)) + intStr + '.' + '0'.repeat(randInt(1, 5));
+          const base = randInt(90, 1100);
+          const ints = [String(base), String(base - randInt(1, 3)), String(base + randInt(1, 3)), String(base + randInt(4, 9))];
+          const qObj = buildQuestionLevel34(ints.map(randomDisplayFor));
+          if (!qObj) continue;
+          const key = qObj.options.map(o => o.str).sort().join('|') + '|' + qObj.direction;
+          if (usedKeys.has(key)) continue;
+          ok = true; usedKeys.add(key);
+          question = { options: qObj.options, direction: qObj.direction, correctStr: qObj.correctStr, correctCanon: qObj.correctCanon, level: subLevel };
+        }
+        else if (cfg.mode === 'equal-lengths' || subLevel === 1) {
+          const intDigits = Math.random() < 0.5 ? 1 : 2;
+          const fracDigits = Math.random() < 0.5 ? 2 : 1;
+          const nums = [];
+          const seenStr = new Set(), seenVal = new Set();
+          while (nums.length < 4) {
+            const integerPart = Math.floor(Math.random() * Math.pow(10, intDigits));
+            const fracPart = Math.floor(Math.random() * Math.pow(10, fracDigits));
+            const display = String(integerPart).padStart(intDigits, '0') + '.' + String(fracPart).padStart(fracDigits, '0');
+            const val = parseFloat(display);
+            if (seenStr.has(display) || seenVal.has(val)) continue;
+            seenStr.add(display); seenVal.add(val);
+            nums.push({ display, val });
+          }
+          const sorted = [...nums].sort((a, b) => a.val - b.val);
+          if (Math.abs(sorted[3].val - sorted[0].val) < 0.01) continue;
+          opts = nums.map(n => ({ str: n.display, val: n.val }));
+          correctStr = (direction === 'greatest' ? sorted[3] : sorted[0]).display;
+          const key = opts.map(o => o.str).sort().join('|') + '|' + direction;
+          if (usedKeys.has(key)) continue;
+          ok = true; usedKeys.add(key);
+          question = { options: opts, direction, correctStr, level: subLevel };
+        }
+        else if (cfg.mode === 'equal-frac-varied-int') {
+          const fracLen = subLevel === 5 ? 4 : (subLevel === 3 ? 3 : 2);
+          const fracs = [];
+          while (fracs.length < 4) {
+            let f = ''; for (let i = 0; i < fracLen; i++) f += String(randDigit());
+            if (!fracs.includes(f)) fracs.push(f);
+          }
+          let ints = [];
+          if (subLevel === 3) {
+            const repDigit = randInt(1, 9);
+            const repStr = String(repDigit).repeat(2) + '.' + String(repDigit).repeat(3);
+            const bigInt = randInt(parseInt(String(repDigit).repeat(2), 10) + 1, 999);
+            const bigStr = String(bigInt) + '.' + fracs[0];
+            const f1 = String(randInt(1, 9)) + '.' + fracs[1];
+            const f2 = String(randInt(10, 99)) + '.' + fracs[2];
+            opts = shuffle([{ str: repStr }, { str: bigStr }, { str: f1 }, { str: f2 }]);
+          } else {
+            const one = String(randInt(1, 9));
+            const two = String(randInt(10, 99));
+            const three1 = String(randInt(100, 999));
+            const three2 = '0' + String(randInt(10, 99));
+            ints = shuffle([one, two, three1, three2]);
+            opts = ints.map((ip, i) => ({ str: ip + '.' + fracs[i] }));
+          }
+          const sorted = [...opts].sort((x, y) => compareDecimalStrings(x.str, y.str));
+          correctStr = (direction === 'greatest' ? sorted[3] : sorted[0]).str;
+          const key = opts.map(o => o.str).sort().join('|') + '|' + direction;
+          if (usedKeys.has(key)) continue;
+          ok = true; usedKeys.add(key);
+          question = { options: opts, direction, correctStr, level: subLevel };
+        }
+        else if (cfg.mode === 'equal-int-varied-frac') {
+          const intLen = randInt(1, 2);
+          let ip = String(randInt(1, 9));
+          for (let i = 1; i < intLen; i++) ip += String(randDigit());
+          
+          const fracLens = shuffle([1, 2, 3, 4]);
+          opts = fracLens.map(fl => {
+            let f = ''; for (let i = 0; i < fl; i++) f += String(randDigit());
+            return { str: ip + '.' + f };
+          });
+          const sorted = [...opts].sort((x, y) => compareDecimalStrings(x.str, y.str));
+          correctStr = (direction === 'greatest' ? sorted[3] : sorted[0]).str;
+          const key = opts.map(o => o.str).sort().join('|') + '|' + direction;
+          if (usedKeys.has(key)) continue;
+          ok = true; usedKeys.add(key);
+          question = { options: opts, direction, correctStr, level: subLevel };
+        }
+      }
+    }
+    return question;
+  }
+
   function generateSpecialQuestions(cfg) {
     let validNumbers = [];
     const primesList = cfg.primes || [2, 3, 5];
     for (let n = 2; n <= 999; n++) {
       if (is5Smooth(n, primesList)) validNumbers.push(n);
     }
-
-    const smooth1Digit = validNumbers.filter(n => n >= 2 && n <= 9);
-    const smooth2Digit = validNumbers.filter(n => n >= 10 && n <= 99);
-    const compositeSmooth1Digit = smooth1Digit.filter(n => !primesList.includes(n));
-    const compositeSmooth2Digit = smooth2Digit;
-
-    const noReuse = cfg.uniqueness === 'no-reused-numbers';
     const usedKeys = new Set();
     const questions = [];
 
     for (let q = 0; q < cfg.questionCount; q++) {
-      let question, ok = false, attempts = 0;
-      while (!ok && attempts < 20000) {
-        attempts++;
-        
-        if (cfg.type === 'prime-factorization') {
-          const min = cfg.minNumber || 10, max = cfg.maxNumber || 99;
-          const pool = validNumbers.filter(n => n >= min && n <= max);
-          const number = pool[Math.floor(Math.random() * pool.length)];
-          if (noReuse && usedKeys.has(number)) continue;
-          ok = true; usedKeys.add(number);
-          question = { number, mathjax: primeFactorization(number, primesList, true), plain: primeFactorization(number, primesList, false) };
-        } 
-        else if (cfg.type === 'lcm' || cfg.type === 'hcf') {
-          const min = cfg.minNumber || 10, max = cfg.maxNumber || 99;
-          const pool = validNumbers.filter(n => n >= min && n <= max);
-          const nums = [];
-          for (let i = 0; i < cfg.numCount; i++) nums.push(pool[Math.floor(Math.random() * pool.length)]);
-          const sortedKey = [...nums].sort((a,b)=>a-b).join('-');
-          if (noReuse && usedKeys.has(sortedKey)) continue;
-          let result = nums[0];
-          for (let i = 1; i < nums.length; i++) {
-            if (cfg.type === 'lcm') result = (result * nums[i]) / gcd(result, nums[i]);
-            else result = gcd(result, nums[i]);
-          }
-          ok = true; usedKeys.add(sortedKey);
-          question = { nums, result };
-        }
-        else if (cfg.type === 'fraction') {
-          const min = cfg.minNumber || 10, max = cfg.maxNumber || 99;
-          const pool = validNumbers.filter(n => n >= min && n <= max);
-          const num = pool[Math.floor(Math.random() * pool.length)];
-          const den = pool[Math.floor(Math.random() * pool.length)];
-          if (num === den) continue;
-          const g = gcd(num, den);
-          if (g === 1) continue; 
-          const pairKey = num + '/' + den;
-          if (noReuse && usedKeys.has(pairKey)) continue;
-          let numF1 = 1, numF2 = num, denF1 = 1, denF2 = den;
-          if (cfg.hasExpression) {
-            if (cfg.expressionMode === 'both' || Math.random() < 0.5) {
-              const fs = getFactors(num).filter(f => f !== 1 && f !== num);
-              if (fs.length > 0) { numF1 = fs[Math.floor(Math.random() * fs.length)]; numF2 = num / numF1; }
-            }
-            if (cfg.expressionMode === 'both' || Math.random() < 0.5) {
-              const fs = getFactors(den).filter(f => f !== 1 && f !== den);
-              if (fs.length > 0) { denF1 = fs[Math.floor(Math.random() * fs.length)]; denF2 = den / denF1; }
-            }
-          }
-          ok = true; usedKeys.add(pairKey);
-          question = { num, den, numF1, numF2, denF1, denF2, correctNum: num / g, correctDen: den / g };
-        }
-        else if (cfg.type === 'fraction-op') {
-          let n1, d1, n2, d2;
-          if (cfg.numbersType === '1-digit') {
-            n1 = Math.floor(Math.random() * 8) + 2; d1 = Math.floor(Math.random() * 8) + 2;
-            n2 = Math.floor(Math.random() * 8) + 2; d2 = Math.floor(Math.random() * 8) + 2;
-          } else {
-            n1 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
-            d1 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
-            n2 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
-            d2 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
-          }
-          if (n1 === d1 || n2 === d2) continue;
-          const key = `${n1}/${d1} ${cfg.operator} ${n2}/${d2}`;
-          if (noReuse && usedKeys.has(key)) continue;
-          let rawNum, rawDen;
-          if (cfg.operator === '×') { rawNum = n1 * n2; rawDen = d1 * d2; }
-          else { rawNum = n1 * d2; rawDen = d1 * n2; }
-          const g = gcd(rawNum, rawDen);
-          const cNum = rawNum / g, cDen = rawDen / g;
-          if (cNum === 1 && cDen === 1) continue;
-          ok = true; usedKeys.add(key);
-          question = { n1, d1, n2, d2, correctNum: cNum, correctDen: cDen };
-        }
-        else if (cfg.type === 'fraction-whole') {
-          let den, wholeNum, numerator;
-          const isFractionFirst = Math.random() < 0.5;
-
-          if (cfg.operator === '×') {
-            den = Math.floor(Math.random() * 8) + 2;
-            numerator = Math.floor(Math.random() * 8) + 1;
-            wholeNum = Math.floor(Math.random() * 11) + 2;
-          } else {
-            const denPool = Math.random() < 0.5 ? compositeSmooth1Digit : compositeSmooth2Digit;
-            den = denPool[Math.floor(Math.random() * denPool.length)];
-
-            const wholePool = Math.random() < 0.5 ? compositeSmooth1Digit : compositeSmooth2Digit;
-            wholeNum = wholePool[Math.floor(Math.random() * wholePool.length)];
-
-            const numPool = Math.random() < 0.5 ? compositeSmooth1Digit : compositeSmooth2Digit;
-            numerator = numPool[Math.floor(Math.random() * numPool.length)];
-          }
-
-          if (gcd(numerator, den) === den) continue; 
-
-          const key = `${isFractionFirst ? 'F' : 'W'}${wholeNum}-${numerator}/${den}`;
-          if (noReuse && usedKeys.has(key)) continue;
-
-          let rawNum, rawDen;
-          if (cfg.operator === '×') {
-            rawNum = numerator * wholeNum; 
-            rawDen = den; 
-          } else {
-            if (isFractionFirst) { rawNum = numerator; rawDen = den * wholeNum; }
-            else { rawNum = wholeNum * den; rawDen = numerator; }
-          }
-
-          const g = gcd(rawNum, rawDen);
-          ok = true; 
-          usedKeys.add(key);
-          question = { wholeNum, numerator, den, isFractionFirst, correctNum: rawNum / g, correctDen: rawDen / g };
-        }
-        else if (cfg.type === 'fraction-add-sub') {
-          let d, n1, n2;
-          if (cfg.numbersType === '1-digit') {
-            d = Math.floor(Math.random() * 8) + 2;
-            const cands = [];
-            for (let n = 1; n <= 9; n++) if (n !== d) cands.push(n);
-            if (cands.length < 2) continue;
-            n1 = cands[Math.floor(Math.random() * cands.length)];
-            do { n2 = cands[Math.floor(Math.random() * cands.length)]; } while (n1 === n2);
-          } else {
-            d = Math.floor(Math.random() * 98) + 2;
-            n1 = Math.floor(Math.random() * 99) + 1;
-            if (n1 === d) continue;
-            n2 = Math.floor(Math.random() * 99) + 1;
-            if (n2 === d || n2 === n1) continue;
-          }
-
-          const op = Math.random() < 0.5 ? '+' : '−';
-          const rawNum = op === '+' ? n1 + n2 : n1 - n2;
-          if (rawNum <= 0) continue;
-
-          const g = gcd(rawNum, d);
-          const cNum = rawNum / g;
-          const cDen = d / g;
-          if (cNum === 0 || cNum === cDen) continue;
-
-          const key = `${n1}/${d} ${op} ${n2}/${d}`;
-          if (noReuse && usedKeys.has(key)) continue;
-
-          ok = true; usedKeys.add(key);
-          question = { n1, n2, d, operation: op, correctNum: cNum, correctDen: cDen };
-        }
-        else if (cfg.type === 'proper-fraction-add-sub') {
-          let n1, d1, n2, d2;
-          if (cfg.numbersType === '1-digit') {
-            d1 = Math.floor(Math.random() * 8) + 2;
-            n1 = Math.floor(Math.random() * (d1 - 1)) + 1;
-            d2 = Math.floor(Math.random() * 8) + 2;
-            n2 = Math.floor(Math.random() * (d2 - 1)) + 1;
-            if (n1 === d1 || n2 === d2 || n1 === n2 || d1 === d2 || n1 === d2 || d1 === n2) continue;
-          } else {
-            n1 = Math.floor(Math.random() * 9) + 1;
-            n2 = Math.floor(Math.random() * 9) + 1;
-            if (n2 === n1) continue;
-            d1 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
-            d2 = smooth2Digit[Math.floor(Math.random() * smooth2Digit.length)];
-            if (d2 === d1 || n1 === d1 || n1 === d2 || n2 === d1 || n2 === d2) continue;
-          }
-
-          const op = Math.random() < 0.5 ? '+' : '−';
-          let rawNum, rawDen;
-          if (op === '+') {
-            rawNum = n1 * d2 + n2 * d1; rawDen = d1 * d2;
-          } else {
-            rawNum = n1 * d2 - n2 * d1; rawDen = d1 * d2;
-            if (rawNum <= 0) continue;
-          }
-
-          const g = gcd(rawNum, rawDen);
-          const cNum = rawNum / g, cDen = rawDen / g;
-          if (cNum === 0 || cNum === cDen) continue;
-
-          const key = `${n1}/${d1} ${op} ${n2}/${d2}`;
-          if (usedKeys.has(key)) continue;
-          ok = true; usedKeys.add(key);
-          question = { n1, d1, n2, d2, operation: op, correctNum: cNum, correctDen: cDen };
-        }
-        else if (cfg.type === 'order-4-fractions') {
-          const allDen = [2,3,4,5,6,7,8,9];
-          for (let i = allDen.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [allDen[i], allDen[j]] = [allDen[j], allDen[i]];
-          }
-          const denoms = allDen.slice(0, 4);
-          const fracs = [];
-          let validFracs = true;
-          const usedNums = new Set();
-          for (const d of denoms) {
-            const possible = [];
-            for (let n = 1; n < d; n++) {
-              if (!usedNums.has(n) && !denoms.includes(n)) possible.push(n);
-            }
-            if (possible.length === 0) { validFracs = false; break; }
-            const n = possible[Math.floor(Math.random() * possible.length)];
-            usedNums.add(n);
-            fracs.push({ n, d });
-          }
-          if (!validFracs || !isDifficultySuitable(fracs)) continue;
-
-          const fracStr = fracs.map(f => `${f.n}/${f.d}`).sort().join('|');
-          if (usedKeys.has(fracStr)) continue;
-
-          const direction = Math.random() < 0.5 ? 'asc' : 'desc';
-          const sorted = [...fracs].sort((a, b) => (a.n * b.d) - (b.n * a.d));
-          if (direction === 'desc') sorted.reverse();
-
-          ok = true; usedKeys.add(fracStr);
-          question = { fractions: fracs, direction, correctOrder: sorted };
-        }
-        else if (cfg.type === 'division-to-fraction') {
-          const a = Math.floor(Math.random() * 12) + 1;
-          const b = Math.floor(Math.random() * 11) + 2;
-          const key = `${a}÷${b}`;
-          if (usedKeys.has(key)) continue;
-          ok = true; usedKeys.add(key);
-          question = { a, b, correctNum: a, correctDen: b };
-        }
-        else if (cfg.type === 'improper-to-decimal') {
-          const [minNum, maxNum] = cfg.numRange || [2, 99];
-          const [minDen, maxDen] = cfg.denRange || [2, 99];
-          const den = Math.floor(Math.random() * (maxDen - minDen + 1)) + minDen;
-          const num = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
-
-          if (num <= den || num % den === 0) continue;
-          const key = `${num}/${den}`;
-          if (usedKeys.has(key)) continue;
-
-          const presentation = Math.random() < 0.5 ? 'fraction' : 'division';
-          ok = true; usedKeys.add(key);
-          question = { num, den, presentation, correctStr: decimalString(num, den) };
-        }
-        else if (cfg.type === 'decimal-comparison') {
-          const direction = Math.random() < 0.5 ? 'greatest' : 'smallest';
-          let opts = [], correctStr = '';
-          const subLevel = q + 1;
-
-          if (cfg.mode === 'randomized-challenge') {
-            const generators = [
-              () => {
-                const id = randInt(1, 9), h = randInt(7, 9), low = randInt(0, h - 1), m = randDigit(), n = randDigit(), p = randDigit();
-                return buildQuestionLevel31([`${id}.${h}`, `${id}.${low}${m}`, `${id}.${low}${m}${n}`, `${id}.${low}${m}${n}${p}`], 1);
-              },
-              () => {
-                const id = randInt(1, 9), nz = randInt(1, 9);
-                return buildQuestionLevel31([`${id}.${nz}`, `${id}.0${nz}`, `${id}.00${nz}`, `${id}.000${nz}${randDigit()}`], 2);
-              },
-              () => {
-                const id = randInt(1, 9), d = randInt(7, 9), d2 = d - 1;
-                return buildQuestionLevel31([`${id}.0${d}${d}${d}`, `${id}.0${d}${d}${d}${d}`, `${id}.0${d}${d}${d}${d}${d}`, `${id}.0${d2}${d}${d}${d}${d}`], 3);
-              },
-              () => {
-                const ip = randInt(10, 99), v = randInt(1, 9);
-                return buildQuestionLevel31([`${ip}.${v}`, `${ip}.${v - 1}99`, `${ip}.${v - 1}9999`, `${ip}.${v}00000${randInt(1, 9)}`], 4);
-              }
-            ];
-            const qObj = generators[q % generators.length]();
-            if (!qObj) continue;
-            const key = qObj.options.map(o => o.str).sort().join('|') + '|' + qObj.direction;
-            if (usedKeys.has(key)) continue;
-            ok = true; usedKeys.add(key);
-            question = { options: qObj.options, direction: qObj.direction, correctStr: qObj.correctStr, level: subLevel };
-          }
-          else if (cfg.mode === 'unpredictable-traps') {
-            const generators = [
-              () => {
-                const base = randInt(10, 60), w1 = base, d1 = `${base - 1}.${randInt(900, 999)}`, d2 = `${base}.${randInt(1, 9)}${randInt(10, 99)}`, w2 = base + randInt(1, 3);
-                return buildQuestionLevel32([String(w1), d1, d2, String(w2)], 1);
-              },
-              () => {
-                const base = randInt(5, 30), s1 = String(base), s2 = `${base - 1}.${randInt(9990, 9999)}`, s3 = `${base}.${randInt(1, 9)}`, s4 = `${base + 1}.${randInt(1, 9)}${randInt(10, 99)}`;
-                return buildQuestionLevel32([s1, s2, s3, s4], 2);
-              },
-              () => {
-                const base = randInt(10, 99), s1 = `${base}.${randInt(1, 9)}`, s2 = `${base - 1}.${randInt(900, 999)}`, s3 = `${base + 1}.${randInt(1, 9)}${randInt(10, 99)}`, s4 = `${base - 1}.${randInt(9000, 9999)}`;
-                return buildQuestionLevel32([s1, s2, s3, s4], 3);
-              }
-            ];
-            const qObj = generators[q % generators.length]();
-            if (!qObj) continue;
-            const key = qObj.options.map(o => o.str).sort().join('|') + '|' + qObj.direction;
-            if (usedKeys.has(key)) continue;
-            ok = true; usedKeys.add(key);
-            question = { options: qObj.options, direction: qObj.direction, correctStr: qObj.correctStr, level: subLevel };
-          }
-          else if (cfg.mode === 'sub-1-traps') {
-            const fmtWithZeros = f => Math.random() < 0.35 ? '.' + f : '0'.repeat(randInt(1, 4)) + '.' + f;
-            const generators = [
-              () => {
-                const h = randInt(7, 9), low = randInt(1, h - 1);
-                return buildQuestionLevel33([fmtWithZeros(String(h)), fmtWithZeros(`${low}${randDigit()}`), fmtWithZeros(`${low}${randDigit()}${randDigit()}`), fmtWithZeros(`${low}${randDigit()}${randDigit()}${randDigit()}`)]);
-              },
-              () => {
-                const nz = randInt(1, 9);
-                return buildQuestionLevel33([fmtWithZeros(`${nz}`), fmtWithZeros(`0${nz}`), fmtWithZeros(`00${nz}`), fmtWithZeros(`000${nz}${randDigit()}`)]);
-              }
-            ];
-            const qObj = generators[q % generators.length]();
-            if (!qObj) continue;
-            const key = qObj.options.map(o => o.str).sort().join('|') + '|' + qObj.direction;
-            if (usedKeys.has(key)) continue;
-            ok = true; usedKeys.add(key);
-            question = { options: qObj.options, direction: qObj.direction, correctStr: qObj.correctStr, level: subLevel };
-          }
-          else if (cfg.mode === 'whole-and-decimal-repr') {
-            const randomDisplayFor = intStr => Math.random() < 0.45 ? '0'.repeat(randInt(0, 3)) + intStr : '0'.repeat(randInt(0, 3)) + intStr + '.' + '0'.repeat(randInt(1, 5));
-            const base = randInt(90, 1100);
-            const ints = [String(base), String(base - randInt(1, 3)), String(base + randInt(1, 3)), String(base + randInt(4, 9))];
-            const qObj = buildQuestionLevel34(ints.map(randomDisplayFor));
-            if (!qObj) continue;
-            const key = qObj.options.map(o => o.str).sort().join('|') + '|' + qObj.direction;
-            if (usedKeys.has(key)) continue;
-            ok = true; usedKeys.add(key);
-            question = { options: qObj.options, direction: qObj.direction, correctStr: qObj.correctStr, correctCanon: qObj.correctCanon, level: subLevel };
-          }
-          else if (cfg.mode === 'equal-lengths' || subLevel === 1) {
-            const intDigits = Math.random() < 0.5 ? 1 : 2;
-            const fracDigits = Math.random() < 0.5 ? 2 : 1;
-            const nums = [];
-            const seenStr = new Set(), seenVal = new Set();
-            while (nums.length < 4) {
-              const integerPart = Math.floor(Math.random() * Math.pow(10, intDigits));
-              const fracPart = Math.floor(Math.random() * Math.pow(10, fracDigits));
-              const display = String(integerPart).padStart(intDigits, '0') + '.' + String(fracPart).padStart(fracDigits, '0');
-              const val = parseFloat(display);
-              if (seenStr.has(display) || seenVal.has(val)) continue;
-              seenStr.add(display); seenVal.add(val);
-              nums.push({ display, val });
-            }
-            const sorted = [...nums].sort((a, b) => a.val - b.val);
-            if (Math.abs(sorted[3].val - sorted[0].val) < 0.01) continue;
-            opts = nums.map(n => ({ str: n.display, val: n.val }));
-            correctStr = (direction === 'greatest' ? sorted[3] : sorted[0]).display;
-          }
-          else if (cfg.mode === 'equal-frac-varied-int') {
-            const fracLen = subLevel === 5 ? 4 : (subLevel === 3 ? 3 : 2);
-            const fracs = [];
-            while (fracs.length < 4) {
-              let f = ''; for (let i = 0; i < fracLen; i++) f += String(randDigit());
-              if (!fracs.includes(f)) fracs.push(f);
-            }
-            let ints = [];
-            if (subLevel === 3) {
-              const repDigit = randInt(1, 9);
-              const repStr = String(repDigit).repeat(2) + '.' + String(repDigit).repeat(3);
-              const bigInt = randInt(parseInt(String(repDigit).repeat(2), 10) + 1, 999);
-              const bigStr = String(bigInt) + '.' + fracs[0];
-              const f1 = String(randInt(1, 9)) + '.' + fracs[1];
-              const f2 = String(randInt(10, 99)) + '.' + fracs[2];
-              opts = shuffle([{ str: repStr }, { str: bigStr }, { str: f1 }, { str: f2 }]);
-            } else {
-              const one = String(randInt(1, 9));
-              const two = String(randInt(10, 99));
-              const three1 = String(randInt(100, 999));
-              const three2 = '0' + String(randInt(10, 99));
-              ints = shuffle([one, two, three1, three2]);
-              opts = ints.map((ip, i) => ({ str: ip + '.' + fracs[i] }));
-            }
-            const sorted = [...opts].sort((x, y) => compareDecimalStrings(x.str, y.str));
-            correctStr = (direction === 'greatest' ? sorted[3] : sorted[0]).str;
-          }
-          else if (cfg.mode === 'equal-int-varied-frac') {
-            const intLen = randInt(1, 2);
-            let ip = String(randInt(1, 9));
-            for (let i = 1; i < intLen; i++) ip += String(randDigit());
-            
-            const fracLens = shuffle([1, 2, 3, 4]);
-            opts = fracLens.map(fl => {
-              let f = ''; for (let i = 0; i < fl; i++) f += String(randDigit());
-              return { str: ip + '.' + f };
-            });
-            const sorted = [...opts].sort((x, y) => compareDecimalStrings(x.str, y.str));
-            correctStr = (direction === 'greatest' ? sorted[3] : sorted[0]).str;
-          }
-
-          if (['randomized-challenge', 'unpredictable-traps', 'sub-1-traps', 'whole-and-decimal-repr'].includes(cfg.mode)) {
-            // Handled inside branching generators above
-          } else {
-            if (opts.length !== 4) continue;
-            const key = opts.map(o => o.str).sort().join('|') + '|' + direction;
-            if (usedKeys.has(key)) continue;
-
-            ok = true; usedKeys.add(key);
-            question = { options: opts, direction, correctStr, level: subLevel };
-          }
-        }
-      }
-      if (!ok) return null;
+      const question = generateSingleSpecialQuestion(cfg, q, validNumbers, usedKeys);
+      if (!question) return null;
       questions.push(question);
     }
     return questions;
@@ -954,10 +1015,8 @@ window.QuizEngine = (function () {
     return shuffle(options);
   }
 
-  function generateStandardQuestions(cfg, poolA, poolB) {
+  function generateSingleStandardQuestion(cfg, poolA, poolB, usedNums) {
     const noReuse = cfg.uniqueness === 'no-reused-numbers';
-    const usedNums = new Set();
-    const questions = [];
 
     if (cfg.operandB && cfg.operandB.type === 'range') {
       const validDivisors = [];
@@ -968,38 +1027,45 @@ window.QuizEngine = (function () {
         }
         if (!skip) validDivisors.push(d);
       }
-      for (let q = 0; q < cfg.questionCount; q++) {
-        let divisor, dividend, ok = false, attempts = 0;
-        while (!ok && attempts < 1000) {
-          attempts++;
-          divisor = validDivisors[Math.floor(Math.random() * validDivisors.length)];
-          const quotient = poolA[Math.floor(Math.random() * poolA.length)];
-          dividend = quotient * divisor;
-          if (noReuse && (usedNums.has(quotient) || usedNums.has(divisor))) continue;
-          ok = true;
-        }
-        if (!ok) return null;
-        usedNums.add(dividend); usedNums.add(divisor);
-        questions.push({ num1: dividend, num2: divisor, result: dividend / divisor });
-      }
-      return questions;
-    }
 
-    for (let q = 0; q < cfg.questionCount; q++) {
-      let num1, num2, ok = false, attempts = 0;
+      let divisor, dividend, ok = false, attempts = 0;
       while (!ok && attempts < 1000) {
         attempts++;
-        num1 = poolA[Math.floor(Math.random() * poolA.length)];
-        num2 = poolB[Math.floor(Math.random() * poolB.length)];
-        if (poolA === poolB && num1 === num2) continue;
-        if (noReuse && (usedNums.has(num1) || usedNums.has(num2))) continue;
+        divisor = validDivisors[Math.floor(Math.random() * validDivisors.length)];
+        const quotient = poolA[Math.floor(Math.random() * poolA.length)];
+        dividend = quotient * divisor;
+        if (noReuse && (usedNums.has(quotient) || usedNums.has(divisor))) continue;
         ok = true;
       }
       if (!ok) return null;
-      usedNums.add(num1); usedNums.add(num2);
-      const result = computeResult(num1, num2, cfg.operator);
-      if (result <= 0) { q--; continue; }
-      questions.push({ num1, num2, result });
+      usedNums.add(dividend); usedNums.add(divisor);
+      return { num1: dividend, num2: divisor, result: dividend / divisor };
+    }
+
+    let num1, num2, ok = false, attempts = 0;
+    while (!ok && attempts < 1000) {
+      attempts++;
+      num1 = poolA[Math.floor(Math.random() * poolA.length)];
+      num2 = poolB[Math.floor(Math.random() * poolB.length)];
+      if (poolA === poolB && num1 === num2) continue;
+      if (noReuse && (usedNums.has(num1) || usedNums.has(num2))) continue;
+      ok = true;
+    }
+    if (!ok) return null;
+    usedNums.add(num1); usedNums.add(num2);
+    const result = computeResult(num1, num2, cfg.operator);
+    if (result <= 0) return null;
+    return { num1, num2, result };
+  }
+
+  function generateStandardQuestions(cfg, poolA, poolB) {
+    const usedNums = new Set();
+    const questions = [];
+
+    for (let q = 0; q < cfg.questionCount; q++) {
+      const question = generateSingleStandardQuestion(cfg, poolA, poolB, usedNums);
+      if (!question) return null;
+      questions.push(question);
     }
     return questions;
   }
@@ -1032,7 +1098,7 @@ window.QuizEngine = (function () {
     return shuffle(options);
   }
 
-  function createController(levelConfig, hostEl, onFinished, onStateChange) {
+  function createController(levelConfig, hostEl, onFinished, onStateChange, studentData) {
     const cfg = levelConfig;
     const totalQuestions = cfg.questionCount;
     let questions = [], optionsList = [], poolA = [], poolB = [], validNums = [];
@@ -1069,8 +1135,14 @@ window.QuizEngine = (function () {
     let state = { levelId: cfg.id, questions, currentIndex: 0, answers: new Array(totalQuestions).fill(null), optionsList, completed: false, score: 0 };
     const notify = () => { if (typeof onStateChange === 'function') { try { onStateChange(JSON.parse(JSON.stringify(state))); } catch (e) {} } };
 
+    // --- Dynamic Watermark Injection for Screen Photo/Video Protection ---
+    const studentName = (studentData && studentData.name) ? studentData.name : 'Student';
+    const studentClass = (studentData && studentData.class) ? `Class ${studentData.class}` : '';
+    const watermarkText = `${studentName} • ${studentClass} • Level ${cfg.id}`;
+
     hostEl.innerHTML = `
       <div class="qe-root">
+        <div class="qe-watermark-overlay" id="qeWatermarkContainer"></div>
         <h1 class="qe-title"></h1>
         <div class="qe-subhead"><div class="qe-status">Question 1 of ${totalQuestions}</div><div class="qe-progress-badge">1 / ${totalQuestions}</div></div>
         <div class="qe-question-view">
@@ -1084,12 +1156,76 @@ window.QuizEngine = (function () {
           </div>
         </div>
       </div>`;
+
     const root = hostEl.querySelector('.qe-root');
+    const watermarkContainer = root.querySelector('#qeWatermarkContainer');
+    
+    for (let i = 0; i < 9; i++) {
+      const item = document.createElement('div');
+      item.className = 'qe-watermark-item';
+      item.textContent = watermarkText;
+      watermarkContainer.appendChild(item);
+    }
+
     const titleEl = root.querySelector('.qe-title'), statusEl = root.querySelector('.qe-status'), badgeEl = root.querySelector('.qe-progress-badge');
     const qViewEl = root.querySelector('.qe-question-view'), rViewEl = root.querySelector('.qe-result-view');
     const qTextEl = root.querySelector('.qe-question-text'), optionsGrid = root.querySelector('.qe-options-grid'), submitBtn = root.querySelector('.qe-submit-btn');
     const scoreBigEl = root.querySelector('.qe-score-big'), scoreMsgEl = root.querySelector('.qe-score-message'), congratsEl = root.querySelector('.qe-congrats'), tryAgainBtn = root.querySelector('.qe-try-again-btn');
     titleEl.textContent = cfg.title || 'Quiz';
+
+    // Regenerate current question on tab leave / focus lost
+    function regenerateCurrentQuestion() {
+      if (state.completed) return;
+      const qi = state.currentIndex;
+      let newQ, newOpts;
+
+      if (specialTypes.includes(cfg.type)) {
+        const usedKeys = new Set();
+        state.questions.forEach((qObj, idx) => {
+          if (idx !== qi && qObj) {
+            if (cfg.type === 'prime-factorization') usedKeys.add(qObj.number);
+            else if (cfg.type === 'lcm' || cfg.type === 'hcf') usedKeys.add(qObj.nums.join('-'));
+            else if (cfg.type === 'fraction') usedKeys.add(qObj.num + '/' + qObj.den);
+            else if (cfg.type === 'division-to-fraction') usedKeys.add(qObj.a + '÷' + qObj.b);
+            else if (cfg.type === 'improper-to-decimal') usedKeys.add(qObj.num + '/' + qObj.den);
+          }
+        });
+        newQ = generateSingleSpecialQuestion(cfg, qi, validNums, usedKeys);
+        if (newQ) newOpts = buildSpecialOptions(newQ, cfg, validNums);
+      } else {
+        const usedNums = new Set();
+        state.questions.forEach((qObj, idx) => {
+          if (idx !== qi && qObj) {
+            usedNums.add(qObj.num1);
+            usedNums.add(qObj.num2);
+          }
+        });
+        newQ = generateSingleStandardQuestion(cfg, poolA, poolB, usedNums);
+        if (newQ) newOpts = buildStandardOptions(newQ.result, cfg, poolA, poolB);
+      }
+
+      if (newQ && newOpts) {
+        state.questions[qi] = newQ;
+        state.optionsList[qi] = newOpts;
+        state.answers[qi] = null;
+        renderQuestion();
+        notify();
+      }
+    }
+
+    // --- Tab-Switch & Focus Blur Event Watcher ---
+    function handleVisibilityOrBlur() {
+      if (document.hidden || !document.hasFocus()) {
+        root.classList.add('qe-security-blur');
+        regenerateCurrentQuestion();
+      } else {
+        root.classList.remove('qe-security-blur');
+      }
+    }
+
+    window.addEventListener('visibilitychange', handleVisibilityOrBlur);
+    window.addEventListener('blur', handleVisibilityOrBlur);
+    window.addEventListener('focus', handleVisibilityOrBlur);
 
     function renderQuestion() {
       if (state.completed) { renderResult(); return; }
@@ -1159,7 +1295,7 @@ window.QuizEngine = (function () {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'qe-option-btn';
-        if (sel === idx) btn.classList.add('selected');
+        if (sel === idx) btn.classList.add('qe-selected');
         
         if (cfg.type === 'prime-factorization') {
           btn.innerHTML = opt.mathjax;
@@ -1268,14 +1404,23 @@ window.QuizEngine = (function () {
 
     renderQuestion();
     notify();
-    return { getState: () => JSON.parse(JSON.stringify(state)), destroy: () => { hostEl.innerHTML = ''; } };
+
+    return {
+      getState: () => JSON.parse(JSON.stringify(state)),
+      destroy: () => {
+        window.removeEventListener('visibilitychange', handleVisibilityOrBlur);
+        window.removeEventListener('blur', handleVisibilityOrBlur);
+        window.removeEventListener('focus', handleVisibilityOrBlur);
+        hostEl.innerHTML = '';
+      }
+    };
   }
 
   return {
-    mount({ levelConfig, hostEl, onFinished, onStateChange }) {
+    mount({ levelConfig, hostEl, onFinished, onStateChange, studentData }) {
       if (!levelConfig) throw new Error('mount() requires levelConfig');
       if (!hostEl) throw new Error('mount() requires hostEl');
-      return createController(levelConfig, hostEl, onFinished, onStateChange);
+      return createController(levelConfig, hostEl, onFinished, onStateChange, studentData);
     },
     unmount(hostEl) { if (hostEl) hostEl.innerHTML = ''; }
   };
