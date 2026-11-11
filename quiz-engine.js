@@ -1,7 +1,3 @@
-/* ============================================================
-   Quiz Engine - Master File (Fully Fixed)
-   ============================================================ */
-
 window.QuizEngine = (function () {
   'use strict';
 
@@ -19,10 +15,9 @@ window.QuizEngine = (function () {
     }
   }
 
-  // --- Math Helpers ---
-  function generateAllNumbers(operandCfg) {
-    if (operandCfg.type === 'range') return [];
-    const { digits, allowedDigits, distinctDigits, requireSpecificDigit, firstDigitExclude } = operandCfg;
+  function generateAllNumbers(cfg) {
+    if (cfg.type === 'range') return [];
+    const { digits, allowedDigits, distinctDigits, requireSpecificDigit, firstDigitExclude } = cfg;
     const results = [];
     (function recurse(prefix, used) {
       if (prefix.length === digits) {
@@ -41,14 +36,12 @@ window.QuizEngine = (function () {
     return results;
   }
 
-  function computeResult(a, b, operator) {
-    switch (operator) {
-      case '×': return a * b;
-      case '+': return a + b;
-      case '-': return a - b;
-      case '÷': return a / b;
-      default: throw new Error('Operator not supported');
-    }
+  function computeResult(a, b, op) {
+    if (op === '×') return a * b;
+    if (op === '+') return a + b;
+    if (op === '-') return a - b;
+    if (op === '÷') return a / b;
+    throw new Error('Op not supported');
   }
 
   function gcd(a, b) {
@@ -84,7 +77,6 @@ window.QuizEngine = (function () {
     return factors;
   }
 
-  // --- Special Generators ---
   function generateSpecialQuestions(cfg) {
     let validNumbers = [];
     if (cfg.primes) {
@@ -103,8 +95,7 @@ window.QuizEngine = (function () {
         attempts++;
         
         if (cfg.type === 'prime-factorization') {
-          const min = cfg.minNumber || 10;
-          const max = cfg.maxNumber || 99;
+          const min = cfg.minNumber || 10, max = cfg.maxNumber || 99;
           const pool = validNumbers.filter(n => n >= min && n <= max);
           const number = pool[Math.floor(Math.random() * pool.length)];
           if (noReuse && usedKeys.has(number)) continue;
@@ -112,14 +103,12 @@ window.QuizEngine = (function () {
           question = { number, mathjax: primeFactorization(number, cfg.primes, true), plain: primeFactorization(number, cfg.primes, false) };
         } 
         else if (cfg.type === 'lcm' || cfg.type === 'hcf') {
-          const min = cfg.minNumber || 10;
-          const max = cfg.maxNumber || 99;
+          const min = cfg.minNumber || 10, max = cfg.maxNumber || 99;
           const pool = validNumbers.filter(n => n >= min && n <= max);
           const nums = [];
           for (let i = 0; i < cfg.numCount; i++) nums.push(pool[Math.floor(Math.random() * pool.length)]);
           const sortedKey = [...nums].sort((a,b)=>a-b).join('-');
           if (noReuse && usedKeys.has(sortedKey)) continue;
-          
           let result = nums[0];
           for (let i = 1; i < nums.length; i++) {
             if (cfg.type === 'lcm') result = (result * nums[i]) / gcd(result, nums[i]);
@@ -129,19 +118,15 @@ window.QuizEngine = (function () {
           question = { nums, result };
         }
         else if (cfg.type === 'fraction') {
-          const min = cfg.minNumber || 10;
-          const max = cfg.maxNumber || 99;
+          const min = cfg.minNumber || 10, max = cfg.maxNumber || 99;
           const pool = validNumbers.filter(n => n >= min && n <= max);
-          
           const num = pool[Math.floor(Math.random() * pool.length)];
           const den = pool[Math.floor(Math.random() * pool.length)];
           if (num === den) continue;
           const g = gcd(num, den);
           if (g === 1) continue; 
-
           const pairKey = num + '/' + den;
           if (noReuse && usedKeys.has(pairKey)) continue;
-
           let numF1 = 1, numF2 = num, denF1 = 1, denF2 = den;
           if (cfg.hasExpression) {
             if (cfg.expressionMode === 'both' || Math.random() < 0.5) {
@@ -168,67 +153,56 @@ window.QuizEngine = (function () {
             d2 = validNumbers[Math.floor(Math.random() * validNumbers.length)];
           }
           if (n1 === d1 || n2 === d2) continue;
-
           const key = `${n1}/${d1} ${cfg.operator} ${n2}/${d2}`;
           if (noReuse && usedKeys.has(key)) continue;
-
           let rawNum, rawDen;
           if (cfg.operator === '×') { rawNum = n1 * n2; rawDen = d1 * d2; }
           else { rawNum = n1 * d2; rawDen = d1 * n2; }
-
           const g = gcd(rawNum, rawDen);
           const cNum = rawNum / g, cDen = rawDen / g;
           if (cNum === 1 && cDen === 1) continue;
-
           ok = true; usedKeys.add(key);
           question = { n1, d1, n2, d2, correctNum: cNum, correctDen: cDen };
         }
         else if (cfg.type === 'fraction-whole') {
-          const smooth2Digit = validNumbers.filter(n => n >= 10 && n <= 99);
-          const smooth3Digit = validNumbers.filter(n => n >= 100 && n <= 999);
+          const smooth2 = validNumbers.filter(n => n >= 10 && n <= 99);
+          const smooth3 = validNumbers.filter(n => n >= 100 && n <= 999);
           
           let den, wholeNum, numerator = 1, foundNum = false;
           
           if (cfg.operator === '×') {
-            const denPool = Math.random() < 0.5 ? smooth2Digit : smooth3Digit;
+            const denPool = Math.random() < 0.5 ? smooth2 : smooth3;
             den = denPool[Math.floor(Math.random() * denPool.length)];
             wholeNum = Math.floor(Math.random() * 11) + 2;
 
             for (let attemptNum = 0; attemptNum < 1000; attemptNum++) {
-              const candidateNum = Math.floor(Math.random() * 90) + 10; // 10 to 99
+              const candidateNum = Math.floor(Math.random() * 90) + 10;
               const product = candidateNum * wholeNum;
               if ((product >= 10 && product <= 999) && is5Smooth(product, cfg.primes)) {
-                numerator = candidateNum;
-                foundNum = true;
-                break;
+                numerator = candidateNum; foundNum = true; break;
               }
             }
-            
             if (!foundNum) {
-              const ansPool = Math.random() < 0.5 ? smooth2Digit : smooth3Digit;
+              const ansPool = Math.random() < 0.5 ? smooth2 : smooth3;
               const ans = ansPool[Math.floor(Math.random() * ansPool.length)];
               const factors = getFactors(ans);
               const possibleWholes = factors.filter(f => f >= 2 && f <= 12);
               if (possibleWholes.length > 0) {
                 wholeNum = possibleWholes[Math.floor(Math.random() * possibleWholes.length)];
-                numerator = ans / wholeNum;
-                foundNum = true;
+                numerator = ans / wholeNum; foundNum = true;
               }
             }
           } else {
             const comp1 = validNumbers.filter(n => n >= 2 && n <= 9 && ![2,3,5].includes(n));
-            const comp2 = smooth2Digit;
-            
+            const comp2 = smooth2;
             const denPool = Math.random() < 0.5 ? comp1 : comp2;
             const wholePool = Math.random() < 0.5 ? comp1 : comp2;
             const numPool = Math.random() < 0.5 ? comp1 : comp2;
-            
             den = denPool[Math.floor(Math.random() * denPool.length)];
             wholeNum = wholePool[Math.floor(Math.random() * wholePool.length)];
             numerator = numPool[Math.floor(Math.random() * numPool.length)];
             foundNum = true;
           }
-          
           if (!foundNum) continue;
           if (gcd(numerator, den) === den) continue; 
 
@@ -258,14 +232,11 @@ window.QuizEngine = (function () {
             n1 = Math.floor(Math.random() * 99) + 1; if (n1 === d) continue;
             n2 = Math.floor(Math.random() * 99) + 1; if (n2 === d || n2 === n1) continue;
           }
-
           const op = Math.random() < 0.5 ? '+' : '−';
           const rawNum = op === '+' ? n1 + n2 : n1 - n2;
           if (rawNum <= 0) continue;
-
           const g = gcd(rawNum, d);
           if (rawNum / g === d / g) continue;
-
           const key = `${n1}/${d} ${op} ${n2}/${d}`;
           if (noReuse && usedKeys.has(key)) continue;
           ok = true; usedKeys.add(key);
@@ -278,7 +249,6 @@ window.QuizEngine = (function () {
     return questions;
   }
 
-  // --- Options Builders ---
   function buildSpecialOptions(correctQ, cfg, validNumbers) {
     const distractors = [];
     const seen = new Set();
@@ -363,7 +333,6 @@ window.QuizEngine = (function () {
     return options;
   }
 
-  // --- Standard Arithmetic Logic ---
   function generateStandardQuestions(cfg, poolA, poolB) {
     const noReuse = cfg.uniqueness === 'no-reused-numbers';
     const usedNums = new Set();
@@ -417,9 +386,9 @@ window.QuizEngine = (function () {
     const needCount = (optCfg.count || 4) - 1;
     const distractors = [];
     const seen = new Set([correctResult]);
-
     const [pLo, pHi] = optCfg.perturbRange  || [-100, 100];
     const [fLo, fHi] = optCfg.fallbackRange || [-1000, 1000];
+    
     let attempts = 0;
     while (distractors.length < needCount && attempts < 3000) {
       attempts++;
@@ -436,7 +405,6 @@ window.QuizEngine = (function () {
       if (seen.has(candidate)) continue;
       seen.add(candidate); distractors.push(candidate);
     }
-
     const options = [correctResult, ...distractors];
     for (let i = options.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -445,12 +413,10 @@ window.QuizEngine = (function () {
     return options;
   }
 
-  // --- Controller ---
   function createController(levelConfig, hostEl, onFinished, onStateChange) {
     const cfg = levelConfig;
     const totalQuestions = cfg.questionCount;
     let questions = [], optionsList = [], poolA = [], poolB = [], validNums = [];
-
     const specialTypes = ['prime-factorization', 'lcm', 'hcf', 'fraction', 'fraction-op', 'fraction-whole', 'fraction-add-sub'];
     
     if (specialTypes.includes(cfg.type)) {
