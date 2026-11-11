@@ -1,5 +1,5 @@
 /* ============================================================
-   Quiz Engine - Master File (Exact Level 15 Logic)
+   Quiz Engine - Master File (Fully Fixed)
    ============================================================ */
 
 window.QuizEngine = (function () {
@@ -184,7 +184,6 @@ window.QuizEngine = (function () {
           question = { n1, d1, n2, d2, correctNum: cNum, correctDen: cDen };
         }
         else if (cfg.type === 'fraction-whole') {
-          // EXACT ORIGINAL LOGIC RESTORED
           const smooth2Digit = validNumbers.filter(n => n >= 10 && n <= 99);
           const smooth3Digit = validNumbers.filter(n => n >= 100 && n <= 999);
           
@@ -195,7 +194,6 @@ window.QuizEngine = (function () {
             den = denPool[Math.floor(Math.random() * denPool.length)];
             wholeNum = Math.floor(Math.random() * 11) + 2;
 
-            // Try to find a valid numerator exactly as the original code did
             for (let attemptNum = 0; attemptNum < 1000; attemptNum++) {
               const candidateNum = Math.floor(Math.random() * 90) + 10; // 10 to 99
               const product = candidateNum * wholeNum;
@@ -206,8 +204,6 @@ window.QuizEngine = (function () {
               }
             }
             
-            // Fallback: if we couldn't find one in 1000 tries, we safely construct one
-            // so the quiz never crashes, but we still respect the smooth constraints.
             if (!foundNum) {
               const ansPool = Math.random() < 0.5 ? smooth2Digit : smooth3Digit;
               const ans = ansPool[Math.floor(Math.random() * ansPool.length)];
