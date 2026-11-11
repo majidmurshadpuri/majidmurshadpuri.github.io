@@ -22,6 +22,38 @@
         "perturbRange": [-100, 100], 
         "fallbackRange": [-1000, 1000] 
       }
+    },
+    
+    {
+  "id": 2,
+  "title": "Division Quiz · 4-Digit Quotient",
+  "operator": "÷",
+  "operandA": {
+    "type": "derived",
+    "deriveFrom": "product",
+    "operandRef": "B",
+    "operandB": {
+      "digits": 4,
+      "allowedDigits": [0, 6, 7, 8, 9],
+      "distinctDigits": false,
+      "requireSpecificDigit": 0,
+      "firstDigitExclude": [0]
+    }
+  },
+  "operandB": {
+    "type": "range",
+    "min": 21,
+    "max": 99,
+    "excludeMultiplesOf": [5, 10, 11]
+  },
+  "questionCount": 5,
+  "uniqueness": "no-reused-numbers",
+  "options": {
+    "count": 4,
+    "distractorMode": "derive-from-answer",
+    "answerDigits": [0, 6, 7, 8, 9],
+    "requireSpecificDigitInAnswer": 0
+  }
     }
   ]
 }
