@@ -2,26 +2,16 @@
   "levels": [
     {
       "id": 1,
-      "title": "3‑Digit Multiplication · Digits 6–9",
-      "operator": "×",
+      "title": "3â€‘Digit Multiplication Â· Digits 6â€“9",
+      "operator": "Ã—",
       "operandA": {
         "digits": 3,
-        "allowedDigits": [
-          6,
-          7,
-          8,
-          9
-        ],
+        "allowedDigits": [6, 7, 8, 9],
         "distinctDigits": true
       },
       "operandB": {
         "digits": 3,
-        "allowedDigits": [
-          6,
-          7,
-          8,
-          9
-        ],
+        "allowedDigits": [6, 7, 8, 9],
         "distinctDigits": true
       },
       "questionCount": 5,
@@ -29,62 +19,38 @@
       "options": {
         "count": 4,
         "perturbChance": 0.3,
-        "perturbRange": [
-          -100,
-          100
-        ],
-        "fallbackRange": [
-          -1000,
-          1000
-        ]
+        "perturbRange": [-100, 100],
+        "fallbackRange": [-1000, 1000]
       }
     },
     {
       "id": 2,
-      "title": "Division Quiz · 4-Digit Quotient",
-      "operator": "÷",
+      "title": "Division Quiz Â· 4-Digit Quotient",
+      "operator": "Ã·",
       "operandA": {
         "type": "derived",
         "deriveFrom": "product",
         "operandRef": "B",
         "operandB": {
           "digits": 4,
-          "allowedDigits": [
-            0,
-            6,
-            7,
-            8,
-            9
-          ],
+          "allowedDigits": [0, 6, 7, 8, 9],
           "distinctDigits": false,
           "requireSpecificDigit": 0,
-          "firstDigitExclude": [
-            0
-          ]
+          "firstDigitExclude": [0]
         }
       },
       "operandB": {
         "type": "range",
         "min": 21,
         "max": 99,
-        "excludeMultiplesOf": [
-          5,
-          10,
-          11
-        ]
+        "excludeMultiplesOf": [5, 10, 11]
       },
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
       "options": {
         "count": 4,
         "distractorMode": "derive-from-answer",
-        "answerDigits": [
-          0,
-          6,
-          7,
-          8,
-          9
-        ],
+        "answerDigits": [0, 6, 7, 8, 9],
         "requireSpecificDigitInAnswer": 0
       }
     },
@@ -94,17 +60,11 @@
       "type": "prime-factorization",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 10,
       "maxNumber": 99,
       "questionTemplate": "Write the prime factorization of {number} = ?",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 4,
@@ -112,17 +72,11 @@
       "type": "prime-factorization",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 100,
       "maxNumber": 999,
       "questionTemplate": "Write the prime factorization of {number} = ?",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 5,
@@ -130,17 +84,11 @@
       "type": "lcm",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 10,
       "maxNumber": 99,
       "numCount": 2,
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 6,
@@ -148,17 +96,11 @@
       "type": "lcm",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 10,
       "maxNumber": 99,
       "numCount": 3,
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 7,
@@ -166,17 +108,11 @@
       "type": "hcf",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 10,
       "maxNumber": 99,
       "numCount": 2,
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 8,
@@ -184,17 +120,11 @@
       "type": "fraction",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 10,
       "maxNumber": 99,
       "hasExpression": false,
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 9,
@@ -202,17 +132,11 @@
       "type": "fraction",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 100,
       "maxNumber": 999,
       "hasExpression": false,
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 10,
@@ -220,119 +144,89 @@
       "type": "fraction",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 10,
       "maxNumber": 99,
       "hasExpression": true,
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 11,
-      "title": "Simplifying Fractions (2×2 Expression)",
+      "title": "Simplifying Fractions (2Ã—2 Expression)",
       "type": "fraction",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 10,
       "maxNumber": 99,
       "hasExpression": true,
       "expressionMode": "both",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 12,
-      "title": "Simplifying Fractions (3×3 Expression)",
+      "title": "Simplifying Fractions (3Ã—3 Expression)",
       "type": "fraction",
       "questionCount": 5,
       "uniqueness": "no-reused-numbers",
-      "primes": [
-        2,
-        3,
-        5
-      ],
+      "primes": [2, 3, 5],
       "minNumber": 100,
       "maxNumber": 999,
       "hasExpression": true,
       "expressionMode": "both",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 13,
       "title": "Multiplication of Fractions (1-Digit)",
       "type": "fraction-op",
       "questionCount": 5,
-      "operator": "×",
+      "operator": "Ã—",
       "numbersType": "1-digit",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 14,
       "title": "Division of Fractions (1-Digit)",
       "type": "fraction-op",
       "questionCount": 5,
-      "operator": "÷",
+      "operator": "Ã·",
       "numbersType": "1-digit",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 15,
       "title": "Multiplying Fraction and Whole Number",
       "type": "fraction-whole",
       "questionCount": 5,
-      "operator": "×",
-      "options": {
-        "count": 4
-      }
+      "operator": "Ã—",
+      "options": { "count": 4 }
     },
     {
       "id": 16,
       "title": "Dividing Fraction and Whole Number",
       "type": "fraction-whole",
       "questionCount": 5,
-      "operator": "÷",
-      "options": {
-        "count": 4
-      }
+      "operator": "Ã·",
+      "options": { "count": 4 }
     },
     {
       "id": 17,
       "title": "Multiplication of Fractions (2-Digit)",
       "type": "fraction-op",
       "questionCount": 5,
-      "operator": "×",
+      "operator": "Ã—",
       "numbersType": "2-digit",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 18,
       "title": "Division of Fractions (2-Digit)",
       "type": "fraction-op",
       "questionCount": 5,
-      "operator": "÷",
+      "operator": "Ã·",
       "numbersType": "2-digit",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 19,
@@ -340,9 +234,7 @@
       "type": "fraction-add-sub",
       "questionCount": 5,
       "numbersType": "1-digit",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 20,
@@ -350,9 +242,7 @@
       "type": "fraction-add-sub",
       "questionCount": 5,
       "numbersType": "1-2-digit",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 21,
@@ -360,9 +250,7 @@
       "type": "proper-fraction-add-sub",
       "questionCount": 5,
       "numbersType": "1-digit",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 22,
@@ -370,83 +258,49 @@
       "type": "proper-fraction-add-sub",
       "questionCount": 5,
       "numbersType": "smooth-2digit-den",
-      "primes": [
-        2,
-        3,
-        5
-      ],
-      "options": {
-        "count": 4
-      }
+      "primes": [2, 3, 5],
+      "options": { "count": 4 }
     },
     {
       "id": 23,
       "title": "Order 4 Proper Fractions (1-Digit)",
       "type": "order-4-fractions",
       "questionCount": 5,
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 24,
       "title": "Convert Division to Fraction",
       "type": "division-to-fraction",
       "questionCount": 5,
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 25,
-      "title": "Improper Fraction → Decimal (1-Digit Num & Den)",
+      "title": "Improper Fraction â†’ Decimal (1-Digit Num & Den)",
       "type": "improper-to-decimal",
       "questionCount": 5,
-      "numRange": [
-        2,
-        9
-      ],
-      "denRange": [
-        2,
-        8
-      ],
-      "options": {
-        "count": 4
-      }
+      "numRange": [2, 9],
+      "denRange": [2, 8],
+      "options": { "count": 4 }
     },
     {
       "id": 26,
-      "title": "Improper Fraction → Decimal (2-Digit Num, 1-Digit Den)",
+      "title": "Improper Fraction â†’ Decimal (2-Digit Num, 1-Digit Den)",
       "type": "improper-to-decimal",
       "questionCount": 5,
-      "numRange": [
-        10,
-        99
-      ],
-      "denRange": [
-        2,
-        9
-      ],
-      "options": {
-        "count": 4
-      }
+      "numRange": [10, 99],
+      "denRange": [2, 9],
+      "options": { "count": 4 }
     },
     {
       "id": 27,
-      "title": "Improper Fraction → Decimal (2-Digit Num & Den)",
+      "title": "Improper Fraction â†’ Decimal (2-Digit Num & Den)",
       "type": "improper-to-decimal",
       "questionCount": 5,
-      "numRange": [
-        10,
-        99
-      ],
-      "denRange": [
-        10,
-        99
-      ],
-      "options": {
-        "count": 4
-      }
+      "numRange": [10, 99],
+      "denRange": [10, 99],
+      "options": { "count": 4 }
     },
     {
       "id": 28,
@@ -454,9 +308,7 @@
       "type": "decimal-comparison",
       "questionCount": 5,
       "mode": "equal-lengths",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 29,
@@ -464,9 +316,7 @@
       "type": "decimal-comparison",
       "questionCount": 5,
       "mode": "equal-frac-varied-int",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 30,
@@ -474,49 +324,39 @@
       "type": "decimal-comparison",
       "questionCount": 5,
       "mode": "equal-int-varied-frac",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 31,
-      "title": "Greatest / Smallest Decimal – Randomized Challenge",
+      "title": "Greatest / Smallest Decimal â€“ Randomized Challenge",
       "type": "decimal-comparison",
       "questionCount": 5,
       "mode": "randomized-challenge",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 32,
-      "title": "Greatest / Smallest – Unpredictable Traps",
+      "title": "Greatest / Smallest â€“ Unpredictable Traps",
       "type": "decimal-comparison",
       "questionCount": 5,
       "mode": "unpredictable-traps",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 33,
-      "title": "Greatest / Smallest Decimal (< 1) — Unpredictable Traps",
+      "title": "Greatest / Smallest Decimal (< 1) â€” Unpredictable Traps",
       "type": "decimal-comparison",
       "questionCount": 5,
       "mode": "sub-1-traps",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     },
     {
       "id": 34,
-      "title": "Whole Numbers & Decimal Representations — Unpredictable Traps",
+      "title": "Whole Numbers & Decimal Representations â€” Unpredictable Traps",
       "type": "decimal-comparison",
       "questionCount": 5,
       "mode": "whole-and-decimal-repr",
-      "options": {
-        "count": 4
-      }
+      "options": { "count": 4 }
     }
   ]
 }
