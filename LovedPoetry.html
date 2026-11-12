@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Poetry I Love | Majid Murshadpuri</title>
+<meta name="description" content="Poems by other poets that Majid Murshadpuri loves — filter by poet or by poetic form and read in Urdu, Hindi or Roman.">
+<meta name="author" content="Majid Murshadpuri">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#35205a">
+<link rel="canonical" href="https://majidmurshadpuri.surge.sh/LovedPoetry.html">
+
+<link rel="stylesheet" href="site.css" />
+<link rel="stylesheet" href="poetry.css" />
+</head>
+<body>
+
+<div class="sky" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="stars" id="stars"></div>
+  <div class="sun"></div>
+</div>
+
+<header class="top">
+  <a class="mark" href="index.html">Majid Murshadpuri ✿</a>
+  <div class="top-actions">
+    <button class="round burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <button class="round d-close" id="drawerClose" type="button" aria-label="Close menu">✕</button>
+  <h3>Come on in 🚪</h3>
+  <p class="small">The little doors of this website, in order.</p>
+  <a class="d-link d-home" href="index.html"><span class="e">🏡</span> Home</a>
+  <a class="d-link d-poetry" href="PoetrySection.html"><span class="e">🪶</span> Poetry Section</a>
+  <div class="d-list"><a class="d-g" href="MyPoetry.html"><i>✍️</i> My Poetry</a><a class="d-g" href="MyPoetryVideos.html"><i>🎬</i> Poetry Videos</a><a class="d-g cur" href="LovedPoetry.html"><i>💛</i> Poetry I Love</a><a class="d-g" href="Aakhiri%20Tasveer%20Hindi.html"><i>📜</i> Umair Najmi Collection</a></div>
+  <a class="d-link d-maths" href="MathsPracticeLibrary.html"><span class="e">🧮</span> Maths Practice Library</a>
+  <div class="d-list"><a class="d-g" href="6thMathQuizHome.html"><i>🎯</i> Class 6 · Quiz</a><a class="d-g" href="6th%20Math%20SA%20I%20Practice.html"><i>6️⃣</i> Class 6 · SA I Practice</a><a class="d-g" href="7th%20Math%20SA%20I%20Practice.html"><i>7️⃣</i> Class 7 · SA I Practice</a><a class="d-g" href="8th%20Math%20SA%20I%20Practice.html"><i>8️⃣</i> Class 8 · SA I Practice</a></div>
+  <a class="d-link d-eng" href="English%20Study%20Material.html"><span class="e">📝</span> English Study Material</a>
+  <div class="d-list"><a class="d-g" href="uppgt2026literature.html"><i>🎯</i> UP PGT 2026 · Literature</a></div>
+  <a class="d-link d-apps" href="apps.html"><span class="e">🧰</span> Tools &amp; Apps Studio</a>
+  <a class="d-link d-about" href="MyResume.html"><span class="e">🌻</span> About Me</a>
+  <h4>All the poems</h4>
+  <nav class="d-list poems" id="dList"></nav>
+  
+  <div class="foot">made with chai &amp; curiosity ☕</div>
+</aside>
+
+<main id="top">
+
+  <nav class="crumbs" id="crumb" aria-label="You are here"></nav>
+
+  <section class="intro" id="intro">
+    <h1>Poetry I love 💛</h1>
+    <p>Lines by other poets that stayed with me. Filter by poet or by form, and read in the script you love most.</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="seg" id="langs" role="group" aria-label="Choose script">
+      <button type="button" data-l="u">اردو</button>
+      <button type="button" data-l="h">हिन्दी</button>
+      <button type="button" data-l="r">Roman</button>
+    </div>
+    <div class="sizes" id="sizes" role="group" aria-label="Text size">
+      <button type="button" id="smaller" aria-label="Smaller text">A−</button>
+      <button type="button" id="bigger" aria-label="Bigger text">A+</button>
+    </div>
+  </div>
+
+  <!-- list screen -->
+  <section id="listView">
+    <div class="filters" id="filters" hidden></div>
+    <p class="total" id="total"></p>
+    <div class="glist" id="glist"></div>
+  </section>
+
+  <!-- reading screen -->
+  <section id="readView" hidden>
+    <div class="sheetwrap" id="sheetwrap"></div>
+    <div class="pager" id="pager"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="hearts">✿ ☕ ✿</div>
+  no rules here · just a home for words, numbers &amp; code<br>
+  <small>Majid Murshadpuri · Hapur, Uttar Pradesh</small>
+  <small>Every poem belongs to its poet — shared here with love and credit.</small>
+</footer>
+
+<!-- =====================================================================
+     HOW THIS PAGE WORKS
+     This page is only a CONTAINER. It holds no poem text at all.
+     Every poem lives in its own small .json file next to this page, and
+     the page finds them BY ITSELF from their file names:
+
+         POEMS OF OTHERS are named   <PoetName><Form><Number>.json
+         Capital letters split the name:  TehzeebHafiNazm1.json  →  Tehzeeb Hafi · Nazm 1
+             MirTaqiMirGhazal1.json  MirTaqiMirGhazal2.json  ...
+         ★ ONE small thing the browser cannot guess: the poet's name.
+           When you add a NEW POET, add the name once to "poets" in PoetryConfig.json
+           (e.g.  "poets": ["TehzeebHafi", "MirTaqiMir"] ). More poems of a poet already
+           listed need nothing at all.
+     Do not edit this page when you add a poem. Upload the new .json file
+     and the page lists it, counts it, groups it and labels it
+     (Latest / New / Fresh) automatically.
+
+     Tip: put   "date": "2026-11-20"   inside a poem's file to fix the day
+     it counts as "added" (otherwise the day you uploaded it is used).
+     ===================================================================== -->
+<script id="config">
+window.PAGE_CFG={mode:'loved',name:'Poetry I Love',foot:'Collected by Majid Murshadpuri'};
+/* Shown when a poem file does not name its own poet */
+var DEFAULT_POET = { u:`ماجد مرشدپوری`, h:`माजिद मुर्शदपुरी`, r:`Majid Murshadpuri` };
+</script>
+
+<script src="poetry.js"></script>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id)}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+  var root=document.documentElement;
+
+  /* menu drawer: opened and closed by the shared site.js; here we only refresh the poem list each time it opens */
+  var drawer=$('drawer');
+  function closeD(){if(window.__closeDrawer)window.__closeDrawer()}
+  document.addEventListener('drawer:open',function(){fillDrawer()});
+
+  var CFG=window.PAGE_CFG, MINE=(CFG.mode==='mine');
+
+  /* ---------- remembered choices ---------- */
+  var state={lang:'u',fs:1,form:'all',poet:'all'};
+  try{
+    var sl=localStorage.getItem('mm-gh-lang'); if(sl==='u'||sl==='h'||sl==='r')state.lang=sl;
+    var sf=parseFloat(localStorage.getItem('mm-gh-fs')); if(sf>=.8&&sf<=1.6)state.fs=sf;
+  }catch(e){}
+  function save(){try{localStorage.setItem('mm-gh-lang',state.lang);localStorage.setItem('mm-gh-fs',String(state.fs))}catch(e){}}
+
+  var LANGNAME={u:'Urdu',h:'Hindi',r:'Roman'};
+  var IS_FILE=(location.protocol==='file:');
+  var BADGE={Latest:'Latest ✨',New:'New',Fresh:'Fresh 🌱'};
+
+  /* ---------- the poems: found automatically from their file names ---------- */
+  function poetObj(p,slug){
+    if(p&&typeof p==='object')return p;
+    if(typeof p==='string'&&p.trim())return {r:p.trim()};
+    return MINE?DEFAULT_POET:{r:MM.camel(slug||'')};
+  }
+  function normalize(it){
+    if(it.broken)return {key:it.key,n:it.n,form:it.form,broken:it.url+': not valid JSON ('+it.broken+')'};
+    var cps=MM.units(it.j);
+    if(!Array.isArray(cps)||!cps.length)return {key:it.key,n:it.n,form:it.form,broken:it.url+': no "couplets" (or "stanzas") found'};
+    var g={key:it.key,n:it.n,form:it.form,slug:it.poet,ts:it.ts,poet:poetObj(it.j.poet,it.poet),title:it.j.title||null,couplets:[],has:{u:true,h:true,r:true}};
+    cps.forEach(function(c){
+      var o={u:MM.lines(c.u),h:MM.lines(c.h),r:MM.lines(c.r)};
+      ['u','h','r'].forEach(function(l){if(!o[l].length)g.has[l]=false});
+      g.couplets.push(o);
+    });
+    return g;
+  }
+  var allP=null,FORMS=[];
+  function loadAll(){
+    if(allP)return allP;
+    allP=MM.config().then(function(c){
+      FORMS=c.forms;
+      return MM.discover(MINE?null:c.poets,c.forms,MINE).then(function(items){
+        var fi=function(f){for(var i=0;i<FORMS.length;i++)if(FORMS[i].k===f.k)return i;return 99};
+        items.sort(function(a,b){
+          if(!MINE&&a.poet!==b.poet)return a.poet<b.poet?-1:1;
+          return fi(a.form)-fi(b.form)||a.n-b.n;
+        });
+        var gs=items.map(normalize);
+        var ok=gs.filter(function(g){return !g.broken});
+        gs.badge=MM.badges(ok);allP.__b=gs.badge;
+        gs.net=items.net;
+        return gs;
+      });
+    });
+    return allP;
+  }
+  function find(items,key){for(var i=0;i<items.length;i++)if(items[i].key===key)return items[i];return null}
+  function lines(g,k,l){return g.couplets[k][l]}
+  function firstLang(g){return g.has.u?'u':(g.has.h?'h':'r')}
+  function titleOf(g,l){
+    if(g.title&&g.title[l])return g.title[l];
+    return g.couplets[0][l][0]||(MM.formName(g.form,'r')+' '+g.n);
+  }
+  function poetLabel(g,L){return (g.poet&&(g.poet[L]||g.poet.r))||''}
+  function formLabel(f,L,pl){return MM.formName(f,L,pl)}
+  function unitWord(g,L){return g.form.unit[L]||g.form.unit.r}
+
+  /* ---------- screens ---------- */
+  var listView=$('listView'),readView=$('readView'),intro=$('intro'),sizes=$('sizes');
+
+  function problemHTML(e,key){
+    if(IS_FILE)return '<div class="note-box"><b>Open this page from your website.</b><br>Poems are loaded from their own files, and a browser does not allow that when a page is opened straight from a folder or phone storage. Once the files are uploaded together with this page, everything appears.</div>';
+    if(e==='missing')return '<div class="note-box"><b>This poem is not here (yet).</b><br>Nothing matches “'+esc(key)+'”. <a href="#all">See everything</a>.</div>';
+    return '<div class="note-box"><b>Could not load.</b><br>Please check your internet connection and try again.</div>';
+  }
+
+  var token=0,visibleCache=[];
+
+  /* chips: filter by form (and, on the "Poetry I Love" page, by poet) */
+  function applyFilter(items,skip){
+    return items.filter(function(g){
+      if(g.broken)return false;
+      if(skip!=='form'&&state.form!=='all'&&g.form.k!==state.form)return false;
+      if(!MINE&&skip!=='poet'&&state.poet!=='all'&&g.slug!==state.poet)return false;
+      return true;
+    });
+  }
+  function drawFilters(items){
+    var L=state.lang,ok=items.filter(function(g){return !g.broken}),h='';
+    function chip(kind,val,label,count,cls){
+      var on=(kind==='form'?state.form:state.poet)===val;
+      return '<button type="button" class="chip '+cls+(on?' on':'')+'" data-f="'+kind+'" data-v="'+esc(val)+'">'+esc(label)+' <small>'+count+'</small></button>';
+    }
+    if(!MINE){
+      var poets=[],seen={};
+      ok.forEach(function(g){if(!seen[g.slug]){seen[g.slug]=1;poets.push(g)}});
+      var pool=applyFilter(ok,'poet');
+      h+='<div class="frow"><span class="flab">Poet</span>'+chip('poet','all','All poets',pool.length,'c'+'r');
+      poets.forEach(function(g){
+        var n=pool.filter(function(x){return x.slug===g.slug}).length;
+        if(n||state.poet===g.slug)h+=chip('poet',g.slug,poetLabel(g,L),n,'c'+L);
+      });
+      h+='</div>';
+    }
+    var pool2=applyFilter(ok,'form');
+    h+='<div class="frow"><span class="flab">Form</span>'+chip('form','all','All forms',pool2.length,'cr');
+    FORMS.forEach(function(f){
+      var n=pool2.filter(function(x){return x.form.k===f.k}).length;
+      if(n||state.form===f.k)h+=chip('form',f.k,formLabel(f,L,true),n,'c'+L);
+    });
+    h+='</div>';
+    $('filters').innerHTML=h;
+    $('filters').hidden=!ok.length;
+  }
+
+  function showList(){
+    var my=++token;
+    $('glist').innerHTML='<p class="loading">Gathering the poems… ☕</p>';
+    loadAll().then(function(items){
+      if(my!==token)return;
+      var ok=items.filter(function(g){return !g.broken});
+      if(!items.length){
+        $('filters').hidden=true;$('total').textContent='';
+        $('glist').innerHTML=IS_FILE||items.net?problemHTML(null,''):'<div class="note-box"><b>'+(MINE?'Poems are on their way.':'Nothing here yet.')+'</b><br>'+(MINE?'Check back soon — new ghazals and nazms will appear here by themselves.':'The poems I love will appear here soon.')+'</div>';
+        return;
+      }
+      /* an old filter that no longer matches anything is dropped */
+      if(state.form!=='all'&&!ok.some(function(g){return g.form.k===state.form}))state.form='all';
+      if(!MINE&&state.poet!=='all'&&!ok.some(function(g){return g.slug===state.poet}))state.poet='all';
+      if(!applyFilter(items).length){state.form='all';if(!applyFilter(items).length)state.poet='all'}
+      drawFilters(items);
+      var vis=applyFilter(items);
+      visibleCache=vis;
+      $('total').textContent=vis.length+(vis.length===1?' poem':' poems')+(vis.length!==ok.length?' of '+ok.length:' available');
+      var h='',lastGroup=null;
+      /* a heading for each group: forms on My Poetry, poets on Poetry I Love */
+      var multi=MINE?(state.form==='all'&&new Set(vis.map(function(g){return g.form.k})).size>1):(state.poet==='all'&&new Set(vis.map(function(g){return g.slug})).size>1);
+      function groupKey(g){return MINE?g.form.k:g.slug}
+      function groupName(g){var L=state.lang;return MINE?formLabel(g.form,L,true):poetLabel(g,L)}
+      function groupCount(k){return vis.filter(function(g){return groupKey(g)===k}).length}
+      items.forEach(function(g){
+        if(g.broken){h+='<div class="gcard l-r"><div class="pv"><span>Problem in this file</span></div><div class="meta">'+esc(g.broken)+'</div></div>';return}
+        if(vis.indexOf(g)<0)return;
+        if(multi&&groupKey(g)!==lastGroup){
+          lastGroup=groupKey(g);
+          h+='<h2 class="ghead c'+state.lang+'">'+esc(groupName(g))+' <small>'+groupCount(lastGroup)+'</small></h2>';
+        }
+        var L=g.has[state.lang]?state.lang:firstLang(g),ln=g.couplets[0][L],b=items.badge[g.key];
+        h+='<a class="gcard l-'+L+'" href="#'+g.key+'">'+
+          (b?'<span class="badge '+b.toLowerCase()+'">'+BADGE[b]+'</span>':'')+
+          '<span class="ftag c'+L+'">'+esc(formLabel(g.form,L))+' '+g.n+'</span>'+
+          '<div class="pv"><span>'+esc(ln[0])+'</span></div>'+
+          '<div class="meta">'+esc(poetLabel(g,L))+' · '+g.couplets.length+' '+unitWord(g,L)+'</div></a>';
+      });
+      $('glist').innerHTML=h;
+    });
+  }
+
+  function fillDrawer(cur){
+    if(cur===undefined)cur=curKey;
+    loadAll().then(function(items){
+      var h='',last=null;
+      items.forEach(function(g){
+        if(g.broken)return;
+        var gk=MINE?g.form.k:g.slug+'|'+g.form.k;
+        if(gk!==last){last=gk;h+='<h4>'+esc((MINE?'':poetLabel(g,'r')+' · ')+formLabel(g.form,'r',true))+'</h4>'}
+        var L=g.has[state.lang]?state.lang:firstLang(g);
+        h+='<a class="d-g l-'+L+(cur===g.key?' cur':'')+'" href="#'+g.key+'"><b>'+g.n+'</b><span>'+esc(titleOf(g,L))+'</span></a>';
+      });
+      $('dList').innerHTML=h;
+    });
+  }
+
+  var curKey='';
+  function showRead(key){
+    var my=++token;
+    curKey=key;
+    $('sheetwrap').innerHTML='<p class="loading">Opening… ☕</p>';
+    $('pager').innerHTML='';
+    loadAll().then(function(items){
+      if(my!==token)return;
+      var g=find(items,key);
+      if(!g&&/^g\d+$/.test(key))g=find(items,'Ghazal'+key.slice(1));   /* old links like #g3 */
+      if(!g||g.broken){$('sheetwrap').innerHTML=problemHTML(g?'bad':'missing',key);return}
+      curKey=g.key;
+      crumbRead(g);
+      drawSheet(g);
+      var order=(visibleCache.indexOf(g)>=0?visibleCache:items.filter(function(x){return !x.broken})),i=order.indexOf(g);
+      var pv=order[i-1],nx=order[i+1];
+      $('pager').innerHTML=
+        '<a class="pbtn" '+(pv?'href="#'+pv.key+'"':'aria-disabled="true"')+'>← Previous</a>'+
+        '<a class="pbtn ghost" href="#all">☰ All</a>'+
+        '<a class="pbtn" '+(nx?'href="#'+nx.key+'"':'aria-disabled="true"')+'>Next →</a>';
+      if(drawer.classList.contains('open'))fillDrawer(g.key);
+    });
+  }
+  function crumbRead(g){
+    $('crumb').innerHTML='<a href="index.html">Home</a><span class="sep">›</span><a href="PoetrySection.html">Poetry Section</a><span class="sep">›</span><a href="#all">'+CFG.name+'</a><span class="sep">›</span><span aria-current="page">'+
+      esc((MINE?'':poetLabel(g,'r')+' · ')+formLabel(g.form,'r')+' '+g.n)+'</span>';
+  }
+
+  var curG=null;
+  function gBadge(g){return (allP&&allP.__b&&allP.__b[g.key])||''}
+  var curL='u';
+  var ICONS={
+    copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>',
+    check:'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    print:'<svg viewBox="0 0 24 24"><path d="M7 9V3h10v6"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>',
+    share:'<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></svg>',
+    wa:'<svg viewBox="0 0 24 24"><path d="M4 20l1.2-4.1A8 8 0 1 1 8.2 19z"/><path d="M9 9c0 3 3 6 6 6l1-1.5-2-1-1 .8c-.9-.4-1.7-1.2-2.1-2.1l.8-1-1-2z"/></svg>'
+  };
+
+  function drawSheet(g){
+    curG=g;
+    var L=state.lang,h='';
+    if(!g.has[L]){
+      var alt=firstLang(g);
+      h+='<div class="note-box"><b>This poem is not yet written in '+LANGNAME[L]+'.</b><br>Showing it in '+LANGNAME[alt]+' for now.</div>';
+      L=alt;
+    }
+    curL=L;
+    h+='<div class="stack l-'+L+'">';
+    var bd=gBadge(g);if(bd)h+='<div class="titlerow"><span class="badge inline '+bd.toLowerCase()+'">'+BADGE[bd]+'</span></div>';
+    h+='<h2 class="gtitle">'+esc(titleOf(g,L))+'</h2>';
+    h+='<p class="gpoet">'+esc(poetName(g,L))+'</p>';
+    g.couplets.forEach(function(c,k){
+      h+='<section class="cp"><button class="cpbtn" type="button" data-act="cc" data-i="'+k+'" aria-label="Copy these lines" title="Copy these lines">'+ICONS.copy+'</button>';
+      c[L].forEach(function(x){h+='<p class="m">'+esc(x)+'</p>'});
+      h+='<div class="tail"><i></i></div></section>';
+    });
+    h+='<div class="actions">'+
+      '<button class="abtn" type="button" data-act="ca">'+ICONS.copy+'<span>Copy poem</span></button>'+
+      '<button class="abtn" type="button" data-act="pr">'+ICONS.print+'<span>Print</span></button>'+
+      '<button class="abtn" type="button" data-act="sh">'+ICONS.share+'<span>Share</span></button>'+
+      '<button class="abtn wa" type="button" data-act="wa">'+ICONS.wa+'<span>WhatsApp</span></button></div>';
+    h+='</div>';
+    $('sheetwrap').innerHTML=h;
+    fit();
+  }
+
+  /* ---------- text for copying / sharing ---------- */
+  function poetName(g,L){return (g.poet&&(g.poet[L]||g.poet.r))||''}
+  function coupletText(g,L,i){return g.couplets[i][L].join('\n')+'\n— '+poetName(g,L)}
+  function ghazalText(g,L){return g.couplets.map(function(c){return c[L].join('\n')}).join('\n\n')+'\n\n— '+poetName(g,L)}
+  function shareUrl(g,L){return location.href.split('#')[0]+'#'+g.key+'-'+L}
+  function waText(g,L){
+    var poet=poetName(g,L);
+    return '✦ *'+titleOf(g,L)+'* ✦\n_'+poet+'_\n\n'+
+      g.couplets.map(function(c){return c[L].join('\n')}).join('\n\n❖\n\n')+
+      '\n\n— — — — —\n✍️ *'+poet+'*\n🔗 '+shareUrl(g,L);
+  }
+
+  /* little message at the bottom of the screen */
+  var toastEl=null,toastT=0;
+  function toast(msg){
+    if(!toastEl){toastEl=document.createElement('div');toastEl.className='toast';toastEl.setAttribute('role','status');document.body.appendChild(toastEl)}
+    toastEl.textContent=msg;toastEl.classList.add('show');
+    clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2300);
+  }
+  function copyText(txt,okMsg){
+    function fallback(){
+      var ta=document.createElement('textarea');ta.value=txt;ta.setAttribute('readonly','');
+      ta.style.cssText='position:fixed;top:-1000px;opacity:0';document.body.appendChild(ta);ta.select();
+      var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+      document.body.removeChild(ta);
+      toast(ok?okMsg:'Could not copy — please select the text and copy it');
+    }
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(function(){toast(okMsg)},fallback)}
+    else fallback();
+  }
+  function flash(b){
+    var o=b.innerHTML;b.innerHTML=ICONS.check;b.classList.add('done');
+    setTimeout(function(){b.innerHTML=o;b.classList.remove('done')},1400);
+  }
+
+  /* buttons on the cards and under the ghazal */
+  $('sheetwrap').addEventListener('click',function(e){
+    var b=e.target.closest('[data-act]'); if(!b||!curG)return;
+    var act=b.getAttribute('data-act');
+    if(act==='cc'){copyText(coupletText(curG,curL,+b.getAttribute('data-i')),'Copied');flash(b)}
+    else if(act==='ca'){copyText(ghazalText(curG,curL),'Whole poem copied')}
+    else if(act==='pr'){printGhazal()}
+    else if(act==='sh'){openShare()}
+    else if(act==='wa'){window.open('https://wa.me/?text='+encodeURIComponent(waText(curG,curL)),'_blank','noopener')}
+  });
+
+  /* ---------- share window ---------- */
+  var shareOv=null;
+  function closeShare(){if(shareOv)shareOv.classList.remove('open')}
+  function openShare(){
+    var g=curG,L=curL,url=shareUrl(g,L),title=titleOf(g,L),msg=title+' — '+poetName(g,L);
+    var items=[
+      ['WhatsApp','https://wa.me/?text='+encodeURIComponent(msg+'\n'+url),'#25d366'],
+      ['Telegram','https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(msg),'#2aa3de'],
+      ['Facebook','https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'#4b7bd8'],
+      ['X (Twitter)','https://twitter.com/intent/tweet?text='+encodeURIComponent(msg)+'&url='+encodeURIComponent(url),'#d8d8d8'],
+      ['LinkedIn','https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url),'#3a8fd0'],
+      ['Email','mailto:?subject='+encodeURIComponent(title)+'&body='+encodeURIComponent(ghazalText(g,L)+'\n\n'+url),'#ff9a76']
+    ];
+    var h='<div class="share-modal"><button class="share-x" type="button" aria-label="Close" data-sh="close">✕</button>'+
+      '<h3>Share this poem</h3><p class="share-t">'+esc(msg)+'</p><div class="share-grid">';
+    items.forEach(function(it){
+      h+='<a class="share-i" target="_blank" rel="noopener" href="'+esc(it[1])+'"><i style="background:'+it[2]+'"></i><span>'+it[0]+'</span></a>';
+    });
+    h+='<button class="share-i" type="button" data-sh="copy"><i style="background:#ffc857"></i><span>Copy link</span></button>';
+    if(navigator.share)h+='<button class="share-i" type="button" data-sh="native"><i style="background:#bfe8cf"></i><span>More apps…</span></button>';
+    h+='</div><p class="share-link">'+esc(url)+'</p></div>';
+    if(!shareOv){
+      shareOv=document.createElement('div');shareOv.className='share-overlay';
+      shareOv.setAttribute('role','dialog');shareOv.setAttribute('aria-modal','true');shareOv.setAttribute('aria-label','Share this poem');
+      document.body.appendChild(shareOv);
+      shareOv.addEventListener('click',function(e){
+        if(e.target===shareOv){closeShare();return}
+        var b=e.target.closest('[data-sh]'),a=e.target.closest('a.share-i');
+        if(a){setTimeout(closeShare,200);return}
+        if(!b)return;
+        var w=b.getAttribute('data-sh');
+        if(w==='close')closeShare();
+        else if(w==='copy'){copyText(shareUrl(curG,curL),'Link copied');closeShare()}
+        else if(w==='native'){
+          navigator.share({title:titleOf(curG,curL),text:titleOf(curG,curL)+' — '+poetName(curG,curL),url:shareUrl(curG,curL)}).catch(function(){});
+          closeShare();
+        }
+      });
+      document.addEventListener('keydown',function(e){if(e.key==='Escape')closeShare()});
+    }
+    shareOv.innerHTML=h;
+    shareOv.classList.add('open');
+  }
+
+  /* ---------- print: a decorated page ---------- */
+  var CORNER='<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#8a5a1e" stroke-width="2.4" stroke-linecap="round"><path d="M6 94V32Q6 6 32 6H94"/><path stroke="#b8862b" stroke-width="1.2" d="M17 94V40Q17 17 40 17H94"/><path stroke="#b8862b" stroke-width="1.2" d="M28 28q10-2 16 6M28 28q-2 10 6 16"/></g><g fill="#b8862b"><rect x="25" y="25" width="9" height="9" transform="rotate(45 29.5 29.5)"/><circle cx="6" cy="94" r="3.2"/><circle cx="94" cy="6" r="3.2"/></g></svg>';
+  function printHTML(g,L){
+    var h='<div class="pa-page"><div class="pa-frame f1"></div><div class="pa-frame f2"></div>';
+    ['tl','tr','bl','br'].forEach(function(p){h+='<div class="pa-c '+p+'">'+CORNER+'</div>'});
+    h+='<div class="pa-inner"><div class="pa-orn"><i></i></div>'+
+      '<h1 class="pa-title">'+esc(titleOf(g,L))+'</h1><p class="pa-poet">'+esc(poetName(g,L))+'</p><div class="pa-body">';
+    g.couplets.forEach(function(c){
+      h+='<div class="pa-cp">'+c[L].map(function(x){return '<p class="pm">'+esc(x)+'</p>'}).join('')+'</div>';
+    });
+    h+='</div><div class="pa-orn"><i></i></div><p class="pa-foot">'+esc(CFG.foot)+
+      (/^https?:$/.test(location.protocol)?' · '+esc(location.hostname):'')+'</p></div></div>';
+    return h;
+  }
+  /* shrink the lettering a little if the ghazal is long, so the whole ghazal fits one decorated page */
+  function fitPrint(pa){
+    var body=pa.querySelector('.pa-body'),ms=pa.querySelectorAll('.pm'),ps=1;
+    for(var it=0;it<4;it++){
+      pa.style.setProperty('--ps',ps);pa.style.setProperty('--pfit',1);
+      ms.forEach(function(m){m.classList.remove('wr')});
+      var worst=1;
+      ms.forEach(function(m){
+        var ws=m.style.whiteSpace,ta=m.style.textAlignLast;
+        m.style.whiteSpace='nowrap';m.style.textAlignLast='auto';
+        var r=m.scrollWidth/Math.max(1,m.clientWidth);if(r>worst)worst=r;
+        m.style.whiteSpace=ws;m.style.textAlignLast=ta;
+      });
+      if(worst>1)pa.style.setProperty('--pfit',Math.max(.6,(1/worst)*.98).toFixed(3));
+      ms.forEach(function(m){var lh=parseFloat(getComputedStyle(m).lineHeight)||20;if(m.offsetHeight>lh*1.6)m.classList.add('wr')});
+      if(body.scrollHeight-body.clientHeight<=1)break;
+      ps=Math.max(.45,ps*body.clientHeight/body.scrollHeight*.97);
+    }
+  }
+  function printGhazal(){
+    var g=curG,L=curL; if(!g)return;
+    var pa=document.getElementById('printArea');
+    if(!pa){pa=document.createElement('div');pa.id='printArea';document.body.appendChild(pa)}
+    pa.className='pa l-'+L+' measuring';
+    pa.innerHTML=printHTML(g,L);
+    fitPrint(pa);
+    pa.classList.remove('measuring');
+    setTimeout(function(){window.print()},80);
+  }
+
+  /* ---------- Rekhta-style fitting ----------
+     Every line is stretched to the full width of the page, so all lines in all couplets
+     are exactly the same length. If a line is too long for a small screen, the letters
+     shrink a little so it still fits. If the screen is extremely narrow (e.g. zoomed in a lot),
+     lines simply wrap and are centred — nothing is ever cut off or pushed out of reach. */
+  function fit(){
+    var sheet=document.querySelector('.stack'); if(!sheet)return;
+    var ms=sheet.querySelectorAll('.m'); if(!ms.length)return;
+    sheet.style.setProperty('--fit',1);
+    ms.forEach(function(m){m.classList.remove('wr')});
+    var worst=1;
+    ms.forEach(function(m){
+      var ws=m.style.whiteSpace,ta=m.style.textAlignLast;
+      m.style.whiteSpace='nowrap';m.style.textAlignLast='auto';
+      var r=m.scrollWidth/Math.max(1,m.clientWidth); if(r>worst)worst=r;
+      m.style.whiteSpace=ws;m.style.textAlignLast=ta;
+    });
+    if(worst>1)sheet.style.setProperty('--fit',Math.max(.6,(1/worst)*.98).toFixed(3));
+    ms.forEach(function(m){
+      var lh=parseFloat(getComputedStyle(m).lineHeight)||20;
+      if(m.offsetHeight>lh*1.6)m.classList.add('wr');
+    });
+  }
+  var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(fit,120)});
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+
+  /* ---------- routing ---------- */
+  function route(){
+    var m=/^#([A-Za-z]+\d+)(?:-([uhr]))?$/.exec(location.hash||'');
+    var key=m?m[1]:'';
+    if(m&&m[2]&&m[2]!==state.lang){state.lang=m[2];save()}
+    var reading=!!key;
+    root.style.setProperty('--fs',state.fs);
+    listView.hidden=reading; readView.hidden=!reading; intro.hidden=reading;
+    sizes.classList.toggle('show',reading);
+    document.querySelectorAll('#langs button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-l')===state.lang)});
+    if(reading){
+      $('crumb').innerHTML='<a href="index.html">Home</a><span class="sep">›</span><a href="PoetrySection.html">Poetry Section</a><span class="sep">›</span><span aria-current="page"><a href="#all">'+CFG.name+'</a></span>';
+      showRead(key);
+    }else{
+      $('crumb').innerHTML='<a href="index.html">Home</a><span class="sep">›</span><a href="PoetrySection.html">Poetry Section</a><span class="sep">›</span><span aria-current="page">'+CFG.name+'</span>';
+      showList();
+    }
+    if(drawer.classList.contains('open'))fillDrawer(key);
+  }
+
+  window.addEventListener('hashchange',function(){closeD();route();window.scrollTo(0,0)});
+
+  document.querySelectorAll('#langs button').forEach(function(b){
+    b.addEventListener('click',function(){
+      state.lang=b.getAttribute('data-l');save();
+      document.querySelectorAll('#langs button').forEach(function(x){x.classList.toggle('on',x===b)});
+      if(readView.hidden)showList();
+      else if(curG)drawSheet(curG);   /* already loaded — just redraw */
+    });
+  });
+  $('filters').addEventListener('click',function(e){
+    var b=e.target.closest('.chip');if(!b)return;
+    var kind=b.getAttribute('data-f'),v=b.getAttribute('data-v');
+    state[kind]=v;
+    showList();
+  });
+  $('smaller').addEventListener('click',function(){state.fs=Math.max(.8,+(state.fs-.1).toFixed(2));save();root.style.setProperty('--fs',state.fs);fit()});
+  $('bigger').addEventListener('click',function(){state.fs=Math.min(1.6,+(state.fs+.1).toFixed(2));save();root.style.setProperty('--fs',state.fs);fit()});
+
+  route();
+})();
+</script>
+<script src="site.js" defer></script>
+</body>
+</html>

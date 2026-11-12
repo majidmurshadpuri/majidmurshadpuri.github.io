@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Poetry Videos & Shorts | Majid Murshadpuri</title>
+<meta name="description" content="Watch Urdu poetry videos and shorts by Majid Murshadpuri — ghazals, nazms and shers in his own voice.">
+<meta name="author" content="Majid Murshadpuri">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#35205a">
+<link rel="canonical" href="https://majidmurshadpuri.surge.sh/MyPoetryVideos.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Poetry Videos & Shorts | Majid Murshadpuri">
+<meta property="og:description" content="Urdu poetry in my own voice — videos and shorts.">
+<meta property="og:site_name" content="Majid Murshadpuri">
+<link rel="stylesheet" href="site.css" />
+<style>
+main{padding-top:92px;padding-left:18px;padding-right:18px}
+.intro h1{font-family:var(--hand);font-weight:400;font-size:clamp(1.9rem,8vw,3.6rem);line-height:1.15}
+.intro h1 .wiggle{display:inline-block;animation:wave 2.6s ease-in-out infinite;transform-origin:70% 80%}
+.intro p{margin-top:10px;max-width:34rem;line-height:1.65;font-size:clamp(1rem,2.8vw,1.15rem)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 6px}
+.chip{font-family:var(--hand);font-size:1rem;border:none;cursor:pointer;color:var(--ink);background:var(--paper);
+  padding:9px 18px;border-radius:999px;box-shadow:0 5px 14px var(--shadow);transition:transform .2s,background .2s}
+.chip:hover{transform:rotate(-2deg) scale(1.05)}
+.chip.on{background:var(--saffron);color:#3a1d3b;transform:rotate(-1.5deg)}
+.chip small{opacity:.7;margin-left:4px}
+.section[hidden]{display:none}
+.section-title{font-size:clamp(1.4rem,4vw,2rem);margin:26px 0 14px;display:flex;align-items:center;gap:10px}
+.grid{display:grid;gap:26px 22px;padding:6px 0 10px}
+.grid.videos{grid-template-columns:1fr}
+.grid.shorts{grid-template-columns:repeat(2,1fr);gap:22px 14px}
+@media (min-width:720px){
+  .grid.videos{grid-template-columns:repeat(2,1fr)}
+  .grid.shorts{grid-template-columns:repeat(4,1fr);gap:26px 20px}
+}
+@media (min-width:1000px){ .grid.videos{grid-template-columns:repeat(3,1fr)} }
+.card{position:relative;opacity:0;transform:translateY(26px) rotate(var(--r,0deg));transition:opacity .6s,transform .6s}
+.card.in{opacity:1;transform:rotate(var(--r,0deg))}
+.card:nth-child(odd){--r:-1.2deg}
+.card:nth-child(even){--r:1.4deg}
+.card button.open{display:block;width:100%;text-align:left;border:none;cursor:pointer;color:var(--ink);background:var(--paper);
+  padding:10px 10px 14px;border-radius:8px 24px 8px 24px;box-shadow:0 12px 26px var(--shadow);
+  transition:transform .3s cubic-bezier(.2,.9,.3,1.3),box-shadow .3s}
+.card button.open:hover{transform:rotate(calc(var(--r,0deg) * -1)) scale(1.03) translateY(-5px);box-shadow:0 22px 40px var(--shadow)}
+.thumb{position:relative;overflow:hidden;border-radius:6px 18px 6px 18px;background:linear-gradient(135deg,#ffb199,#8e5a9b)}
+.videos .thumb{aspect-ratio:16/9}
+.shorts .thumb{aspect-ratio:9/16}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.card button.open:hover .thumb img{transform:scale(1.07)}
+.play{position:absolute;inset:0;display:grid;place-items:center}
+.play span{width:54px;height:54px;border-radius:50%;background:rgba(255,246,230,.92);color:#c2412f;font-size:1.4rem;
+  display:grid;place-items:center;padding-left:4px;box-shadow:0 6px 16px rgba(0,0,0,.3);transition:transform .3s}
+.card button.open:hover .play span{transform:scale(1.15)}
+.card h3{font-family:var(--hand);font-weight:400;font-size:1.05rem;line-height:1.35;margin:12px 4px 0}
+.shorts .card h3{font-size:.92rem}
+.card .when{margin:4px 4px 0;font-size:.8rem;opacity:.7}
+.badge{top:-10px;right:-6px;font-size:.8rem;padding:6px 13px;pointer-events:none;animation:none}
+.badge.latest{background:var(--coral);transform:rotate(8deg);animation:wiggle 2.4s ease-in-out infinite}
+.badge.new{background:#3f9d74;transform:rotate(6deg)}
+.empty{display:block;font-family:var(--hand);padding:20px;background:var(--paper);border-radius:20px;box-shadow:0 8px 20px var(--shadow);color:var(--ink)}
+footer{padding:26px 20px 50px}
+footer small{display:block;opacity:.85}
+.player-overlay{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;
+  background:rgba(30,8,40,.72);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .3s}
+.player-overlay.open{opacity:1;pointer-events:auto}
+.player{width:min(94vw,860px);max-height:92vh;background:var(--paper);color:var(--ink);padding:14px 14px 16px;
+  border-radius:30px 12px 30px 12px;box-shadow:0 30px 70px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px;
+  transform:scale(.92) rotate(-1deg);transition:transform .35s cubic-bezier(.2,.9,.3,1.3);position:relative}
+.player-overlay.open .player{transform:scale(1) rotate(0)}
+.player.short{width:min(86vw,380px)}
+.frame{position:relative;width:100%;border-radius:18px;overflow:hidden;background:#000}
+.player:not(.short) .frame{aspect-ratio:16/9}
+.player.short .frame{aspect-ratio:9/16;max-height:68vh;margin:0 auto}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.player .ptitle{font-family:var(--hand);font-size:1.05rem;padding:2px 6px}
+.player .row{display:flex;gap:10px;flex-wrap:wrap;padding:0 6px}
+.player .fsbtn{font-family:var(--hand);border:none;cursor:pointer;color:#3a1d3b;background:var(--saffron);padding:9px 20px;border-radius:999px;font-size:.95rem;box-shadow:0 5px 14px var(--shadow)}
+.frame .note-msg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;color:#fff1dc;font-family:var(--hand);line-height:1.6;background:linear-gradient(135deg,#8e5a9b,#35205a)}
+.pclose{position:absolute;top:-14px;right:-8px;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--coral);color:#fff;font-size:1.1rem;box-shadow:0 6px 16px rgba(0,0,0,.35);z-index:2}
+.player-overlay:fullscreen{background:#000;padding:0}
+.player-overlay:-webkit-full-screen{background:#000;padding:0}
+.player-overlay:fullscreen .player,.player-overlay.pseudo .player{
+  width:100% !important;max-width:none !important;height:100% !important;max-height:none !important;
+  border-radius:0;padding:0;background:#000;transform:none;gap:0}
+.player-overlay:-webkit-full-screen .player{width:100% !important;height:100% !important;max-width:none !important;max-height:none !important;border-radius:0;padding:0;background:#000;transform:none;gap:0}
+.player-overlay:fullscreen .frame,.player-overlay.pseudo .frame,
+.player-overlay:-webkit-full-screen .frame{aspect-ratio:auto !important;width:100%;height:100% !important;max-height:none !important;border-radius:0}
+.player-overlay:fullscreen .ptitle,.player-overlay:fullscreen .row,
+.player-overlay:-webkit-full-screen .ptitle,.player-overlay:-webkit-full-screen .row,
+.player-overlay.pseudo .ptitle,.player-overlay.pseudo .row{display:none}
+.player-overlay:fullscreen .pclose,.player-overlay:-webkit-full-screen .pclose,.player-overlay.pseudo .pclose{top:12px;right:12px;opacity:.85}
+.player-overlay.pseudo{padding:0;background:#000}
+.player-overlay.pseudo.rot .player{
+  position:fixed;top:0;left:0;width:100vh !important;width:100dvh !important;height:100vw !important;height:100dvw !important;
+  transform-origin:top left;transform:rotate(90deg) translateY(-100%)}
+@media (max-width:720px){main{padding-left:16px;padding-right:16px}}
+@media (prefers-reduced-motion:reduce){.card{opacity:1;transform:none}}
+</style>
+<noscript><style>.note{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+
+<div class="sky" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="stars" id="stars"></div>
+  <div class="sun"></div>
+</div>
+
+<header class="top">
+  <a class="mark" href="index.html">Majid Murshadpuri ✿</a>
+  <div class="top-actions">
+    <button class="round burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <button class="round d-close" id="drawerClose" type="button" aria-label="Close menu">✕</button>
+  <h3>Come on in 🚪</h3>
+  <p class="small">The little doors of this website, in order.</p>
+  <a class="d-link d-home" href="index.html"><span class="e">🏡</span> Home</a>
+  <a class="d-link d-poetry" href="PoetrySection.html"><span class="e">🪶</span> Poetry Section</a>
+  <div class="d-list"><a class="d-g" href="MyPoetry.html"><i>✍️</i> My Poetry</a><a class="d-g cur" href="MyPoetryVideos.html"><i>🎬</i> Poetry Videos</a><a class="d-g" href="LovedPoetry.html"><i>💛</i> Poetry I Love</a><a class="d-g" href="Aakhiri%20Tasveer%20Hindi.html"><i>📜</i> Umair Najmi Collection</a></div>
+  <a class="d-link d-maths" href="MathsPracticeLibrary.html"><span class="e">🧮</span> Maths Practice Library</a>
+  <div class="d-list"><a class="d-g" href="6thMathQuizHome.html"><i>🎯</i> Class 6 · Quiz</a><a class="d-g" href="6th%20Math%20SA%20I%20Practice.html"><i>6️⃣</i> Class 6 · SA I Practice</a><a class="d-g" href="7th%20Math%20SA%20I%20Practice.html"><i>7️⃣</i> Class 7 · SA I Practice</a><a class="d-g" href="8th%20Math%20SA%20I%20Practice.html"><i>8️⃣</i> Class 8 · SA I Practice</a></div>
+  <a class="d-link d-eng" href="English%20Study%20Material.html"><span class="e">📝</span> English Study Material</a>
+  <div class="d-list"><a class="d-g" href="uppgt2026literature.html"><i>🎯</i> UP PGT 2026 · Literature</a></div>
+  <a class="d-link d-apps" href="apps.html"><span class="e">🧰</span> Tools &amp; Apps Studio</a>
+  <a class="d-link d-about" href="MyResume.html"><span class="e">🌻</span> About Me</a>
+  
+  
+  <div class="foot">made with chai &amp; curiosity ☕</div>
+</aside>
+
+<main id="top">
+
+  <nav class="crumbs" aria-label="You are here"><a href="index.html">Home</a><span class="sep">›</span><a href="PoetrySection.html">Poetry Section</a><span class="sep">›</span><span aria-current="page">Poetry Videos</span></nav>
+
+  <section class="intro">
+    <h1>Poetry, out loud <span class="wiggle">🎙️</span></h1>
+    <p>Ghazals, nazms and shers in my own voice. Pick one, press play, and pause whenever the world calls.</p>
+  </section>
+
+  <div class="chips" id="chips">
+    <button class="chip on" data-filter="all" type="button">All <small id="cAll"></small></button>
+    <button class="chip" data-filter="videos" type="button">Videos <small id="cVideos"></small></button>
+    <button class="chip" data-filter="shorts" type="button">Shorts <small id="cShorts"></small></button>
+  </div>
+
+  <section class="section" id="secVideos">
+    <h2 class="section-title">🎬 Videos</h2>
+    <div class="grid videos" id="gridVideos"></div>
+  </section>
+
+  <section class="section" id="secShorts">
+    <h2 class="section-title">⚡ Shorts</h2>
+    <div class="grid shorts" id="gridShorts"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="hearts">✿ ☕ ✿</div>
+  no rules here · just a home for words, numbers &amp; code<br>
+  <small>Majid Murshadpuri · Hapur, Uttar Pradesh · <a href="index.html">Home</a></small>
+</footer>
+<script src="site.js" defer></script>
+<!-- =====================================================================
+     ★★★  YOUR VIDEOS LIVE HERE — THIS IS THE ONLY PART YOU EDIT  ★★★
+     =====================================================================
+
+ HOW TO ADD A NEW VIDEO OR SHORT (30 seconds):
+   1. Copy ONE line inside VIDEOS (for a normal video) or SHORTS (for a short).
+   2. Paste it at the TOP of that list (newest first).
+   3. Replace the url with the YouTube link — paste it exactly as YouTube
+      gives it (youtu.be/..., youtube.com/watch?v=..., youtube.com/shorts/...).
+   4. Replace the title.
+   5. Add today's date as  date:'YYYY-MM-DD'  (this is what makes the "New" label work).
+   Save, upload — done. Nothing else to touch.
+
+ THE LABELS ARE AUTOMATIC:
+   • "Latest ✨" → always goes on the FIRST item of each list (the one at the top).
+                  When you add a newer one above it, the label moves by itself.
+   • "New"      → goes on any item whose date is within the last NEW_DAYS days.
+                  After that, it fades away on its own. Items without a date
+                  never get "New" (they can still be "Latest" if they are first).
+
+ HOW TO REMOVE one: delete its line. Keep the commas between lines.
+ Own titles with an apostrophe: write  'Hum Dono\'s Ghazal'  (put a \ before ').
+-->
+<script id="my-videos">
+/* How many days an item keeps its green "New" label: */
+var NEW_DAYS = 14;
+
+/* ---------- NORMAL VIDEOS (newest on top) ---------- */
+var VIDEOS = [
+  { url:'https://youtu.be/a30NaQcsUj0' },
+  { url:'https://youtu.be/Lg1u-XvIf3c' },
+  { url:'https://youtu.be/hOvkuK5O08w' },
+  { url:'https://youtu.be/evdy6kgqYHs' },
+  { url:'https://youtu.be/0jF7yoVOCis' },
+  { url:'https://youtu.be/LPeKIc85f_k' },
+  { url:'https://youtu.be/NIZrn4Z1X0s' }
+  /* Example of a NEW one (paste above, at the top):
+  { url:'https://youtu.be/XXXXXXXXXXX', date:'2026-11-20' },
+  */
+];
+
+/* ---------- SHORTS (newest on top) ---------- */
+var SHORTS = [
+  { url:'https://youtube.com/shorts/cQUfTkNxpQc' },
+  { url:'https://youtube.com/shorts/mmnMg8JzT9g' }
+  /* Example of a NEW short (paste above, at the top):
+  { url:'https://youtube.com/shorts/XXXXXXXXXXX', date:'2026-11-20' },
+  */
+];
+</script>
+
+<!-- =====================================================================
+     ENGINE — builds the cards, labels and player. You never need to edit
+     anything below this line.
+     ===================================================================== -->
+<script>
+(function(){
+  /* helpers */
+  function getId(url){
+    var m=String(url).match(/(?:youtu\.be\/|shorts\/|[?&]v=|embed\/)([A-Za-z0-9_-]{11})/);
+    return m?m[1]:String(url).trim();
+  }
+  function daysAgo(d){
+    if(!d)return Infinity;
+    var t=new Date(d+'T00:00:00').getTime();
+    if(isNaN(t))return Infinity;
+    return (Date.now()-t)/86400000;
+  }
+  function prettyDate(d){
+    var t=new Date(d+'T00:00:00');
+    if(isNaN(t.getTime()))return '';
+    return t.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  }
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+  /* ---- automatic titles: asked from YouTube in the visitor's browser, then remembered for 3 days ---- */
+  function getTitle(id,ok,fail){
+    var key='mm-yt-title-'+id;
+    try{
+      var c=JSON.parse(localStorage.getItem(key)||'null');
+      if(c&&c.t&&(Date.now()-c.ts)<3*86400000){ok(c.t);return}
+    }catch(e){}
+    fetch('https://www.youtube.com/oembed?format=json&url='+encodeURIComponent('https://www.youtube.com/watch?v='+id))
+      .then(function(r){return r.ok?r.json():null})
+      .then(function(j){
+        if(j&&j.title){
+          try{localStorage.setItem(key,JSON.stringify({t:j.title,ts:Date.now()}))}catch(e){}
+          ok(j.title);
+        }else fail();
+      })
+      .catch(fail);
+  }
+
+  /* build cards */
+  var observer=('IntersectionObserver' in window)?new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');observer.unobserve(e.target)}});
+  },{threshold:.12}):null;
+
+  function render(list,gridId,kind){
+    var grid=document.getElementById(gridId);
+    grid.innerHTML='';
+    if(!list.length){grid.innerHTML='<p class="empty">Nothing here yet — something is cooking ☕</p>';return}
+    list.forEach(function(item,idx){
+      var id=getId(item.url);
+      var card=document.createElement('div');card.className='card';
+
+      /* ---- automatic labels ---- */
+      var badge='';
+      if(idx===0){badge='<span class="badge latest">Latest ✨</span>'}
+      else if(daysAgo(item.date)<=NEW_DAYS){badge='<span class="badge new">New</span>'}
+
+      var when=item.date?'<p class="when">'+esc(prettyDate(item.date))+'</p>':'';
+      card.innerHTML=badge+
+        '<button class="open" type="button" aria-label="Play video">'+
+          '<div class="thumb">'+
+            '<img loading="lazy" alt="" src="https://i.ytimg.com/vi/'+id+'/hqdefault.jpg">'+
+            '<div class="play"><span>▶</span></div>'+
+          '</div>'+
+          '<h3>'+esc(item.title||'Loading title…')+'</h3>'+when+
+        '</button>';
+      var img=card.querySelector('img');
+      img.addEventListener('error',function(){img.style.display='none'}); /* gradient shows if thumbnail can't load */
+      var h3=card.querySelector('h3');
+      if(!item.title){
+        getTitle(id,function(t){item.title=t;h3.textContent=t},function(){item.title='Poetry video';h3.textContent=item.title});
+      }
+      card.querySelector('button.open').addEventListener('click',function(){openPlayer(id,item.title||'Poetry video',kind)});
+      grid.appendChild(card);
+      if(observer)observer.observe(card);else card.classList.add('in');
+    });
+  }
+  render(VIDEOS,'gridVideos','video');
+  render(SHORTS,'gridShorts','short');
+
+  document.getElementById('cAll').textContent=(VIDEOS.length+SHORTS.length);
+  document.getElementById('cVideos').textContent=VIDEOS.length;
+  document.getElementById('cShorts').textContent=SHORTS.length;
+
+  /* filter chips */
+  var chips=document.querySelectorAll('.chip');
+  chips.forEach(function(c){c.addEventListener('click',function(){
+    chips.forEach(function(x){x.classList.remove('on')});c.classList.add('on');
+    var f=c.getAttribute('data-filter');
+    document.getElementById('secVideos').hidden=(f==='shorts');
+    document.getElementById('secShorts').hidden=(f==='videos');
+  })});
+
+  /* player popup (video loads only when tapped — keeps the page fast) */
+  var overlay=document.createElement('div');
+  overlay.className='player-overlay';
+  overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
+  overlay.innerHTML='<div class="player"><button class="pclose" type="button" aria-label="Close">✕</button>'+
+    '<div class="frame" id="frame"></div><div class="ptitle" id="ptitle"></div>'+
+    '<div class="row"><button class="fsbtn" id="fsbtn" type="button">⛶ Full screen</button></div></div>';
+  document.body.appendChild(overlay);
+  var player=overlay.querySelector('.player'),frame=overlay.querySelector('#frame');
+
+  /* Videos only play when this page is served from a real website address
+     (https://...). Opened as a local file, the player cannot start. */
+  var LIVE=/^https?:$/.test(location.protocol);
+  var curKind='video';
+
+  function fsElement(){return document.fullscreenElement||document.webkitFullscreenElement||null}
+
+  /* landscape lock (Android phones & tablets; ignored where unsupported) */
+  function lockLandscape(){
+    try{
+      if(curKind==='video' && screen.orientation && screen.orientation.lock){
+        screen.orientation.lock('landscape').catch(function(){});
+      }
+    }catch(e){}
+  }
+  function unlockOrientation(){
+    try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock()}catch(e){}
+  }
+
+  /* fallback for devices where real fullscreen is blocked (e.g. iPhone):
+     fill the screen and, for normal videos held upright, rotate to landscape */
+  function updateRot(){
+    var on=overlay.classList.contains('pseudo')&&curKind==='video'&&window.innerHeight>window.innerWidth;
+    overlay.classList.toggle('rot',on);
+  }
+  function pseudoFull(){overlay.classList.add('pseudo');updateRot()}
+  window.addEventListener('resize',updateRot);
+  window.addEventListener('orientationchange',function(){setTimeout(updateRot,200)});
+
+  function goFull(){
+    var req=overlay.requestFullscreen||overlay.webkitRequestFullscreen||overlay.msRequestFullscreen;
+    if(!req){pseudoFull();return}
+    try{
+      var r=req.call(overlay);
+      if(r&&r.then){r.then(lockLandscape).catch(pseudoFull)}else{lockLandscape()}
+    }catch(e){pseudoFull()}
+  }
+
+  function openPlayer(id,title,kind){
+    curKind=kind;
+    player.classList.toggle('short',kind==='short');
+    if(LIVE){
+      var src='https://www.youtube-nocookie.com/embed/'+id+
+        '?autoplay=1&rel=0&playsinline=1&modestbranding=1&iv_load_policy=3&fs=1&cc_load_policy=0'+
+        '&origin='+encodeURIComponent(location.origin);
+      frame.innerHTML='<iframe src="'+src+'" title="'+esc(title)+'" referrerpolicy="strict-origin-when-cross-origin" '+
+        'allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+    }else{
+      frame.innerHTML='<div class="note-msg">Videos play once this page is uploaded to your website.<br>This is only a local preview. 🌸</div>';
+    }
+    overlay.querySelector('#ptitle').textContent=title;
+    overlay.classList.add('open');document.body.classList.add('no-scroll');
+    goFull(); /* must run inside the tap, so the browser allows it */
+  }
+  function closePlayer(){
+    overlay.classList.remove('open','pseudo','rot');
+    frame.innerHTML=''; /* removing the iframe stops playback */
+    document.body.classList.remove('no-scroll');
+    unlockOrientation();
+    if(fsElement()){
+      try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}
+    }
+  }
+  /* leaving full screen (back button, Esc, swipe) closes the video */
+  function onFsChange(){
+    if(!fsElement() && overlay.classList.contains('open') && !overlay.classList.contains('pseudo')) closePlayer();
+  }
+  document.addEventListener('fullscreenchange',onFsChange);
+  document.addEventListener('webkitfullscreenchange',onFsChange);
+
+  /* the "Full screen" button inside the popup (shown only if full screen didn't start) */
+  overlay.querySelector('#fsbtn').addEventListener('click',goFull);
+  overlay.querySelector('.pclose').addEventListener('click',closePlayer);
+  overlay.addEventListener('click',function(e){if(e.target===overlay)closePlayer()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){closePlayer()}});
+})();
+</script>
+
+</body>
+</html>
