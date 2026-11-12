@@ -1,6 +1,12 @@
 /* ============================================================
-   Quiz Engine — reusable styles (all classes prefixed .qe-)
+   Quiz Engine — reusable & anti-cheat styles (all classes prefixed .qe-)
    ============================================================ */
+
+body, .main-wrapper, .qe-root {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 
 .qe-root {
   --qe-green: #123c35;
@@ -21,6 +27,74 @@
   padding: clamp(16px, 3.5vh, 30px) clamp(16px, 4vw, 30px);
   color: var(--qe-ink);
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.qe-watermark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-content: space-around;
+  opacity: 0.06;
+  overflow: hidden;
+}
+
+.qe-watermark-item {
+  transform: rotate(-25deg);
+  font-size: clamp(12px, 1.8vh, 15px);
+  font-weight: 800;
+  color: #123c35;
+  white-space: nowrap;
+  padding: 20px;
+}
+
+.qe-content-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.qe-security-blur {
+  filter: blur(28px) grayscale(100%) !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+.qe-security-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(18, 60, 53, 0.96);
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  text-align: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.qe-security-warning h2 {
+  font-size: clamp(24px, 4vh, 36px);
+  color: #e7b95b;
+  margin-bottom: 12px;
+}
+.qe-security-warning p {
+  font-size: clamp(15px, 2.2vh, 20px);
+  max-width: 540px;
+  margin-bottom: 24px;
+  line-height: 1.5;
 }
 
 .qe-title {
