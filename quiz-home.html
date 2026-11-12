@@ -207,6 +207,18 @@
     margin-top: 10px;
     padding-bottom: 20px;
   }
+
+  .inline-msg {
+    background: #fdf2f2;
+    border: 1px solid #f5c2c7;
+    color: #842029;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -227,6 +239,7 @@
     <div class="student-form">
       <h2>📋 New Student Details</h2>
       <p>Enter your name and class to begin the quiz.</p>
+      <div id="formErrorMsg" class="inline-msg hide"></div>
       <div class="form-group">
         <label for="studentNameInput">Full name</label>
         <input type="text" id="studentNameInput" placeholder="e.g. Aarav Sharma" autocomplete="off">
@@ -263,7 +276,8 @@
   </div>
 </div>
 
-<script src="quiz-engine_2.js"></script>
+<!-- Quiz engine script -->
+<script src="quiz-engine.js"></script>
 <script>
 (function () {
   'use strict';
@@ -276,6 +290,7 @@
   const studentListContainer   = document.getElementById('studentListContainer');
   const showAddFormBtn         = document.getElementById('showAddFormBtn');
   const addStudentFormOverlay  = document.getElementById('addStudentFormOverlay');
+  const formErrorMsg           = document.getElementById('formErrorMsg');
   const studentNameInput       = document.getElementById('studentNameInput');
   const studentClassSelect     = document.getElementById('studentClassSelect');
   const saveNewStudentBtn      = document.getElementById('saveNewStudentBtn');
@@ -293,6 +308,16 @@
   let progress = null;
   let levelsCache = null;
   let controller = null;
+
+  function showFormError(msg) {
+    if (!msg) {
+      formErrorMsg.classList.add('hide');
+      formErrorMsg.textContent = '';
+    } else {
+      formErrorMsg.textContent = msg;
+      formErrorMsg.classList.remove('hide');
+    }
+  }
 
   function loadJSON(key) {
     try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; }
@@ -379,6 +404,7 @@
 
   function showAddStudentForm() {
     hideAllScreens();
+    showFormError('');
     addStudentFormOverlay.classList.remove('hide');
     studentNameInput.value = '';
     studentClassSelect.value = '';
@@ -391,7 +417,7 @@
 
     try { await loadAllLevels(); }
     catch (e) {
-      alert('Could not load levels.json.');
+      levelHost.innerHTML = '<div class="inline-msg">Could not load quiz-levels.json.</div>';
       return;
     }
 
@@ -426,7 +452,10 @@
     const levelCfg = findLevel(levelId);
     if (!levelCfg) {
       const all = levelsCache || [];
-      if (all.length === 0) { alert('No levels found.'); return; }
+      if (all.length === 0) {
+        levelHost.innerHTML = '<div class="inline-msg">No levels found in quiz-levels.json.</div>';
+        return;
+      }
       const fallback = all[all.length - 1];
       progress.currentLevel = fallback.id;
       saveProgress();
@@ -467,8 +496,9 @@
   saveNewStudentBtn.addEventListener('click', async () => {
     const name = studentNameInput.value.trim();
     const cls = studentClassSelect.value;
-    if (!name) { alert("Please enter the student's name."); return; }
-    if (!cls)  { alert('Please select the class.'); return; }
+    if (!name) { showFormError("Please enter the student's name."); return; }
+    if (!cls)  { showFormError('Please select the class.'); return; }
+    showFormError('');
 
     const newStudent = { id: generateId(), name, class: cls };
     studentsList.push(newStudent);
