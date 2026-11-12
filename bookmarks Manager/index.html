@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Bookmark Manager · Folders</title>
+    
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f4f6fa;
+            color: #1e293b;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 20px;
+            -webkit-text-fill-color: #475569;
+        }
+
+        /* Add Form */
+        .add-form {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-row label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 0.3px;
+        }
+
+        .form-row input, .form-row select {
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #fafbfc;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            width: 100%;
+            color: #1e293b;
+        }
+
+        .form-row input:focus, .form-row select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            background: #ffffff;
+        }
+
+        .form-row input::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Folder creation inline */
+        .folder-create-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .folder-create-row input {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            font-size: 14px;
+            background: #fafbfc;
+            outline: none;
+        }
+
+        .folder-create-row input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .create-folder-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            white-space: nowrap;
+            touch-action: manipulation;
+        }
+
+        .create-folder-btn:active {
+            transform: scale(0.96);
+            background: #059669;
+        }
+
+        .add-btn {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 4px;
+            touch-action: manipulation;
+        }
+
+        .add-btn:active {
+            transform: scale(0.97);
+            background: #2563eb;
+        }
+
+        .add-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar button {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .toolbar button:active {
+            transform: scale(0.97);
+        }
+
+        .copy-btn {
+            background: #8b5cf6;
+            color: #fff;
+        }
+
+        .copy-btn:active {
+            background: #7c3aed;
+        }
+
+        .clear-btn {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .clear-btn:active {
+            background: #fecaca;
+        }
+
+        /* Folder & selection bar */
+        .folder-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            background: #ffffffd9;
+            backdrop-filter: blur(4px);
+            padding: 12px 16px;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .folder-bar label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .folder-select {
+            flex: 1;
+            min-width: 140px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .folder-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .move-btn {
+            background: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+
+        .move-btn:active {
+            background: #1e293b;
+            transform: scale(0.96);
+        }
+
+        .move-btn:disabled {
+            opacity: 0.4;
+            transform: none;
+            cursor: not-allowed;
+            background: #64748b;
+        }
+
+        /* Bookmark list */
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #94a3b8;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .empty-state svg {
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        .bookmark-item {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.25s ease;
+            border: 1px solid #f1f5f9;
+            transition: border-color 0.2s, background 0.1s;
+        }
+
+        .bookmark-item.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        }
+
+        .bookmark-check {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+            border-radius: 6px;
+        }
+
+        .bookmark-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .bookmark-heading {
+            font-weight: 600;
+            font-size: 16px;
+            color: #0f172a;
+            word-break: break-word;
+            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .folder-tag {
+            font-size: 11px;
+            font-weight: 600;
+            background: #e9e9ff;
+            color: #5b3cc4;
+            padding: 2px 8px;
+            border-radius: 100px;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+
+        .bookmark-url {
+            font-size: 13px;
+            color: #64748b;
+            word-break: break-all;
+            margin-top: 2px;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .bookmark-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .bookmark-actions button {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+
+        .bookmark-actions button:active {
+            transform: scale(0.94);
+        }
+
+        .go-btn {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .go-btn:active {
+            background: #bfdbfe;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 8px 10px;
+        }
+
+        .delete-btn:active {
+            background: #fecaca;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+            z-index: 999;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 540px) {
+            body {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .add-form {
+                padding: 14px;
+            }
+
+            .bookmark-item {
+                padding: 12px 14px;
+                flex-wrap: wrap;
+            }
+
+            .bookmark-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 6px;
+            }
+
+            .toolbar button {
+                font-size: 13px;
+                padding: 10px 12px;
+                min-width: 80px;
+            }
+
+            .folder-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .move-btn {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+
+            .folder-create-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .bookmark-actions button {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            .bookmark-heading {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" role="main">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔖 Bookmarks</h1>
+            <span class="badge" id="countBadge">0</span>
+        </div>
+
+        <!-- Add Form (with folder selection + create folder) -->
+        <form class="add-form" id="addForm" autocomplete="off">
+            <div class="form-row">
+                <label for="headingInput">Heading</label>
+                <input type="text" id="headingInput" placeholder="e.g. My favorite site" required />
+            </div>
+            <div class="form-row">
+                <label for="urlInput">URL</label>
+                <input type="url" id="urlInput" placeholder="https://example.com" required />
+            </div>
+            <div class="form-row">
+                <label for="folderInput">Folder (optional)</label>
+                <select id="folderInput">
+                    <option value="">— No folder —</option>
+                    <!-- dynamic folders will be injected -->
+                </select>
+            </div>
+
+            <!-- Folder creation -->
+            <div class="folder-create-row">
+                <input type="text" id="newFolderInput" placeholder="New folder name…" />
+                <button type="button" class="create-folder-btn" id="createFolderBtn">+ Folder</button>
+            </div>
+
+            <button class="add-btn" type="submit" id="addBtn">➕ Add Bookmark</button>
+        </form>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button class="copy-btn" id="copyBtn">📋 Copy All</button>
+            <button class="clear-btn" id="clearBtn">🗑️ Clear All</button>
+        </div>
+
+        <!-- Folder & selection bar -->
+        <div class="folder-bar" id="folderBar">
+            <label for="moveFolderSelect">📁 Move selected to</label>
+            <select class="folder-select" id="moveFolderSelect">
+                <option value="">— No folder —</option>
+                <!-- dynamic folders -->
+            </select>
+            <button class="move-btn" id="moveSelectedBtn" disabled>Move selected</button>
+        </div>
+
+        <!-- Bookmark List -->
+        <div class="list" id="bookmarkList" role="list">
+            <!-- items rendered here -->
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ----- DOM refs -----
+            const form = document.getElementById('addForm');
+            const headingInput = document.getElementById('headingInput');
+            const urlInput = document.getElementById('urlInput');
+            const folderInput = document.getElementById('folderInput');
+            const newFolderInput = document.getElementById('newFolderInput');
+            const createFolderBtn = document.getElementById('createFolderBtn');
+            const moveFolderSelect = document.getElementById('moveFolderSelect');
+            const moveSelectedBtn = document.getElementById('moveSelectedBtn');
+            const addBtn = document.getElementById('addBtn');
+            const listEl = document.getElementById('bookmarkList');
+            const countBadge = document.getElementById('countBadge');
+            const copyBtn = document.getElementById('copyBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const toast = document.getElementById('toast');
+
+            // ----- State -----
+            let bookmarks = [];          
+            let selectedIndices = new Set(); 
+
+            // ----- Storage keys -----
+            const NEW_STORAGE_KEY = 'bookmark_manager_data_v2';
+            const LEGACY_STORAGE_KEY = 'bookmark_manager_data';
+            const FOLDERS_STORAGE_KEY = 'bookmark_manager_folders';
+
+            // ----- Load from localStorage WITH automatic migration -----
+            function loadFromStorage() {
+                // 1. Try new storage key first
+                try {
+                    const rawNew = localStorage.getItem(NEW_STORAGE_KEY);
+                    if (rawNew) {
+                        const parsed = JSON.parse(rawNew);
+                        if (Array.isArray(parsed)) {
+                            bookmarks = parsed.map(b => ({
+                                heading: b.heading || 'Untitled',
+                                url: b.url || '',
+                                folder: b.folder || ''
+                            }));
+                            return;
+                        }
+                    }
+                } catch (_) { /* ignore */ }
+
+                // 2. Fall back to legacy key (old version without folders)
+                try {
+                    const rawLegacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+                    if (rawLegacy) {
+                        const parsed = JSON.parse(rawLegacy);
+                        if (Array.isArray(parsed)) {
+                            bookmarks = parsed.map(b => ({
+                                heading: b.heading || 'Untitled',
+                                url: b.url || '',
+                                folder: ''
+                            }));
+                            saveToStorage();
+                            showToast('Bookmarks migrated to new version!');
+                            return;
+                        }
+                    }
+                } catch (_) { /* ignore */ }
+
+                bookmarks = [];
+            }
+
+            // ----- Save to localStorage -----
+            function saveToStorage() {
+                try {
+                    localStorage.setItem(NEW_STORAGE_KEY, JSON.stringify(bookmarks));
+                } catch (_) { /* ignore */ }
+            }
+
+            // ----- Folder Management -----
+            function getStoredFolders() {
+                try {
+                    const raw = localStorage.getItem(FOLDERS_STORAGE_KEY);
+                    if (raw) {
+                        const arr = JSON.parse(raw);
+                        if (Array.isArray(arr)) return new Set(arr);
+                    }
+                } catch (_) {}
+                return new Set();
+            }
+
+            function saveStoredFolders(folderSet) {
+                try {
+                    localStorage.setItem(FOLDERS_STORAGE_KEY, JSON.stringify([...folderSet]));
+                } catch (_) {}
+            }
+
+            function getAllFolders() {
+                const fromBookmarks = new Set();
+                bookmarks.forEach(b => {
+                    if (b.folder && b.folder.trim() !== '') fromBookmarks.add(b.folder.trim());
+                });
+                const stored = getStoredFolders();
+                const all = new Set([...fromBookmarks, ...stored]);
+                return Array.from(all).sort();
+            }
+
+            function updateFolderDropdowns() {
+                const folders = getAllFolders();
+
+                function fillSelect(selectEl) {
+                    const currentValue = selectEl.value;
+                    selectEl.innerHTML = '';
+                    const emptyOpt = document.createElement('option');
+                    emptyOpt.value = '';
+                    emptyOpt.textContent = '— No folder —';
+                    selectEl.appendChild(emptyOpt);
+                    folders.forEach(f => {
+                        const opt = document.createElement('option');
+                        opt.value = f;
+                        opt.textContent = f;
+                        selectEl.appendChild(opt);
+                    });
+                    if (selectEl.querySelector(`option[value="${CSS.escape(currentValue)}"]`)) {
+                        selectEl.value = currentValue;
+                    }
+                }
+
+                fillSelect(folderInput);
+                fillSelect(moveFolderSelect);
+            }
+
+            function createNewFolder(folderName) {
+                const name = folderName.trim();
+                if (!name) {
+                    showToast('Folder name cannot be empty');
+                    return false;
+                }
+
+                const stored = getStoredFolders();
+                const allFolders = getAllFolders();
+                if (stored.has(name) || allFolders.includes(name)) {
+                    showToast('Folder already exists');
+                    return false;
+                }
+
+                stored.add(name);
+                saveStoredFolders(stored);
+                updateFolderDropdowns();
+                folderInput.value = name;
+                showToast(`Folder "${name}" created`);
+                return true;
+            }
+
+            // ----- Render list -----
+            function render() {
+                selectedIndices.forEach(idx => {
+                    if (idx >= bookmarks.length) selectedIndices.delete(idx);
+                });
+
+                if (bookmarks.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="empty-state" role="status">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                            </svg>
+                            <p>No bookmarks yet. Add one above!</p>
+                        </div>
+                    `;
+                    countBadge.textContent = '0';
+                    updateMoveButtonState();
+                    return;
+                }
+
+                let html = '';
+                for (let i = 0; i < bookmarks.length; i++) {
+                    const b = bookmarks[i];
+                    const heading = escapeHtml(b.heading) || 'Untitled';
+                    const url = escapeHtml(b.url);
+                    const folder = b.folder && b.folder.trim() !== '' ? b.folder.trim() : '';
+                    const folderTag = folder ? `<span class="folder-tag">📁 ${escapeHtml(folder)}</span>` : '';
+                    const isSelected = selectedIndices.has(i);
+                    const checkedAttr = isSelected ? 'checked' : '';
+
+                    html += `
+                        <div class="bookmark-item ${isSelected ? 'selected' : ''}" role="listitem" data-index="${i}">
+                            <input type="checkbox" class="bookmark-check" data-index="${i}" ${checkedAttr} aria-label="Select bookmark">
+                            <div class="bookmark-info">
+                                <div class="bookmark-heading">${heading} ${folderTag}</div>
+                                <span class="bookmark-url">${url}</span>
+                            </div>
+                            <div class="bookmark-actions">
+                                <button class="go-btn" data-action="go" data-index="${i}">Go</button>
+                                <button class="delete-btn" data-action="delete" data-index="${i}">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                listEl.innerHTML = html;
+                countBadge.textContent = bookmarks.length;
+                updateMoveButtonState();
+            }
+
+            function updateMoveButtonState() {
+                moveSelectedBtn.disabled = selectedIndices.size === 0;
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // ----- Event Handlers -----
+            function handleCheckboxChange(e) {
+                if (!e.target.classList.contains('bookmark-check')) return;
+                const idx = parseInt(e.target.getAttribute('data-index'), 10);
+                if (isNaN(idx)) return;
+
+                if (e.target.checked) {
+                    selectedIndices.add(idx);
+                } else {
+                    selectedIndices.delete(idx);
+                }
+                render();
+            }
+
+            function handleListClick(e) {
+                const target = e.target.closest('button');
+                if (!target) return;
+
+                const action = target.getAttribute('data-action');
+                const indexAttr = target.getAttribute('data-index');
+                if (indexAttr === null) return;
+                const index = parseInt(indexAttr, 10);
+                if (isNaN(index) || index < 0 || index >= bookmarks.length) return;
+
+                if (action === 'go') {
+                    const bookmark = bookmarks[index];
+                    if (bookmark && bookmark.url) {
+                        let url = bookmark.url.trim();
+                        if (!/^https?:\/\//i.test(url)) {
+                            url = 'https://' + url;
+                        }
+                        window.open(url, '_blank');
+                    }
+                } else if (action === 'delete') {
+                    const bookmark = bookmarks[index];
+                    const heading = bookmark.heading || 'Untitled';
+                    if (!confirm(`Delete bookmark "${heading}"?`)) {
+                        return;
+                    }
+                    bookmarks.splice(index, 1);
+                    selectedIndices.clear(); 
+                    saveToStorage();
+                    render();
+                    updateFolderDropdowns(); 
+                    showToast('Bookmark removed');
+                }
+            }
+
+            function addBookmark(heading, url, folder) {
+                const trimmedHeading = heading.trim();
+                let trimmedUrl = url.trim();
+                const trimmedFolder = folder ? folder.trim() : '';
+
+                if (!trimmedHeading || !trimmedUrl) {
+                    showToast('Please fill in both fields');
+                    return false;
+                }
+
+                try {
+                    if (!/^https?:\/\//i.test(trimmedUrl)) {
+                        trimmedUrl = 'https://' + trimmedUrl;
+                    }
+                    new URL(trimmedUrl);
+                } catch (_) {
+                    showToast('Please enter a valid URL (e.g. https://example.com)');
+                    return false;
+                }
+
+                bookmarks.push({
+                    heading: trimmedHeading,
+                    url: trimmedUrl,
+                    folder: trimmedFolder
+                });
+
+                saveToStorage();
+                render();
+                updateFolderDropdowns();
+                form.reset();
+                folderInput.value = ''; 
+                headingInput.focus();
+                showToast('Bookmark added!');
+                return true;
+            }
+
+            function moveSelectedToFolder() {
+                if (selectedIndices.size === 0) {
+                    showToast('No bookmarks selected');
+                    return;
+                }
+
+                const targetFolder = moveFolderSelect.value.trim();
+                const selectedList = Array.from(selectedIndices).sort((a, b) => a - b);
+
+                selectedList.forEach(idx => {
+                    if (idx < bookmarks.length) {
+                        bookmarks[idx].folder = targetFolder;
+                    }
+                });
+
+                saveToStorage();
+                render();
+                updateFolderDropdowns();
+                showToast(`Moved ${selectedList.length} bookmark(s) to folder "${targetFolder || 'No folder'}"`);
+            }
+
+            function copyAllAsText() {
+                if (bookmarks.length === 0) {
+                    showToast('No bookmarks to copy');
+                    return;
+                }
+
+                let text = '';
+                for (let i = 0; i < bookmarks.length; i++) {
+                    const b = bookmarks[i];
+                    const heading = b.heading || 'Untitled';
+                    const folder = b.folder ? ` [${b.folder}]` : '';
+                    text += `${heading}${folder}: ${b.url}`;
+                    if (i < bookmarks.length - 1) text += '\n';
+                }
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text)
+                        .then(() => showToast('Copied all bookmarks!'))
+                        .catch(() => fallbackCopy(text));
+                } else {
+                    fallbackCopy(text);
+                }
+            }
+
+            function fallbackCopy(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                textarea.style.top = '-9999px';
+                document.body.appendChild(textarea);
+                try {
+                    textarea.select();
+                    document.execCommand('copy');
+                    showToast('Copied all bookmarks!');
+                } catch (_) {
+                    showToast('Could not copy. Please copy manually.');
+                } finally {
+                    document.body.removeChild(textarea);
+                }
+            }
+
+            function clearAll() {
+                if (bookmarks.length === 0) {
+                    showToast('No bookmarks to clear');
+                    return;
+                }
+                if (confirm('Remove all bookmarks? (Folders will remain)')) {
+                    bookmarks = [];
+                    selectedIndices.clear();
+                    saveToStorage();
+                    render();
+                    updateFolderDropdowns();
+                    showToast('All bookmarks cleared');
+                }
+            }
+
+            let toastTimer = null;
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2200);
+            }
+
+            function handleSubmit(e) {
+                e.preventDefault();
+                const heading = headingInput.value;
+                const url = urlInput.value;
+                const folder = folderInput.value;
+                addBookmark(heading, url, folder);
+            }
+
+            function handleCreateFolder() {
+                const name = newFolderInput.value;
+                if (createNewFolder(name)) {
+                    newFolderInput.value = '';
+                }
+            }
+
+            // ----- Init -----
+            function init() {
+                loadFromStorage();
+                updateFolderDropdowns();
+                render();
+
+                form.addEventListener('submit', handleSubmit);
+                listEl.addEventListener('click', handleListClick);
+                listEl.addEventListener('change', handleCheckboxChange);
+                copyBtn.addEventListener('click', copyAllAsText);
+                clearBtn.addEventListener('click', clearAll);
+                moveSelectedBtn.addEventListener('click', moveSelectedToFolder);
+                createFolderBtn.addEventListener('click', handleCreateFolder);
+
+                newFolderInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleCreateFolder();
+                    }
+                });
+            }
+
+            init();
+
+            // ----- PWA Service Worker Registration -----
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('sw.js')
+                        .then((registration) => {
+                            console.log('ServiceWorker registration successful');
+                        })
+                        .catch((err) => {
+                            console.log('ServiceWorker registration failed: ', err);
+                        });
+                });
+            }
+
+        })();
+    </script>
+
+</body>
+</html>
