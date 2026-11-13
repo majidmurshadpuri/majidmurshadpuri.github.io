@@ -28,6 +28,12 @@
 })();
 
 (function(){
+  var top=document.querySelector(".top");if(!top)return;var last=window.scrollY||0;
+  addEventListener("scroll",function(){var y=window.scrollY||0;top.classList.toggle("scrolled",y>40);
+    if(y>last+8&&y>90)top.classList.add("hide");else if(y<last-8||y<60)top.classList.remove("hide");last=y},{passive:true});
+})();
+
+(function(){
   /* keep visited pages, styles, fonts & data in the visitor's browser: fast loads, works offline */
   if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
     window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
