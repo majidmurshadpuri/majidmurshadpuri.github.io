@@ -1,0 +1,64 @@
+{
+ "generated": "2026-11-13",
+ "pages": [
+  {
+   "href": "MathsPracticeLibrary.html",
+   "title": "Maths Practice Library",
+   "desc": "Class 6, 7 & 8 Mathematics — interactive SA I practice papers and quizzes by Majid Murshadpuri.",
+   "kind": "section",
+   "updated": "2025-03-20"
+  },
+  {
+   "href": "apps.html",
+   "title": "Tools & Apps Studio",
+   "desc": "A warm workspace of converters, composers and creative utilities by Majid Murshadpuri.",
+   "kind": "section",
+   "updated": "2025-03-05"
+  },
+  {
+   "href": "English Study Material.html",
+   "title": "English Literature & Criticism",
+   "desc": "A curated collection of HTML books on English Literature, Criticism, Theory and analytical thought — from Majid Murshadpuri.",
+   "kind": "section",
+   "updated": "2025-03-15"
+  },
+  {
+   "href": "uppgt2026literature.html",
+   "title": "Literature Syllabus · UP PGT English 2026",
+   "desc": "Section 2 – Literature Syllabus coverage for UP PGT English Exam 2026, curated by Majid Murshadpuri.",
+   "kind": "english"
+  },
+  {
+   "href": "6th Math SA I Practice.html",
+   "title": "Class 6 Maths · SA I Practice",
+   "desc": "Interactive Class 6 Mathematics practice paper (SA I pattern) — regenerate questions, reveal answers, print with key.",
+   "kind": "maths"
+  },
+  {
+   "href": "7th Math SA I Practice.html",
+   "title": "Class 7 Maths · SA I Practice",
+   "desc": "Interactive Class 7 Mathematics practice paper (SA I pattern) — regenerate questions, reveal answers, print with key.",
+   "kind": "maths"
+  },
+  {
+   "href": "8th Math SA I Practice.html",
+   "title": "Class 8 Maths · SA I Practice",
+   "desc": "Interactive Class 8 Mathematics practice paper (SA I pattern) — regenerate questions, reveal answers, print with key.",
+   "kind": "maths"
+  },
+  {
+   "href": "6thQuizHome.html",
+   "title": "Class 6 Math Quiz",
+   "desc": "Class 6 Math Quiz — test your skills and track your progress, level by level.",
+   "kind": "maths",
+   "added": "2026-11-12"
+  },
+  {
+   "href": "PoetrySection.html",
+   "title": "Poetry Section",
+   "desc": "Ghazals, nazms and poetry videos by Majid Murshadpuri, and the poems of other poets he loves.",
+   "kind": "section",
+   "updated": "2026-11-10"
+  }
+ ]
+}
