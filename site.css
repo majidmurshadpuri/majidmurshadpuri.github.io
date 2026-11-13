@@ -265,3 +265,18 @@ html body .student-list-item,html body .class-tag,html body .switch-student-btn,
 html body .form-group select,html body .student-info,html body .search input,html body .count,html body .d-g{font-family:var(--sans);font-weight:600}
 html body .note p,html body .lede{font-family:var(--serif);line-height:1.7;font-weight:400}
 html body .jar p{font-family:var(--serif);font-style:italic}
+/* name pill: wraps instead of cutting to "Maji…", tucks away while scrolling down */
+html body .mark{white-space:normal;max-width:calc(100vw - 88px);line-height:1.15;padding:9px 20px;overflow:visible;text-overflow:clip;display:inline-block}
+.top .mark-wrap{transition:transform .35s ease,opacity .35s ease}
+.top.hide .mark-wrap{transform:translateY(-140%);opacity:0;pointer-events:none}
+html body main,html body .wrap{min-width:0}
+html body img,html body svg,html body video,html body iframe{max-width:100%}
+/* every card on every page wears the same navy + gold as the home page */
+html body .note a,html body .note.k1 a,html body .note.k2 a,html body .note.k3 a,html body .note.k4 a,html body .note.k5 a,html body .note.featured a{background:var(--paper);border:1px solid var(--gold-line);color:var(--ink)}
+html body .d-more{margin:2px 0 8px}
+html body .d-more summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:22px 10px 22px 10px;border:1px dashed var(--gold-line);font-family:var(--hand);font-weight:700;font-size:1.3rem;color:var(--ink)}
+html body .d-more summary::-webkit-details-marker{display:none}
+html body .d-more summary:after{content:"▾";margin-left:auto;color:var(--saffron);transition:transform .25s}
+html body .d-more[open] summary:after{transform:rotate(180deg)}
+html body .d-more .d-link{margin-top:10px}
+@media (max-width:480px){html body{font-size:106%}html body .note h3{font-size:1.55rem}}
