@@ -12,7 +12,9 @@
   function jget(k,d){try{var v=JSON.parse(lsGet(k));return v==null?d:v}catch(e){return d}}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function norm(h){try{return decodeURIComponent(String(h)).replace(/^\.\//,'').split('#')[0].toLowerCase()}catch(e){return String(h).toLowerCase()}}
-  function pick(a,seed){return a[Math.abs(seed|0)%a.length]}
+  var SEED=Math.floor(Math.random()*1e9);          /* new wording on every visit, but stable within one page-load */
+  function pick(a,seed){return a[Math.abs((seed+SEED)|0)%a.length]}
+  function rnd(a){return a[Math.floor(Math.random()*a.length)]}
   function hash(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h)}
   function dts(d){if(!d)return 0;var t=Date.parse(d);return isNaN(t)?0:t}
   function strip(s){return String(s||'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim()}
@@ -30,23 +32,23 @@
   };
   function say(it,old){
     var s=hash(it.href+it.title), t=it.title, f=(it.form||'poem').toLowerCase(), q=it.first?'“'+it.first+'”':'';
-    var D=it.desc?(' '+it.desc):'';
+    var D=it.desc?(' '+it.desc):'', P=it.poet;
     switch(it.kind){
       case 'own': return old?
-        pick(['A '+f+' of mine you may have missed: '+q,'Still one of my favourites to read aloud — '+q],s):
-        pick(['I just wrote a new '+f+' — it begins '+q,'A new '+f+' came out of me, and I wanted you to hear it first: '+q,'Fresh from my notebook, a '+f+': '+q],s);
+        pick(['A '+f+' of mine you may have missed: '+q,'Still one of my favourites to read aloud — '+q,'Have you read this '+f+' of mine yet? '+q,'Going back through my notebook, I found this '+f+' again: '+q],s):
+        pick(['I just wrote a new '+f+' — it begins '+q,'A new '+f+' came out of me, and I wanted you to hear it first: '+q,'Fresh from my notebook, a '+f+': '+q,'This '+f+' found me today. I hope it finds you too: '+q,'I couldn’t keep this '+f+' to myself any longer: '+q,'Here’s a '+f+' I finished writing — tell me what you feel: '+q],s);
       case 'loved': return old?
-        pick(['A '+f+' by '+it.poet+' that I keep returning to: '+q,'If you haven’t read this one by '+it.poet+', sit with it: '+q],s):
-        pick(['I fell in love with this '+f+' by '+it.poet+' and had to share it with you: '+q,'Someone else’s words, but I wish I’d written them — '+it.poet+': '+q,'Today I’m sharing a '+f+' I love, by '+it.poet+': '+q],s);
+        pick(['A '+f+' by '+P+' that I keep returning to: '+q,'If you haven’t read this one by '+P+', sit with it: '+q,'I still read this '+f+' by '+P+' when I need a little courage: '+q],s):
+        pick(['I fell in love with this '+f+' by '+P+' and had to share it with you: '+q,'Someone else’s words, but I wish I’d written them — '+P+': '+q,'Today I’m sharing a '+f+' I love, by '+P+': '+q,'This '+f+' by '+P+' has been following me around all week: '+q,'I read this by '+P+' and sat quietly for a while. Now it’s yours: '+q,'A '+f+' I loved, from '+P+' — read it slowly: '+q],s);
       case 'video': return it.short?
-        pick(['A little poetry short, just for you — press play.','I recorded a short one for you. Less than a minute, I promise.'],s):
-        pick(['I recorded a new poetry video — come and listen.','My voice, my poem, one more video for the shelf. Hope you like it.'],s);
-      case 'app': return pick(['I built something new: '+t+'.'+D,'A new tool is ready in my studio — '+t+'.'+D,'Made this with chai and stubbornness: '+t+'.'+D],s);
-      case 'maths': return pick(['For my students: '+t+'.'+D,'New in the maths room — '+t+'.'+D,'Dear students, I’ve added '+t+'.'+D],s);
-      case 'english': return pick(['New in the English room — '+t+'.'+D,'I’ve put together '+t+' for you.'+D,'Study material, freshly written: '+t+'.'+D],s);
-      case 'section': return pick(['I’ve been tidying up '+t+' — come and look around.','Something changed in '+t+'. Have a look.'],s);
+        pick(['A little poetry short, just for you — press play.','I recorded a short one for you. Less than a minute, I promise.','Quick one: a poetry short from me to you.','Sixty seconds of poetry — press play and see.'],s):
+        pick(['I recorded a new poetry video — come and listen.','My voice, my poem, one more video for the shelf. Hope you like it.','Come and listen — I’ve put a new poetry video up.','I read a poem aloud for you. Put your earphones in.'],s);
+      case 'app': return pick(['I built something new: '+t+'.'+D,'A new tool is ready in my studio — '+t+'.'+D,'Made this with stubborn curiosity: '+t+'.'+D,'Fresh off my laptop: '+t+'.'+D,'Come and try what I’ve been building — '+t+'.'+D],s);
+      case 'maths': return pick(['For my students: '+t+'.'+D,'New in the maths room — '+t+'.'+D,'Dear students, I’ve added '+t+'.'+D,'Maths time! I’ve put up '+t+'.'+D,'Something for your practice — '+t+'.'+D],s);
+      case 'english': return pick(['New in the English room — '+t+'.'+D,'I’ve put together '+t+' for you.'+D,'Study material, freshly written: '+t+'.'+D,'Settle in with a book and this: '+t+'.'+D],s);
+      case 'section': return pick(['I’ve been tidying up '+t+' — come and look around.','Something changed in '+t+'. Have a look.','I’ve been working on '+t+' — see what’s new.'],s);
       case 'note': return it.text;
-      default: return pick(['I added a new page: '+t+'.'+D,'There’s a new door in my corner: '+t+'.'+D],s);
+      default: return pick(['I added a new page: '+t+'.'+D,'There’s a new door in my corner: '+t+'.'+D,'Something new to explore: '+t+'.'+D],s);
     }
   }
   function ago(ts){
@@ -79,9 +81,9 @@
     if(!window.MM)return Promise.resolve([]);
     return MM.scan().then(function(r){
       var out=[];
-      r.mine.forEach(function(x){if(x.broken)return;out.push({kind:'own',href:'MyPoetry.html#'+x.key,title:MM.titleOf(x.j),first:MM.titleOf(x.j),form:MM.formName?MM.formName(x.form,'r'):x.form.k,ts:x.ts})});
+      r.mine.forEach(function(x){if(x.broken)return;out.push({kind:'own',href:'MyPoetry.html#'+x.key,title:MM.titleOf(x.j),first:MM.titleOf(x.j),form:MM.formName?MM.formName(x.form,'r'):x.form.k,ts:dts(x.j&&x.j.date)})});
       r.loved.forEach(function(x){if(x.broken)return;var p=(x.j&&x.j.poet&&(x.j.poet.r||x.j.poet.h||x.j.poet.u))||MM.camel(x.poet);
-        out.push({kind:'loved',href:'LovedPoetry.html#'+x.key,title:MM.titleOf(x.j),first:MM.titleOf(x.j),form:MM.formName?MM.formName(x.form,'r'):x.form.k,poet:p,ts:x.ts})});
+        out.push({kind:'loved',href:'LovedPoetry.html#'+x.key,title:MM.titleOf(x.j),first:MM.titleOf(x.j),form:MM.formName?MM.formName(x.form,'r'):x.form.k,poet:p,ts:dts(x.j&&x.j.date)})});
       r.vids.forEach(function(v,i){out.push({kind:'video',href:'MyPoetryVideos.html',title:'Poetry video '+(i+1),short:v.short,ts:v.ts})});
       return out;
     }).catch(function(){return []});
@@ -119,15 +121,24 @@
       h3+'<p class="fc-say">'+esc(say(it,old))+'</p>'+
       (href?'<a class="fc-go" href="'+esc(href)+'">'+(it.kind==='video'?'press play':it.kind==='note'?'take me there':'read it · open it')+' →</a>':'')+'</article>';
   }
+  function intro(ts){
+    var d=ts?Math.floor((NOW-ts)/DAY):-1,w=ts?ago(ts):'';
+    if(d<0)return rnd(['Pull up a chair — here’s what’s in my corner right now.','I’m still arranging the shelves in here. Look around while I do.','Welcome in. Everything I make will turn up on this page first.']);
+    if(d===0)return rnd(['I’ve been busy today — come and see what’s new.','Just added something today. You’re right on time.','Today was a good day for making things. Here’s the proof, newest first.','You’ve caught me mid-work — I added something today.']);
+    if(d<=3)return rnd(['I added something '+w+'. Here’s what I’ve been up to lately.','It’s been a few quiet, busy days — the newest thing is from '+w+'.','Here’s what I’ve been making. The latest is from '+w+'.']);
+    if(d<=14)return rnd(['My latest addition was '+w+'. Take your time with what’s here.','Here’s what I’ve been up to — the newest thing arrived '+w+'.','It’s been a little while ('+w+'), but there’s plenty here to read.']);
+    return rnd(['It’s been quiet here lately — the last thing I added was '+w+'. Plenty to explore in the meantime.','I’ve been working on bigger things. The last update here was '+w+'.','Not much new lately, but everything here is waiting for you.']);
+  }
   function draw(list){
     var dated=list.filter(function(x){return x.ts}).sort(function(a,b){return b.ts-a.ts});
     var recent=dated.filter(function(x){return NOW-x.ts<=90*DAY});
     var show=recent.length>=4?recent:dated.slice(0,Math.max(4,recent.length));
+    if(seen){var fresh=list.filter(function(x){return !x.ts&&x.kind!=='note'&&x.kind!=='section'&&!seen[norm(x.href)+'|'+x.kind]&&x.href&&x.href!=='#'});show=fresh.concat(show)}
     show=show.slice(0,12);
     if(!show.length){feedEl.innerHTML='<p class="fc-empty">I’m still unpacking boxes in here. Check back soon — I’ll tell you the moment something new lands.</p>'}
     else feedEl.innerHTML=show.map(card).join('');
     if(introEl){
-      introEl.textContent=dated.length?('The last thing I added was '+ago(dated[0].ts)+'. Here’s what I’ve been up to, newest first.'):'Here’s what’s in my corner right now.';
+      introEl.textContent=intro(dated.length?dated[0].ts:0);
     }
     /* everything, grouped */
     var groups={own:'My poetry',loved:'Poems I love',video:'Poetry videos',maths:'Maths',english:'English',app:'Tools & apps',page:'More pages',section:'More pages'},order=['own','loved','video','maths','english','app','page','section'],html='';
@@ -157,7 +168,7 @@
       'Think of this as a quiet study with the lamp left on: poems, practice papers, study notes and a few apps I made.',
       'Half classroom, half notebook, half workshop — yes, that’s three halves. It’s that kind of place.'];
     var I=['Take your shoes off, look around, and stay as long as you like.',
-      'Pull up a chair, pour some chai, and wander wherever your curiosity takes you.',
+      'Pull up a chair, get comfortable, and wander wherever your curiosity takes you.',
       'There’s no rush and no rules — open any door in the menu and see what you find.',
       'Read slowly, come back often. Everything here is meant to be taken at your own pace.',
       'Look around — I keep adding things, and I’ll tell you right here whenever I do.'];
@@ -165,7 +176,7 @@
     var g=r(G),a=r(A),i=r(I);
     var ov=document.createElement('div');ov.className='wc-overlay';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-labelledby','wcT');
     ov.innerHTML='<div class="wc-modal"><button class="wc-x" type="button" aria-label="Close">✕</button><h2 id="wcT">'+esc(g)+'</h2><p>'+esc(a)+'</p><p>'+esc(i)+'</p>'+
-      '<div class="wc-btns"><button class="btn wc-go" type="button">Come on in</button><button class="wc-menu" type="button">show me around</button></div><div class="wc-orn">✿ ☕ ✿</div></div>';
+      '<div class="wc-btns"><button class="btn wc-go" type="button">Come on in</button><button class="wc-menu" type="button">show me around</button></div><div class="wc-orn">✿ ✿ ✿</div></div>';
     document.body.appendChild(ov);
     requestAnimationFrame(function(){ov.classList.add('open')});
     document.body.classList.add('no-scroll');
@@ -183,7 +194,7 @@
     var t=document.createElement('div');t.className='hello';t.setAttribute('role','status');
     var m;
     if(n>0)m=['Welcome back 👋 — '+n+' new '+(n>1?'things':'thing')+' since you were last here.','Oh, you’re back! I’ve added '+n+' '+(n>1?'things':'thing')+' since your last visit.','Good to see you again — '+n+' new '+(n>1?'arrivals':'arrival')+' while you were away.'];
-    else m=['Good to see you again — nothing new since last time, but the chai is still warm.','Welcome back 👋 Same corner, same lamp. I’ll tell you when something changes.','You’re back! Quiet week here — I’m working on the next thing.'];
+    else m=['Good to see you again — nothing new since last time, but the lamp is still on.','Welcome back 👋 Same corner, same lamp. I’ll tell you when something changes.','You’re back! Quiet week here — I’m working on the next thing.'];
     t.innerHTML='<span>'+esc(m[Math.floor(Math.random()*m.length)])+'</span><button type="button" aria-label="Dismiss">✕</button>';
     document.body.appendChild(t);
     requestAnimationFrame(function(){t.classList.add('show')});
@@ -213,7 +224,5 @@
   if(tg){
     var W=['a poet','a maths teacher','a lover of literature','a web tinkerer','a tech-driven teacher','a dreamer with a laptop'],i=0;
     setInterval(function(){i=(i+1)%W.length;tg.classList.add('out');setTimeout(function(){tg.textContent=W[i];tg.classList.remove('out')},450)},3200);
-    var top=document.querySelector('.top');
-    addEventListener('scroll',function(){top.classList.toggle('scrolled',scrollY>40)},{passive:true});
   }
 })();
