@@ -24,7 +24,7 @@ var MM=(function(){
     return plural?(f.pl||camel(f.k)+'s'):camel(f.k);
   }
 
-  /* PoetryConfig.json (optional): {"poets":["TehzeebHafi"],"moreForms":["Masnavi"]} */
+  /* PoetryConfig.json: {"poets":["AllamaIqbal"],"moreForms":["Masnavi"],"legacy":false} */
   var cfgP=null;
   function config(){
     if(cfgP)return cfgP;
@@ -32,7 +32,7 @@ var MM=(function(){
       var forms=FORMS.slice(),poets=[];
       (c.moreForms||[]).forEach(function(k){if(/^[A-Z][A-Za-z]*$/.test(k)&&!forms.some(function(f){return f.k===k}))forms.push(formOf([],k))});
       (c.poets||[]).forEach(function(p){if(/^[A-Z][A-Za-z]*$/.test(p)&&poets.indexOf(p)<0)poets.push(p)});
-      return {forms:forms,poets:poets};
+      return {forms:forms,poets:poets,legacy:c.legacy};
     });
     return cfgP;
   }
@@ -57,7 +57,7 @@ var MM=(function(){
 
   /* poems of one kind of file name.  mine:  My<Form><n>.json   others:  <Poet><Form><n>.json
      Counts upward 1, 2, 3 … for each form until a number is missing. */
-  function discover(poets,forms,mine){
+  function discoverLegacy(poets,forms,mine){
     var combos=[];
     (mine?[null]:poets).forEach(function(p){forms.forEach(function(f){combos.push({p:p,f:f})})});
     var net=false;
@@ -118,15 +118,67 @@ var MM=(function(){
     });
   }
 
+
+  /* ONE FILE PER POET:  MyPoetry.json (yours)  and  <Poet>.json (others, e.g. AllamaIqbal.json)
+     {"poet":{"u":"..","h":"..","r":".."},"poems":[{"form":"Ghazal","date":"2026-11-13","title":{...},"couplets":[...]}, ...]}
+     Poems get keys  <Poet><Form><n>  (n counts up per form, in the order written in the file). */
+  function fromPoetFile(poet,forms,r){
+    var out=[],cnt={},fl=forms.slice();
+    if(!r||!r.j)return out;
+    var list=Array.isArray(r.j)?r.j:(r.j.poems||[]);
+    list.forEach(function(p,i){
+      var fk=String(p.form||'').replace(/\s+/g,'');
+      fk=fk.charAt(0).toUpperCase()+fk.slice(1);
+      var f=null;for(var a=0;a<fl.length;a++)if(fl[a].k.toLowerCase()===fk.toLowerCase()){f=fl[a];break}
+      if(!f)f=formOf([],fk||'Poem');
+      cnt[f.k]=(cnt[f.k]||0)+1;
+      var n=cnt[f.k],j={};
+      if(r.j.poet)j.poet=r.j.poet;
+      for(var k in p)if(k!=='form')j[k]=p[k];
+      var t=0;if(typeof p.date==='string'){t=Date.parse(p.date)||0}
+      out.push({key:(poet||'')+f.k+n,url:(poet?poet:'MyPoetry')+'.json',n:n,poet:poet,form:f,j:j,ts:t,broken:null});
+    });
+    return out;
+  }
+  function poetFile(poet,forms){
+    var url=(poet||'MyPoetry')+'.json';
+    return fetch(url,{cache:'no-cache'}).then(function(r){
+      if(!r.ok)return [];
+      return r.text().then(function(t){
+        if(/^\s*</.test(t))return [];
+        var j;try{j=JSON.parse(t)}catch(x){return [{key:(poet||'My')+'BrokenFile',url:url,n:1,poet:poet,form:formOf([],'Poem'),j:null,ts:0,broken:x.message}]}
+        return fromPoetFile(poet,forms,{j:j});
+      });
+    }).catch(function(){return []});
+  }
+  function merge(a,b){var seen={};a.forEach(function(x){seen[x.key]=1});return a.concat(b.filter(function(x){return !seen[x.key]}))}
+
+
+  /* used by the My Poetry / Poetry I Love pages: poet files first, then old one-file-per-poem files */
+  function discover(poets,forms,mine){
+    return config().then(function(c){
+      var legacy=c.legacy!==false;
+      var pf=mine?poetFile(null,forms).then(function(a){return a}):Promise.all((poets||[]).map(function(p){return poetFile(p,forms)})).then(function(x){return [].concat.apply([],x)});
+      return Promise.all([pf,legacy?discoverLegacy(poets,forms,mine):Promise.resolve([])]).then(function(r){var m=merge(r[0],r[1]);m.net=r[1].net;return m});
+    });
+  }
+
   /* one call that gathers everything (used by the home page and the Poetry Section page) */
   function scan(){
     return config().then(function(c){
-      return Promise.all([discover(null,c.forms,true),discover(c.poets,c.forms,false),videos()]).then(function(r){
-        return {cfg:c,mine:r[0],loved:r[1],vids:r[2]};
+      var legacy=c.legacy!==false;
+      return Promise.all([
+        poetFile(null,c.forms),
+        Promise.all(c.poets.map(function(p){return poetFile(p,c.forms)})),
+        legacy?discoverLegacy(null,c.forms,true):Promise.resolve([]),
+        legacy?discoverLegacy(c.poets,c.forms,false):Promise.resolve([]),
+        videos()
+      ]).then(function(r){
+        var mine=merge(r[0],r[2]),loved=merge([].concat.apply([],r[1]),r[3]);
+        return {cfg:c,mine:mine,loved:loved,vids:r[4]};
       });
     });
   }
   return {FORMS:FORMS,camel:camel,formOf:formOf,formName:formName,config:config,discover:discover,badges:badges,
           scan:scan,videos:videos,lines:lines,units:units,titleOf:titleOf,ymd:ymd,DAY:DAY,NEW_DAYS:NEW_DAYS,LATEST_DAYS:LATEST_DAYS,hash:hash};
 })();
-
