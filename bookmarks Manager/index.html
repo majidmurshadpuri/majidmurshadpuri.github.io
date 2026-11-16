@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>Bookmark Manager · Folders</title>
-    
-    <!-- PWA Manifest & Theme -->
+    <title>Bookmark Manager · Folders · Edit & JSON</title>
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#3b82f6" />
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -333,6 +331,12 @@
             box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
         }
 
+        .bookmark-item.editing {
+            background: #fefce8;
+            border-color: #eab308;
+            flex-wrap: wrap;
+        }
+
         .bookmark-check {
             flex-shrink: 0;
             width: 22px;
@@ -412,6 +416,15 @@
             background: #bfdbfe;
         }
 
+        .edit-btn {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .edit-btn:active {
+            background: #fde68a;
+        }
+
         .delete-btn {
             background: #fee2e2;
             color: #dc2626;
@@ -420,6 +433,140 @@
 
         .delete-btn:active {
             background: #fecaca;
+        }
+
+        /* Edit form inside card */
+        .edit-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .edit-form .edit-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .edit-form label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .edit-form input, .edit-form select {
+            padding: 8px 10px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #ffffff;
+            outline: none;
+        }
+
+        .edit-form input:focus, .edit-form select:focus {
+            border-color: #eab308;
+            box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.15);
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 4px;
+        }
+
+        .edit-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .save-edit-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .save-edit-btn:active {
+            background: #059669;
+            transform: scale(0.96);
+        }
+
+        .cancel-edit-btn {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .cancel-edit-btn:active {
+            background: #cbd5e1;
+            transform: scale(0.96);
+        }
+
+        /* Import / Export bar */
+        .io-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .io-bar button, .io-bar label {
+            flex: 1;
+            min-width: 110px;
+            padding: 12px 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-align: center;
+        }
+
+        .io-bar button:active, .io-bar label:active {
+            transform: scale(0.97);
+        }
+
+        .export-btn {
+            background: #0ea5e9;
+            color: #fff;
+        }
+
+        .export-btn:active {
+            background: #0284c7;
+        }
+
+        .import-btn {
+            background: #f1f5f9;
+            color: #0f172a;
+            border: 1.5px dashed #94a3b8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .import-btn:active {
+            background: #e2e8f0;
+        }
+
+        .import-btn input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
         }
 
         /* Toast */
@@ -494,6 +641,14 @@
                 flex-direction: column;
                 align-items: stretch;
             }
+
+            .io-bar {
+                flex-direction: column;
+            }
+
+            .edit-form input, .edit-form select {
+                font-size: 16px;
+            }
         }
 
         @media (max-width: 380px) {
@@ -531,7 +686,6 @@
                 <label for="folderInput">Folder (optional)</label>
                 <select id="folderInput">
                     <option value="">— No folder —</option>
-                    <!-- dynamic folders will be injected -->
                 </select>
             </div>
 
@@ -544,6 +698,15 @@
             <button class="add-btn" type="submit" id="addBtn">➕ Add Bookmark</button>
         </form>
 
+        <!-- JSON Import / Export bar -->
+        <div class="io-bar">
+            <button class="export-btn" id="exportJsonBtn">📤 Export JSON</button>
+            <label class="import-btn">
+                📥 Import JSON
+                <input type="file" id="importJsonInput" accept=".json,application/json" />
+            </label>
+        </div>
+
         <!-- Toolbar -->
         <div class="toolbar">
             <button class="copy-btn" id="copyBtn">📋 Copy All</button>
@@ -555,7 +718,6 @@
             <label for="moveFolderSelect">📁 Move selected to</label>
             <select class="folder-select" id="moveFolderSelect">
                 <option value="">— No folder —</option>
-                <!-- dynamic folders -->
             </select>
             <button class="move-btn" id="moveSelectedBtn" disabled>Move selected</button>
         </div>
@@ -588,10 +750,14 @@
             const copyBtn = document.getElementById('copyBtn');
             const clearBtn = document.getElementById('clearBtn');
             const toast = document.getElementById('toast');
+            const exportJsonBtn = document.getElementById('exportJsonBtn');
+            const importJsonInput = document.getElementById('importJsonInput');
 
             // ----- State -----
-            let bookmarks = [];          
-            let selectedIndices = new Set(); 
+            let bookmarks = [];
+            let selectedIndices = new Set();
+            // editingIndex: index of bookmark currently being edited, or null
+            let editingIndex = null;
 
             // ----- Storage keys -----
             const NEW_STORAGE_KEY = 'bookmark_manager_data_v2';
@@ -600,7 +766,6 @@
 
             // ----- Load from localStorage WITH automatic migration -----
             function loadFromStorage() {
-                // 1. Try new storage key first
                 try {
                     const rawNew = localStorage.getItem(NEW_STORAGE_KEY);
                     if (rawNew) {
@@ -616,7 +781,6 @@
                     }
                 } catch (_) { /* ignore */ }
 
-                // 2. Fall back to legacy key (old version without folders)
                 try {
                     const rawLegacy = localStorage.getItem(LEGACY_STORAGE_KEY);
                     if (rawLegacy) {
@@ -637,7 +801,6 @@
                 bookmarks = [];
             }
 
-            // ----- Save to localStorage -----
             function saveToStorage() {
                 try {
                     localStorage.setItem(NEW_STORAGE_KEY, JSON.stringify(bookmarks));
@@ -688,8 +851,10 @@
                         opt.textContent = f;
                         selectEl.appendChild(opt);
                     });
-                    if (selectEl.querySelector(`option[value="${CSS.escape(currentValue)}"]`)) {
+                    if (currentValue && selectEl.querySelector(`option[value="${CSS.escape(currentValue)}"]`)) {
                         selectEl.value = currentValue;
+                    } else if (currentValue) {
+                        selectEl.value = '';
                     }
                 }
 
@@ -721,9 +886,14 @@
 
             // ----- Render list -----
             function render() {
+                // clean up selection
                 selectedIndices.forEach(idx => {
                     if (idx >= bookmarks.length) selectedIndices.delete(idx);
                 });
+                // if editing index is out of range, cancel editing
+                if (editingIndex !== null && editingIndex >= bookmarks.length) {
+                    editingIndex = null;
+                }
 
                 if (bookmarks.length === 0) {
                     listEl.innerHTML = `
@@ -740,6 +910,7 @@
                     return;
                 }
 
+                const folders = getAllFolders();
                 let html = '';
                 for (let i = 0; i < bookmarks.length; i++) {
                     const b = bookmarks[i];
@@ -749,20 +920,56 @@
                     const folderTag = folder ? `<span class="folder-tag">📁 ${escapeHtml(folder)}</span>` : '';
                     const isSelected = selectedIndices.has(i);
                     const checkedAttr = isSelected ? 'checked' : '';
+                    const isEditing = (editingIndex === i);
 
-                    html += `
-                        <div class="bookmark-item ${isSelected ? 'selected' : ''}" role="listitem" data-index="${i}">
-                            <input type="checkbox" class="bookmark-check" data-index="${i}" ${checkedAttr} aria-label="Select bookmark">
-                            <div class="bookmark-info">
-                                <div class="bookmark-heading">${heading} ${folderTag}</div>
-                                <span class="bookmark-url">${url}</span>
+                    if (isEditing) {
+                        // Build edit form
+                        const folderOptions = ['<option value="">— No folder —</option>']
+                            .concat(folders.map(f => `<option value="${escapeHtml(f)}" ${f === folder ? 'selected' : ''}>${escapeHtml(f)}</option>`))
+                            .join('');
+
+                        html += `
+                            <div class="bookmark-item editing" role="listitem" data-index="${i}">
+                                <div class="bookmark-info" style="width:100%;">
+                                    <div class="edit-form">
+                                        <div class="edit-row">
+                                            <label>Heading</label>
+                                            <input type="text" class="edit-heading" data-index="${i}" value="${heading}" />
+                                        </div>
+                                        <div class="edit-row">
+                                            <label>URL</label>
+                                            <input type="url" class="edit-url" data-index="${i}" value="${url}" />
+                                        </div>
+                                        <div class="edit-row">
+                                            <label>Folder</label>
+                                            <select class="edit-folder" data-index="${i}">
+                                                ${folderOptions}
+                                            </select>
+                                        </div>
+                                        <div class="edit-actions">
+                                            <button class="cancel-edit-btn" data-action="cancel-edit" data-index="${i}">Cancel</button>
+                                            <button class="save-edit-btn" data-action="save-edit" data-index="${i}">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="bookmark-actions">
-                                <button class="go-btn" data-action="go" data-index="${i}">Go</button>
-                                <button class="delete-btn" data-action="delete" data-index="${i}">✕</button>
+                        `;
+                    } else {
+                        html += `
+                            <div class="bookmark-item ${isSelected ? 'selected' : ''}" role="listitem" data-index="${i}">
+                                <input type="checkbox" class="bookmark-check" data-index="${i}" ${checkedAttr} aria-label="Select bookmark">
+                                <div class="bookmark-info">
+                                    <div class="bookmark-heading">${heading} ${folderTag}</div>
+                                    <span class="bookmark-url">${url}</span>
+                                </div>
+                                <div class="bookmark-actions">
+                                    <button class="go-btn" data-action="go" data-index="${i}">Go</button>
+                                    <button class="edit-btn" data-action="edit" data-index="${i}">Edit</button>
+                                    <button class="delete-btn" data-action="delete" data-index="${i}">✕</button>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }
                 listEl.innerHTML = html;
                 countBadge.textContent = bookmarks.length;
@@ -820,11 +1027,57 @@
                         return;
                     }
                     bookmarks.splice(index, 1);
-                    selectedIndices.clear(); 
+                    selectedIndices.clear();
+                    if (editingIndex === index) editingIndex = null;
                     saveToStorage();
                     render();
-                    updateFolderDropdowns(); 
+                    updateFolderDropdowns();
                     showToast('Bookmark removed');
+                } else if (action === 'edit') {
+                    editingIndex = index;
+                    render();
+                } else if (action === 'cancel-edit') {
+                    editingIndex = null;
+                    render();
+                } else if (action === 'save-edit') {
+                    // find the edit card container
+                    const card = target.closest('.bookmark-item');
+                    if (!card) return;
+                    const headingField = card.querySelector('.edit-heading');
+                    const urlField = card.querySelector('.edit-url');
+                    const folderField = card.querySelector('.edit-folder');
+                    if (!headingField || !urlField || !folderField) return;
+
+                    const newHeading = headingField.value.trim();
+                    let newUrl = urlField.value.trim();
+                    const newFolder = folderField.value.trim();
+
+                    if (!newHeading || !newUrl) {
+                        showToast('Heading and URL cannot be empty');
+                        return;
+                    }
+
+                    // validate & normalize URL
+                    try {
+                        if (!/^https?:\/\//i.test(newUrl)) {
+                            newUrl = 'https://' + newUrl;
+                        }
+                        new URL(newUrl);
+                    } catch (_) {
+                        showToast('Please enter a valid URL (e.g. https://example.com)');
+                        return;
+                    }
+
+                    bookmarks[index] = {
+                        heading: newHeading,
+                        url: newUrl,
+                        folder: newFolder
+                    };
+                    editingIndex = null;
+                    saveToStorage();
+                    render();
+                    updateFolderDropdowns();
+                    showToast('Bookmark updated');
                 }
             }
 
@@ -858,7 +1111,7 @@
                 render();
                 updateFolderDropdowns();
                 form.reset();
-                folderInput.value = ''; 
+                folderInput.value = '';
                 headingInput.focus();
                 showToast('Bookmark added!');
                 return true;
@@ -935,11 +1188,117 @@
                 if (confirm('Remove all bookmarks? (Folders will remain)')) {
                     bookmarks = [];
                     selectedIndices.clear();
+                    editingIndex = null;
                     saveToStorage();
                     render();
                     updateFolderDropdowns();
                     showToast('All bookmarks cleared');
                 }
+            }
+
+            // ----- Export / Import JSON -----
+            function exportAsJson() {
+                const data = {
+                    bookmarks: bookmarks,
+                    folders: [...getStoredFolders()]
+                };
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `bookmarks-${new Date().toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('JSON exported');
+            }
+
+            function importFromJson(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const text = e.target.result;
+                        const data = JSON.parse(text);
+
+                        // accept either {bookmarks: [...], folders: [...]} or a raw array of bookmarks
+                        let importedBookmarks = [];
+                        let importedFolders = [];
+
+                        if (Array.isArray(data)) {
+                            importedBookmarks = data;
+                        } else if (data && typeof data === 'object') {
+                            if (Array.isArray(data.bookmarks)) {
+                                importedBookmarks = data.bookmarks;
+                            }
+                            if (Array.isArray(data.folders)) {
+                                importedFolders = data.folders;
+                            }
+                        } else {
+                            throw new Error('Invalid JSON structure');
+                        }
+
+                        // validate / normalize bookmarks
+                        const normalizedBookmarks = [];
+                        for (const b of importedBookmarks) {
+                            if (!b || typeof b !== 'object') continue;
+                            const heading = (b.heading || 'Untitled').toString().trim();
+                            let url = (b.url || '').toString().trim();
+                            const folder = (b.folder || '').toString().trim();
+
+                            if (!heading || !url) continue;
+
+                            try {
+                                if (!/^https?:\/\//i.test(url)) {
+                                    url = 'https://' + url;
+                                }
+                                new URL(url);
+                            } catch (_) {
+                                continue; // skip invalid URLs
+                            }
+
+                            normalizedBookmarks.push({ heading, url, folder });
+                        }
+
+                        if (normalizedBookmarks.length === 0) {
+                            showToast('No valid bookmarks found in file');
+                            return;
+                        }
+
+                        // merge strategy: replace all
+                        bookmarks = normalizedBookmarks;
+
+                        // merge folders: add imported ones to existing stored folders
+                        const stored = getStoredFolders();
+                        importedFolders.forEach(f => {
+                            const name = (f || '').toString().trim();
+                            if (name) stored.add(name);
+                        });
+                        // also add folders referenced by imported bookmarks
+                        normalizedBookmarks.forEach(b => {
+                            if (b.folder && b.folder.trim()) stored.add(b.folder.trim());
+                        });
+                        saveStoredFolders(stored);
+
+                        selectedIndices.clear();
+                        editingIndex = null;
+                        saveToStorage();
+                        updateFolderDropdowns();
+                        render();
+                        showToast(`Imported ${bookmarks.length} bookmark(s)`);
+                    } catch (err) {
+                        showToast('Invalid JSON file: ' + err.message);
+                    } finally {
+                        importJsonInput.value = ''; // reset file input
+                    }
+                };
+                reader.onerror = () => {
+                    showToast('Failed to read file');
+                    importJsonInput.value = '';
+                };
+                reader.readAsText(file);
             }
 
             let toastTimer = null;
@@ -980,6 +1339,12 @@
                 clearBtn.addEventListener('click', clearAll);
                 moveSelectedBtn.addEventListener('click', moveSelectedToFolder);
                 createFolderBtn.addEventListener('click', handleCreateFolder);
+                exportJsonBtn.addEventListener('click', exportAsJson);
+                importJsonInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        importFromJson(e.target.files[0]);
+                    }
+                });
 
                 newFolderInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
@@ -987,6 +1352,8 @@
                         handleCreateFolder();
                     }
                 });
+
+                // Click outside edit area to cancel edit? Optional, but we provide explicit cancel button.
             }
 
             init();
@@ -995,7 +1362,7 @@
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('sw.js')
-                        .then((registration) => {
+                        .then(() => {
                             console.log('ServiceWorker registration successful');
                         })
                         .catch((err) => {
