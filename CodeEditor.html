@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code File Downloader · copy, import & download</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f4f4f4;
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      padding: 28px 30px;
+    }
+
+    h2 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      color: #1e293b;
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .subhead {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 16px;
+    }
+
+    .subhead span {
+      background: #f1f5f9;
+      padding: 2px 10px;
+      border-radius: 40px;
+      font-weight: 500;
+      color: #334155;
+    }
+
+    textarea {
+      width: 100%;
+      height: 380px;
+      padding: 18px;
+      font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      resize: vertical;
+      outline: none;
+      background: #fafcff;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    textarea:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      background: #ffffff;
+    }
+
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filename-wrap {
+      flex: 2;
+      min-width: 220px;
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1.5px solid #e2e8f0;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    .filename-wrap:focus-within {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      background: #fff;
+    }
+
+    .filename-wrap input {
+      flex: 1;
+      padding: 14px 16px;
+      font-size: 15px;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: inherit;
+      color: #0f172a;
+      min-width: 0;
+    }
+
+    .filename-wrap input::placeholder {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .ext-badge {
+      background: #eef2ff;
+      color: #3b82f6;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 30px;
+      margin-right: 8px;
+      white-space: nowrap;
+      border: 1px solid #c7d2fe;
+    }
+
+    button {
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    /* secondary button for import */
+    button.secondary {
+      background: #ffffff;
+      color: #1e293b;
+      border: 1.5px solid #cbd5e1;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    button.secondary:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    /* ----- Type selector row ----- */
+    .type-row {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .type-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-right: 4px;
+    }
+
+    .type-chip {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 999px;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      letter-spacing: 0.2px;
+    }
+
+    .type-chip:hover {
+      border-color: #c7d2fe;
+      color: #1d4ed8;
+    }
+
+    .type-chip.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .type-chip.active.auto-chip {
+      background: #7c3aed;
+      border-color: #7c3aed;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+    }
+
+    .type-chip .hint {
+      font-weight: 500;
+      opacity: 0.75;
+      font-size: 11px;
+      margin-left: 4px;
+    }
+
+    .note {
+      margin-top: 18px;
+      color: #475569;
+      font-size: 13px;
+      text-align: center;
+      background: #f8fafc;
+      padding: 12px 18px;
+      border-radius: 14px;
+      border: 1px solid #e9eef3;
+      line-height: 1.6;
+    }
+
+    .note strong {
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    .note code {
+      background: #e2e8f0;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #0f172a;
+    }
+
+    .flex-break {
+      width: 100%;
+    }
+
+    /* small status message for import */
+    .import-status {
+      font-size: 13px;
+      color: #047857;
+      margin-left: 8px;
+      transition: opacity 0.2s;
+    }
+
+    /* copy feedback (subtle) */
+    .copy-feedback {
+      color: #047857;
+      font-size: 13px;
+      margin-left: 6px;
+      opacity: 0;
+      transition: opacity 0.25s;
+      white-space: nowrap;
+    }
+
+    .copy-feedback.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 580px) {
+      .container {
+        padding: 18px;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      .controls {
+        flex-direction: column;
+      }
+      .filename-wrap {
+        width: 100%;
+      }
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+      .type-row {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>📥 Code File Downloader</h2>
+  <div class="subhead">
+    <span>HTML · CSS · JS · JSON</span> — paste or import code, auto‑detect or pick a type, download instantly.
+  </div>
+
+  <textarea
+    id="codeEditor"
+    placeholder="Paste your HTML, CSS, JavaScript, or JSON code here..."
+    spellcheck="false"
+  ></textarea>
+
+  <!-- Manual file-type selection -->
+  <div class="type-row" id="typeRow">
+    <span class="type-label">File type:</span>
+    <div class="type-chip active auto-chip" data-type="auto">Auto <span class="hint">(detect)</span></div>
+    <div class="type-chip" data-type="html">HTML</div>
+    <div class="type-chip" data-type="css">CSS</div>
+    <div class="type-chip" data-type="js">JS</div>
+    <div class="type-chip" data-type="json">JSON</div>
+  </div>
+
+  <div class="controls">
+    <div class="filename-wrap">
+      <input
+        type="text"
+        id="fileName"
+        placeholder="Filename will be extracted from the <title> tag"
+      >
+      <span class="ext-badge" id="extBadge">.html</span>
+    </div>
+    <button id="downloadBtn">
+      ⬇ Download File
+    </button>
+    <button id="importBtn" class="secondary" title="Import a code file (HTML, CSS, JS, JSON, or plain text)">
+      📂 Import file
+    </button>
+    <button id="copyBtn" class="secondary" title="Copy all text from the editor">
+      📋 Copy
+    </button>
+    <span id="copyFeedback" class="copy-feedback">✅ Copied!</span>
+    <input type="file" id="fileInput" accept=".html,.htm,.css,.js,.json,.txt,text/*" style="display:none">
+    <span id="importStatus" class="import-status"></span>
+  </div>
+
+  <div class="note">
+    <strong>Auto‑filename</strong> — extracts from <code>&lt;title&gt;</code> (HTML) or uses sensible defaults for CSS, JS, and JSON.<br>
+    Pick a type manually to override auto-detection. The extension is always forced to match your chosen type.<br>
+    <strong>📂 Import file</strong> — load any code file into the editor; content and type are set automatically.<br>
+    <strong>📋 Copy</strong> — copies the entire editor content to the clipboard.
+  </div>
+</div>
+
+<script>
+  (function() {
+    'use strict';
+
+    const editor       = document.getElementById('codeEditor');
+    const fileNameInput = document.getElementById('fileName');
+    const extBadge     = document.getElementById('extBadge');
+    const typeRow      = document.getElementById('typeRow');
+    const fileInput    = document.getElementById('fileInput');
+    const importBtn    = document.getElementById('importBtn');
+    const importStatus = document.getElementById('importStatus');
+    const copyBtn      = document.getElementById('copyBtn');
+    const copyFeedback = document.getElementById('copyFeedback');
+
+    // 'auto' | 'html' | 'css' | 'js' | 'json'
+    let selectedType = 'auto';
+    let copyFeedbackTimeout = null;
+
+    // ------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------
+
+    function sanitizeFilename(name) {
+      if (!name) return '';
+      return name
+        .replace(/[\\\/:*?"<>|]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function stripLeadingComments(src) {
+      return src
+        .replace(/^\s*\/\*[\s\S]*?\*\//, '')
+        .replace(/^\s*(\/\/[^\n]*\n)+/, '')
+        .replace(/^\s*<!--[\s\S]*?-->/, '')
+        .trim();
+    }
+
+    function extractTitleFromHTML(content) {
+      const match = content.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+      if (match && match[1]) {
+        return sanitizeFilename(match[1].replace(/\s+/g, ' ').trim());
+      }
+      return '';
+    }
+
+    // ------------------------------------------------------------
+    // Detection
+    // ------------------------------------------------------------
+    function detectFileType(code) {
+      const raw = (code || '').trim();
+      if (!raw) return 'html';
+
+      let t = stripLeadingComments(raw);
+      if (!t) t = raw;
+
+      // 1) JSON
+      if ((t[0] === '{' && t.endsWith('}')) ||
+          (t[0] === '[' && t.endsWith(']'))) {
+        try {
+          JSON.parse(t);
+          return 'json';
+        } catch (e) { /* fall through */ }
+      }
+
+      // 2) Strong JavaScript signals.
+      const jsSignals = [
+        /\bfunction\b/,
+        /\b(const|let|var)\s+[\w$]+\s*=/,
+        /=>/,
+        /\bwindow\.[\w$]+\s*=/,
+        /\bglobalThis\.[\w$]+\s*=/,
+        /\bmodule\.exports\b/,
+        /\brequire\s*\(/,
+        /\bconsole\.\w+\s*\(/,
+        /\bdocument\.\w+/,
+        /\baddEventListener\s*\(/,
+        /\bclass\s+[\w$]+\s*\{/,
+        /\bnew\s+[A-Z][\w$]*\s*\(/,
+        /['"]use strict['"]/,
+      ];
+      const jsScore = jsSignals.reduce((n, re) => n + (re.test(t) ? 1 : 0), 0);
+
+      if (!t.startsWith('<')) {
+        if (jsScore >= 2) return 'js';
+        if (jsScore >= 1 && /[;{}]/.test(t)) return 'js';
+      }
+
+      // 3) HTML
+      if (/<!DOCTYPE\s+html/i.test(t) ||
+          /<html[\s>]/i.test(t) ||
+          t.startsWith('<')) {
+        return 'html';
+      }
+
+      // 4) CSS
+      const cssPattern = /[.#]?[\w-]+\s*\{[^}]*[\w-]+\s*:\s*[^;}]+;?/;
+      if (cssPattern.test(t) && jsScore === 0) {
+        return 'css';
+      }
+
+      // 5) Generic braces with colons
+      if (/\{[\s\S]*[\w-]+\s*:\s*[^;}]+[\s\S]*\}/.test(t) && jsScore === 0) {
+        return 'css';
+      }
+
+      return 'html';
+    }
+
+    function resolvedType() {
+      if (selectedType === 'auto') {
+        return detectFileType(editor.value);
+      }
+      return selectedType;
+    }
+
+    function defaultNameFor(type) {
+      switch (type) {
+        case 'css':  return 'styles';
+        case 'js':   return 'script';
+        case 'json': return 'data';
+        case 'html':
+        default:     return 'index';
+      }
+    }
+
+    // ------------------------------------------------------------
+    // UI sync — filename + extension badge
+    // ------------------------------------------------------------
+    function refreshUI() {
+      const type = resolvedType();
+      extBadge.textContent = '.' + type;
+
+      const current = fileNameInput.value.trim();
+      const previousAuto = fileNameInput.dataset.autoFilled || '';
+
+      const title = (type === 'html') ? extractTitleFromHTML(editor.value) : '';
+      const autoName = title || defaultNameFor(type);
+
+      const shouldAutoFill =
+        !current ||
+        (previousAuto && current === previousAuto);
+
+      if (shouldAutoFill) {
+        fileNameInput.value = autoName;
+        fileNameInput.dataset.autoFilled = autoName;
+      }
+    }
+
+    // ------------------------------------------------------------
+    // Import handler
+    // ------------------------------------------------------------
+    function handleImportedFile(file) {
+      if (!file) return;
+
+      const status = (msg, isError = false) => {
+        importStatus.textContent = msg;
+        importStatus.style.color = isError ? '#b91c1c' : '#047857';
+        importStatus.style.opacity = '1';
+        setTimeout(() => {
+          importStatus.style.opacity = '0.5';
+        }, 3000);
+      };
+
+      const reader = new FileReader();
+
+      reader.onload = (ev) => {
+        const content = ev.target.result;
+        editor.value = content;
+
+        const extMatch = file.name.match(/\.(html|htm|css|js|json)$/i);
+        let ext = extMatch ? extMatch[1].toLowerCase() : null;
+        if (ext === 'htm') ext = 'html';
+
+        if (ext && ['html', 'css', 'js', 'json'].includes(ext)) {
+          setSelectedType(ext);
+          const baseName = file.name.replace(/\.[^.]+$/, '');
+          if (baseName) {
+            fileNameInput.value = sanitizeFilename(baseName);
+            fileNameInput.dataset.autoFilled = '';
+          }
+        } else {
+          setSelectedType('auto');
+          const baseName = file.name.replace(/\.[^.]+$/, '');
+          if (baseName && baseName.length > 0) {
+            fileNameInput.value = sanitizeFilename(baseName);
+            fileNameInput.dataset.autoFilled = '';
+          }
+        }
+
+        refreshUI();
+
+        if (file.name && file.name !== '') {
+          const baseName = file.name.replace(/\.[^.]+$/, '');
+          if (baseName && fileNameInput.value === '') {
+            fileNameInput.value = sanitizeFilename(baseName);
+            fileNameInput.dataset.autoFilled = '';
+          } else if (baseName && fileNameInput.dataset.autoFilled === '') {
+            if (fileNameInput.value !== sanitizeFilename(baseName)) {
+              fileNameInput.value = sanitizeFilename(baseName);
+              fileNameInput.dataset.autoFilled = '';
+            }
+          }
+        }
+
+        status(`✅ Imported: ${file.name}`);
+      };
+
+      reader.onerror = () => {
+        status('❌ Error reading file', true);
+      };
+
+      reader.readAsText(file);
+    }
+
+    // ------------------------------------------------------------
+    // Download
+    // ------------------------------------------------------------
+    function downloadFile() {
+      const code = editor.value.trim();
+      if (!code) {
+        alert('Please paste or import some code first.');
+        return;
+      }
+
+      const type = resolvedType();
+      const extension = type;
+
+      let fileName = fileNameInput.value.trim();
+
+      if (!fileName) {
+        if (type === 'html') {
+          fileName = extractTitleFromHTML(code) || defaultNameFor(type);
+        } else {
+          fileName = defaultNameFor(type);
+        }
+      }
+
+      fileName = fileName.replace(/\.(html|htm|css|js|json)$/i, '');
+      fileName = sanitizeFilename(fileName) || 'untitled';
+
+      const finalFileName = fileName + '.' + extension;
+
+      const mimeTypes = {
+        html: 'text/html;charset=utf-8',
+        css:  'text/css;charset=utf-8',
+        js:   'text/javascript;charset=utf-8',
+        json: 'application/json;charset=utf-8',
+      };
+      const mime = mimeTypes[extension] || 'text/plain;charset=utf-8';
+
+      const blob = new Blob([code], { type: mime });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = finalFileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ------------------------------------------------------------
+    // Copy to clipboard
+    // ------------------------------------------------------------
+    function copyEditorContent() {
+      const text = editor.value;
+      if (!text) {
+        // optionally show a subtle hint, but we can just do nothing
+        return;
+      }
+
+      // Use the modern clipboard API if available
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text)
+          .then(() => {
+            showCopyFeedback('✅ Copied!');
+          })
+          .catch(() => {
+            // fallback to execCommand
+            fallbackCopy(text);
+          });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      // Use a temporary textarea to copy
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showCopyFeedback('✅ Copied!');
+        } else {
+          showCopyFeedback('❌ Copy failed', true);
+        }
+      } catch (err) {
+        showCopyFeedback('❌ Copy failed', true);
+      }
+      document.body.removeChild(ta);
+    }
+
+    function showCopyFeedback(msg, isError = false) {
+      if (copyFeedbackTimeout) {
+        clearTimeout(copyFeedbackTimeout);
+      }
+      copyFeedback.textContent = msg;
+      copyFeedback.style.color = isError ? '#b91c1c' : '#047857';
+      copyFeedback.classList.add('show');
+
+      copyFeedbackTimeout = setTimeout(() => {
+        copyFeedback.classList.remove('show');
+        copyFeedbackTimeout = null;
+      }, 1800);
+    }
+
+    // ------------------------------------------------------------
+    // Type chips
+    // ------------------------------------------------------------
+    function setSelectedType(type) {
+      selectedType = type;
+      typeRow.querySelectorAll('.type-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.type === type);
+      });
+
+      const current = fileNameInput.value.trim();
+      const previousAuto = fileNameInput.dataset.autoFilled || '';
+
+      if (type !== 'auto') {
+        if (!current || (previousAuto && current === previousAuto)) {
+          const newName = defaultNameFor(type);
+          fileNameInput.value = newName;
+          fileNameInput.dataset.autoFilled = newName;
+        }
+      }
+      refreshUI();
+    }
+
+    typeRow.addEventListener('click', (e) => {
+      const chip = e.target.closest('.type-chip');
+      if (!chip) return;
+      setSelectedType(chip.dataset.type);
+    });
+
+    // ------------------------------------------------------------
+    // Wiring
+    // ------------------------------------------------------------
+    const onEditorChange = () => refreshUI();
+
+    editor.addEventListener('input', onEditorChange);
+    editor.addEventListener('change', onEditorChange);
+    editor.addEventListener('paste', () => {
+      setTimeout(onEditorChange, 0);
+    });
+
+    fileNameInput.addEventListener('input', () => {
+      fileNameInput.dataset.autoFilled = '';
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', downloadFile);
+
+    importBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        handleImportedFile(file);
+        fileInput.value = '';
+      }
+    });
+
+    // ----- Copy button wiring -----
+    copyBtn.addEventListener('click', copyEditorContent);
+
+    // Initial state.
+    refreshUI();
+  })();
+</script>
+
+</body>
+</html>
