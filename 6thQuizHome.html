@@ -203,17 +203,19 @@
   async function loadAllLevels() {
     if (levelsCache) return levelsCache;
 
-    try {
-      const res = await fetch('6QuizLevels.json', { cache: 'no-store' });
-      if (res.ok) {
+    const LEVEL_FILES = ['6thQuizLevels.json', '6QuizLevels.json'];
+    for (const f of LEVEL_FILES) {
+      try {
+        const res = await fetch(f, { cache: 'no-store' });
+        if (!res.ok) continue;
         const data = await res.json();
         const list = Array.isArray(data) ? data : data.levels;
         if (Array.isArray(list) && list.length > 0) {
           levelsCache = list;
           return levelsCache;
         }
-      }
-    } catch (e) { /* fall through */ }
+      } catch (e) { /* try the next name */ }
+    }
 
     levelsCache = EMBEDDED_LEVELS.levels;
     return levelsCache;
