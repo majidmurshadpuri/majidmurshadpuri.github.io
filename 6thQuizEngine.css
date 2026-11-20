@@ -226,4 +226,4 @@
   .qe-result-area { padding: 20px 14px; }
 }
 
-.qe-option-btn sup { font-size: .6em; margin: 0 .2em 0 .05em; line-height: 0; }
+.qe-option-btn sup { font-size: .68em; font-weight: 700; line-height: 0; vertical-align: baseline; position: relative; top: -.75em; margin: 0 .16em 0 .04em; }
